@@ -1,0 +1,96 @@
+.card{
+    height: 610px;
+    width: 340px;
+ background-color: white;
+    margin-block: 30px;
+    display: flex;
+    flex-direction: column;
+    
+   
+} 
+.item-image {
+    width: 100%;
+    height: 82%;
+   position: relative;
+}
+.item-image a img{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    cursor: pointer;
+}
+
+
+.item-image a img:first-child{
+z-index: 4;
+transition: all 0.4s ease-in-out;
+}
+.item-image a img:first-child:hover{
+opacity: 0;
+}
+.item-naming{
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+  margin: 10px;
+}
+.info{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.item-naming h3{
+  /* font-size: 12px;
+  font-family: 'Arial';
+  font-weight: 500; */
+}
+.item-naming h3 , .item-naming h4{
+  color: #4f5362;
+    text-transform: capitalize;
+    font-family: 'montserrat', sans-serif;
+    font-size: 15px;
+    line-height: 15px;
+    text-align: left;
+    text-overflow: ellipsis;
+}
+.item-naming h4{
+    margin-top: 5px;
+  font-size: 11px;
+  color: #737373;
+  font-weight: 500;
+}
+.item-price{
+  display: flex;
+  margin-left: 10px;
+  gap: 0px;
+}
+.item-price span{
+    margin-right: 15px;
+    font-family: 'montserrat', sans-serif;
+    
+    }
+.new-price{
+  color: #000000;
+  font-size: 18px;
+ 
+  font-weight: 600;
+
+}
+.old-price{
+  color: #8c8c8c;
+  font-size: 16px;
+  font-weight: 400;
+  text-decoration: line-through;
+
+}
+.discount{
+    color: #8c8c8c;
+  font-size: 18px;
+  font-weight: 500;
+  color: #00b852;
+
+}
+
+.add-wishlist img{
+height: 25px;
+}

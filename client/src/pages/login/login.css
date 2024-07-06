@@ -1,0 +1,64 @@
+.login-signup{
+display: flex;
+justify-content: center;
+align-items: center;
+padding-top: 60px;
+background: url('/public/Images/bg-business.png') center / cover no-repeat;
+}
+.login-signup-container{
+    place-self: center;
+    border: 1px solid #c9c9c9;
+    width: max(23vw, 330px);
+    color: #808080;
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding: 25px 30px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+.login-signup-title{
+    color: black;
+}
+.login-signup-inputs{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.login-signup-inputs input{
+outline: none;
+border: 1px solid #c9c9c9;
+border-radius: 4px;
+padding: 10px;
+
+}
+.login-signup-inputs input:focus{
+   
+    border: 1px solid #434343;
+  
+    
+    }
+.login-signup-container button{
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    color: white;
+    background-color: tomato;
+    font-size: 15px;
+    cursor: pointer;
+}
+.login-signup-condition{
+    display: flex;
+    align-items: start;
+    gap: 8px;
+    margin-top: -15px;
+}
+.login-signup-condition input{
+margin-top: 5px;
+}
+.login-signup p span{
+    color: tomato;
+    font-weight: 500;
+    cursor: pointer;
+}

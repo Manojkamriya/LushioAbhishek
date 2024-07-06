@@ -1,0 +1,69 @@
+ .dropdowm-container{
+    position: absolute;
+   
+    height: 380px;
+    width: 99vw;
+    right: 10px;
+    top: 60px;
+    animation: fadeIn 0.4s ease-in-out;
+}
+@keyframes fadeIn {
+    from{
+ opacity: 0;
+    }
+    to{
+        opacity: 1;
+    }
+    
+}
+.dropdown{
+    height: 380px;
+    width: 100%;
+    background-color: #ebebeb;
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+.sub-menu{
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  
+}
+.sub-menu h5{
+    font-family: 'montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+}
+.sub-menu h4{
+    font-family: 'montserrat', sans-serif;
+    margin-block: 10px;
+    font-size: 15px;
+    font-weight: 400;
+}
+.sub-menu ul{
+    display:flex;
+    flex-direction: column;
+    align-items: flex-start;
+    
+    width: 100px; 
+   
+}
+.sub-menu ul li{
+    height: 30px;
+    width: 100px;
+}
+.sub-menu ul li{
+    list-style: none;
+    font-size: 14px;
+    padding: 6px 0px;
+    margin: 0px;
+    font-family: 'montserrat', sans-serif;
+    font-weight: 400;
+}
+.submenu-image{
+display: block;
+width: 200px;
+height: 270px !important;
+}
