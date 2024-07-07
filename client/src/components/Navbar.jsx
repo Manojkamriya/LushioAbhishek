@@ -20,19 +20,19 @@ function Navbar() {
                 <li
                   onMouseEnter={() => setDropdown(true)}
                   onMouseLeave={() => setDropdown(false)}
-                >Men <img src='./Images/dropdown.png' alt=''/>
+                >Men <img src='./Images/icons/dropdown.png' alt=''/>
                      {dropdown && <Dropdowm/>}
                 </li>
                 <li
                   onMouseEnter={() => setDropdown2(true)}
                   onMouseLeave={() => setDropdown2(false)}
-                >Women <img src='./Images/dropdown.png' alt=''/>
+                >Women <img src='./Images/icons/dropdown.png' alt=''/>
                      {dropdown2 && <Dropdown2/>}
                 </li>
                 <li
                   onMouseEnter={() => setDropdown1(true)}
                   onMouseLeave={() => setDropdown1(false)}
-                >Accessories <img src='./Images/dropdown.png' alt=''/>
+                >Accessories <img src='./Images/icons/dropdown.png' alt=''/>
                      {dropdown1 && <Dropdown1/>}
                 </li>
               
@@ -41,16 +41,16 @@ function Navbar() {
         </div>
         <div className="search-box">
           <input type='text' name='productName' placeholder='search by product category or collection'/>
-          <img src='./Images/search-icon.png' alt=''/>
+          <img src='./Images/icons/search-icon.png' alt=''/>
         </div>
         <div className="icons">
           
             <Link to='/wishlist' >
-            <img src='./Images/wishlist_3.png' alt='' /></Link>
+            <img src='./Images/icons/wishlist.png' alt='' /></Link>
             <Link to='/cart' >
-            <img src='./Images/cart_2.png' alt='' /></Link>
+            <img src='./Images/icons/cart.png' alt='' /></Link>
             <Link to='/login' >
-            <img src='./Images/profile_2.png' alt='' /></Link>
+            <img src='./Images/icons/profile.png' alt='' /></Link>
         </div>
       </div>
     

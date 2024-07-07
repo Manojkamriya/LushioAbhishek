@@ -18,10 +18,10 @@ export default function Home() {
        name='SHORTS'
        />
         <Card
-       name='SHORTS'
+       name='TANKS'
        />
         <Card
-       name='SHORTS'
+       name='JEANS'
        />
        
        </div>

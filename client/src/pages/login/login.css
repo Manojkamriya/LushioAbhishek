@@ -3,7 +3,7 @@ display: flex;
 justify-content: center;
 align-items: center;
 padding-top: 60px;
-background: url('/public/Images/bg-business.png') center / cover no-repeat;
+background: url('/public/Images/bg-login.png') center / cover no-repeat;
 }
 .login-signup-container{
     place-self: center;

@@ -20,7 +20,7 @@ function Card(props) {
          
         </div>
         <div className="add-wishlist">
-          <img src='./Images/wishlist_2.png' alt='' />
+          <img src='./Images/icons/wishlist.png' alt='' />
         </div>
       </div>
       <div className="item-price">
