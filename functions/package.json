@@ -19,7 +19,8 @@
     "firebase-admin": "^12.2.0",
     "firebase-functions": "^5.0.1",
     "passport": "^0.7.0",
-    "passport-google-oauth20": "^2.0.0"
+    "passport-google-oauth20": "^2.0.0",
+    "passport-local": "^1.0.0"
   },
   "devDependencies": {
     "eslint": "^8.15.0",
