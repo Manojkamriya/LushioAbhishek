@@ -1,7 +1,8 @@
 // src/auth/phoneAuth.js
 
-import { auth } from '../firebaseConfig';
+import { auth, db } from '../firebaseConfig';
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
 export const setupRecaptcha = () => {
   if (!window.recaptchaVerifier) {
@@ -17,7 +18,7 @@ export const setupRecaptcha = () => {
   }
 };
 
-export const sendOtp = async (formattedPhoneNumber) => {
+const sendOtp = async (formattedPhoneNumber) => {
   setupRecaptcha();
   const appVerifier = window.recaptchaVerifier;
 
@@ -31,13 +32,30 @@ export const sendOtp = async (formattedPhoneNumber) => {
   }
 };
 
-export const verifyOtp = async (confirmationResult, otp) => {
+const verifyOtp = async (confirmationResult, otp, formattedPhoneNumber) => {
   try {
     const result = await confirmationResult.confirm(otp);
     console.log("OTP verified successfully:", result);
+
+    // Save user data in Firestore
+    await setDoc(doc(db, "users", result.user.uid), {
+      phoneNumber: formattedPhoneNumber,
+      createdAt: new Date(),
+    });
+
     return result.user;
   } catch (error) {
     console.error("Error during OTP verification", error);
     throw error;
   }
 };
+
+const verifyOtpForLogin = async (confirmationResult, otp) => {
+  try {
+    await confirmationResult.confirm(otp);
+  } catch (error) {
+    console.error("Error verifying OTP for login", error);
+  }
+};
+
+export { sendOtp, verifyOtp, verifyOtpForLogin };

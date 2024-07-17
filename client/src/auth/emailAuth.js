@@ -1,21 +1,23 @@
-import { auth } from '../firebaseConfig';
-import { createUserWithEmailAndPassword, sendSignInLinkToEmail } from "firebase/auth";
+import { auth, db } from '../firebaseConfig';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendSignInLinkToEmail } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
 const handleEmailSignUp = async (email, password) => {
   try {
-    // Sign up the user with email and password
-    await createUserWithEmailAndPassword(auth, email, password);
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
 
-    // Send email link for verification
+    await setDoc(doc(db, "users", user.uid), {
+      email: user.email,
+      createdAt: new Date(),
+    });
+
     const actionCodeSettings = {
-      // URL you want to redirect back to. The domain (www.example.com) for this
-      // URL must be in the authorized domains list in the Firebase Console.
       url: 'http://localhost:3000/finishSignUp?cartId=1234',
       handleCodeInApp: true,
     };
     await sendSignInLinkToEmail(auth, email, actionCodeSettings);
 
-    // Save the email locally to complete the sign-in flow later.
     window.localStorage.setItem('emailForSignIn', email);
 
     alert('Verification email sent!');
@@ -25,4 +27,26 @@ const handleEmailSignUp = async (email, password) => {
   }
 };
 
-export default handleEmailSignUp;
+const handleEmailLogin = async (email, password) => {
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    console.error("Error during email login", error);
+  }
+};
+
+const sendEmailSignInLink = async (email) => {
+  try {
+    const actionCodeSettings = {
+      url: 'http://localhost:3000/finishSignIn',
+      handleCodeInApp: true,
+    };
+    await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+    window.localStorage.setItem('emailForSignIn', email);
+    alert('Login link sent to your email!');
+  } catch (error) {
+    console.error("Error sending email sign-in link", error);
+  }
+};
+
+export { handleEmailSignUp, handleEmailLogin, sendEmailSignInLink };
