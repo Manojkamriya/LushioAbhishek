@@ -1,44 +1,6 @@
 import React from 'react'
-// import MemberCard from './MemberCard'
 import './productCard.css'
-import { Link } from 'react-router-dom'
-function Card(props) {
- 
-  return (
-   
-    <div className='card'>
-      <div className="item-image">
-      <Link to='/product'>
-        <img  src={props.image1} alt=''/>
-        <img  src={props.image2} alt=''/>
-        </Link>
-      </div>
-      <div className="item-naming">
-        <div className="info">
-          <h3>LushioFitness®</h3>
-          <h4>{props.discription}</h4>
-         
-        </div>
-        <div className="add-wishlist">
-          <img src='./Images/icons/wishlist.png' alt='' />
-        </div>
-      </div>
-      <div className="item-price">
-        <span className="new-price">
-        ₹{props.newPrice}
-        </span>
-        <span className="old-price">
-        ₹{props.oldPrice}
-          </span>
-          <span className="discount">
-        {props.discount}% OFF
-          </span>
-      </div>
-    </div>
-   
-   
-  )
-}
+import Card from './ProductCard'
 
 function ProductCards() {
   return (
@@ -49,7 +11,7 @@ function ProductCards() {
      
       image1='./Images/card-image.webp'
       image2='./Images/card-image-2.webp'
-      discription='Women Black Friends Typography Boyfriend T-shirt'
+      discription='Women Black Friends Typography Boyfriend T-shirt very stylish and trendy'
       newPrice='599'
       oldPrice='1299'
       discount='53'

@@ -3,15 +3,15 @@
   top: 0%;
   z-index: 999;
   background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.14) 0px 3px 8px;
 }
 .navbar{
     height: 65px;
-   
     display: flex;
     justify-content: space-between;
     background-color: white;
-    /* background-color: aqua; */
 }
+
 .logo{
     height: 100%;
     margin-left: 4%;
@@ -34,16 +34,24 @@
     align-items: center;
     height: 10vh;
     transition: all 0.2s ease-in-out;
-    text-decoration: none;
-    color: #1b1919;
-    font-size: 1.1rem;
-    margin-inline: 1.5rem;
-    cursor: pointer;
+  margin-inline: 10px;
     /* position: relative; */
     /* padding: 6px 13px; */
   }
+  .list ul li a{
+    text-decoration: none;
+    color: #1b1919;
+    font-size: 1.1rem;
+    margin-inline: 0.2rem;
+    cursor: pointer;
+  }
   .list ul li img{
     height: 22px;
+  }
+  .list ul li a span{
+   background-color: red;
+   font-size: 3px;
+   color: #17B677;
   }
  .search-box{
    display: flex;
@@ -89,14 +97,28 @@ margin-right: 4%;
   } */
    .icons a {
     height: 90%;
+    position: relative;
    }
   .icons a img{
     height: 60%;
     margin: 10px 20px;
 cursor: pointer;
   }
+  .icons a span{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    text-decoration: none;
+    color: white;
+    text-align: center;
+    background-color: rgb(249, 4, 4);
+
+  } 
   @media(max-width:500px) {
     .navbar{
-      display: none;
+      /* display: none; */
     }
   }

@@ -1,11 +1,21 @@
-.login-signup{
+.auth-container{
 display: flex;
+flex-direction: column;
 justify-content: center;
 align-items: center;
 padding-top: 60px;
 background: url('/public/Images/bg-login.png') center / cover no-repeat;
 }
-.login-signup-container{
+.auth-container-button{
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    color: white;
+    font-size: 15px;
+    background-color: tomato;
+    cursor: pointer;
+}
+.auth-form{
     place-self: center;
     border: 1px solid #c9c9c9;
     width: max(23vw, 330px);
@@ -26,27 +36,42 @@ background: url('/public/Images/bg-login.png') center / cover no-repeat;
     flex-direction: column;
     gap: 20px;
 }
-.login-signup-inputs input{
+.auth-form input{
 outline: none;
 border: 1px solid #c9c9c9;
 border-radius: 4px;
 padding: 10px;
 
 }
-.login-signup-inputs input:focus{
+.auth-form input:focus{
    
     border: 1px solid #434343;
-  
-    
-    }
-.login-signup-container button{
+  }
+.auth-form button{
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    /* color: white;
+    background-color: tomato;
+    font-size: 15px; */
+ 
+}
+.enabled{
     border: none;
     padding: 10px;
     border-radius: 4px;
     color: white;
-    background-color: tomato;
     font-size: 15px;
+    background-color: tomato;
     cursor: pointer;
+}
+.disabled{
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    color: white;
+    font-size: 15px;
+    background-color: rgb(240, 138, 120);
 }
 .login-signup-condition{
     display: flex;
@@ -56,8 +81,11 @@ padding: 10px;
 }
 .login-signup-condition input{
 margin-top: 5px;
+height: 15px;
+width: 15px;
+cursor: pointer;
 }
-.login-signup p span{
+.auth-form p a{
     color: tomato;
     font-weight: 500;
     cursor: pointer;
