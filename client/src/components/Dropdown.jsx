@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import './dropdown.css'
 function Dropdowm() {
   return (
@@ -7,23 +8,23 @@ function Dropdowm() {
       <div className="sub-menu">
         <h5>TOP PRODUCTS</h5>
         <ul>
-            <li>Shirts</li>
-            <li>T-Shirts</li>
-            <li>Joggers</li>
-            <li>Outerwear</li>
-            <li>Pants</li>
-            <li>Hats/Caps</li>
+            <li><Link to='/'>Shirts</Link></li>
+            <li><Link to='/'>Joggers</Link></li>
+            <li><Link to='/'>Outerwear</Link></li>
+            <li><Link to='/'>Pants</Link></li>
+            <li><Link to='/'>Hats/Caps</Link></li>
+
         </ul>
       </div>
       <div className="sub-menu">
       <h5>FEATURED</h5>
         <ul>
-            <li>New Drop</li>
-            <li>Coming Soon</li>
-            <li>Restock</li>
-            <li>Best Seller</li>
-            <li>SALE</li>
-           
+        <li><Link to='/'>New Drop</Link></li>
+            <li><Link to='/'>Comming Soon</Link></li>
+            <li><Link to='/'>Restock</Link></li>
+            <li><Link to='/'>Best Seller</Link></li>
+            <li><Link to='/'>Sale</Link></li>
+       
         </ul>
       </div>
       <div className="sub-menu">

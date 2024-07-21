@@ -15,6 +15,11 @@ const Login = () => {
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [isPhone, setIsPhone] = useState(false);
   const [loginMethod, setLoginMethod] = useState('password'); // "password" or "otp"
+  const [isChecked, setIsChecked] = useState(false);
+
+  const handleCheckboxChange = () => {
+    setIsChecked(!isChecked);
+  };
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -82,6 +87,8 @@ const Login = () => {
 
   return (
     <div className='auth-container'>
+      <Link to='/user'> <button className='auth-container-button'>Go to User page </button> </Link>
+     
       <form className="auth-form" onSubmit={handleFormSubmit}>
         <h2>Login</h2>
         <input
@@ -138,10 +145,14 @@ const Login = () => {
             disabled={loginMethod === 'otp'}
           />
         )}
-        <button type="submit">Login</button>
+          <div className="login-signup-condition">
+            <input type='checkbox'  checked={isChecked}   onChange={handleCheckboxChange}   required/>
+            <p>By continuing, i agree to the terms of use & privacy policy</p>
+          </div>
+        <button type="submit"  className={isChecked ? 'enabled' : 'disabled'} disabled={!isChecked}>Login</button>
         <p>Create a new account? <Link to='/register'>Sign Up here</Link></p>
-        <button type="button" onClick={handleGoogleSignIn}>Continue With Google</button>
-        <button type="button" onClick={handleFacebookSignIn}>Continue With Facebook</button>
+        <button type="button" onClick={handleGoogleSignIn}  className={isChecked ? 'enabled' : 'disabled'} disabled={!isChecked}>Continue With Google</button>
+        <button type="button" onClick={handleFacebookSignIn}  className={isChecked ? 'enabled' : 'disabled'} disabled={!isChecked}>Continue With Facebook</button>
       </form>
       <div id="recaptcha-container"></div>
     </div>

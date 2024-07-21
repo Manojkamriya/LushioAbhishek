@@ -46,12 +46,13 @@ opacity: 0;
 }
 .item-naming h3 , .item-naming h4{
   color: #4f5362;
+  text-overflow: ellipsis;
     text-transform: capitalize;
     font-family: 'montserrat', sans-serif;
     font-size: 15px;
     line-height: 15px;
     text-align: left;
-    text-overflow: ellipsis;
+  
 }
 .item-naming h4{
     margin-top: 5px;
@@ -93,4 +94,5 @@ opacity: 0;
 
 .add-wishlist img{
 height: 25px;
+cursor: pointer;
 }
