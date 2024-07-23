@@ -1,9 +1,9 @@
-import React, {useState} from 'react'
+import React from 'react'
 import './product.css'
 function ProductDisplayPage(props) {
-  const [size, setSize] = useState('')
+  // const [size, setSize] = useState('')
   // const [image, setImage] = useState(props.image)
-  console.log(size);
+  // console.log(size);
   return (
     <>
     
@@ -48,11 +48,11 @@ function ProductDisplayPage(props) {
 <div className="productDisplay-right-size">
   <h1>Select Size</h1>
   <div className="productDisplay-right-sizes">
-    <div onClick={()=>setSize('S')}>S</div>
-    <div  onClick={()=>setSize('M')}>M</div>
-    <div  onClick={()=>setSize('L')}>L</div>
-    <div  onClick={()=>setSize('XL')}>XL</div>
-    <div  onClick={()=>setSize('XXL')}>XXL</div>
+    <div>S</div>
+    <div  >M</div>
+    <div >L</div>
+    <div >XL</div>
+    <div >XXL</div>
   </div>
 </div>
 <button>ADD TO CART</button>

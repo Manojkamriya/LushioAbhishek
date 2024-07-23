@@ -26,17 +26,17 @@ function App() {
           {/* <Route path="/login" element={<LoginSignUp/>} /> */}
           <Route path="/men" element={<ShopCategory banner={men_banner} category='men'/>} />
           <Route path="/women" element={<ShopCategory banner={women_banner} category='women'/>} />
-          <Route path="/kids" element={<ShopCategory banner={kids_banner} category='kid'/>} />
+          <Route path="/accessories" element={<ShopCategory banner={kids_banner} category='kid'/>} />
           <Route path="/register" element={<Register/>} />
           <Route path="/login" element={<Login/>} />
           <Route path="/finishSignUp" element={<FinishEmailSignUp />} />
-        
-        
           <Route path="/product" element={<ProductDisplay/>}/>
           <Route path='/cart' element={<Cart/>}/>
           <Route path="/wishlist" element={<WishList/>}/>
           <Route path='/user'     element={<User/>}/>
           <Route path='/user/profile'     element={<EditProfile/>}/>
+        
+          
         </Routes>
         <Footer/>
       </BrowserRouter>

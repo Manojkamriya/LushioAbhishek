@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom';
 import './user.css';
 function User() {
-  const [userName, setUserName]  = useState("User");
+  // const [userName, setUserName]  = useState("User");
   return (
     <>
-     <h1 className='user-greet'>Welcome {userName}</h1> 
+     <h1 className='user-greet'>Welcome User</h1> 
      <p className='user-question'>What would you like to do ?</p>
      <div className="user-action-container">
       

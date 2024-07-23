@@ -75,7 +75,7 @@ const Register = () => {
 
   return (
     <div className='auth-container'>
-       <Link to='/user'> <button>Go to User page </button> </Link>
+       <Link to='/user'> <button className='auth-container-button'>Go to User page </button> </Link>
       <form className="auth-form" onSubmit={handleFormSubmit}>
         <h2>Sign Up</h2>
         <input

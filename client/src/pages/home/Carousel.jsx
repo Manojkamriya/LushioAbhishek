@@ -1,28 +1,28 @@
-import { useEffect } from "react";
-import { useState } from "react";
-import { useRef } from "react";
+import { useEffect, useState, useRef, useCallback  } from "react";
 import './Home.css'
 function Carousel( {images} ) {
   
   const [current, setCurrent] = useState(0);
   const timeOutRef = useRef(null);
 
+ 
+
+  const slideRight = useCallback(() => {
+    setCurrent(prev => (prev === images.length - 1 ? 0 : prev + 1));
+  }, [images.length]);
+
+  // useEffect to handle the timeout
   useEffect(() => {
     timeOutRef.current = setTimeout(slideRight, 9000);
 
     return () => {
       clearTimeout(timeOutRef.current);
     };
-  }, [current]);
-  
-  const slideRight = () => {
-    setCurrent(current === images.length - 1 ? 0 : current + 1);
-  };
+  }, [slideRight]);
 
   const slideLeft = () => {
-    setCurrent(current === 0 ? images.length - 1 : current - 1);
+    setCurrent(prev => (prev === 0 ? images.length - 1 : prev - 1));
   };
-  console.log(current);
   return (
     <div className="carousel">
       <div className="carousel_wrapper">
