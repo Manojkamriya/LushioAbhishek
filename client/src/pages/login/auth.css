@@ -90,3 +90,9 @@ cursor: pointer;
     font-weight: 500;
     cursor: pointer;
 }
+
+
+.login-method{
+    display: flex;
+    justify-content: space-evenly;
+}

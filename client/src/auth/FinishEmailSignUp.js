@@ -20,7 +20,7 @@ const FinishEmailSignUp = () => {
           // Complete sign-in with email link
           await signInWithEmailLink(auth, email, window.location.href);
           window.localStorage.removeItem('emailForSignIn');
-          navigate('/'); // Redirect to home page after successful sign-in
+          navigate('/user'); // Redirect to home page after successful sign-in
         } catch (error) {
           console.error('Error signing in with email link', error);
         }
