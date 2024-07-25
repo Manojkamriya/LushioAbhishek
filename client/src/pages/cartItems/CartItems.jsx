@@ -15,10 +15,10 @@ const CartItems = () => {
       </div>
       <hr />
       {
-        all_product.map((e)=>{
+        all_product.map((e,i)=>{
           if(cartItems[e.id]>0){
             return (
-            <div>
+            <div key={i}>
             <div className="cartitems-format cartitems-format-main">
               <img src={e.image} alt="" className="carticon-product-icon" />
               <p>{e.name}</p>

@@ -52,7 +52,7 @@ for(const item in cartItems){
 
 
   const contextValue = { all_product, cartItems, addToCart, removeFromCart , getTotalCartAmount, getTotalCartItems};
-  console.log(cartItems);
+
   return (
     <ShopContext.Provider value={contextValue}>
       {props.children}

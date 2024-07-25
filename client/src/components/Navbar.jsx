@@ -1,16 +1,16 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import "./Navbar.css";
 import { Link } from "react-router-dom";
 import Dropdown from "./Dropdown";
 import Dropdown1 from "./Dropdown1";
 import Dropdown2 from "./Dropdown2";
 // import ShopCategory from "../pages/shopCategory/ShopCategory";
-import { ShopContext } from "./context/ShopContext";
+// import { ShopContext } from "./context/ShopContext";
 function Navbar() {
   const [dropdown, setDropdown] = useState(false);
   const [dropdown2, setDropdown2] = useState(false);
   const [dropdown1, setDropdown1] = useState(false);
-  const { getTotalCartItems } = useContext(ShopContext);
+  // const { getTotalCartItems } = useContext(ShopContext);
   return (
     <nav id="navbar">
       <div className="navbar">
@@ -41,7 +41,7 @@ function Navbar() {
               onMouseEnter={() => setDropdown1(true)}
               onMouseLeave={() => setDropdown1(false)}
             >
-              <Link to="/men">Accessories</Link>{" "}
+              <Link to="/accessories">Accessories</Link>{" "}
               <img src="./Images/icons/dropdown.png" alt="" />
               {dropdown1 && <Dropdown1 />}
             </li>
