@@ -3,7 +3,7 @@
 
 const media = [
   {
-    image: "./Images/carousel/carousel-image-1.webp",
+    image: "/public/Images/carousel/carousel-image-1.webp",
    
   },
   {

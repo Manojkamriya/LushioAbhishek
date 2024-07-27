@@ -7,19 +7,15 @@ import { sendOtp, verifyOtpForLogin } from '../../auth/phoneAuth';
 import './auth.css';
 
 const Login = () => {
-  const [identifier, setIdentifier] = useState(''); // Can be either email or phone number
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
-  const [countryCode, setCountryCode] = useState(''); // Country code for phone number
+  const [countryCode, setCountryCode] = useState('');
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [isPhone, setIsPhone] = useState(false);
-  const [loginMethod, setLoginMethod] = useState('password'); // "password" or "otp"
-  const [isChecked, setIsChecked] = useState(false);
+  const [loginMethod, setLoginMethod] = useState('password');
 
-  const handleCheckboxChange = () => {
-    setIsChecked(!isChecked);
-  };
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,7 +25,7 @@ const Login = () => {
   const handleGoogleSignIn = async () => {
     try {
       await signInWithGoogle();
-      navigate('/');
+      navigate('/user');
     } catch (error) {
       console.error("Error during Google sign-in", error);
     }
@@ -38,7 +34,7 @@ const Login = () => {
   const handleFacebookSignIn = async () => {
     try {
       await signInWithFacebook();
-      navigate('/');
+      navigate('/user');
     } catch (error) {
       console.error("Error during Facebook sign-in", error);
     }
@@ -47,37 +43,31 @@ const Login = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (isPhone) {
-      if (loginMethod === 'otp') {
+      try {
+        const formattedPhoneNumber = `${countryCode}${identifier}`;
+        console.log(formattedPhoneNumber)
         if (!otpSent) {
-          try {
-            const formattedPhoneNumber = `${countryCode}${identifier}`;
-            const result = await sendOtp(formattedPhoneNumber);
-            setConfirmationResult(result);
-            setOtpSent(true);
-          } catch (error) {
-            console.error("Error sending OTP", error);
-          }
+          const result = await sendOtp(formattedPhoneNumber);
+          setConfirmationResult(result);
+          setOtpSent(true);
         } else {
-          try {
-            await verifyOtpForLogin(confirmationResult, otp);
-            navigate('/');
-          } catch (error) {
-            console.error("Error verifying OTP", error);
-          }
+          await verifyOtpForLogin(confirmationResult, otp);
+          navigate('/user');
         }
-      } else {
-        // Handle phone login with password
-        // You need to implement a function to handle phone login with password if applicable
+      } catch (error) {
+        console.error("Error with phone login", error);
       }
     } else {
       if (loginMethod === 'otp') {
-        // Handle email login with OTP
-        await sendEmailSignInLink(identifier);
-        navigate('/');
+        try {
+          await sendEmailSignInLink(identifier);
+        } catch (error) {
+          console.error("Error sending email sign-in link", error);
+        }
       } else {
         try {
           await handleEmailLogin(identifier, password);
-          navigate('/');
+          navigate('/user');
         } catch (error) {
           console.error("Error logging in with email", error);
         }
@@ -87,8 +77,6 @@ const Login = () => {
 
   return (
     <div className='auth-container'>
-      <Link to='/user'> <button className='auth-container-button'>Go to User page </button> </Link>
-     
       <form className="auth-form" onSubmit={handleFormSubmit}>
         <h2>Login</h2>
         <input
@@ -98,7 +86,7 @@ const Login = () => {
           onChange={(e) => setIdentifier(e.target.value)}
           required
         />
-        {isPhone && (
+        {isPhone ? (
           <input
             type="text"
             placeholder='Enter your country code'
@@ -106,7 +94,7 @@ const Login = () => {
             onChange={(e) => setCountryCode(e.target.value)}
             required
           />
-        )}
+        ):
         <div className="login-method">
           <label>
             <input
@@ -114,6 +102,7 @@ const Login = () => {
               value="password"
               checked={loginMethod === 'password'}
               onChange={() => setLoginMethod('password')}
+              disabled={isPhone}
             />
             Password
           </label>
@@ -124,9 +113,10 @@ const Login = () => {
               checked={loginMethod === 'otp'}
               onChange={() => setLoginMethod('otp')}
             />
-            OTP
+             OTP
           </label>
         </div>
+        }
         {loginMethod === 'otp' && otpSent ? (
           <input
             type="text"
@@ -136,23 +126,20 @@ const Login = () => {
             required
           />
         ) : (
-          <input
-            type="password"
-            placeholder='Enter your password'
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            disabled={loginMethod === 'otp'}
-          />
+          loginMethod === 'password' && !isPhone && (
+            <input
+              type="password"
+              placeholder='Enter your password'
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          )
         )}
-          <div className="login-signup-condition">
-            <input type='checkbox'  checked={isChecked}   onChange={handleCheckboxChange}   required/>
-            <p>By continuing, i agree to the terms of use & privacy policy</p>
-          </div>
-        <button type="submit"  className={isChecked ? 'enabled' : 'disabled'} disabled={!isChecked}>Login</button>
+        <button type="submit">Login</button>
         <p>Create a new account? <Link to='/register'>Sign Up here</Link></p>
-        <button type="button" onClick={handleGoogleSignIn}  className={isChecked ? 'enabled' : 'disabled'} disabled={!isChecked}>Continue With Google</button>
-        <button type="button" onClick={handleFacebookSignIn}  className={isChecked ? 'enabled' : 'disabled'} disabled={!isChecked}>Continue With Facebook</button>
+        <button type="button" onClick={handleGoogleSignIn}>Continue With Google</button>
+        <button type="button" onClick={handleFacebookSignIn}>Continue With Facebook</button>
       </form>
       <div id="recaptcha-container"></div>
     </div>
