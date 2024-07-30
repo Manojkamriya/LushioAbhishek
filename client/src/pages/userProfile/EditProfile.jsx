@@ -16,11 +16,14 @@ function EditProfile() {
           <input type="tel" placeholder='Enter your phone no.' required/>
           <label>Address</label>
           <input type="text" placeholder='Enter your address' required/>
-          <label>Gender</label>
+         
           <div className="radio-input">
+
+            
+          <label>Gender
           <label> <input type='radio' required/> Male</label>
           <label> <input type='radio' required/> Female</label>
-          <label> <input type='radio' required/> Other</label></div>
+          <label> <input type='radio' required/> Other</label> </label></div>
         <button type='Submit'>Save</button>
       </form>
       </div>

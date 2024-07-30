@@ -14,6 +14,8 @@
     display: flex;
     justify-content: center;
     gap: 30px;
+    max-width: 1000px;
+    margin-inline: auto;
     flex-wrap: wrap;
 }
 .user-action{
@@ -67,6 +69,7 @@
     font-weight: 500;
     color: #2e2e2e;
     font-family: 'Poppins', sans-serif;
+    margin-top: 9px;
 }
 .edit-profile input[type='text']{
     /* height: 300px; */
@@ -74,19 +77,14 @@
 .edit-profile input[type='text'], .edit-profile input[type='email'], .edit-profile input[type='tel']{
 
     outline: none;
-    font-family: 'Poppins', sans-serif;
-    font-size: 14px;
-    font-weight: 400;
-    color: #333;
-    border-radius: 5px;
-    border: 1px solid #aaa;
-    padding: 0 15px;
-    height: 42px;
-    margin: 8px 0;
-    transition: all 0.15s ease-in;
+    border: 1px solid #c9c9c9;
+    border-radius: 4px;
+    padding: 10px;
+  
 }
 .edit-profile input:focus{
-    box-shadow: 0 3px 6px rgba(0,0,0,0.13);
+   
+    border: 1px solid #434343;
 }
 .radio-input label{
    margin: 20px;

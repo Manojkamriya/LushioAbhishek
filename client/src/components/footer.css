@@ -12,17 +12,18 @@ footer{
  padding-top: 40px;
     justify-content: space-evenly;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-    height: 250px;
+    height: 300px;
 }
-.business-section .quick-links{
+.business-section, .quick-links{
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
+    margin-bottom: 40px;
 }
 .business-section h4, .quick-links h4{
     
-    line-height: 4px;
+    /* line-height: 4px; */
     text-align: left;
     color: #1c1b1b;
     font-size: 16px !important;
@@ -31,13 +32,24 @@ footer{
     font-size: 1.5rem;
     font-weight: 400;
 }
+.quick-links h4{
+   
+    /* height: 300px; */
+    color: #606060;
+ 
+    font-family: "Montserrat", sans-serif;
+   
+    width: 250px;
+    font-size: 12px !important;
+    margin-top: 20px;
+}
 .business-section p{
     color: #606060;
  
     font-family: "Montserrat", sans-serif;
     margin-top: 20px;
-    width: 300px;
-    font-size: 13px !important;
+    width: 250px;
+    font-size: 12px !important;
 }
 .business-section button{
     width: 200px;
@@ -85,8 +97,8 @@ margin-block: 10px;
     color: #20c9c3;
 }
 .quick-links img{
-    margin-top: 20px;
-    height: 100px;
+    margin-top: -10px;
+    height: 30px;
     }
 .contact-section{
     border-left: 1px solid #d1caca;
@@ -133,3 +145,25 @@ margin-block: 10px;
     padding: 12px;
   
 }
+
+@media(max-width: 1050px){
+    .primary{
+        display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      justify-items: start;
+      height: auto;
+    }
+    .business-section, .quick-links{
+        margin-left: 40px;
+    }
+}
+@media(max-width: 850px){
+.primary{
+    grid-template-columns: repeat(2, 1fr);
+}
+}
+@media(max-width: 550px){
+    .primary{
+        grid-template-columns: repeat(1, 1fr);
+    }
+    }

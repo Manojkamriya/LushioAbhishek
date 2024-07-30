@@ -72,6 +72,7 @@ padding: 10px;
     color: white;
     font-size: 15px;
     background-color: rgb(240, 138, 120);
+    cursor: not-allowed;
 }
 .login-signup-condition{
     display: flex;

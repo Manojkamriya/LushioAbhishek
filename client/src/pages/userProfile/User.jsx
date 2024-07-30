@@ -28,7 +28,9 @@ function User() {
 </div>
         </div>
         <div className="user-action">
-            <img src='./Images/icons/orders.png' alt='logo'/>
+        <Link to='/orders'>
+        <img src='./Images/icons/orders.png' alt='logo'/> </Link> 
+          
             
             <div className="action-details">
 <h3>Your Orders</h3>
@@ -40,6 +42,13 @@ function User() {
             <div className="action-details">
 <h3>Refer and Earn</h3>
 <p>Refer to your friends, family members</p>
+</div>
+        </div>
+        <div className="user-action">
+            <img src='./Images/icons/logout.png' alt='logo'/>
+            <div className="action-details">
+<h3>Sign Out</h3>
+<p>Sign out from your account</p>
 </div>
         </div>
      </div>

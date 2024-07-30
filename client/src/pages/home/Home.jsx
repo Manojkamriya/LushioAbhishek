@@ -13,30 +13,26 @@ export default function Home() {
    
        <Carousel images={Media}/>
        <ProductCards/>
-       <div className="card-container">
+     
+     
+       <div className="mycard-container">
        <Card
-       name='SHORTS'
+       image='./Images/assets/card-image-7.webp'
+       name='SHIRTS'
        />
         <Card
-       name='TANKS'
+         image='./Images/assets/card-image-5.webp'
+       name='BEST SELLERS'
        />
         <Card
-       name='JEANS'
+         image='./Images/assets/card-image-6.webp'
+       name='SALE'
        />
        
        </div>
-       <br></br>  <br></br>  <br></br> 
      
       
-       <br></br>  <br></br> 
-       
-
-        <br></br> 
-      
-      
-    
-      
-   <br></br>  <br></br>  <br></br>  <br></br>  <br></br>  <br></br>
+   <br></br>  <br></br>  
     </>
   )
 }

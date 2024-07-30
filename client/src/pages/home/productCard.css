@@ -1,3 +1,12 @@
+.card-container{
+  display: grid;
+  margin-top: 62px;
+grid-template-columns: repeat(4, 1fr);
+justify-items: center;
+
+  background-color: #efefef;
+  row-gap: 10px;
+} 
 .card{
     height: 610px;
     width: 340px;
@@ -59,6 +68,7 @@ opacity: 0;
   font-size: 11px;
   color: #737373;
   font-weight: 500;
+ 
 }
 .item-price{
   display: flex;
@@ -95,4 +105,65 @@ opacity: 0;
 .add-wishlist img{
 height: 25px;
 cursor: pointer;
+}
+@media(max-width:1350px){
+.card{
+  height: 550px;
+  width: 305px;
+}
+.item-price span{
+ font-size: 15px;
+  
+  }
+  .add-wishlist img{
+    height: 20px;
+    margin-top: 5px;
+    }
+    .item-price{
+     
+      margin-top: -10px;
+     
+    }
+}
+@media(max-width: 1250px){
+  .card-container{
+    width: 100%;
+    margin-inline: auto;
+    margin: #efefef;
+    max-width: 1000px;
+    grid-template-columns: repeat(3,1fr);
+  }
+}
+
+@media(max-width: 970px){
+  .card{
+    height: 467px;
+    width: 255px;
+  }
+}
+@media(max-width: 800px){
+  .card-container{
+    grid-template-columns: repeat(2,1fr);
+    row-gap: 0px;
+  }
+  .card{
+    height: 550px;
+    width: 305px;
+    margin-bottom: 0px;
+  }
+}
+@media(max-width: 600px){
+  .card{
+    height: 305px;
+    width: 170px;
+  }
+  .item-naming h3{
+    font-size: 10px;
+  }
+  .item-naming h4{
+    font-size: 8px;
+  }
+  .item-price span{
+    font-size: 8px;
+  }
 }

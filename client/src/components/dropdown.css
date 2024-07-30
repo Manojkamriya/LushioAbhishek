@@ -50,13 +50,13 @@
     align-items: flex-start;
     margin-right: 10px;
     margin-top: 20px;
-    width: 100px; 
+    width: 150px; 
    
 }
 .sub-menu ul li{
     list-style: none;
     height: 20px;
-    width: 150px;
+    width: 200px;
     margin-block: 10px;
     
     font-family: 'montserrat', sans-serif;
@@ -64,7 +64,7 @@
 }
 .sub-menu ul li  a{
     height: 20px;
-    width: 150px;
+    width: 200px;
     font-size: 15px;
     padding: 15px 10px;
     margin: 0px;

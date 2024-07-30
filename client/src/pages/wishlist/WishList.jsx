@@ -1,10 +1,13 @@
 import React from 'react'
-import './wishlist.css'
+
 function WishList() {
   return (
-    <>
-      <h1 className='wishlist-heading'>WishList Page</h1>
-    </>
+    <div>
+    
+      
+  
+    <h1 className='wishlist-text'>Wishlist page</h1>
+    </div>
   )
 }
 

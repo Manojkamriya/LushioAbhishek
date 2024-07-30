@@ -69,9 +69,11 @@
      border-radius: 50%;
      padding: 0px 0px 5px 5px;
      cursor: pointer;
+     user-select: none;
    }
    .carousel_arrow_left p, .carousel_arrow_right p{
      margin: 0px;
+     user-select: none;
    }
    .carousel_arrow_left {
      left: 15px;
@@ -106,15 +108,7 @@
    .pagination_dot-active {
      background-color: rgb(249, 249, 249);
    }
-  .card-container{
-    display: flex;
-    margin-top: 62px;
-flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    background-color: #efefef;
-    gap: 30px;
-  } 
+ 
   .background-container {
     position: relative;
     width: 460px; /* Adjust as needed */

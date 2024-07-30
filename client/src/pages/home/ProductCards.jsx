@@ -11,7 +11,7 @@ function ProductCards() {
      
       image1='./Images/card-image.webp'
       image2='./Images/card-image-2.webp'
-      discription='Women Black Friends Typography Boyfriend T-shirt very stylish and trendy'
+      discription='Women Black Friends Typography Boyfriend T-shirt'
       newPrice='599'
       oldPrice='1299'
       discount='53'
