@@ -28,7 +28,9 @@
   justify-content: flex-end;
   margin-right: 2rem;
 }
-
+.left-icons{
+  display: none;
+}
 .list ul li {
   display: flex;
   align-items: center;
@@ -47,10 +49,10 @@
   text-transform: uppercase;
   font-weight: 400;
   font-family: "Montserrat", sans-serif;
-  font-size: 16px;
+  font-size: 15px;
 }
 .list ul li img {
-  height: 15px;
+  height: 14px;
   margin-left: 5px;
 }
 .list ul li a span {
@@ -158,8 +160,8 @@
   border: none;
 }
 .header-search-form-control img {
-  height: 30px;
-  width: 30px;
+  height: 40%;
+  /* width: 40%; */
   margin-inline: 10px;
   cursor: pointer;
 }
@@ -173,7 +175,14 @@
 .search-icon {
   display: none;
 }
+
+@media (max-width: 1300px) {
+.list ul{
+  width: 35vw;
+}
+}
 @media (max-width: 1148px) {
+
   .logo img {
     display: none;
   }
@@ -185,13 +194,13 @@
     margin: 0px;
   }
   .lushio-text img {
-    margin-top: 10px;
+    /* margin-top: 10px; */
     height: 50%;
     width: auto;
   }
   .menu-open {
     display: block;
-    position: fixed;
+    /* position: fixed; */
     margin-block: 8px;
     left: 30px;
     width: 50px;
@@ -217,10 +226,10 @@
     flex-direction: column;
     top: 0px;
     gap: 30px;
-    background-color: #1f0016;
+    background-color: #1c1b1b;
     align-items: start;
     width: 350px;
-    height: 100%;
+    height: 100vh;
     z-index: 998;
     transition: left 0.5s;
     left: -550px;
@@ -228,19 +237,51 @@
 
   .search-icon {
     display: block;
-    margin-top: 5px;
+    margin-bottom: 0px;
+    height: 26px !important;
   }
+.wallet-icon{
+  display: none;
+}
+.left-icons{
+  display: flex;
+
+align-items: center;
+margin-left: -14%;
+gap: 10px;
+  /* justify-content: center;
+  align-items: center; */
+}
+.left-icons img {
+  height: 40%;
+  cursor: pointer;
+}
+.left-icons a {
+  height: 90%;
+  position: relative;
+}
+.left-icons a img {
+ 
+  height: 40%;
+  margin: 15px 11px;
+  cursor: pointer;
+}
 
   .icons img {
-    height: 50%;
+    height: 40%;
   }
   .icons a {
     height: 90%;
   }
   .icons a img {
-    height: 50%;
+    height: 40%;
     margin: 15px 11px;
   }
+}
+@media(max-width: 850px){
+.left-icons {
+  gap: 6px;
+}
 }
 @media (max-width: 700px) {
   .navbar {
@@ -249,19 +290,55 @@
   .menu-open {
     margin-block: 12px;
     left: 10px;
-    width: 30px;
+    height: 24px !important;
   }
   .icons a img {
     height: 40%;
     margin: 15px 6px;
   }
+  .left-icons a img {
+ 
+    height: 40%;
+    margin: 15px 6px;
+   
+  }
+  .search-icon {
+    margin-top: 1px;
+    height: 20px !important;
+  }
   .lushio-text img {
-    margin-top: 10px;
+    /* margin-top: 10px; */
     /* height: 50%; */
     width: 90px;
   }
-  .search-icon {
-    margin-top: 4px;
-    height: 15px;
+ 
+  .header-search-form-control {
+ height: 45px;
+  }
+}
+@media (max-width: 500px) {
+
+  .lushio-text img{
+    /* width: 80%; */
+    height: 40%;
+    margin-top: 0px;
+  }
+  .menu-open {
+    margin-top: 16px;
+   
+    height: 21px !important;
+    width: 30px !important;
+  }
+  .left-icons {
+    gap: 2px;
+    margin-left: -7%;
+  }
+ 
+  .icons img{
+    margin-top: 1px;
+    height: 45%;
+  }
+  .search-icon{
+    margin-bottom: 0px;
   }
 }

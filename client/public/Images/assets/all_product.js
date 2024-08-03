@@ -10,12 +10,12 @@ import p15_img from "./product_103.webp";
 import p16_img from "./product_104.webp";
 import p17_img from "./product_105.webp";
 import p18_img from "./product_106.webp";
-import p25_img from "./product_37.webp";
-import p26_img from "./product_38.avif";
-import p27_img from "./product_39.avif";
-import p28_img from "./product_40.avif";
-import p29_img from "./product_41.avif";
-import p30_img from "./product_42.webp";
+import p25_img from "./product_301.webp";
+import p26_img from "./product_302.webp";
+import p27_img from "./product_303.webp";
+import p28_img from "./product_304.webp";
+import p29_img from "./product_305.webp";
+import p30_img from "./product_306.webp";
 
 
 
@@ -71,7 +71,7 @@ let all_product = [
   {
     id: 7,
     name: "Boys Orange Colourblocked Hooded Sweatshirt",
-    category: "kid",
+    category: "accessories",
     image: p25_img,
     new_price: 85.0,
     old_price: 120.5,
@@ -79,7 +79,7 @@ let all_product = [
   {
     id: 8,
     name: "Boys Orange Colourblocked Hooded Sweatshirt",
-    category: "kid",
+    category: "accessories",
     image: p26_img,
     new_price: 85.0,
     old_price: 120.5,
@@ -87,7 +87,7 @@ let all_product = [
   {
     id: 9,
     name: "Boys Orange Colourblocked Hooded Sweatshirt",
-    category: "kid",
+    category: "accessories",
     image: p27_img,
     new_price: 85.0,
     old_price: 120.5,
@@ -95,7 +95,7 @@ let all_product = [
   {
     id: 10,
     name: "Boys Orange Colourblocked Hooded Sweatshirt",
-    category: "kid",
+    category: "accessories",
     image: p28_img,
     new_price: 85.0,
     old_price: 120.5,
@@ -103,7 +103,7 @@ let all_product = [
   {
     id: 11,
     name: "Boys Orange Colourblocked Hooded Sweatshirt",
-    category: "kid",
+    category: "accessories",
     image: p29_img,
     new_price: 85.0,
     old_price: 120.5,
@@ -111,7 +111,7 @@ let all_product = [
   {
     id: 12,
     name: "Boys Orange Colourblocked Hooded Sweatshirt",
-    category: "kid",
+    category: "accessories",
     image: p30_img,
     new_price: 85.0,
     old_price: 120.5,

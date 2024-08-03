@@ -12,7 +12,7 @@ footer{
  padding-top: 40px;
     justify-content: space-evenly;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-    height: 300px;
+    height: 260px;
 }
 .business-section, .quick-links{
     display: flex;

@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import signInWithGoogle from '../../auth/googleAuth';
-import signInWithFacebook from '../../auth/facebookAuth';
-import {handleEmailSignUp} from '../../auth/emailAuth';
-import { sendOtp, verifyOtp } from '../../auth/phoneAuth';
-import './auth.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import signInWithGoogle from "../../auth/googleAuth";
+import signInWithFacebook from "../../auth/facebookAuth";
+import {handleEmailSignUp} from "../../auth/emailAuth";
+import { sendOtp, verifyOtp } from "../../auth/phoneAuth";
+import "./auth.css";
 
 const Register = () => {
-  const [identifier, setIdentifier] = useState(''); // Can be either email or phone number
-  const [password, setPassword] = useState('');
-  const [countryCode, setCountryCode] = useState(''); // Country code for phone number
-  const [otp, setOtp] = useState('');
+  const [identifier, setIdentifier] = useState(""); // Can be either email or phone number
+  const [password, setPassword] = useState("");
+  const [countryCode, setCountryCode] = useState(""); // Country code for phone number
+  const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [isPhone, setIsPhone] = useState(false);
@@ -28,7 +28,7 @@ const Register = () => {
   const handleGoogleSignIn = async () => {
     try {
       await signInWithGoogle();
-      navigate('/');
+      navigate("/");
     } catch (error) {
       console.error("Error during Google sign-in", error);
     }
@@ -37,7 +37,7 @@ const Register = () => {
   const handleFacebookSignIn = async () => {
     try {
       await signInWithFacebook();
-      navigate('/');
+      navigate("/");
     } catch (error) {
       console.error("Error during Facebook sign-in", error);
     }
@@ -58,7 +58,7 @@ const Register = () => {
       } else {
         try {
           await verifyOtp(confirmationResult, otp, `${countryCode}${identifier}`);
-          navigate('/');
+          navigate("/");
         } catch (error) {
           console.error("Error verifying OTP", error);
         }
@@ -66,7 +66,7 @@ const Register = () => {
     } else {
       try {
         await handleEmailSignUp(identifier, password);
-        navigate('/');
+        navigate("/");
       } catch (error) {
         console.error("Error signing up with email", error);
       }
@@ -74,13 +74,13 @@ const Register = () => {
   };
 
   return (
-    <div className='auth-container'>
-       <Link to='/user'> <button className='auth-container-button'>Go to User page </button> </Link>
+    <div className="auth-container">
+       <Link to="/user"> <button className="auth-container-button">Go to User page </button> </Link>
       <form className="auth-form" onSubmit={handleFormSubmit}>
         <h2>Sign Up</h2>
         <input
           type="text"
-          placeholder='Enter your email or phone number'
+          placeholder="Enter your email or phone number"
           value={identifier}
           onChange={(e) => setIdentifier(e.target.value)}
           required
@@ -88,7 +88,7 @@ const Register = () => {
         {isPhone && (
           <input
             type="text"
-            placeholder='Enter your country code'
+            placeholder="Enter your country code"
             value={countryCode}
             onChange={(e) => setCountryCode(e.target.value)}
             required
@@ -97,7 +97,7 @@ const Register = () => {
         {otpSent ? (
           <input
             type="text"
-            placeholder='Enter the OTP'
+            placeholder="Enter the OTP"
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
             required
@@ -105,20 +105,20 @@ const Register = () => {
         ) : (
           <input
             type="password"
-            placeholder='Enter your password'
+            placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
         )}
           <div className="login-signup-condition">
-            <input type='checkbox'  checked={isChecked}   onChange={handleCheckboxChange}   required/>
+            <input type="checkbox"  checked={isChecked}   onChange={handleCheckboxChange}   required/>
             <p>By continuing, i agree to the terms of use & privacy policy</p>
           </div>
-        <button type="submit"  className={isChecked ? 'enabled' : 'disabled'} disabled={!isChecked}>Create Account</button>
-        <p>Already have an account? <Link to='/login'>Login here</Link></p>
-        <button type="button" onClick={handleGoogleSignIn}  className={isChecked ? 'enabled' : 'disabled'} disabled={!isChecked}>Continue With Google</button>
-        <button type="button" onClick={handleFacebookSignIn}  className={isChecked ? 'enabled' : 'disabled'} disabled={!isChecked}>Continue With Facebook</button>
+        <button type="submit"  className={isChecked ? "enabled" : "disabled"} disabled={!isChecked}>Create Account</button>
+        <p>Already have an account? <Link to="/login">Login here</Link></p>
+        <button type="button" onClick={handleGoogleSignIn}  className={isChecked ? "enabled" : "disabled"} disabled={!isChecked}>Continue With Google</button>
+        <button type="button" onClick={handleFacebookSignIn}  className={isChecked ? "enabled" : "disabled"} disabled={!isChecked}>Continue With Facebook</button>
       </form>
       <div id="recaptcha-container"></div>
     </div>

@@ -4,7 +4,7 @@
     justify-content: center;
     align-items: center;
     padding-top: 60px;
-    background: url('/public/Images/bg-login.png') center / cover no-repeat;
+    background: url("/public/Images/bg-login.png") center / cover no-repeat;
     }
     .auth-container-button{
         border: none;
@@ -47,6 +47,18 @@
        
         border: 1px solid #434343;
       }
+      .login-method{
+        display: flex;
+        justify-content: flex-start;
+
+    }
+    .login-method label{
+        margin-right: 20px;
+    }
+    .login-method input{
+        margin-top: 4px;
+        margin-right: 5px;
+    }
     .auth-form button{
         border: none;
         padding: 10px;
@@ -73,6 +85,7 @@
         font-size: 15px;
         background-color: rgb(240, 138, 120);
     }
+   
     .login-signup-condition{
         display: flex;
         align-items: start;
@@ -91,7 +104,4 @@
         cursor: pointer;
     }    
     
-    .login-method{
-        display: flex;
-        justify-content: space-evenly;
-    }
+    

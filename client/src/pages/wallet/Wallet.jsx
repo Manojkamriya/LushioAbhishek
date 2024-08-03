@@ -1,11 +1,6 @@
-import React from 'react'
-
+import React from "react";
 function wallet() {
-  return (
-    <h1 className='wishlist-text'>
-      Wallet Page
-    </h1>
-  )
+  return <h1 className="wishlist-text">Wallet Page</h1>;
 }
 
-export default wallet
+export default wallet;

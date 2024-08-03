@@ -14,6 +14,7 @@
   width: 100%;
   position: relative;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .mycard-wrapper img {
@@ -103,6 +104,7 @@
     height: 700px;
     width: 100%;
     max-width: 470px;
+    
   }
   .mycard-wrapper h1 {
     margin-block: 25px;
@@ -113,5 +115,13 @@
     margin-bottom: 20px;
     width: 200px;
     padding: 14px 28px;
+  }
+}
+@media(max-width: 500px){
+  .mycard{
+    height: 630px;
+    width: 95%;
+  margin-inline: auto;
+    
   }
 }

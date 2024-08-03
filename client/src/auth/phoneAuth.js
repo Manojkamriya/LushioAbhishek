@@ -1,15 +1,15 @@
 // src/auth/phoneAuth.js
 
-import { auth, db } from '../firebaseConfig';
+import { auth, db } from "../firebaseConfig";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 
 export const setupRecaptcha = () => {
   if (!window.recaptchaVerifier) {
     console.log("Initializing RecaptchaVerifier...");
-    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-      'size': 'invisible',
-      'callback': (response) => {
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+      "size": "invisible",
+      "callback": (response) => {
         console.log("Recaptcha solved:", response);
       }
     });
