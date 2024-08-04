@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import signInWithGoogle from '../../auth/googleAuth';
-import signInWithFacebook from '../../auth/facebookAuth';
-import { handleEmailLogin, sendEmailSignInLink } from '../../auth/emailAuth';
-import { sendOtp, verifyOtpForLogin } from '../../auth/phoneAuth';
-import './auth.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import signInWithGoogle from "../../auth/googleAuth";
+import signInWithFacebook from "../../auth/facebookAuth";
+import { handleEmailLogin, sendEmailSignInLink } from "../../auth/emailAuth";
+import { sendOtp, verifyOtpForLogin } from "../../auth/phoneAuth";
+import "./auth.css";
 
 const Login = () => {
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
-  const [countryCode, setCountryCode] = useState('');
-  const [otp, setOtp] = useState('');
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
+  const [countryCode, setCountryCode] = useState("");
+  const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [isPhone, setIsPhone] = useState(false);
-  const [loginMethod, setLoginMethod] = useState('password');
+  const [loginMethod, setLoginMethod] = useState("password");
 
   const navigate = useNavigate();
 
@@ -25,7 +25,7 @@ const Login = () => {
   const handleGoogleSignIn = async () => {
     try {
       await signInWithGoogle();
-      navigate('/user');
+      navigate("/user");
     } catch (error) {
       console.error("Error during Google sign-in", error);
     }
@@ -34,7 +34,7 @@ const Login = () => {
   const handleFacebookSignIn = async () => {
     try {
       await signInWithFacebook();
-      navigate('/user');
+      navigate("/user");
     } catch (error) {
       console.error("Error during Facebook sign-in", error);
     }
@@ -52,13 +52,13 @@ const Login = () => {
           setOtpSent(true);
         } else {
           await verifyOtpForLogin(confirmationResult, otp);
-          navigate('/user');
+          navigate("/user");
         }
       } catch (error) {
         console.error("Error with phone login", error);
       }
     } else {
-      if (loginMethod === 'otp') {
+      if (loginMethod === "otp") {
         try {
           await sendEmailSignInLink(identifier);
         } catch (error) {
@@ -67,7 +67,7 @@ const Login = () => {
       } else {
         try {
           await handleEmailLogin(identifier, password);
-          navigate('/user');
+          navigate("/user");
         } catch (error) {
           console.error("Error logging in with email", error);
         }
@@ -76,12 +76,13 @@ const Login = () => {
   };
 
   return (
-    <div className='auth-container'>
+    <div className="auth-container">
+       <Link to="/user"> <button className="auth-container-button">Go to User page </button> </Link>
       <form className="auth-form" onSubmit={handleFormSubmit}>
         <h2>Login</h2>
         <input
           type="text"
-          placeholder='Enter your email or phone number'
+          placeholder="Enter your email or phone number"
           value={identifier}
           onChange={(e) => setIdentifier(e.target.value)}
           required
@@ -89,7 +90,7 @@ const Login = () => {
         {isPhone ? (
           <input
             type="text"
-            placeholder='Enter your country code'
+            placeholder="Enter your country code"
             value={countryCode}
             onChange={(e) => setCountryCode(e.target.value)}
             required
@@ -100,8 +101,8 @@ const Login = () => {
             <input
               type="radio"
               value="password"
-              checked={loginMethod === 'password'}
-              onChange={() => setLoginMethod('password')}
+              checked={loginMethod === "password"}
+              onChange={() => setLoginMethod("password")}
               disabled={isPhone}
             />
             Password
@@ -110,36 +111,36 @@ const Login = () => {
             <input
               type="radio"
               value="otp"
-              checked={loginMethod === 'otp'}
-              onChange={() => setLoginMethod('otp')}
+              checked={loginMethod === "otp"}
+              onChange={() => setLoginMethod("otp")}
             />
              OTP
           </label>
         </div>
         }
-        {loginMethod === 'otp' && otpSent ? (
+        {loginMethod === "otp" && otpSent ? (
           <input
             type="text"
-            placeholder='Enter the OTP'
+            placeholder="Enter the OTP"
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
             required
           />
         ) : (
-          loginMethod === 'password' && !isPhone && (
+          loginMethod === "password" && !isPhone && (
             <input
               type="password"
-              placeholder='Enter your password'
+              placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           )
         )}
-        <button type="submit">Login</button>
-        <p>Create a new account? <Link to='/register'>Sign Up here</Link></p>
-        <button type="button" onClick={handleGoogleSignIn}>Continue With Google</button>
-        <button type="button" onClick={handleFacebookSignIn}>Continue With Facebook</button>
+        <button type="submit"className="enabled">Login</button>
+        <p>Create a new account? <Link to="/register">Sign Up here</Link></p>
+        <button type="button" className="enabled" onClick={handleGoogleSignIn}>Continue With Google</button>
+        <button type="button" className="enabled" onClick={handleFacebookSignIn}>Continue With Facebook</button>
       </form>
       <div id="recaptcha-container"></div>
     </div>

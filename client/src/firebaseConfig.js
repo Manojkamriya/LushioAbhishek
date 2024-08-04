@@ -19,10 +19,10 @@ const db = getFirestore(app);
 // Set the persistence to local to keep the user logged in across sessions
 setPersistence(auth, browserLocalPersistence)
   .then(() => {
-    console.log('Persistence set to local');
+    console.log("Persistence set to local");
   })
   .catch((error) => {
-    console.error('Error setting persistence:', error);
+    console.error("Error setting persistence:", error);
   });
 
 export { auth, db };

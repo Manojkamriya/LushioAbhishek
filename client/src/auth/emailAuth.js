@@ -1,4 +1,4 @@
-import { auth, db } from '../firebaseConfig';
+import { auth, db } from "../firebaseConfig";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendSignInLinkToEmail } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 
@@ -13,16 +13,16 @@ const handleEmailSignUp = async (email, password) => {
     });
 
     const actionCodeSettings = {
-      url: 'http://localhost:3000/finishSignUp?cartId=1234',
+      url: "http://localhost:3000/finishSignUp?cartId=1234",
       handleCodeInApp: true,
     };
     await sendSignInLinkToEmail(auth, email, actionCodeSettings);
 
-    window.localStorage.setItem('emailForSignIn', email);
+    window.localStorage.setItem("emailForSignIn", email);
 
-    alert('Verification email sent!');
+    alert("Verification email sent!");
   } catch (error) {
-    console.error('Error signing up with email and password', error);
+    console.error("Error signing up with email and password", error);
     alert(error.message);
   }
 };
@@ -38,12 +38,12 @@ const handleEmailLogin = async (email, password) => {
 const sendEmailSignInLink = async (email) => {
   try {
     const actionCodeSettings = {
-      url: 'http://localhost:3000/finishSignIn',
+      url: "http://localhost:3000/finishSignIn",
       handleCodeInApp: true,
     };
     await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-    window.localStorage.setItem('emailForSignIn', email);
-    alert('Login link sent to your email!');
+    window.localStorage.setItem("emailForSignIn", email);
+    alert("Login link sent to your email!");
   } catch (error) {
     console.error("Error sending email sign-in link", error);
   }

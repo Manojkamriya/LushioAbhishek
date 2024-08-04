@@ -1,5 +1,5 @@
 // client/src/auth/googleAuth.js
-import { auth, db } from '../firebaseConfig';
+import { auth, db } from "../firebaseConfig";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 

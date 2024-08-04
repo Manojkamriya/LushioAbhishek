@@ -1,4 +1,4 @@
-import { auth, db } from '../firebaseConfig';
+import { auth, db } from "../firebaseConfig";
 import { FacebookAuthProvider, signInWithPopup } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 
