@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { getApp, initializeApp } from "firebase/app";
 import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
@@ -12,9 +12,16 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
 };
 
-const app = initializeApp(firebaseConfig);
+let app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+try {
+  app = getApp();
+} catch (error) {
+  console.error(error);
+  app = initializeApp(firebaseConfig);
+}
 
 // Set the persistence to local to keep the user logged in across sessions
 setPersistence(auth, browserLocalPersistence)

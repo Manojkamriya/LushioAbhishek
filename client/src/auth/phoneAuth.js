@@ -6,20 +6,19 @@ import { doc, setDoc } from "firebase/firestore";
 
 export const setupRecaptcha = () => {
   if (!window.recaptchaVerifier) {
-    console.log("Initializing RecaptchaVerifier...");
     window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
       'size': 'invisible',
       'callback': (response) => {
         console.log("Recaptcha solved:", response);
-      }
+      },
     });
-  } else {
-    console.log("RecaptchaVerifier already initialized");
   }
 };
 
 const sendOtp = async (formattedPhoneNumber) => {
   setupRecaptcha();
+  console.log("RecaptchaVerifier instance:", window.recaptchaVerifier);
+
   const appVerifier = window.recaptchaVerifier;
 
   try {

@@ -53,18 +53,18 @@ function Navbar() {
             name="productName"
             placeholder="search by product category or collection"
           />
-          <img src="./Images/icons/search-icon.png" alt="" />
+          <img src="./LushioFitness/Images/icons/search-icon.png" alt="" />
         </div>
         <div className="icons">
           <Link to="/wishlist">
-            <img src="./Images/icons/wishlist.png" alt="" />
+            <img src="./LushioFitness/Images/icons/wishlist.png" alt="" />
           </Link>
           <Link to="/cart">
-            <img src="./Images/icons/cart.png" alt="" />
+            <img src="./LushioFitness/Images/icons/cart.png" alt="" />
             {/* <span>{getTotalCartItems()}</span> */}
           </Link>
           <Link to="/login">
-            <img src="./Images/icons/profile.png" alt="" />
+            <img src="./LushioFitness/Images/icons/profile.png" alt="" />
           </Link>
         </div>
       </div>

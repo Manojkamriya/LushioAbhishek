@@ -1,33 +1,73 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 import signInWithGoogle from '../../auth/googleAuth';
 import signInWithFacebook from '../../auth/facebookAuth';
-import {handleEmailSignUp} from '../../auth/emailAuth';
+import { handleEmailSignUp } from '../../auth/emailAuth';
 import { sendOtp, verifyOtp } from '../../auth/phoneAuth';
 import './auth.css';
 
 const Register = () => {
   const [identifier, setIdentifier] = useState(''); // Can be either email or phone number
+  const [phone, setPhone] = useState('');
+  const [showPwdField,setShowPwdField] = useState(false);
   const [password, setPassword] = useState('');
-  const [countryCode, setCountryCode] = useState(''); // Country code for phone number
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [referralCode, setReferralCode] = useState(''); // Optional referral code
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [isPhone, setIsPhone] = useState(false);
-  const navigate = useNavigate();
-
   const [isChecked, setIsChecked] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [otpTimer, setOtpTimer] = useState(0); // OTP timer state
+
+  const navigate = useNavigate();
 
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked);
   };
+
   useEffect(() => {
-    setIsPhone(/^\d{10}$/.test(identifier));
-  }, [identifier]);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailRegex.test(identifier)) {
+      setIsPhone(false);
+      setShowPwdField(true);
+    } else if (/^\d/.test(identifier)) {
+      setIsPhone(true);
+      setPhone(identifier);
+      setShowPwdField(false);
+    } else {
+      setShowPwdField(false);
+    }
+
+    if (
+      isChecked &&
+      (isPhone || (password && confirmPassword && password === confirmPassword))
+    ) {
+      setIsButtonDisabled(false);
+    } else {
+      setIsButtonDisabled(true);
+    }
+  }, [identifier, password, confirmPassword, isChecked, isPhone]);
+
+  useEffect(() => {
+    let timer;
+    if (otpSent && otpTimer > 0) {
+      timer = setInterval(() => {
+        setOtpTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+    } else if (otpTimer === 0 && otpSent) {
+      setIsButtonDisabled(false); // Enable the Resend OTP button after 1 minute
+    }
+
+    return () => clearInterval(timer);
+  }, [otpSent, otpTimer]);
 
   const handleGoogleSignIn = async () => {
     try {
-      await signInWithGoogle();
+      await signInWithGoogle(referralCode);
       navigate('/');
     } catch (error) {
       console.error("Error during Google sign-in", error);
@@ -36,7 +76,7 @@ const Register = () => {
 
   const handleFacebookSignIn = async () => {
     try {
-      await signInWithFacebook();
+      await signInWithFacebook(referralCode);
       navigate('/');
     } catch (error) {
       console.error("Error during Facebook sign-in", error);
@@ -48,16 +88,16 @@ const Register = () => {
     if (isPhone) {
       if (!otpSent) {
         try {
-          const formattedPhoneNumber = `${countryCode}${identifier}`;
-          const result = await sendOtp(formattedPhoneNumber);
+          const result = await sendOtp(`+${phone}`);
           setConfirmationResult(result);
           setOtpSent(true);
+          setOtpTimer(60); // Set timer for 1 minute
         } catch (error) {
           console.error("Error sending OTP", error);
         }
       } else {
         try {
-          await verifyOtp(confirmationResult, otp, `${countryCode}${identifier}`);
+          await verifyOtp(confirmationResult, otp, referralCode);
           navigate('/');
         } catch (error) {
           console.error("Error verifying OTP", error);
@@ -65,7 +105,7 @@ const Register = () => {
       }
     } else {
       try {
-        await handleEmailSignUp(identifier, password);
+        await handleEmailSignUp(identifier, password, referralCode);
         navigate('/');
       } catch (error) {
         console.error("Error signing up with email", error);
@@ -73,52 +113,109 @@ const Register = () => {
     }
   };
 
+  const handleIdentifierInput = (e) => {
+    setIdentifier(e.target.value);
+  };
+
+  const handleResendOtp = async () => {
+    setIsButtonDisabled(true);
+    try {
+      const result = await sendOtp(`+${phone}`);
+      setConfirmationResult(result);
+      setOtpTimer(60); // Reset timer for another 1 minute
+    } catch (error) {
+      console.error("Error resending OTP", error);
+      setIsButtonDisabled(false);
+    }
+  };
+
   return (
     <div className='auth-container'>
-       <Link to='/user'> <button className='auth-container-button'>Go to User page </button> </Link>
       <form className="auth-form" onSubmit={handleFormSubmit}>
         <h2>Sign Up</h2>
-        <input
-          type="text"
-          placeholder='Enter your email or phone number'
-          value={identifier}
-          onChange={(e) => setIdentifier(e.target.value)}
-          required
-        />
-        {isPhone && (
+        {!isPhone ? (
           <input
             type="text"
-            placeholder='Enter your country code'
-            value={countryCode}
-            onChange={(e) => setCountryCode(e.target.value)}
-            required
-          />
-        )}
-        {otpSent ? (
-          <input
-            type="text"
-            placeholder='Enter the OTP'
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
+            placeholder='Enter your email or phone number'
+            value={identifier}
+            onChange={handleIdentifierInput}
             required
           />
         ) : (
-          <input
-            type="password"
-            placeholder='Enter your password'
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
+          <PhoneInput
+            country={'in'}
+            value={phone}
+            onChange={(phone) => setPhone(phone)}
+            disabled={otpSent}
           />
         )}
-          <div className="login-signup-condition">
-            <input type='checkbox'  checked={isChecked}   onChange={handleCheckboxChange}   required/>
-            <p>By continuing, i agree to the terms of use & privacy policy</p>
+        {otpSent && (
+          <div>
+            <input
+              type="text"
+              placeholder='Enter the OTP'
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              required
+            />
+            <button type="button" onClick={handleFormSubmit} disabled={otp.length !== 6}>
+              Submit OTP
+            </button>
           </div>
-        <button type="submit"  className={isChecked ? 'enabled' : 'disabled'} disabled={!isChecked}>Create Account</button>
+        )}
+        {showPwdField && (
+            <>
+              <input
+                type="password"
+                placeholder='Enter your password'
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={{ display: !isPhone ? 'block' : 'none' }}
+                required={!isPhone}
+              />
+              <input
+                type="password"
+                placeholder='Confirm your password'
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                style={{ display: !isPhone ? 'block' : 'none' }}
+                required={!isPhone}
+              />
+            </>
+        )}
+        {otpSent && isPhone && otpTimer === 0 && (
+          <button type="button" onClick={handleResendOtp} disabled={isButtonDisabled}>
+            Resend OTP
+          </button>
+        )}
+        {otpSent && isPhone && otpTimer !== 0 && (
+          <p>Resend OTP in {otpTimer} seconds.</p>
+        )}
+        <input
+          type="text"
+          placeholder='Referral Code (optional)'
+          value={referralCode}
+          onChange={(e) => setReferralCode(e.target.value)}
+        />
+        <div className="login-signup-condition">
+          <input
+            type='checkbox'
+            checked={isChecked}
+            onChange={handleCheckboxChange}
+            required
+          />
+          <p>By continuing, I agree to the terms of use & privacy policy</p>
+        </div>
+        <button type="submit" disabled={isButtonDisabled}>
+          Create Account
+        </button>
         <p>Already have an account? <Link to='/login'>Login here</Link></p>
-        <button type="button" onClick={handleGoogleSignIn}  className={isChecked ? 'enabled' : 'disabled'} disabled={!isChecked}>Continue With Google</button>
-        <button type="button" onClick={handleFacebookSignIn}  className={isChecked ? 'enabled' : 'disabled'} disabled={!isChecked}>Continue With Facebook</button>
+        <button type="button" onClick={handleGoogleSignIn} disabled={isButtonDisabled}>
+          Continue With Google
+        </button>
+        <button type="button" onClick={handleFacebookSignIn} disabled={isButtonDisabled}>
+          Continue With Facebook
+        </button>
       </form>
       <div id="recaptcha-container"></div>
     </div>

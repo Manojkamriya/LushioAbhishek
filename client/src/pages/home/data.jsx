@@ -3,7 +3,7 @@
 
 const media = [
   {
-    image: "/public/Images/carousel/carousel-image-1.webp",
+    image: "./LushioFitness/Images/carousel/carousel-image-1.webp",
    
   },
   {
