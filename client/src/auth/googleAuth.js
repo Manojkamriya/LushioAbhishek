@@ -1,11 +1,11 @@
 // client/src/auth/googleAuth.js
-import { auth, db } from '../firebaseConfig';
+import { auth, db } from "../firebaseConfig";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 
 const googleProvider = new GoogleAuthProvider();
 
-const signInWithGoogle = async () => {
+const signInWithGoogle = async (referralCode) => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
@@ -25,6 +25,7 @@ const signInWithGoogle = async () => {
         displayName: user.displayName,
         photoURL: user.photoURL,
         createdAt: new Date(),
+        referralCode: referralCode,
         lastSignInTime: new Date(user.metadata.lastSignInTime)
       });
     }

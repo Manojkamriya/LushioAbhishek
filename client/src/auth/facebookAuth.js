@@ -1,10 +1,10 @@
-import { auth, db } from '../firebaseConfig';
+import { auth, db } from "../firebaseConfig";
 import { FacebookAuthProvider, signInWithPopup } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 
 const facebookProvider = new FacebookAuthProvider();
 
-const signInWithFacebook = async () => {
+const signInWithFacebook = async (referralCode) => {
   try {
     const result = await signInWithPopup(auth, facebookProvider);
     const user = result.user;
@@ -22,6 +22,7 @@ const signInWithFacebook = async () => {
         email: user.email,
         displayName: user.displayName,
         photoURL: user.photoURL,
+        referralCode: referralCode,
         createdAt: new Date()
       });
     }

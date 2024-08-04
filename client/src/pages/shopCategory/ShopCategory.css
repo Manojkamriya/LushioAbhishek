@@ -23,17 +23,24 @@
     margin: 20px 50px;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
-    row-gap: 80px;
+    row-gap: 3px;
     background-color: #efefef;
 }
 .shopcategory-loadmore{
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 150px auto;
+    margin: 100px auto;
     width: 233px;
     height: 69px;
     border-radius: 75px;
     background: #ededed;
     color: #787878;
+    cursor: pointer;
+}
+
+@media(max-width:1350px){
+    .shopcategory-products{
+        margin: 20p;
+    }
 }

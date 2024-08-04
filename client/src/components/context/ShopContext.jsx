@@ -1,6 +1,7 @@
 import React, { createContext, useState } from "react";
 import all_product from "./assets/all_product";
 
+
 const getDefaultCart = () => {
   let cart = {};
   for (let index = 0; index < all_product.length + 1; index++) {
@@ -17,14 +18,7 @@ const ShopContextProvider = (props) => {
   };
   const removeFromCart = (itemId) => {
      setCartItems((prev) => ({ ...prev, [itemId]:prev[itemId] - 1 }));
-  //   const newArr  = cartItems.filter((e) => {
-  //     return (
-  //     e.id !== e
-  //     )
-  // }
-  
-  // )
-  // setCartItems(newArr)
+
   };
 
 const getTotalCartAmount = () =>{

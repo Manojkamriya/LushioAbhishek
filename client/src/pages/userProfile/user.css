@@ -1,19 +1,21 @@
 .user-greet{
     text-align: center;
-    font-size: 60px;
+    font-size: 55px;
     font-weight: 600;
-    margin-block: 40px;
+    margin: 40px 1px 10px 1px;
 }
 .user-question{
     text-align: center;
-    font-size: 30px;
+    font-size: 25px;
     font-weight: 400;
-    margin-block: 20px;
+    margin-block: 10px;
 }
 .user-action-container{
     display: flex;
     justify-content: center;
     gap: 30px;
+    max-width: 1000px;
+    margin-inline: auto;
     flex-wrap: wrap;
 }
 .user-action{
@@ -23,13 +25,13 @@
      border: 1px solid #c9c9c9;
      border-radius: 10px;
      padding: 10px;
-     height: 130px;
-     width: 280px;
+     height: 120px;
+     width: 240px;
      cursor: pointer;
      gap: 10px;
 }
 .user-action img{
-    height: 100px;
+    height: 90px;
 
 }
 .user-details{
@@ -66,27 +68,23 @@
     font-size: 14px;
     font-weight: 500;
     color: #2e2e2e;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
+    margin-top: 9px;
 }
-.edit-profile input[type='text']{
+.edit-profile input[type="text"]{
     /* height: 300px; */
 }
-.edit-profile input[type='text'], .edit-profile input[type='email'], .edit-profile input[type='tel']{
+.edit-profile input[type="text"], .edit-profile input[type="email"], .edit-profile input[type="tel"]{
 
     outline: none;
-    font-family: 'Poppins', sans-serif;
-    font-size: 14px;
-    font-weight: 400;
-    color: #333;
-    border-radius: 5px;
-    border: 1px solid #aaa;
-    padding: 0 15px;
-    height: 42px;
-    margin: 8px 0;
-    transition: all 0.15s ease-in;
+    border: 1px solid #c9c9c9;
+    border-radius: 4px;
+    padding: 10px;
+  
 }
 .edit-profile input:focus{
-    box-shadow: 0 3px 6px rgba(0,0,0,0.13);
+   
+    border: 1px solid #434343;
 }
 .radio-input label{
    margin: 20px;
