@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
-import signInWithGoogle from '../../auth/googleAuth';
-import signInWithFacebook from '../../auth/facebookAuth';
-import { handleEmailLogin, sendEmailSignInLink } from '../../auth/emailAuth';
-import { sendOtp, verifyOtpForLogin } from '../../auth/phoneAuth';
-import './auth.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import signInWithGoogle from "../../auth/googleAuth";
+import signInWithFacebook from "../../auth/facebookAuth";
+import { handleEmailLogin, sendEmailSignInLink } from "../../auth/emailAuth";
+import { sendOtp, verifyOtpForLogin } from "../../auth/phoneAuth";
+import "./auth.css";
 
 const Login = () => {
-  const [identifier, setIdentifier] = useState('');
-  const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
-  const [otp, setOtp] = useState('');
+  const [identifier, setIdentifier] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [isPhone, setIsPhone] = useState(false);
-  const [loginMethod, setLoginMethod] = useState('password');
+  const [loginMethod, setLoginMethod] = useState("password");
   const [showRadioButtons, setShowRadioButtons] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [otpTimer, setOtpTimer] = useState(0);
@@ -49,7 +49,7 @@ const Login = () => {
     setIsButtonDisabled(true);
     try {
       await signInWithGoogle();
-      navigate('/user');
+      navigate("/user");
     } catch (error) {
       console.error("Error during Google sign-in", error);
       setIsButtonDisabled(false);
@@ -60,7 +60,7 @@ const Login = () => {
     setIsButtonDisabled(true);
     try {
       await signInWithFacebook();
-      navigate('/user');
+      navigate("/user");
     } catch (error) {
       console.error("Error during Facebook sign-in", error);
       setIsButtonDisabled(false);
@@ -80,14 +80,14 @@ const Login = () => {
           setOtpTimer(60); // Set timer for 1 minute
         } else {
           await verifyOtpForLogin(confirmationResult, otp);
-          navigate('/user');
+          navigate("/user");
         }
       } catch (error) {
         console.error("Error with phone login", error);
         setIsButtonDisabled(false);
       }
     } else {
-      if (loginMethod === 'otp') {
+      if (loginMethod === "otp") {
         try {
           await sendEmailSignInLink(identifier);
         } catch (error) {
@@ -96,7 +96,7 @@ const Login = () => {
       } else {
         try {
           await handleEmailLogin(identifier, password);
-          navigate('/user');
+          navigate("/user");
         } catch (error) {
           console.error("Error logging in with email", error);
           setIsButtonDisabled(false);
@@ -120,7 +120,7 @@ const Login = () => {
   const handleOtpSubmit = async () => {
     try {
       await verifyOtpForLogin(confirmationResult, otp);
-      navigate('/user');
+      navigate("/user");
     } catch (error) {
       console.error("Error verifying OTP", error);
     }
@@ -137,13 +137,13 @@ const Login = () => {
   };
 
   return (
-    <div className='auth-container'>
+    <div className="auth-container">
       <form className="auth-form" onSubmit={handleFormSubmit}>
         <h2>Login</h2>
         {!isPhone ? (
           <input
             type="text"
-            placeholder='Enter your email or phone number'
+            placeholder="Enter your email or phone number"
             value={identifier}
             onChange={handleEmailInput}
             required
@@ -151,7 +151,7 @@ const Login = () => {
           />
         ) : (
           <PhoneInput
-            country={'in'}
+            country={"in"}
             value={phone}
             onChange={(phone) => setPhone(phone)}
             disabled={isButtonDisabled && !otpSent}
@@ -163,8 +163,8 @@ const Login = () => {
               <input
                 type="radio"
                 value="password"
-                checked={loginMethod === 'password'}
-                onChange={() => setLoginMethod('password')}
+                checked={loginMethod === "password"}
+                onChange={() => setLoginMethod("password")}
                 disabled={isButtonDisabled && !otpSent}
               />
               Password
@@ -173,18 +173,18 @@ const Login = () => {
               <input
                 type="radio"
                 value="otp"
-                checked={loginMethod === 'otp'}
-                onChange={() => setLoginMethod('otp')}
+                checked={loginMethod === "otp"}
+                onChange={() => setLoginMethod("otp")}
                 disabled={isButtonDisabled && !otpSent}
               />
               OTP
             </label>
           </div>
         )}
-        {loginMethod === 'password' && showRadioButtons && (
+        {loginMethod === "password" && showRadioButtons && (
           <input
             type="password"
-            placeholder='Enter your password'
+            placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -195,7 +195,7 @@ const Login = () => {
           <div>
             <input
               type="text"
-              placeholder='Enter the OTP'
+              placeholder="Enter the OTP"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
               required
@@ -209,10 +209,10 @@ const Login = () => {
         {otpSent && isPhone && otpTimer !== 0 && (
           <p>Resend OTP in {otpTimer} seconds.</p>
         )}
-        <button type="submit" disabled={isButtonDisabled }>
+        <button type="submit" disabled={isButtonDisabled}>
           Login
         </button>
-        <p>Create a new account? <Link to='/register'>Sign Up here</Link></p>
+        <p>Create a new account? <Link to="/register">Sign Up here</Link></p>
         <button type="button" onClick={handleGoogleSignIn} disabled={isButtonDisabled}>Continue With Google</button>
         <button type="button" onClick={handleFacebookSignIn} disabled={isButtonDisabled}>Continue With Facebook</button>
       </form>

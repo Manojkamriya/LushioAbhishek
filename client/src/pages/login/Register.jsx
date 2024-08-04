@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
-import signInWithGoogle from '../../auth/googleAuth';
-import signInWithFacebook from '../../auth/facebookAuth';
-import { handleEmailSignUp } from '../../auth/emailAuth';
-import { sendOtp, verifyOtp } from '../../auth/phoneAuth';
-import './auth.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import signInWithGoogle from "../../auth/googleAuth";
+import signInWithFacebook from "../../auth/facebookAuth";
+import { handleEmailSignUp } from "../../auth/emailAuth";
+import { sendOtp, verifyOtp } from "../../auth/phoneAuth";
+import "./auth.css";
 
 const Register = () => {
-  const [identifier, setIdentifier] = useState(''); // Can be either email or phone number
-  const [phone, setPhone] = useState('');
+  const [identifier, setIdentifier] = useState(""); // Can be either email or phone number
+  const [phone, setPhone] = useState("");
   const [showPwdField,setShowPwdField] = useState(false);
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [referralCode, setReferralCode] = useState(''); // Optional referral code
-  const [otp, setOtp] = useState('');
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [referralCode, setReferralCode] = useState(""); // Optional referral code
+  const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [isPhone, setIsPhone] = useState(false);
@@ -68,7 +68,7 @@ const Register = () => {
   const handleGoogleSignIn = async () => {
     try {
       await signInWithGoogle(referralCode);
-      navigate('/');
+      navigate("/user");
     } catch (error) {
       console.error("Error during Google sign-in", error);
     }
@@ -77,7 +77,7 @@ const Register = () => {
   const handleFacebookSignIn = async () => {
     try {
       await signInWithFacebook(referralCode);
-      navigate('/');
+      navigate("/user");
     } catch (error) {
       console.error("Error during Facebook sign-in", error);
     }
@@ -97,8 +97,8 @@ const Register = () => {
         }
       } else {
         try {
-          await verifyOtp(confirmationResult, otp, referralCode);
-          navigate('/');
+          await verifyOtp(confirmationResult, otp, `+${phone}` ,referralCode);
+          navigate("/user");
         } catch (error) {
           console.error("Error verifying OTP", error);
         }
@@ -106,7 +106,7 @@ const Register = () => {
     } else {
       try {
         await handleEmailSignUp(identifier, password, referralCode);
-        navigate('/');
+        navigate("/user");
       } catch (error) {
         console.error("Error signing up with email", error);
       }
@@ -130,20 +130,20 @@ const Register = () => {
   };
 
   return (
-    <div className='auth-container'>
+    <div className="auth-container">
       <form className="auth-form" onSubmit={handleFormSubmit}>
         <h2>Sign Up</h2>
         {!isPhone ? (
           <input
             type="text"
-            placeholder='Enter your email or phone number'
+            placeholder="Enter your email or phone number"
             value={identifier}
             onChange={handleIdentifierInput}
             required
           />
         ) : (
           <PhoneInput
-            country={'in'}
+            country={"in"}
             value={phone}
             onChange={(phone) => setPhone(phone)}
             disabled={otpSent}
@@ -153,7 +153,7 @@ const Register = () => {
           <div>
             <input
               type="text"
-              placeholder='Enter the OTP'
+              placeholder="Enter the OTP"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
               required
@@ -167,18 +167,18 @@ const Register = () => {
             <>
               <input
                 type="password"
-                placeholder='Enter your password'
+                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                style={{ display: !isPhone ? 'block' : 'none' }}
+                style={{ display: !isPhone ? "block" : "none" }}
                 required={!isPhone}
               />
               <input
                 type="password"
-                placeholder='Confirm your password'
+                placeholder="Confirm your password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                style={{ display: !isPhone ? 'block' : 'none' }}
+                style={{ display: !isPhone ? "block" : "none" }}
                 required={!isPhone}
               />
             </>
@@ -193,13 +193,13 @@ const Register = () => {
         )}
         <input
           type="text"
-          placeholder='Referral Code (optional)'
+          placeholder="Referral Code (optional)"
           value={referralCode}
           onChange={(e) => setReferralCode(e.target.value)}
         />
         <div className="login-signup-condition">
           <input
-            type='checkbox'
+            type="checkbox"
             checked={isChecked}
             onChange={handleCheckboxChange}
             required
@@ -209,11 +209,11 @@ const Register = () => {
         <button type="submit" disabled={isButtonDisabled}>
           Create Account
         </button>
-        <p>Already have an account? <Link to='/login'>Login here</Link></p>
-        <button type="button" onClick={handleGoogleSignIn} disabled={isButtonDisabled}>
+        <p>Already have an account? <Link to="/login">Login here</Link></p>
+        <button type="button" onClick={handleGoogleSignIn} disabled = {!isChecked}>
           Continue With Google
         </button>
-        <button type="button" onClick={handleFacebookSignIn} disabled={isButtonDisabled}>
+        <button type="button" onClick={handleFacebookSignIn} disabled = {!isChecked}>
           Continue With Facebook
         </button>
       </form>

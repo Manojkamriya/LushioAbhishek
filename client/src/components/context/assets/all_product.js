@@ -1,21 +1,22 @@
-import p1_img from "./product_1.png";
-import p2_img from "./product_2.png";
-import p3_img from "./product_3.png";
-import p4_img from "./product_4.png";
-import p5_img from "./product_5.png";
-import p6_img from "./product_6.png";
-import p13_img from "./product_13.png";
-import p14_img from "./product_14.png";
-import p15_img from "./product_15.png";
-import p16_img from "./product_16.png";
-import p17_img from "./product_17.png";
-import p18_img from "./product_18.png";
-import p25_img from "./product_25.png";
-import p26_img from "./product_26.png";
-import p27_img from "./product_27.png";
-import p28_img from "./product_28.png";
-import p29_img from "./product_29.png";
-import p30_img from "./product_30.png";
+import p1_img from "./product_201.webp";
+import p2_img from "./product_202.webp";
+import p3_img from "./product_203.webp";
+import p4_img from "./product_204.webp";
+import p5_img from "./product_205.webp";
+import p6_img from "./product_206.webp";
+import p13_img from "./product_101.webp";
+import p14_img from "./product_102.webp";
+import p15_img from "./product_103.webp";
+import p16_img from "./product_104.webp";
+import p17_img from "./product_105.webp";
+import p18_img from "./product_106.webp";
+import p25_img from "./product_301.webp";
+import p26_img from "./product_302.webp";
+import p27_img from "./product_303.webp";
+import p28_img from "./product_304.webp";
+import p29_img from "./product_305.webp";
+import p30_img from "./product_306.webp";
+
 
 
 let all_product = [
@@ -70,7 +71,7 @@ let all_product = [
   {
     id: 7,
     name: "Boys Orange Colourblocked Hooded Sweatshirt",
-    category: "kid",
+    category: "accessories",
     image: p25_img,
     new_price: 85.0,
     old_price: 120.5,
@@ -78,7 +79,7 @@ let all_product = [
   {
     id: 8,
     name: "Boys Orange Colourblocked Hooded Sweatshirt",
-    category: "kid",
+    category: "accessories",
     image: p26_img,
     new_price: 85.0,
     old_price: 120.5,
@@ -86,7 +87,7 @@ let all_product = [
   {
     id: 9,
     name: "Boys Orange Colourblocked Hooded Sweatshirt",
-    category: "kid",
+    category: "accessories",
     image: p27_img,
     new_price: 85.0,
     old_price: 120.5,
@@ -94,7 +95,7 @@ let all_product = [
   {
     id: 10,
     name: "Boys Orange Colourblocked Hooded Sweatshirt",
-    category: "kid",
+    category: "accessories",
     image: p28_img,
     new_price: 85.0,
     old_price: 120.5,
@@ -102,7 +103,7 @@ let all_product = [
   {
     id: 11,
     name: "Boys Orange Colourblocked Hooded Sweatshirt",
-    category: "kid",
+    category: "accessories",
     image: p29_img,
     new_price: 85.0,
     old_price: 120.5,
@@ -110,7 +111,7 @@ let all_product = [
   {
     id: 12,
     name: "Boys Orange Colourblocked Hooded Sweatshirt",
-    category: "kid",
+    category: "accessories",
     image: p30_img,
     new_price: 85.0,
     old_price: 120.5,

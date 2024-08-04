@@ -1,14 +1,15 @@
 // src/auth/phoneAuth.js
 
-import { auth, db } from '../firebaseConfig';
+import { auth, db } from "../firebaseConfig";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 
 export const setupRecaptcha = () => {
   if (!window.recaptchaVerifier) {
-    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-      'size': 'invisible',
-      'callback': (response) => {
+    console.log("Initializing RecaptchaVerifier...");
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+      "size": "invisible",
+      "callback": (response) => {
         console.log("Recaptcha solved:", response);
       },
     });
@@ -31,7 +32,7 @@ const sendOtp = async (formattedPhoneNumber) => {
   }
 };
 
-const verifyOtp = async (confirmationResult, otp, formattedPhoneNumber) => {
+const verifyOtp = async (confirmationResult, otp, formattedPhoneNumber, referralCode) => {
   try {
     const result = await confirmationResult.confirm(otp);
     console.log("OTP verified successfully:", result);
@@ -39,9 +40,12 @@ const verifyOtp = async (confirmationResult, otp, formattedPhoneNumber) => {
     // Save user data in Firestore
     await setDoc(doc(db, "users", result.user.uid), {
       phoneNumber: formattedPhoneNumber,
+      referralCode: referralCode,
       createdAt: new Date(),
     });
 
+    console.log(result.user);
+    
     return result.user;
   } catch (error) {
     console.error("Error during OTP verification", error);
@@ -51,7 +55,11 @@ const verifyOtp = async (confirmationResult, otp, formattedPhoneNumber) => {
 
 const verifyOtpForLogin = async (confirmationResult, otp) => {
   try {
-    await confirmationResult.confirm(otp);
+    const result = await confirmationResult.confirm(otp);
+
+    console.log(result.user);
+
+    return result.user;
   } catch (error) {
     console.error("Error verifying OTP for login", error);
   }

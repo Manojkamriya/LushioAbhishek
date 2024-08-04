@@ -1,14 +1,11 @@
-import { useEffect, useState, useRef, useCallback  } from "react";
-import './Home.css'
-function Carousel( {images} ) {
-  
+import { useEffect, useState, useRef, useCallback } from "react";
+import "./Home.css";
+function Carousel({ images }) {
   const [current, setCurrent] = useState(0);
   const timeOutRef = useRef(null);
 
- 
-
   const slideRight = useCallback(() => {
-    setCurrent(prev => (prev === images.length - 1 ? 0 : prev + 1));
+    setCurrent((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   }, [images.length]);
 
   // useEffect to handle the timeout
@@ -21,14 +18,14 @@ function Carousel( {images} ) {
   }, [slideRight]);
 
   const slideLeft = () => {
-    setCurrent(prev => (prev === 0 ? images.length - 1 : prev - 1));
+    setCurrent((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
   return (
     <div className="carousel">
       <div className="carousel_wrapper">
         {images.map((image, index) => {
           return (
-           <div
+            <div
               key={index}
               className={
                 index === current
@@ -37,18 +34,15 @@ function Carousel( {images} ) {
               }
             >
               <img className="card_image" src={image.image} alt="" />
-           </div>
+            </div>
           );
         })}
         <div className="carousel_arrow_left" onClick={slideLeft}>
-        <p>
-          &lsaquo;</p>
-         
+          <p>&lsaquo;</p>
         </div>
         {/* <button className="carousel-button">SHOP NOW</button> */}
         <div className="carousel_arrow_right" onClick={slideRight}>
-          <p>
-          &rsaquo;</p>
+          <p>&rsaquo;</p>
         </div>
         <div className="carousel_pagination">
           {images.map((_, index) => {
