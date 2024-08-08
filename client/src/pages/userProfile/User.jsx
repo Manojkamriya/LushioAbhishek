@@ -1,7 +1,23 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { auth } from "../../firebaseConfig.js";
+import { signOut } from "firebase/auth";
 import "./user.css";
+
 function User() {
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        // Redirect to the login page after successful sign out
+        alert("Logged out Successfully!");
+        window.location.href = "/LushioFitness"; // Ensure this route is defined in your router
+      })
+      .catch((error) => {
+        console.error("Error signing out:", error);
+      });
+  };
+
+
   // const [userName, setUserName]  = useState("User");
   return (
     <>
@@ -50,8 +66,8 @@ function User() {
             <p>Refer to your friends, family members</p>
           </div>
         </div>
-        <div className="user-action">
-          <img src="./LushioFitness/Images/icons/logout.png" alt="logo" />
+        <div className="user-action" onClick={handleLogout}>
+          <img src="./LushioFitness/Images/icons/logout.png" alt="Sign Out" />
           <div className="action-details">
             <h3>Sign Out</h3>
             <p>Sign out from your account</p>
