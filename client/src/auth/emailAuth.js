@@ -1,20 +1,24 @@
 import { auth, db } from "../firebaseConfig";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendSignInLinkToEmail } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, updateDoc, getDoc } from "firebase/firestore";
 
 const handleEmailSignUp = async (email, password, referralCode) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
+    // Ensure referralCode is either a string value or an empty string
+    const finalReferralCode = referralCode ? referralCode : "";
+
     await setDoc(doc(db, "users", user.uid), {
       email: user.email,
       createdAt: new Date(),
-      referralCode: referralCode
+      referralCode: finalReferralCode, // Pass referralCode or empty string
+      lastSignInTime: new Date()  // Set lastSignInTime for new user
     });
 
     const actionCodeSettings = {
-      url: "http://localhost:3000/finishSignUp?cartId=1234",
+      url: "http://localhost:3000/finishSignIn?cartId=1234",
       handleCodeInApp: true,
     };
     await sendSignInLinkToEmail(auth, email, actionCodeSettings);
@@ -35,10 +39,22 @@ const handleEmailSignUp = async (email, password, referralCode) => {
 const handleEmailLogin = async (email, password) => {
   try {
     const result = await signInWithEmailAndPassword(auth, email, password);
+    const user = result.user;
 
-    console.log(result.user);
+    // Reference to the user document in Firestore
+    const userDoc = doc(db, "users", user.uid);
+    const userSnapshot = await getDoc(userDoc);
 
-    return result.user;
+    if (userSnapshot.exists()) {
+      // Update lastSignInTime if the user already exists
+      await updateDoc(userDoc, {
+        lastSignInTime: new Date()
+      });
+    }
+
+    console.log(user);
+
+    return user;
   } catch (error) {
     console.error("Error during email login", error);
   }

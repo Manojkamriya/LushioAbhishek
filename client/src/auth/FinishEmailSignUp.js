@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAuth, isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
+import { isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
+import { doc, updateDoc } from "firebase/firestore";
+import { auth, db } from "../firebaseConfig";
 
 const FinishEmailSignUp = () => {
   const navigate = useNavigate();
-  const auth = getAuth();
 
   useEffect(() => {
     const handleSignIn = async () => {
@@ -18,9 +19,17 @@ const FinishEmailSignUp = () => {
 
         try {
           // Complete sign-in with email link
-          await signInWithEmailLink(auth, email, window.location.href);
+          const result = await signInWithEmailLink(auth, email, window.location.href);
+          const user = result.user;
+
+          // Update lastSignInTime in Firestore
+          const userDoc = doc(db, "users", user.uid);
+          await updateDoc(userDoc, {
+            lastSignInTime: new Date()
+          });
+
           window.localStorage.removeItem("emailForSignIn");
-          navigate("/user"); // Redirect to home page after successful sign-in
+          navigate("/user"); // Redirect to user page after successful sign-in
         } catch (error) {
           console.error("Error signing in with email link", error);
         }
@@ -28,7 +37,7 @@ const FinishEmailSignUp = () => {
     };
 
     handleSignIn();
-  }, [auth, navigate]);
+  }, [navigate]);
 
   return (
     <div>
