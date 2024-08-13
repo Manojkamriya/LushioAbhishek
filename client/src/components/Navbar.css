@@ -247,8 +247,8 @@
   display: flex;
 
 align-items: center;
-margin-left: -14%;
-gap: 10px;
+margin-left: -17%;
+gap: 10px !important;
   /* justify-content: center;
   align-items: center; */
 }
@@ -280,7 +280,8 @@ gap: 10px;
 }
 @media(max-width: 850px){
 .left-icons {
-  gap: 6px;
+  margin-left: -13%;
+  gap: 6px !important;
 }
 }
 @media (max-width: 700px) {

@@ -1,7 +1,22 @@
 import React from "react";
-
+import "./wishlist.css"
 function WishList() {
-  return <h1 className="wishlist-text">Wishlist page</h1>;
+  return (
+<>
+  <div className="empty-wishlist">
+    <img src="./LushioFitness/Images/emptyWishlist.png" alt=""/>
+    <h3>Hey! your wishlist is empty.
+    </h3>
+    <p>Save your favourites here and make them yours soon!</p>
+    <button>Shop Now</button>
+  </div>
+  <div className="empty-cart">
+    <img src="./LushioFitness/Images/emptyCart.png" alt=""/>
+    <p>Nothing in the bag</p>
+    <button>Shop Now</button>
+  </div>
+  </>
+  )
 }
 
 export default WishList;

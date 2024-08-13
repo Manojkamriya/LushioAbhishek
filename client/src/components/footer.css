@@ -1,5 +1,5 @@
 footer{
-    margin-top: 50px;
+    margin-top: 10px;
   display: flex;
   flex-direction: column;
   margin-bottom: 0;
@@ -94,7 +94,7 @@ margin-block: 10px;
    
 }
 .business-section ul li a:hover, .quick-links ul li a:hover{
-    color: #20c9c3;
+    color: #1c1b1b;
 }
 .quick-links img{
     margin-top: -10px;
@@ -154,7 +154,7 @@ margin-block: 10px;
       height: auto;
     }
     .business-section, .quick-links{
-        margin-left: 40px;
+        margin-left: 20px;
     }
 }
 @media(max-width: 850px){
@@ -165,5 +165,10 @@ margin-block: 10px;
 @media(max-width: 550px){
     .primary{
         grid-template-columns: repeat(1, 1fr);
+    }
+    .business-section ul, .quick-links ul{
+      
+        margin-top: 10px;
+       
     }
     }

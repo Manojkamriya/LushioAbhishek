@@ -149,11 +149,12 @@ cursor: pointer;
     width: 100%;
   }
   .card{
-    height: 550px;
-    width: 305px;
-    margin-block: 20px;
+    height: 500px;
+    width: 275px;
+    margin-block: 3px;
   }
 }
+
 @media(max-width: 600px){
   .card-container{
     display: flex;
@@ -162,9 +163,10 @@ cursor: pointer;
     /* justify-items: start; */
     gap: 10px;
     flex-wrap: wrap;
+    padding-block: 10px;
   }
   .card{
-    height: 355px;
+    height: 435px;
     width: calc(50% - 13px);
     /* aspect-ratio: 34/55; */
 
@@ -195,4 +197,12 @@ cursor: pointer;
       margin-top: 1px;
      
     }
+}
+@media(max-width: 500px){
+  .card{
+    height: 355px;
+    width: calc(50% - 13px);
+    /* aspect-ratio: 34/55; */
+
+  }
 }

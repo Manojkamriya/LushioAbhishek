@@ -1,6 +1,6 @@
 .productDisplay {
   display: flex;
-  margin: 40px 170px;
+  margin: 50px 170px;
   gap: 10px;
 }
 
@@ -20,11 +20,27 @@
 .productDisplay-main-img {
   height: 600px;
   width: 500px;
+ 
 }
 .productDisplay-right {
   margin: 0px 40px;
   display: flex;
   flex-direction: column;
+  height: 590px;
+  width: 100%;
+  overflow-y: scroll;
+}
+.productDisplay-right::-webkit-scrollbar {
+  width: 10px;
+}
+
+.productDisplay-right::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.productDisplay-right::-webkit-scrollbar-track {
+  background: #ebebeb;
 }
 .productDisplay-right h1 {
   color: #3d3d3e;
@@ -45,7 +61,7 @@
 }
 .productDisplay-right-prices {
   display: flex;
-  margin: 30px 0px;
+  margin: 15px 0px;
   gap: 20px;
   font-size: 24px;
   font-weight: 700;
@@ -70,14 +86,15 @@
   color: #00b852;
 }
 .productDisplay-right-size h1 {
-  margin-top: 20px;
+  margin-top: 10px;
   color: #656565;
   font-size: 20px;
   font-weight: 600;
 }
+
 .productDisplay-right-sizes {
   display: flex;
-  margin: 20px 0px;
+  margin: 10px 0px;
   gap: 15px;
 }
 .productDisplay-right-sizes div{
@@ -87,21 +104,73 @@
     border-radius: 3px;
     cursor: pointer;
 }
+.select-color div:first-child{
+  background-color: aqua;
+}
+.select-color div:nth-child(2){
+  background-color: rgb(0, 145, 255);
+}
+.select-color div:nth-child(3){
+  background-color: rgb(84, 36, 160);
+}
+.select-color div:nth-child(4){
+  background-color: rgb(196, 78, 14);
+}
+.select-color div:nth-child(5){
+  background-color: rgb(196, 14, 151);
+}
+
 .button-container{
   display: flex;
   gap: 10px;
 }
 .productDisplay-right button{
-padding: 20px 40px;
+padding: 15px 30px;
 /* width: 200px; */
 font-size: 16px;
 font-weight: 600;
 color: white;
 background: tomato;
-margin-bottom: 20px;
+
+background-image: linear-gradient(to right, #FF512F 0%, #F09819  100%);
+margin-block: 10px;
+border-radius: 50px;
 border: none;
 outline: none;
 cursor: pointer;
+}
+.women-size{
+  display: flex;
+     gap: 20px;
+}
+.tax-statement{
+  color: #8c8c8c;
+  margin-bottom: 20px;
+}
+.trust-image{
+  width: 98%;
+}
+.review-container{
+  display: flex;
+  flex-direction: column;
+
+}
+.review-container h5{
+  margin-top: 10px;
+  margin-bottom: 9px;
+  color: #656565;
+  font-size: 16px;
+  padding-bottom: 9px;
+  width: 170px;
+  text-transform: uppercase;
+  border-bottom: 5px solid rgb(227, 162, 10);
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+}
+.women-size button{
+ font-size: 12px;
+ padding: 7px 16px;
+
 }
 .buy-button{
   width: 350px;
@@ -115,7 +184,7 @@ cursor: pointer;
 }
 @media(max-width:1280px){
   .productDisplay{
-    margin: 0px 60px;
+    margin: 40px 60px;
   }
   .productDisplay-left{
     gap: 10px;
@@ -134,6 +203,7 @@ cursor: pointer;
   }
   .productDisplay-right {
     margin: 0px 30px;
+    height: 490px;
    
   }
   .productDisplay-right h1 {
@@ -178,10 +248,14 @@ cursor: pointer;
 }
 @media(max-width:1024px){
   .productDisplay{
-    margin: 0px 30px;
+    margin: 30px 30px;
   }
   .productDisplay-left{
     gap: 5px;
+  }
+  .productDisplay-right{
+    gap: 5px;
+    height: 350px;
   }
   
   .productDisplay-img-list img {
@@ -233,12 +307,13 @@ cursor: pointer;
 }
 @media(max-width:800px){
   .productDisplay{
-    margin: 0px 10px;
+    margin: 20px 10px;
   }
   .productDisplay-left{
     gap: 0px;
     flex-direction: column-reverse;
     align-items: center;
+    justify-content: flex-end;
   }
   .productDisplay-img-list{
    flex-direction: row;
@@ -312,21 +387,27 @@ cursor: pointer;
    height: 330px;
   }
   .productDisplay-right{
+    height: auto;
+    width: auto;
+    overflow-y: auto;
    margin: 5px;
    }
   .productDisplay-right h1 {
   margin-top: 15px;
-  font-size: 20xp;
+  font-size: 20px;
   font-weight: 500;
   }
-  
+  .select-color div{
+    height:10px;
+    padding: 20px 16px;
+ }
  
   .productDisplay-right-stars img {
     height: 15px;
   }
   .productDisplay-right-price-discount{
   
-    font-size: 14px;
+    font-size: 22px;
    
   }
   .productDisplay-right-size-discription{
@@ -348,7 +429,7 @@ cursor: pointer;
  width: 130px;
  
  font-size: 15px;
- padding: 12px 0px;
+ padding: 9px 0px;
   }
   
   .productDisplay-right-category{

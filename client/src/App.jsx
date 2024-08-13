@@ -17,6 +17,7 @@ import accessories_banner from "./components/context/assets/banner_accessories.j
 import Footer from "./components/Footer";
 import Register from "./pages/login/Register";
 import Login from "./pages/login/Login";
+import ReferAndEarn from "./pages/ReferAndEarn/ReferAndEarn";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
           <Route path="/user/profile" element={<EditProfile />} />
           <Route path="/wallet" element={<Wallet />} />
           <Route path="/orders" element={<Orders />} />
+          <Route path="/refer-and-earn" element={<ReferAndEarn />} />
         </Routes>
         <Footer/>
       </BrowserRouter>

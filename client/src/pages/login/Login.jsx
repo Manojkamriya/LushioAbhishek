@@ -138,6 +138,7 @@ const Login = () => {
 
   return (
     <div className="auth-container">
+        <Link to="/user"> <button className="auth-container-button">Go to User page </button> </Link>
       <form className="auth-form" onSubmit={handleFormSubmit}>
         <h2>Login</h2>
         {!isPhone ? (
@@ -209,12 +210,12 @@ const Login = () => {
         {otpSent && isPhone && otpTimer !== 0 && (
           <p>Resend OTP in {otpTimer} seconds.</p>
         )}
-        <button type="submit" disabled={isButtonDisabled}>
+        <button type="submit" disabled={isButtonDisabled} className="enabled">
           Login
         </button>
         <p>Create a new account? <Link to="/register">Sign Up here</Link></p>
-        <button type="button" onClick={handleGoogleSignIn} disabled={isButtonDisabled}>Continue With Google</button>
-        <button type="button" onClick={handleFacebookSignIn} disabled={isButtonDisabled}>Continue With Facebook</button>
+        <button type="button" onClick={handleGoogleSignIn} disabled={isButtonDisabled} className="enabled">Continue With Google</button>
+        <button type="button" onClick={handleFacebookSignIn} disabled={isButtonDisabled} className="enabled">Continue With Facebook</button>
       </form>
       <div id="recaptcha-container"></div>
     </div>

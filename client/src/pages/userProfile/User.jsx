@@ -17,7 +17,7 @@ function User() {
           </Link>
           <div className="action-details">
             <h3>Edit Profile</h3>
-            <p>Edit your account details</p>
+            <p>Edit personal info, change password</p>
           </div>
         </div>
 
@@ -43,8 +43,12 @@ function User() {
             <p>Track, return or buy things again</p>
           </div>
         </div>
+        
         <div className="user-action">
-          <img src="./LushioFitness/Images/icons/referEarn.png" alt="logo" />
+        <Link to="/refer-and-earn">
+            <img src="./LushioFitness/Images/icons/referEarn.png" alt="logo" />{" "}
+          </Link>
+         
           <div className="action-details">
             <h3>Refer and Earn</h3>
             <p>Refer to your friends, family members</p>

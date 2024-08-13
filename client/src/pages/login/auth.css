@@ -4,7 +4,7 @@
     justify-content: center;
     align-items: center;
     padding-top: 60px;
-    background: url('/public/Images/bg-login.png') center / cover no-repeat;
+    background: url("/public/Images/bg-login.png") center / cover no-repeat;
 }
 
 .auth-container-button {
@@ -81,6 +81,7 @@
     color: white;
     font-size: 15px;
     background-color: rgb(240, 138, 120);
+    cursor: not-allowed;
 }
 
 .login-signup-condition {
@@ -94,6 +95,7 @@
     margin-top: 5px;
     height: 15px;
     width: 15px;
+    /* accent-color: tomato; */
     cursor: pointer;
 }
 

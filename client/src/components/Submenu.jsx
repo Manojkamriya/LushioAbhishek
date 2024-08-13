@@ -138,10 +138,10 @@ function Submenu() {
     <div className="res-navbar-headings">
       <ul className="res-navbar-headings-list">
         <li onClick={() => setMenu("Men")}>
-          <Link to="/men">Men</Link>
+         Men
         </li>
         <li onClick={() => setMenu("Women")}>
-          <Link to="/women">Women</Link>
+        Women
         </li>
         <li onClick={() => setMenu("Accessories")}>
           <Link to="/accessories">Accessories</Link>

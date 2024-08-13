@@ -131,6 +131,7 @@ const Register = () => {
 
   return (
     <div className="auth-container">
+        <Link to="/user"> <button className="auth-container-button">Go to User page </button> </Link>
       <form className="auth-form" onSubmit={handleFormSubmit}>
         <h2>Sign Up</h2>
         {!isPhone ? (
@@ -206,14 +207,14 @@ const Register = () => {
           />
           <p>By continuing, I agree to the terms of use & privacy policy</p>
         </div>
-        <button type="submit" disabled={isButtonDisabled}>
+        <button type="submit" disabled={isButtonDisabled} className={isChecked?"enabled":"disabled"}>
           Create Account
         </button>
         <p>Already have an account? <Link to="/login">Login here</Link></p>
-        <button type="button" onClick={handleGoogleSignIn} disabled = {!isChecked}>
+        <button type="button" onClick={handleGoogleSignIn} disabled = {!isChecked} className={isChecked?"enabled":"disabled"}>
           Continue With Google
         </button>
-        <button type="button" onClick={handleFacebookSignIn} disabled = {!isChecked}>
+        <button type="button" onClick={handleFacebookSignIn} disabled = {!isChecked} className={isChecked?"enabled":"disabled"}>
           Continue With Facebook
         </button>
       </form>
