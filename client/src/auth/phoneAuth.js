@@ -1,9 +1,8 @@
-// src/auth/phoneAuth.js
-
 import { auth, db } from "../firebaseConfig";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 
+// Recaptcha setup function
 export const setupRecaptcha = () => {
   if (!window.recaptchaVerifier) {
     console.log("Initializing RecaptchaVerifier...");
@@ -16,6 +15,7 @@ export const setupRecaptcha = () => {
   }
 };
 
+// Function to send OTP
 const sendOtp = async (formattedPhoneNumber) => {
   setupRecaptcha();
   console.log("RecaptchaVerifier instance:", window.recaptchaVerifier);
@@ -32,34 +32,56 @@ const sendOtp = async (formattedPhoneNumber) => {
   }
 };
 
+// Function to verify OTP for signup
 const verifyOtp = async (confirmationResult, otp, formattedPhoneNumber, referralCode) => {
   try {
     const result = await confirmationResult.confirm(otp);
     console.log("OTP verified successfully:", result);
 
-    // Save user data in Firestore
-    await setDoc(doc(db, "users", result.user.uid), {
-      phoneNumber: formattedPhoneNumber,
-      referralCode: referralCode,
-      createdAt: new Date(),
-    });
+    const user = result.user;
+    const userDoc = doc(db, "users", user.uid);
+    const userSnapshot = await getDoc(userDoc);
 
-    console.log(result.user);
-    
-    return result.user;
+    if (userSnapshot.exists()) {
+      // Update lastSignInTime if the user already exists
+      await updateDoc(userDoc, {
+        lastSignInTime: new Date(),
+      });
+    } else {
+      // Save new user data in Firestore
+      await setDoc(userDoc, {
+        phoneNumber: formattedPhoneNumber,
+        referralCode: referralCode || "", // Pass empty string if referralCode is undefined
+        createdAt: new Date(),
+        lastSignInTime: new Date(),
+      });
+    }
+
+    console.log(user);
+
+    return user;
   } catch (error) {
     console.error("Error during OTP verification", error);
     throw error;
   }
 };
 
+// Function to verify OTP for login
 const verifyOtpForLogin = async (confirmationResult, otp) => {
   try {
     const result = await confirmationResult.confirm(otp);
 
-    console.log(result.user);
+    const user = result.user;
+    const userDoc = doc(db, "users", user.uid);
 
-    return result.user;
+    // Update lastSignInTime when the user logs in
+    await updateDoc(userDoc, {
+      lastSignInTime: new Date(),
+    });
+
+    console.log(user);
+
+    return user;
   } catch (error) {
     console.error("Error verifying OTP for login", error);
   }

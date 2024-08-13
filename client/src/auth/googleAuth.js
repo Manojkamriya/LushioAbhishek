@@ -1,7 +1,7 @@
 // client/src/auth/googleAuth.js
 import { auth, db } from "../firebaseConfig";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -10,6 +10,8 @@ const signInWithGoogle = async (referralCode) => {
     const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
     
+    // Ensure referralCode is either a string value or an empty string
+    const finalReferralCode = referralCode ? referralCode : ""; 
     
     console.log(user);
 
@@ -25,11 +27,15 @@ const signInWithGoogle = async (referralCode) => {
         displayName: user.displayName,
         photoURL: user.photoURL,
         createdAt: new Date(),
-        referralCode: referralCode,
+        referralCode: finalReferralCode, // Pass referralCode or empty string
         lastSignInTime: new Date(user.metadata.lastSignInTime)
       });
+    } else {
+      // Update lastSignInTime if the user already exists
+      await updateDoc(userDoc, {
+        lastSignInTime: new Date()
+      });
     }
-
   } catch (error) {
     console.error("Error during sign-in with Google", error);
   }

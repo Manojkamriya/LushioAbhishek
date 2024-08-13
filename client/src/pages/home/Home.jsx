@@ -1,12 +1,29 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Media from "./data";
 import Carousel from "./Carousel";
 import Card from "./Card";
 import ProductCards from "./ProductCards";
-
-// import ProductDisplay from "./ProductDisplay"
+import { auth } from "../../firebaseConfig.js";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function Home() {
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUser(user);
+        console.log("User ID:", user.uid);
+      } else {
+        setCurrentUser(null);
+        console.log("No user is currently logged in.");
+      }
+    });
+
+    // Cleanup the listener on component unmount
+    return () => unsubscribe();
+  }, []);
+
   return (
     <>
       <Carousel images={Media} />
