@@ -6,6 +6,9 @@ function MenSubmenu() {
   return (
     <>
       <ul>
+      <li>
+          <Link to="/men">All</Link>
+        </li>
         <li>
           <Link to="/">Shirts</Link>
         </li>
@@ -50,6 +53,9 @@ function WomenSubmenu() {
   return (
     <>
       <ul>
+      <li>
+          <Link to="/women">All</Link>
+        </li>
         <li>
           <Link to="/">Bras</Link>
         </li>
@@ -94,6 +100,9 @@ function AccesoriesSubmenu() {
   return (
     <>
       <ul>
+      <li>
+          <Link to="/accessories">All</Link>
+        </li>
         <li>
           <Link to="/">Gloves</Link>
         </li>
@@ -144,7 +153,7 @@ function Submenu() {
         Women
         </li>
         <li onClick={() => setMenu("Accessories")}>
-          <Link to="/accessories">Accessories</Link>
+          Accessories
         </li>
       </ul>
       <div className="res-navbar-links">

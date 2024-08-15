@@ -2,6 +2,7 @@
     height: 350px;
     width: 350px;
     margin: 30px auto;
+    margin-block: 120px;
     text-align: center;
 }
 .empty-wishlist img{

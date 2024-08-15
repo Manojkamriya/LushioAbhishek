@@ -138,7 +138,7 @@ const Login = () => {
 
   return (
     <div className="auth-container">
-        <Link to="/user"> <button className="auth-container-button">Go to User page </button> </Link>
+       
       <form className="auth-form" onSubmit={handleFormSubmit}>
         <h2>Login</h2>
         {!isPhone ? (

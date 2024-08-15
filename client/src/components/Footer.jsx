@@ -1,7 +1,9 @@
 import React from "react";
 import "./footer.css";
 import { HashLink as Link } from "react-router-hash-link";
+import {useAuth} from '../firebaseUtils'
 export default function Footer() {
+  const user = useAuth();
   return (
     <footer>
       <div className="primary">
@@ -127,7 +129,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="secondary">
-        <h4>2024 © LushioFitness.com</h4>
+        <h4>2024 © LushioFitness.com {user && <span>{user.displayName}</span>}</h4>
       </div>
     </footer>
   );

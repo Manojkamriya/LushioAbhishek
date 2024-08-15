@@ -1,11 +1,11 @@
 import React from "react";
 import "./product.css";
+import { useAuth } from '../../firebaseUtils';
 function ProductDisplayPage(props) {
-  // const [size, setSize] = useState("")
-  // const [image, setImage] = useState(props.image)
-  // console.log(size);
+  const user = useAuth();
   return (
     <div className="productDisplay">
+           
       <div className="productDisplay-left">
         <div className="productDisplay-img-list">
           <img src={props.image_l1} alt="" />
@@ -18,14 +18,16 @@ function ProductDisplayPage(props) {
         </div>
       </div>
       <div className="productDisplay-right">
-        <h1>{props.name}</h1>
+        <h1>{props.name } </h1>
         <div className="productDisplay-right-stars">
           <img src="./LushioFitness/Images/icons/star-icon.png" alt="" />
           <img src="./LushioFitness/Images/icons/star-icon.png" alt="" />
           <img src="./LushioFitness/Images/icons/star-icon.png" alt="" />
           <img src="./LushioFitness/Images/icons/star-icon.png" alt="" />
           <img src="./LushioFitness/Images/icons/star-icon.png" alt="" />
-          <p>(122 reviews)</p>
+          <p>(122 reviews)</p> 
+          {user &&  <p>{user.displayName}</p>  }
+           
         </div>
         <div className="productDisplay-right-prices">
           <div className="productDisplay-right-price-new">
@@ -86,6 +88,7 @@ function ProductDisplayPage(props) {
         <img className="trust-image" src="./LushioFitness/Images/trust.png" alt=""/>
         <div className="review-container">
         <h5>Product Review</h5>
+      
         <h6>Review 1</h6>
         <h6>Review 2</h6>
         <h6>Review 3</h6>
@@ -109,7 +112,7 @@ function ProductDisplay() {
       discription="A lightweight, Usually knitted, pullover shirt, close-fitting and with a round neckline and short sleeves, worn as an undershirt or outer garment"
       old_price="300"
       new_price="240"
-      discount="53"
+      discount="20"
       category=" Women, T-Shirt, Crop Top"
       tags="A lightweight, Usually knitted, pullover shirt, close-fitting and with a round neckline and short sleeves, worn as an undershirt or outer garment. Striped Flutter Sleeve Overlap Collar Peplum Hem Blouse"
     />

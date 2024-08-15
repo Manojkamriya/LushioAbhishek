@@ -134,7 +134,13 @@ margin-block: 10px;
     width: 28px;
     fill: #1c1b1b;
 }
-.secondary ul{
+.footer-icon-container img{
+    margin: 10px;
+    height: 28px;
+    width: 28px;
+    fill: #1c1b1b;
+}
+/* .secondary ul{
     display: flex;
     justify-content: flex-end;
     width: 40%;
@@ -144,7 +150,7 @@ margin-block: 10px;
 .secondary ul li{
     padding: 12px;
   
-}
+} */
 
 @media(max-width: 1050px){
     .primary{

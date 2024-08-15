@@ -16,23 +16,22 @@ function EditProfile() {
         <label>Address</label>
         <input type="text" placeholder="Enter your address" required />
 
+       
         <div className="radio-input">
-          <label>
-            Gender
-            <label>
-              {" "}
-              <input type="radio" required /> Male
-            </label>
-            <label>
-              {" "}
-              <input type="radio" required /> Female
-            </label>
-            <label>
-              {" "}
-              <input type="radio" required /> Other
-            </label>{" "}
-          </label>
-        </div>
+  <label>
+    Gender
+    <label>
+      <input type="radio" name="gender" required /> Male
+    </label>
+    <label>
+      <input type="radio" name="gender" required /> Female
+    </label>
+    <label>
+      <input type="radio" name="gender" required /> Other
+    </label>
+  </label>
+</div>
+
         <button type="Submit">Save</button>
       </form>
     </div>

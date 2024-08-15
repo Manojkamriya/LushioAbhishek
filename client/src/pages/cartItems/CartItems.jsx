@@ -1,9 +1,15 @@
 import React, { useContext } from "react";
 import "./cartitems.css";
 import { ShopContext } from "../../components/context/ShopContext";
+import EmptyCart from "./EmptyCart";
 const CartItems = () => {
   const { all_product, cartItems, removeFromCart, getTotalCartAmount } =
     useContext(ShopContext);
+    const cartHasItems = Object.values(cartItems).some(quantity => quantity > 0);
+
+    if (!cartHasItems) {
+      return <EmptyCart/> // Render empty cart message
+    }
   return (
     <div className="cartitems">
       <div className="cartitems-format-main">
@@ -18,7 +24,7 @@ const CartItems = () => {
       {all_product.map((e, i) => {
         if (cartItems[e.id] > 0) {
           return (
-            <>
+            
             <div key={i}>
               <div className="cartitems-format cartitems-format-main">
                 <img src={e.image} alt="" className="carticon-product-icon" />
@@ -39,7 +45,7 @@ const CartItems = () => {
               </div>
               <hr />
             </div>
-            </>
+            
           );
         }
         return null;

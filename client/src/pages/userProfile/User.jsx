@@ -14,7 +14,7 @@ function User() {
       if (user) {
         // Log the UID in the console
         console.log("User UID:", user.uid);
-        setUser(user.uid);  
+        setUser(user.displayName);  
       } else {
         // If not authenticated, redirect to the login page
         navigate("/login");
