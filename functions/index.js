@@ -15,6 +15,7 @@ const userRoutes = require("./routes/users.js");
 
 // Use routes
 app.use("/userName", userRoutes);
+app.use("/userDetails", userRoutes);
 
 // Export the API
 exports.api = functions.https.onRequest(app);
