@@ -27,6 +27,12 @@ border-bottom: 4px solid #c1c1c1;
 .res-navbar-headings-list li{
   
     margin-bottom: 15px;
+    font-size: 14px;
+    font-family: "Montserrat", sans-serif;
+    padding: 10px 10px;
+    font-weight: 300;
+    color: #fff;
+    margin-bottom: 5px;
     }
 .res-navbar-headings-list li a{
     font-size: 14px;

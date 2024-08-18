@@ -14,7 +14,7 @@ function User() {
       if (user) {
         // Log the UID in the console
         console.log("User UID:", user.uid);
-        setUser(user.uid);  
+        setUser(user.displayName);  
       } else {
         // If not authenticated, redirect to the login page
         navigate("/login");
@@ -44,7 +44,7 @@ function User() {
       <p className="user-question">What would you like to do?</p>
       <div className="user-action-container">
         <div className="user-action">
-          <Link to="/user/profile">
+          <Link to="/user/editProfile">
             <img
               src="./LushioFitness/Images/icons/editProfile.png"
               alt="logo"
@@ -52,7 +52,7 @@ function User() {
           </Link>
           <div className="action-details">
             <h3>Edit Profile</h3>
-            <p>Edit your account details</p>
+            <p>Edit personal info, change password</p>
           </div>
         </div>
 
@@ -69,7 +69,7 @@ function User() {
           </div>
         </div>
         <div className="user-action">
-          <Link to="/orders">
+          <Link to="/user/orders">
             <img src="./LushioFitness/Images/icons/orders.png" alt="logo" />
           </Link>
           <div className="action-details">
@@ -77,8 +77,22 @@ function User() {
             <p>Track, return, or buy things again</p>
           </div>
         </div>
+        
         <div className="user-action">
-          <img src="./LushioFitness/Images/icons/referEarn.png" alt="logo" />
+        <Link to="/user/address">
+            <img src="./LushioFitness/Images/icons/address.png" alt="logo" />{" "}
+          </Link>
+         
+          <div className="action-details">
+            <h3>My Addresses</h3>
+            <p>Add, Remove or change your default address</p>
+          </div>
+        </div>
+        <div className="user-action">
+        <Link to="/user/refer-and-earn">
+            <img src="./LushioFitness/Images/icons/referEarn.png" alt="logo" />{" "}
+          </Link>
+         
           <div className="action-details">
             <h3>Refer and Earn</h3>
             <p>Refer to your friends, family members</p>
@@ -92,6 +106,8 @@ function User() {
           </div>
         </div>
       </div>
+    
+
     </>
   );
 }

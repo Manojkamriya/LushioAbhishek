@@ -1,0 +1,25 @@
+.empty-wallet{
+    height: 450px;
+    width: 450px;
+    margin: 100px auto;
+    text-align: center;
+}
+.empty-wallet img{
+    width: 90%;
+    height: 70%;
+}
+.empty-wallet button{
+  
+        width: 320px;
+        height: 40px;
+        border-radius: 5px;
+        background-color: #42a2a2;
+        color: #fff;
+        text-align: center;
+        font-family: montserrat,sans-serif;
+        font-size: 16px;
+        margin-top: 19px;
+        padding: 10px 0;
+        border: 1px solid #42a2a2
+    
+}
