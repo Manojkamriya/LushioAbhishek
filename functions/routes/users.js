@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const express = require("express");
 const admin = require("firebase-admin");
 
@@ -40,11 +41,33 @@ router.get("/details/:uid", async (req, res) => {
       email: userData.email || null,
       phoneNumber: userData.phoneNumber || null,
       photoURL: userData.photoURL || null,
-      addresses: userData.addresses || [], // Assume 'addresses' is an array
+      // addresses: userData.addresses || [], // Assume 'addresses' is an array
       gender: userData.gender || null,
     };
 
     return res.status(200).json(userDetails);
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+});
+
+// Update user details by UID
+router.post("/details/:uid", async (req, res) => {
+  try {
+    const uid = req.params.uid;
+    const userDoc = db.collection("users").doc(uid);
+    const userData = (await userDoc.get()).data() || {};
+
+    const updatedUserData = {
+      displayName: req.body.displayName || userData.displayName || null,
+      email: req.body.email || userData.email || null,
+      phoneNumber: req.body.phoneNumber || userData.phoneNumber || null,
+      gender: req.body.gender || userData.gender || null,
+    };
+
+    await userDoc.set(updatedUserData, {merge: true});
+
+    return res.status(200).json(updatedUserData);
   } catch (error) {
     return res.status(500).send(error.message);
   }
