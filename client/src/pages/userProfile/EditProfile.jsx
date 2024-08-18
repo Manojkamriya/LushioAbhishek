@@ -7,8 +7,8 @@ function EditProfile() {
       <form action="" className="edit-profile">
         <label>Name</label>
         <input type="text" placeholder="Enter your Name" required />
-        <label>Profile Picture</label>
-        <input type="file" placeholder="Enter your email" required />
+      
+       
         <label>Email</label>
         <input type="email" placeholder="Enter your email" required />
         <label>Phone no.</label>
@@ -19,7 +19,8 @@ function EditProfile() {
        
         <div className="radio-input">
   <label>
-    Gender
+    Gender </label>
+    <div>
     <label>
       <input type="radio" name="gender" required /> Male
     </label>
@@ -29,7 +30,7 @@ function EditProfile() {
     <label>
       <input type="radio" name="gender" required /> Other
     </label>
-  </label>
+    </div>
 </div>
 
         <button type="Submit">Save</button>

@@ -1,8 +1,8 @@
 import React from "react";
 import "./product.css";
-import { useAuth } from '../../firebaseUtils';
+
 function ProductDisplayPage(props) {
-  const user = useAuth();
+ 
   return (
     <div className="productDisplay">
            
@@ -12,6 +12,7 @@ function ProductDisplayPage(props) {
           <img src={props.image_l2} alt="" />
           <img src={props.image_l3} alt="" />
           <img src={props.image_l4} alt="" />
+          <img src={props.image_l5} alt="" />
         </div>
         <div className="productDispaly-img">
           <img className="productDisplay-main-img" src={props.image} alt="" />
@@ -26,7 +27,7 @@ function ProductDisplayPage(props) {
           <img src="./LushioFitness/Images/icons/star-icon.png" alt="" />
           <img src="./LushioFitness/Images/icons/star-icon.png" alt="" />
           <p>(122 reviews)</p> 
-          {user &&  <p>{user.displayName}</p>  }
+       
            
         </div>
         <div className="productDisplay-right-prices">
@@ -108,6 +109,7 @@ function ProductDisplay() {
       image_l2="./LushioFitness/Images/p1_product_i2.png"
       image_l3="./LushioFitness/Images/p1_product_i3.png"
       image_l4="./LushioFitness/Images/p1_product_i4.png"
+        image_l5="./LushioFitness/Images/p1_product_i4.png"
       name="Striped Flutter Sleeve Overlap Collar Peplum Hem Blouse"
       discription="A lightweight, Usually knitted, pullover shirt, close-fitting and with a round neckline and short sleeves, worn as an undershirt or outer garment"
       old_price="300"

@@ -35,6 +35,7 @@
     height: 69px;
     border-radius: 75px;
     background-image: linear-gradient(to right, #FF512F 0%, #F09819  100%);
+    background-image: linear-gradient(to right, rgb(226 52 43) 0%,rgb(255 106 28)  100%);
     color: white;
     cursor: pointer;
 }

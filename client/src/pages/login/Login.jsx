@@ -156,6 +156,7 @@ const Login = () => {
             value={phone}
             onChange={(phone) => setPhone(phone)}
             disabled={isButtonDisabled && !otpSent}
+           
           />
         )}
         {showRadioButtons && !isPhone && (
@@ -201,21 +202,21 @@ const Login = () => {
               onChange={(e) => setOtp(e.target.value)}
               required
             />
-            <button type="button" onClick={handleOtpSubmit} disabled={otp.length !== 6}>Submit OTP</button>
+            <button type="button" onClick={handleOtpSubmit}  id="submit-otp"  disabled={otp.length !== 6}  className={otp.length !== 6?"disabled":"enabled"}>Submit OTP</button>
           </div>
         )}
         {otpSent && isPhone && otpTimer === 0 && (
-          <button type="button" onClick={handleResendOtp} disabled={isButtonDisabled}>Resend OTP</button>
+          <button type="button" onClick={handleResendOtp}  disabled={isButtonDisabled} className={isButtonDisabled?"disabled":"enabled"}>Resend OTP</button>
         )}
         {otpSent && isPhone && otpTimer !== 0 && (
           <p>Resend OTP in {otpTimer} seconds.</p>
         )}
-        <button type="submit" disabled={isButtonDisabled} className="enabled">
+        <button type="submit" disabled={isButtonDisabled} className={isButtonDisabled?"disabled":"enabled"}>
           Login
         </button>
         <p>Create a new account? <Link to="/register">Sign Up here</Link></p>
-        <button type="button" onClick={handleGoogleSignIn} disabled={isButtonDisabled} className="enabled">Continue With Google</button>
-        <button type="button" onClick={handleFacebookSignIn} disabled={isButtonDisabled} className="enabled">Continue With Facebook</button>
+        <button type="button" onClick={handleGoogleSignIn} disabled={isButtonDisabled} className={isButtonDisabled?"disabled":"enabled"}>Continue With Google</button>
+        <button type="button" onClick={handleFacebookSignIn} disabled={isButtonDisabled} className={isButtonDisabled?"disabled":"enabled"}>Continue With Facebook</button>
       </form>
       <div id="recaptcha-container"></div>
     </div>

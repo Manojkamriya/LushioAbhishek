@@ -44,7 +44,7 @@ function User() {
       <p className="user-question">What would you like to do?</p>
       <div className="user-action-container">
         <div className="user-action">
-          <Link to="/user/profile">
+          <Link to="/user/editProfile">
             <img
               src="./LushioFitness/Images/icons/editProfile.png"
               alt="logo"
@@ -69,7 +69,7 @@ function User() {
           </div>
         </div>
         <div className="user-action">
-          <Link to="/orders">
+          <Link to="/user/orders">
             <img src="./LushioFitness/Images/icons/orders.png" alt="logo" />
           </Link>
           <div className="action-details">
@@ -79,7 +79,17 @@ function User() {
         </div>
         
         <div className="user-action">
-        <Link to="/refer-and-earn">
+        <Link to="/user/address">
+            <img src="./LushioFitness/Images/icons/address.png" alt="logo" />{" "}
+          </Link>
+         
+          <div className="action-details">
+            <h3>My Addresses</h3>
+            <p>Add, Remove or change your default address</p>
+          </div>
+        </div>
+        <div className="user-action">
+        <Link to="/user/refer-and-earn">
             <img src="./LushioFitness/Images/icons/referEarn.png" alt="logo" />{" "}
           </Link>
          
@@ -96,6 +106,8 @@ function User() {
           </div>
         </div>
       </div>
+    
+
     </>
   );
 }

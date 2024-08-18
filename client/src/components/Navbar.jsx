@@ -5,13 +5,12 @@ import Dropdown from "./Dropdown";
 import Dropdown1 from "./Dropdown1";
 import Dropdown2 from "./Dropdown2";
 import Submenu from "./Submenu";
-// import ShopCategory from "../pages/shopCategory/ShopCategory";
-// import { ShopContext } from "./context/ShopContext";
+
 function Navbar() {
   const [dropdown, setDropdown] = useState(false);
   const [dropdown2, setDropdown2] = useState(false);
   const [dropdown1, setDropdown1] = useState(false);
-  // const { getTotalCartItems } = useContext(ShopContext);
+  
   const menuRef = useRef();
 
   const openMenu = () => {
@@ -84,19 +83,17 @@ function Navbar() {
             </li>
           </ul>
         </div>
-        <div className="search-box">
-          <input
-            type="text"
-            name="productName"
-            placeholder="search by product category or collection"
-          />
-
-          <img src="./LushioFitness/Images/icons/search-icon.png" alt="" />
-        </div>
+        <div className="new-search">
+<input  type="text"
+    name="productName"
+    placeholder="search by product category or collection" />
+      <img src="./LushioFitness/Images/icons/search-icon.png" alt="" />
+    </div>
         <Link to="/LushioFitness" className="lushio-text">
           <img src="./LushioFitness/Images/lushio-text-3.png" alt="" />
         </Link>
         <div className="icons">
+          
           <Link to="/wishlist">
             <img src="./LushioFitness/Images/icons/wishlist.png" alt="" />
           </Link>

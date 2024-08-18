@@ -1,9 +1,25 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./footer.css";
 import { HashLink as Link } from "react-router-hash-link";
-import {useAuth} from '../firebaseUtils'
+import { getUser } from "../firebaseUtils";
+
 export default function Footer() {
-  const user = useAuth();
+
+
+const [user, setUser] = useState(null);
+
+useEffect(() => {
+  const fetchUser = async () => {
+    try {
+     
+      setUser(await getUser());
+     
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    }
+  };
+  fetchUser();
+}, []);
   return (
     <footer>
       <div className="primary">
@@ -129,7 +145,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="secondary">
-        <h4>2024 © LushioFitness.com {user && <span>{user.displayName}</span>}</h4>
+        <h4>2024 © LushioFitness.com {user && <span>{user.displayName}</span>} </h4>
       </div>
     </footer>
   );

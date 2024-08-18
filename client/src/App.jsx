@@ -18,6 +18,7 @@ import Footer from "./components/Footer";
 import Register from "./pages/login/Register";
 import Login from "./pages/login/Login";
 import ReferAndEarn from "./pages/ReferAndEarn/ReferAndEarn";
+import Address from "./pages/userProfile/Address";
 
 function App() {
   return (
@@ -36,10 +37,11 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/wishlist" element={<WishList />} />
           <Route path="/user" element={<User />} />
-          <Route path="/user/profile" element={<EditProfile />} />
+          <Route path="/user/editProfile" element={<EditProfile />} />
           <Route path="/wallet" element={<Wallet />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/refer-and-earn" element={<ReferAndEarn />} />
+          <Route path="/user/orders" element={<Orders />} />
+          <Route path="/user/address" element={<Address />} />
+          <Route path="/user/refer-and-earn" element={<ReferAndEarn />} />
         </Routes>
         <Footer/>
       </BrowserRouter>

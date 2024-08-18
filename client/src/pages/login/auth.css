@@ -107,5 +107,19 @@
 
 .login-method {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: flex-start;
+}
+.login-method label{
+    margin-left: 15px;
+}
+.login-method input{
+    margin-right: 6px;
+    /* margin-top: 3px; */
+}
+.button-style{
+    background-color: tomato;
+  color: white;
+}
+#submit-otp{
+    margin-left: 15px;
 }
