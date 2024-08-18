@@ -8,7 +8,7 @@ const db = admin.firestore();
 const router = express.Router();
 
 // Fetch user name by UID
-router.get("/:uid", async (req, res) => {
+router.get("/name/:uid", async (req, res) => {
   try {
     const uid = req.params.uid;
     const userDoc = await db.collection("users").doc(uid).get();
@@ -68,6 +68,72 @@ router.post("/details/:uid", async (req, res) => {
     await userDoc.set(updatedUserData, {merge: true});
 
     return res.status(200).json(updatedUserData);
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+});
+
+// Fetch user addresses by UID
+router.get("/addresses/:uid", async (req, res) => {
+  try {
+    const uid = req.params.uid;
+    const addressesRef = db.collection("users").doc(uid).collection("addresses");
+    const addressesSnapshot = await addressesRef.get();
+
+    if (addressesSnapshot.empty) {
+      return res.status(404).send("No addresses found. Add some addresses first!");
+    }
+
+    const addresses = addressesSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return res.status(200).json({addresses});
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+});
+
+
+// Update, add new address, or set address as default
+router.post("/addresses/:uid", async (req, res) => {
+  try {
+    const uid = req.params.uid;
+    const {newAddress, updateAddress, setDefaultAddress} = req.body;
+    const addressesRef = db.collection("users").doc(uid).collection("addresses");
+
+    // Add a new address
+    if (newAddress) {
+      await addressesRef.add({
+        ...newAddress,
+        isDefault: false,
+      });
+    }
+
+    // Update an existing address
+    if (updateAddress) {
+      const addressDoc = addressesRef.doc(updateAddress.id);
+      await addressDoc.set(updateAddress, {merge: true});
+    }
+
+    // Set an address as default (unset other defaults)
+    if (setDefaultAddress) {
+      const addressesSnapshot = await addressesRef.get();
+      addressesSnapshot.forEach(async (doc) => {
+        await doc.ref.update({
+          isDefault: doc.id === setDefaultAddress.id,
+        });
+      });
+    }
+
+    const updatedAddressesSnapshot = await addressesRef.get();
+    const updatedAddresses = updatedAddressesSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return res.status(200).json({addresses: updatedAddresses});
   } catch (error) {
     return res.status(500).send(error.message);
   }
