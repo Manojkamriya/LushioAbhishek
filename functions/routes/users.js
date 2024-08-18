@@ -41,7 +41,6 @@ router.get("/details/:uid", async (req, res) => {
       email: userData.email || null,
       phoneNumber: userData.phoneNumber || null,
       photoURL: userData.photoURL || null,
-      // addresses: userData.addresses || [], // Assume 'addresses' is an array
       gender: userData.gender || null,
     };
 
