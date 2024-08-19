@@ -86,15 +86,21 @@
    
     border: 1px solid #434343;
 }
+.radio-input{
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
 .radio-input label{
-   margin: 20px;
+   margin-right: 19px;
 }
 .edit-profile button{
     width: 120px;
-    height: 40px;
+    height: 35px;
     font-size: 19px;
-    border-radius: 40px;
+    border-radius: 35px;
     background-color: rgb(255, 221, 0);
+    margin-top: 19px;
     outline: none;
     border: none;
 }

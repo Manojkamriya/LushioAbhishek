@@ -4,6 +4,7 @@
   align-items: center;
   gap: 30px;
   margin-top: 30px;
+ 
 }
 .mycard {
   height: 700px;
@@ -119,7 +120,7 @@
 }
 @media(max-width: 500px){
   .mycard{
-    height: 630px;
+    height: 580px;
     width: 95%;
   margin-inline: auto;
     

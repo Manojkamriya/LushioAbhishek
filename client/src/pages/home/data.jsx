@@ -7,6 +7,10 @@ const media = [
    
   },
   {
+    image: "./LushioFitness/Images/carousel/carousel_image_8.webp",
+   
+  },
+  {
     image: "./LushioFitness/Images/carousel/carousel-image-1.webp",
    
   },

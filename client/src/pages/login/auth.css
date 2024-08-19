@@ -4,7 +4,7 @@
     justify-content: center;
     align-items: center;
     padding-top: 60px;
-    background: url('/public/Images/bg-login.png') center / cover no-repeat;
+    background: url("/public/Images/bg-login.png") center / cover no-repeat;
 }
 
 .auth-container-button {
@@ -81,6 +81,7 @@
     color: white;
     font-size: 15px;
     background-color: rgb(240, 138, 120);
+    cursor: not-allowed;
 }
 
 .login-signup-condition {
@@ -94,6 +95,7 @@
     margin-top: 5px;
     height: 15px;
     width: 15px;
+    /* accent-color: tomato; */
     cursor: pointer;
 }
 
@@ -105,5 +107,19 @@
 
 .login-method {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: flex-start;
+}
+.login-method label{
+    margin-left: 15px;
+}
+.login-method input{
+    margin-right: 6px;
+    /* margin-top: 3px; */
+}
+.button-style{
+    background-color: tomato;
+  color: white;
+}
+#submit-otp{
+    margin-left: 15px;
 }

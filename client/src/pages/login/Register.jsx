@@ -131,6 +131,7 @@ const Register = () => {
 
   return (
     <div className="auth-container">
+     
       <form className="auth-form" onSubmit={handleFormSubmit}>
         <h2>Sign Up</h2>
         {!isPhone ? (
@@ -158,7 +159,7 @@ const Register = () => {
               onChange={(e) => setOtp(e.target.value)}
               required
             />
-            <button type="button" onClick={handleFormSubmit} disabled={otp.length !== 6}>
+            <button type="button"  id="submit-otp" onClick={handleFormSubmit} disabled={otp.length !== 6}  className={otp.length !== 6?"disabled":"enabled"}>
               Submit OTP
             </button>
           </div>
@@ -184,7 +185,7 @@ const Register = () => {
             </>
         )}
         {otpSent && isPhone && otpTimer === 0 && (
-          <button type="button" onClick={handleResendOtp} disabled={isButtonDisabled}>
+          <button type="button"  onClick={handleResendOtp} disabled={isButtonDisabled} className={isButtonDisabled?"disabled":"enabled"}> 
             Resend OTP
           </button>
         )}
@@ -206,14 +207,14 @@ const Register = () => {
           />
           <p>By continuing, I agree to the terms of use & privacy policy</p>
         </div>
-        <button type="submit" disabled={isButtonDisabled}>
+        <button type="submit" disabled={isButtonDisabled} className={isButtonDisabled?"disabled":"enabled"}>
           Create Account
         </button>
         <p>Already have an account? <Link to="/login">Login here</Link></p>
-        <button type="button" onClick={handleGoogleSignIn} disabled = {!isChecked}>
+        <button type="button" onClick={handleGoogleSignIn} disabled = {!isChecked} className={!isChecked?"disabled":"enabled"}>
           Continue With Google
         </button>
-        <button type="button" onClick={handleFacebookSignIn} disabled = {!isChecked}>
+        <button type="button" onClick={handleFacebookSignIn} disabled = {!isChecked} className={!isChecked?"disabled":"enabled"}>
           Continue With Facebook
         </button>
       </form>
