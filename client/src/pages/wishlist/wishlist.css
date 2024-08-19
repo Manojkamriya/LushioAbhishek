@@ -1,0 +1,24 @@
+.empty-wishlist{
+    height: 350px;
+    width: 350px;
+    margin: 30px auto;
+    margin-block: 120px;
+    text-align: center;
+}
+.empty-wishlist img{
+    width: 85%;
+    height: 75%;
+}
+.empty-wishlist button{
+    width: 320px;
+    height: 40px;
+    border-radius: 5px;
+    background-color: #42a2a2;
+    color: #fff;
+    text-align: center;
+   
+    font-size: 16px;
+    margin-top: 19px;
+    padding: 10px 0;
+    border: 1px solid #42a2a2
+}
