@@ -55,13 +55,13 @@ function App() {
     return <div>Loading...</div>;
   }
 
-  if (backend) {
-    if (!admin) {
+  if (admin) {
+    if (!backend) {
       return (
         <BrowserRouter>
           <Routes>
-            <Route path="/lushioGods" element={<AdminPanel />} />
-            <Route path="*" element={<div>Site under maintenance</div>} />
+            <Route path="/backendAnalytics" element={<BackendAnalytics />} />
+            <Route path="*" element={<div>Server is not responding</div>} />
           </Routes>
         </BrowserRouter>
       );
@@ -95,12 +95,12 @@ function App() {
       </>
     );
   }
-
+    
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/backendAnalytics" element={<BackendAnalytics />} />
-        <Route path="*" element={<div>Server is not responding</div>} />
+        <Route path="/lushioGods" element={<AdminPanel />} />
+        <Route path="*" element={<div>Site under maintenance</div>} />
       </Routes>
     </BrowserRouter>
   );
