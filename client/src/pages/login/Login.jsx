@@ -30,7 +30,7 @@ const Login = () => {
     } else {
       setIsPhone(false);
     }
-  }, [identifier]);
+  }, [identifier,phone]);
 
   useEffect(() => {
     let timer;
