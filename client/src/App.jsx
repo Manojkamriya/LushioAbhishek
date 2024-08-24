@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import Navbar from "./components/Navbar";
 import Home from "./pages/home/Home";
@@ -20,6 +20,8 @@ import Register from "./pages/login/Register";
 import Login from "./pages/login/Login";
 import ReferAndEarn from "./pages/ReferAndEarn/ReferAndEarn";
 import Address from "./pages/userProfile/Address";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "./firebaseConfig";
 
 // Dummy components for Backend Analytics and Lushio Gods
 function BackendAnalytics() {
@@ -27,12 +29,31 @@ function BackendAnalytics() {
 }
 
 function AdminPanel() {
-  return <div>Admin Dashboard</div>;
+  return <div>Lushio Gods Dashboard</div>;
 }
 
-function App() {        // DO NOT TOUCH
-  const backend = true; 
-  const admin = true; 
+function App() {
+  const [backend, setBackend] = useState(null);
+  const [admin, setAdmin] = useState(null);
+
+  useEffect(() => {
+    const fetchControls = async () => {
+      try {
+        const backendDoc = await getDoc(doc(db, "controls", "backend"));
+        const adminDoc = await getDoc(doc(db, "controls", "admin"));
+        setBackend(backendDoc.data().engine);
+        setAdmin(adminDoc.data().engine);
+      } catch (error) {
+        console.error("Error fetching control values:", error);
+      }
+    };
+
+    fetchControls();
+  }, []);
+
+  if (backend === null || admin === null) {
+    return <div>Loading...</div>;
+  }
 
   if (backend) {
     if (!admin) {
