@@ -20,17 +20,12 @@ import Register from "./pages/login/Register";
 import Login from "./pages/login/Login";
 import ReferAndEarn from "./pages/ReferAndEarn/ReferAndEarn";
 import Address from "./pages/userProfile/Address";
+
+import AdminPanel from "./pages/admin/AdminPanel";
+import BackendAnalytics from "./pages/bakendAnalytics/BackendAnalytics";
+
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "./firebaseConfig";
-
-// Dummy components for Backend Analytics and Lushio Gods
-function BackendAnalytics() {
-  return <div>Backend Analytics Dashboard</div>;
-}
-
-function AdminPanel() {
-  return <div>Lushio Gods Dashboard</div>;
-}
 
 function App() {
   const [backend, setBackend] = useState(null);
