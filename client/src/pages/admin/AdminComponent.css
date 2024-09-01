@@ -1,0 +1,48 @@
+.admin-container {
+    display: flex;
+    height: 100vh;
+    background-color: white;
+    color: black;
+  }
+  
+  .admin-sidebar {
+    width: 20%;
+    background-color: black;
+    color: white;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .admin-button {
+    padding: 20px;
+    border: none;
+    background-color: black;
+    color: white;
+    text-align: left;
+    font-size: 16px;
+    cursor: pointer;
+    border-bottom: 1px solid white;
+    outline: none;
+  }
+  
+  .admin-logout-button {
+    padding: 20px;
+    border: none;
+    background-color: black;
+    color: white;
+    text-align: left;
+    font-size: 16px;
+    cursor: pointer;
+    outline: none;
+  }
+  
+  .admin-main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    color: black;
+    padding: 20px;
+  }
+  
