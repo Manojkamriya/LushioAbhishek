@@ -7,6 +7,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import AdminComponent from "./AdminComponent";
 import SubAdminComponent from "./SubAdminComponent";
+import { useNavigate } from "react-router-dom";
 
 const AdminPanel = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -17,6 +18,8 @@ const AdminPanel = () => {
     const [isResendDisabled, setIsResendDisabled] = useState(true);
     const [selectedType, setSelectedType] = useState("admin");
     const [userType, setUserType] = useState("");
+
+    const navigate = useNavigate(); // Use navigate hook for redirection
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -99,27 +102,39 @@ const AdminPanel = () => {
         try {
             const result = await window.confirmationResult.confirm(OTP);
             const user = result.user;
-            console.log('user: ', user);
-            const q = query(collection(db, "employees"), where("phone", "==", phoneNumber), where("type", "==", selectedType));
+            
+            // Log user details
+            console.log("User authenticated:", user);
+    
+            const q = query(
+                collection(db, "employees"),
+                where("phone", "==", `+${phoneNumber}`),
+                where("type", "==", selectedType)
+            );
+    
             const querySnapshot = await getDocs(q);
+            
             let isAdmin = false;
-
+    
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
+                console.log('Document data:', data);
                 if (data.type === selectedType) {
                     isAdmin = true;
                 }
             });
-
+    
             if (isAdmin) {
                 localStorage.setItem("adminLoggedIn", "true");
                 setUserType(selectedType);
                 setIsLoggedIn(true);
             } else {
                 alert("You are not authorized to access the admin panel.");
+                navigate("/LushioFitness"); // Redirect to home page if not authorized
             }
         } catch (error) {
             console.error("Error verifying OTP:", error);
+            alert("Invalid OTP");
         }
     };
 
