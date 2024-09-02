@@ -1,29 +1,43 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link} from "react-router-dom";
 import { auth } from "../../firebaseConfig.js";
 import { signOut } from "firebase/auth";
+import { getUser } from "../../firebaseUtils.js";
+
 import "./user.css";
 
 function User() {
   const [user, setUser] = useState(null);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if the user is authenticated
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        // Log the UID in the console
-        console.log("User UID:", user.uid);
-        setUser(user.displayName);  
-      } else {
-        // If not authenticated, redirect to the login page
-        navigate("/login");
+    const fetchUser = async () => {
+      try {
+       
+        setUser(await getUser());
+       
+      } catch (error) {
+        console.error("Error fetching user:", error);
       }
-    });
+    };
+    fetchUser();
+  }, []);
+  // useEffect(() => {
+  //   // Check if the user is authenticated
+  //   const unsubscribe = auth.onAuthStateChanged((user) => {
+  //     if (user) {
+  //       // Log the UID in the console
+  //       console.log("User UID:", user.uid);
+  //       setUser(user.displayName);  
+  //     } else {
+  //       // If not authenticated, redirect to the login page
+  //       navigate("/login");
+  //     }
+  //   });
 
-    // Clean up the subscription
-    return () => unsubscribe();
-  }, [navigate]);
+  //   // Clean up the subscription
+  //   return () => unsubscribe();
+  // }, [navigate]);
 
   const handleLogout = () => {
     signOut(auth)
@@ -40,8 +54,8 @@ function User() {
 
   return (
     <>
-      <h1 className="user-greet">Welcome {user}</h1>
-      <p className="user-question">What would you like to do?</p>
+    {user &&  <h1 className="user-greet">Welcome {user.displayName}</h1>
+          }      <p className="user-question">What would you like to do?</p>
       <div className="user-action-container">
         <div className="user-action">
           <Link to="/user/editProfile">

@@ -1,21 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import "./product.css";
 
 function ProductDisplayPage(props) {
- 
+ const [image, setImage]  =useState(props.image);
   return (
     <div className="productDisplay">
            
       <div className="productDisplay-left">
         <div className="productDisplay-img-list">
-          <img src={props.image_l1} alt="" />
-          <img src={props.image_l2} alt="" />
-          <img src={props.image_l3} alt="" />
-          <img src={props.image_l4} alt="" />
+          <img onClick={()=>setImage(props.image_l1)} src={props.image_l1} alt="" />
+          <img onClick={()=>setImage(props.image_l2)}  src={props.image_l2} alt="" />
+          <img onClick={()=>setImage(props.image_l3)}  src={props.image_l3} alt="" />
+          <img onClick={()=>setImage(props.image_l4)}  src={props.image_l4} alt="" />
           <img src={props.image_l5} alt="" />
         </div>
         <div className="productDispaly-img">
-          <img className="productDisplay-main-img" src={props.image} alt="" />
+          <img className="productDisplay-main-img" src={image} alt="" />
         </div>
       </div>
       <div className="productDisplay-right">

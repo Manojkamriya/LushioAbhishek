@@ -11,32 +11,32 @@ function ProductCards() {
         image1="./LushioFitness/Images/card-image.webp"
         image2="./LushioFitness/Images/card-image-2.webp"
         discription="Women Black Friends Typography Boyfriend T-shirt"
-        newPrice="599"
-        oldPrice="1299"
+        newPrice="1199"
+        oldPrice="1599"
         discount="53"
       />
       <Card
         image1="./LushioFitness/Images/card-image.webp"
         image2="./LushioFitness/Images/card-image-2.webp"
         discription="Women Black Friends Typography Boyfriend T-shirt"
-        newPrice="599"
-        oldPrice="1299"
+        newPrice="1199"
+        oldPrice="1599"
         discount="53"
       />
       <Card
         image1="./LushioFitness/Images/card-image.webp"
         image2="./LushioFitness/Images/card-image-2.webp"
         discription="Women Black Friends Typography Boyfriend T-shirt"
-        newPrice="599"
-        oldPrice="1299"
+        newPrice="1199"
+        oldPrice="1599"
         discount="53"
       />
       <Card
         image1="./LushioFitness/Images/card-image.webp"
         image2="./LushioFitness/Images/card-image-2.webp"
         discription="Women Black Friends Typography Boyfriend T-shirt"
-        newPrice="599"
-        oldPrice="1299"
+        newPrice="1199"
+        oldPrice="1599"
         discount="53"
       />
 

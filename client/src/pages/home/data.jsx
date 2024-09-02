@@ -7,6 +7,10 @@ const media = [
    
   },
   {
+    image: "./LushioFitness/Images/carousel/carousel_image_9.webp",
+    
+  }, 
+  {
     image: "./LushioFitness/Images/carousel/carousel_image_8.webp",
    
   },
@@ -18,11 +22,8 @@ const media = [
     image: "./LushioFitness/Images/carousel/carousel-image-2.webp",
    
   },
-  
-  {
-    image: "./LushioFitness/Images/carousel/carousel-image-3.webp",
-  
-  },
+ 
+ 
   {
     image: "./LushioFitness/Images/carousel/carousel-image-4.webp",
     

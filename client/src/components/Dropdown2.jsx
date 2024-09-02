@@ -31,7 +31,7 @@ function Dropdown2() {
               <Link to="/">New Drop</Link>
             </li>
             <li>
-              <Link to="/">Comming Soon</Link>
+              <Link to="/">Coming Soon</Link>
             </li>
             <li>
               <Link to="/">Restock</Link>
