@@ -6,20 +6,21 @@ import { getUser } from "../firebaseUtils";
 export default function Footer() {
 
 
-const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null);
 
-useEffect(() => {
-  const fetchUser = async () => {
-    try {
-     
-      setUser(await getUser());
-     
-    } catch (error) {
-      console.error("Error fetching user:", error);
-    }
-  };
-  fetchUser();
-}, []);
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+
+        setUser(await getUser());
+
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+    fetchUser();
+  }, []);
+  
   return (
     <footer>
       <div className="primary">

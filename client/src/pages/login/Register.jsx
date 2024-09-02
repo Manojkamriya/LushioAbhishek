@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
@@ -24,6 +24,7 @@ const Register = () => {
   const [otpTimer, setOtpTimer] = useState(0); // OTP timer state
 
   const navigate = useNavigate();
+  const phoneInputRef = useRef(null);
 
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked);
@@ -38,6 +39,11 @@ const Register = () => {
       setIsPhone(true);
       setPhone(identifier);
       setShowPwdField(false);
+      setTimeout(() => {
+        if (phoneInputRef.current) {
+          phoneInputRef.current.focus();
+        }
+      }, 0);
     } else {
       setShowPwdField(false);
     }
@@ -51,6 +57,15 @@ const Register = () => {
       setIsButtonDisabled(true);
     }
   }, [identifier, password, confirmPassword, isChecked, isPhone]);
+
+  const handleIdentifierInput = (e) => {
+    setIdentifier(e.target.value);
+  };
+
+  const handlePhoneChange = (value) => {
+    setPhone(value);
+    setIdentifier(value);
+  };
 
   useEffect(() => {
     let timer;
@@ -113,10 +128,6 @@ const Register = () => {
     }
   };
 
-  const handleIdentifierInput = (e) => {
-    setIdentifier(e.target.value);
-  };
-
   const handleResendOtp = async () => {
     setIsButtonDisabled(true);
     try {
@@ -146,8 +157,11 @@ const Register = () => {
           <PhoneInput
             country={"in"}
             value={phone}
-            onChange={(phone) => setPhone(phone)}
+            onChange={handlePhoneChange}
             disabled={otpSent}
+            inputProps={{
+              ref: phoneInputRef,
+            }}
           />
         )}
         {otpSent && (

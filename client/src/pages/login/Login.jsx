@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
@@ -22,11 +22,17 @@ const Login = () => {
   const [otpTimer, setOtpTimer] = useState(0);
 
   const navigate = useNavigate();
+  const phoneInputRef = useRef(null);
 
   useEffect(() => {
     if (/^\d/.test(identifier)) {
       setIsPhone(true);
       setPhone(identifier);
+      setTimeout(() => {
+        if (phoneInputRef.current) {
+          phoneInputRef.current.focus();
+        }
+      }, 0);
     } else {
       setIsPhone(false);
     }
@@ -44,6 +50,18 @@ const Login = () => {
 
     return () => clearInterval(timer);
   }, [otpSent, otpTimer]);
+
+  const handleIdentifierChange = (e) => {
+    setIdentifier(e.target.value);
+    if (!/^\d/.test(e.target.value)) {
+      handleEmailInput(e);
+    }
+  };
+
+  const handlePhoneChange = (value) => {
+    setPhone(value);
+    setIdentifier(value);
+  };
 
   const handleGoogleSignIn = async () => {
     setIsButtonDisabled(true);
@@ -146,7 +164,7 @@ const Login = () => {
             type="text"
             placeholder="Enter your email or phone number"
             value={identifier}
-            onChange={handleEmailInput}
+            onChange={handleIdentifierChange}
             required
             disabled={isButtonDisabled && !otpSent}
           />
@@ -154,9 +172,11 @@ const Login = () => {
           <PhoneInput
             country={"in"}
             value={phone}
-            onChange={(phone) => setPhone(phone)}
+            onChange={handlePhoneChange}
             disabled={isButtonDisabled && !otpSent}
-           
+            inputProps={{
+              ref: phoneInputRef,
+            }}
           />
         )}
         {showRadioButtons && !isPhone && (

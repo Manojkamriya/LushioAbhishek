@@ -1,0 +1,64 @@
+/* AddProducts.css */
+
+.add-product-container {
+    max-width: 800px;
+    margin: auto;
+  }
+  
+  .add-product-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .image-upload {
+    margin-bottom: 20px;
+  }
+  
+  .image-preview {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .image-item {
+    margin-right: 10px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  
+  .image-item img {
+    max-width: 100px;
+    max-height: 100px;
+    object-fit: cover;
+  }
+  
+  .image-item button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .color-option {
+    margin-bottom: 20px;
+  }
+  
+  .color-option h4 {
+    margin: 5px 0;
+  }
+  
+  .sizes-list {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .size-item {
+    background-color: #e0e0e0;
+    padding: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+  }
+  
