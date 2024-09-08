@@ -1,5 +1,8 @@
+// AddProducts.jsx
 import React, { useState } from 'react';
 import './AddProducts.css';
+import { storage } from '../../firebaseConfig'; // Import storage from Firebase config
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 const validSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 
@@ -12,6 +15,7 @@ const AddProducts = () => {
     const [discount, setDiscount] = useState('');
     const [categories, setCategories] = useState([]);
     const [images, setImages] = useState([]);
+    const [uploadedImageUrls, setUploadedImageUrls] = useState([]); // To hold uploaded image URLs
     const [colorOptions, setColorOptions] = useState([]);
     const [newColor, setNewColor] = useState('');
     const [sizeOptions, setSizeOptions] = useState({});
@@ -24,6 +28,7 @@ const AddProducts = () => {
 
     const handleRemoveImage = (index) => {
         setImages(images.filter((_, i) => i !== index));
+        setUploadedImageUrls(uploadedImageUrls.filter((_, i) => i !== index)); // Remove from uploaded URLs if needed
     };
 
     const handleAddColor = () => {
@@ -58,26 +63,79 @@ const AddProducts = () => {
         setSizeOptions(newSizeOptions);
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault(); // Prevent form submission
-
-        const productData = {
-            name,
-            displayName,
-            description,
-            price,
-            gst,
-            discount,
-            categories,
-            images,
-            colorOptions,
-            sizeOptions,
-        };
-
-        console.log(productData);
-
-        alert('Product saved successfully!');
+    const uploadImagesToFirebase = async () => {
+        return Promise.all(images.map(image => {
+            console.log('Uploading image:', image);
+            const storageRef = ref(storage, `products/${Date.now()}_${image.name}`);
+            console.log('Storage ref:', storageRef);
+    
+            const uploadTask = uploadBytesResumable(storageRef, image);
+    
+            return new Promise((resolve, reject) => {
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log(`Upload is ${progress}% done`);
+                    }, 
+                    (error) => {
+                        console.error('Error uploading image:', error);
+                        reject(error);
+                    }, 
+                    () => {
+                        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                            resolve(downloadURL);
+                        }).catch((error) => {
+                            console.error('Error getting download URL:', error);
+                            reject(error);
+                        });
+                    }
+                );
+            });
+        }));
     };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+    
+        try {
+            // Upload images to Firebase and get their URLs
+            const urls = await uploadImagesToFirebase();
+            setUploadedImageUrls(urls);
+    
+            // Prepare JSON object with product data
+            const productData = {
+                name,
+                displayName,
+                description,
+                price,
+                gst,
+                discount,
+                categories: categories.join(', '),
+                colorOptions: colorOptions,
+                sizeOptions: sizeOptions,
+                imageUrls: urls, // Include uploaded image URLs
+            };
+    
+            const response = await fetch('http://127.0.0.1:5001/lushio-fitness/us-central1/api/products/addProduct', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Send data as JSON
+                },
+                body: JSON.stringify(productData), // Convert productData to JSON
+            });
+    
+            const data = await response.json();
+            if (response.ok) {
+                alert('Product saved successfully!');
+                console.log('Product added:', data);
+            } else {
+                alert('Failed to save product.');
+            }
+        } catch (error) {
+            console.error('Error saving product:', error);
+        }
+    };
+    
 
     return (
         <div className="add-product-container">
@@ -160,32 +218,24 @@ const AddProducts = () => {
 
                     {colorOptions.map((color) => (
                         <div key={color} className="color-option">
-                            <h4>{color}</h4>
-                            <button type="button" onClick={() => handleRemoveColor(color)}>
-                                Remove Color
-                            </button>
+                            <span>{color}</span>
                             <input
                                 type="text"
-                                placeholder={`Add sizes for ${color} (comma separated)`}
+                                placeholder={`Sizes for ${color} (comma separated)`}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter' && e.target.value.trim() !== '') {
-                                        e.preventDefault(); // Prevent form submission
                                         handleAddSize(color, e.target.value);
                                         e.target.value = '';
                                     }
                                 }}
                             />
-                            {sizeError && <div className="size-error">{sizeError}</div>}
-                            <div className="sizes-list">
-                                {sizeOptions[color]?.map((size) => (
-                                    <span key={size} className="size-item">{size}</span>
-                                ))}
-                            </div>
+                            <button type="button" onClick={() => handleRemoveColor(color)}>Remove</button>
                         </div>
                     ))}
+                    {sizeError && <p className="error">{sizeError}</p>}
                 </div>
 
-                <button type="submit" className="save-button">Save</button>
+                <button type="submit">Save Product</button>
             </form>
         </div>
     );
