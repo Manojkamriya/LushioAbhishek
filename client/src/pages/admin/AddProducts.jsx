@@ -1,8 +1,9 @@
 // AddProducts.jsx
 import React, { useState } from 'react';
+import axios from 'axios';
 import './AddProducts.css';
 import { storage } from '../../firebaseConfig'; // Import storage from Firebase config
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 const validSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 
@@ -16,11 +17,26 @@ const AddProducts = () => {
     const [categories, setCategories] = useState([]);
     const [images, setImages] = useState([]);
     const [uploadedImageUrls, setUploadedImageUrls] = useState([]); // To hold uploaded image URLs
-    const [colorOptions, setColorOptions] = useState([]);
-    const [newColor, setNewColor] = useState('');
-    const [sizeOptions, setSizeOptions] = useState({});
+    const [height, setHeight] = useState(''); // New height field
+    const [colorOptionsAbove, setColorOptionsAbove] = useState([]); // Colors for "Above" height
+    const [sizeOptionsAbove, setSizeOptionsAbove] = useState({});
+    const [quantitiesAbove, setQuantitiesAbove] = useState({});
+    const [colorOptionsBelow, setColorOptionsBelow] = useState([]); // Colors for "Below" height
+    const [sizeOptionsBelow, setSizeOptionsBelow] = useState({});
+    const [quantitiesBelow, setQuantitiesBelow] = useState({});
+    const [newColorNameAbove, setNewColorNameAbove] = useState('');
+    const [newColorHexAbove, setNewColorHexAbove] = useState('#000000');
+    const [newColorNameBelow, setNewColorNameBelow] = useState('');
+    const [newColorHexBelow, setNewColorHexBelow] = useState('#000000');
     const [sizeError, setSizeError] = useState('');
+    const [useHeightClassification, setUseHeightClassification] = useState(false);
+    const [colorOptions, setColorOptions] = useState([]);
+    const [sizeOptions, setSizeOptions] = useState({});
+    const [quantities, setQuantities] = useState({});
+    const [newColorName, setNewColorName] = useState('');
+    const [newColorHex, setNewColorHex] = useState('#000000');
 
+    // Image Upload Logic
     const handleImageUpload = (e) => {
         const files = Array.from(e.target.files);
         setImages([...images, ...files]);
@@ -31,56 +47,164 @@ const AddProducts = () => {
         setUploadedImageUrls(uploadedImageUrls.filter((_, i) => i !== index)); // Remove from uploaded URLs if needed
     };
 
+    // Color Handling for Above
+    const handleAddColorAbove = () => {
+        if (newColorNameAbove && !colorOptionsAbove.some(color => color.name === newColorNameAbove)) {
+            setColorOptionsAbove([...colorOptionsAbove, { name: newColorNameAbove, hex: newColorHexAbove }]);
+            setSizeOptionsAbove({ ...sizeOptionsAbove, [newColorNameAbove]: [] });
+            setQuantitiesAbove({ ...quantitiesAbove, [newColorNameAbove]: {} });
+            setNewColorNameAbove('');
+            setNewColorHexAbove('#000000');
+        }
+    };
+
+    const handleRemoveColorAbove = (colorName) => {
+        setColorOptionsAbove(colorOptionsAbove.filter(color => color.name !== colorName));
+        const newSizeOptions = { ...sizeOptionsAbove };
+        delete newSizeOptions[colorName];
+        setSizeOptionsAbove(newSizeOptions);
+        const newQuantities = { ...quantitiesAbove };
+        delete newQuantities[colorName];
+        setQuantitiesAbove(newQuantities);
+    };
+
+    // Color Handling for Below
+    const handleAddColorBelow = () => {
+        if (newColorNameBelow && !colorOptionsBelow.some(color => color.name === newColorNameBelow)) {
+            setColorOptionsBelow([...colorOptionsBelow, { name: newColorNameBelow, hex: newColorHexBelow }]);
+            setSizeOptionsBelow({ ...sizeOptionsBelow, [newColorNameBelow]: [] });
+            setQuantitiesBelow({ ...quantitiesBelow, [newColorNameBelow]: {} });
+            setNewColorNameBelow('');
+            setNewColorHexBelow('#000000');
+        }
+    };
+
+    const handleRemoveColorBelow = (colorName) => {
+        setColorOptionsBelow(colorOptionsBelow.filter(color => color.name !== colorName));
+        const newSizeOptions = { ...sizeOptionsBelow };
+        delete newSizeOptions[colorName];
+        setSizeOptionsBelow(newSizeOptions);
+        const newQuantities = { ...quantitiesBelow };
+        delete newQuantities[colorName];
+        setQuantitiesBelow(newQuantities);
+    };
+
+    // Size Handling for Above
+    const handleAddSizeAbove = (colorName, size) => {
+        const sizesArray = size.split(',').map(s => s.trim());
+        const invalidSizes = sizesArray.filter(s => !validSizes.includes(s));
+
+        if (invalidSizes.length > 0) {
+            setSizeError(`Invalid sizes: ${invalidSizes.join(', ')}`);
+        } else {
+            setSizeError('');
+            const uniqueSizes = [...new Set([...(sizeOptionsAbove[colorName] || []), ...sizesArray])]; // Ensure no duplicates
+            setSizeOptionsAbove({ ...sizeOptionsAbove, [colorName]: uniqueSizes });
+            // Initialize quantities for new sizes
+            const newQuantities = { ...quantitiesAbove[colorName] };
+            uniqueSizes.forEach(size => {
+                if (!newQuantities[size]) newQuantities[size] = 0;
+            });
+            setQuantitiesAbove({ ...quantitiesAbove, [colorName]: newQuantities });
+        }
+    };
+
+    // Size Handling for Below
+    const handleAddSizeBelow = (colorName, size) => {
+        const sizesArray = size.split(',').map(s => s.trim());
+        const invalidSizes = sizesArray.filter(s => !validSizes.includes(s));
+
+        if (invalidSizes.length > 0) {
+            setSizeError(`Invalid sizes: ${invalidSizes.join(', ')}`);
+        } else {
+            setSizeError('');
+            const uniqueSizes = [...new Set([...(sizeOptionsBelow[colorName] || []), ...sizesArray])]; // Ensure no duplicates
+            setSizeOptionsBelow({ ...sizeOptionsBelow, [colorName]: uniqueSizes });
+            // Initialize quantities for new sizes
+            const newQuantities = { ...quantitiesBelow[colorName] };
+            uniqueSizes.forEach(size => {
+                if (!newQuantities[size]) newQuantities[size] = 0;
+            });
+            setQuantitiesBelow({ ...quantitiesBelow, [colorName]: newQuantities });
+        }
+    };
+
     const handleAddColor = () => {
-        if (newColor && !colorOptions.includes(newColor)) {
-            setColorOptions([...colorOptions, newColor]);
-            setSizeOptions({ ...sizeOptions, [newColor]: [] });
-            setNewColor('');
+        if (newColorName && !colorOptions.some(color => color.name === newColorName)) {
+            setColorOptions([...colorOptions, { name: newColorName, hex: newColorHex }]);
+            setSizeOptions({ ...sizeOptions, [newColorName]: [] });
+            setQuantities({ ...quantities, [newColorName]: {} });
+            setNewColorName('');
+            setNewColorHex('#000000');
         }
     };
 
-    const handleAddSize = (color, size) => {
-        if (size.trim() !== '') {
-            const sizesArray = size.split(',').map(s => s.trim());
-            const invalidSizes = sizesArray.filter(s => !validSizes.includes(s));
-
-            if (invalidSizes.length > 0) {
-                setSizeError(`Invalid sizes: ${invalidSizes.join(', ')}`);
-            } else {
-                setSizeError('');
-                setSizeOptions({
-                    ...sizeOptions,
-                    [color]: [...(sizeOptions[color] || []), ...sizesArray]
-                });
-            }
-        }
-    };
-
-    const handleRemoveColor = (color) => {
-        setColorOptions(colorOptions.filter(c => c !== color));
+    const handleRemoveColor = (colorName) => {
+        setColorOptions(colorOptions.filter(color => color.name !== colorName));
         const newSizeOptions = { ...sizeOptions };
-        delete newSizeOptions[color];
+        delete newSizeOptions[colorName];
         setSizeOptions(newSizeOptions);
+        const newQuantities = { ...quantities };
+        delete newQuantities[colorName];
+        setQuantities(newQuantities);
     };
 
+    const handleAddSize = (colorName, size) => {
+        const sizesArray = size.split(',').map(s => s.trim());
+        const invalidSizes = sizesArray.filter(s => !validSizes.includes(s));
+
+        if (invalidSizes.length > 0) {
+            setSizeError(`Invalid sizes: ${invalidSizes.join(', ')}`);
+        } else {
+            setSizeError('');
+            const uniqueSizes = [...new Set([...(sizeOptions[colorName] || []), ...sizesArray])];
+            setSizeOptions({ ...sizeOptions, [colorName]: uniqueSizes });
+            // Initialize quantities for new sizes
+            const newQuantities = { ...quantities[colorName] };
+            uniqueSizes.forEach(size => {
+                if (!newQuantities[size]) newQuantities[size] = 0;
+            });
+            setQuantities({ ...quantities, [colorName]: newQuantities });
+        }
+    };
+
+    // handle quantity changes
+    const handleQuantityChange = (colorName, size, value, section = null) => {
+        const newValue = parseInt(value, 10) || 0;
+        if (section === 'above') {
+            setQuantitiesAbove({
+                ...quantitiesAbove,
+                [colorName]: { ...quantitiesAbove[colorName], [size]: newValue }
+            });
+        } else if (section === 'below') {
+            setQuantitiesBelow({
+                ...quantitiesBelow,
+                [colorName]: { ...quantitiesBelow[colorName], [size]: newValue }
+            });
+        } else {
+            setQuantities({
+                ...quantities,
+                [colorName]: { ...quantities[colorName], [size]: newValue }
+            });
+        }
+    };
+
+    // Image Upload Logic to Firebase
     const uploadImagesToFirebase = async () => {
         return Promise.all(images.map(image => {
-            console.log('Uploading image:', image);
             const storageRef = ref(storage, `products/${Date.now()}_${image.name}`);
-            console.log('Storage ref:', storageRef);
-    
             const uploadTask = uploadBytesResumable(storageRef, image);
-    
+
             return new Promise((resolve, reject) => {
-                uploadTask.on('state_changed', 
+                uploadTask.on('state_changed',
                     (snapshot) => {
                         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                         console.log(`Upload is ${progress}% done`);
-                    }, 
+                    },
                     (error) => {
                         console.error('Error uploading image:', error);
                         reject(error);
-                    }, 
+                    },
                     () => {
                         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                             resolve(downloadURL);
@@ -94,15 +218,14 @@ const AddProducts = () => {
         }));
     };
 
+    // Form Submission Handler
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         try {
-            // Upload images to Firebase and get their URLs
             const urls = await uploadImagesToFirebase();
             setUploadedImageUrls(urls);
-    
-            // Prepare JSON object with product data
+
             const productData = {
                 name,
                 displayName,
@@ -111,31 +234,45 @@ const AddProducts = () => {
                 gst,
                 discount,
                 categories: categories.join(', '),
-                colorOptions: colorOptions,
-                sizeOptions: sizeOptions,
-                imageUrls: urls, // Include uploaded image URLs
+                imageUrls: urls,
             };
-    
-            const response = await fetch('http://127.0.0.1:5001/lushio-fitness/us-central1/api/products/addProduct', {
-                method: 'POST',
+
+            if (useHeightClassification) {
+                productData.height = { value: height };
+                productData.aboveHeight = {
+                    colorOptions: colorOptionsAbove,
+                    sizeOptions: sizeOptionsAbove,
+                    quantities: quantitiesAbove,
+                };
+                productData.belowHeight = {
+                    colorOptions: colorOptionsBelow,
+                    sizeOptions: sizeOptionsBelow,
+                    quantities: quantitiesBelow,
+                };
+            } else {
+                productData.colorOptions = colorOptions;
+                productData.sizeOptions = sizeOptions;
+                productData.quantities = quantities;
+            }
+
+            // console.log(productData);
+            const response = await axios.post('http://127.0.0.1:5001/lushio-fitness/us-central1/api/products/addProduct', productData, {
                 headers: {
-                    'Content-Type': 'application/json', // Send data as JSON
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(productData), // Convert productData to JSON
             });
-    
-            const data = await response.json();
-            if (response.ok) {
+
+            if (response.status === 201) {
                 alert('Product saved successfully!');
-                console.log('Product added:', data);
+                console.log('Product added:', response.data);
             } else {
                 alert('Failed to save product.');
             }
         } catch (error) {
             console.error('Error saving product:', error);
+            alert('Failed to save product. Please try again.');
         }
     };
-    
 
     return (
         <div className="add-product-container">
@@ -156,86 +293,146 @@ const AddProducts = () => {
                 </div>
 
                 <div className="form-fields">
-                    <input
-                        type="text"
-                        placeholder="Name Field"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Display Name"
-                        value={displayName}
-                        onChange={(e) => setDisplayName(e.target.value)}
-                    />
-                    <textarea
-                        placeholder="Description"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                    />
-                    <input
-                        type="number"
-                        placeholder="Price"
-                        value={price}
-                        onChange={(e) => setPrice(e.target.value)}
-                    />
-                    <input
-                        type="number"
-                        placeholder="GST (Default: 5%)"
-                        value={gst}
-                        onChange={(e) => setGst(e.target.value)}
-                    />
-                    <input
-                        type="number"
-                        placeholder="Discount"
-                        value={discount}
-                        onChange={(e) => setDiscount(e.target.value)}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Categories (comma separated)"
-                        value={categories.join(', ')}
-                        onChange={(e) => setCategories(e.target.value.split(',').map(cat => cat.trim()))}
-                    />
+                    <input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
+                    <input type="text" placeholder="Display Name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+                    <textarea placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+                    <input type="number" placeholder="Price" value={price} onChange={(e) => setPrice(e.target.value)} />
+                    <input type="number" placeholder="GST Percentage" value={gst} onChange={(e) => setGst(e.target.value)} />
+                    <input type="number" placeholder="Discount Percentage" value={discount} onChange={(e) => setDiscount(e.target.value)} />
+                    <input type="text" placeholder="Categories (comma separated)" value={categories} onChange={(e) => setCategories(e.target.value.split(','))} />
+                </div>
+                <div className="height-classification">
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={useHeightClassification}
+                            onChange={(e) => setUseHeightClassification(e.target.checked)}
+                        />
+                        Use height-based classification
+                    </label>
                 </div>
 
-                <div className="color-size-selection">
-                    <input
-                        type="text"
-                        placeholder="Add Color"
-                        value={newColor}
-                        onChange={(e) => setNewColor(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' && newColor.trim() !== '') {
-                                e.preventDefault(); // Prevent form submission
-                                handleAddColor();
-                            }
-                        }}
-                    />
-                    <button type="button" onClick={handleAddColor}>
-                        Add Color
-                    </button>
+                {useHeightClassification ? (
+                    <>
+                        <input
+                            type="number"
+                            placeholder="Height (in cm)"
+                            value={height}
+                            onChange={(e) => setHeight(e.target.value)}
+                        />
+                        {/* Section for Above Height */}
+                        <div className="height-section">
+                            <h3>Above Height</h3>
+                            <div>
+                                <input type="text" placeholder="Color Name" value={newColorNameAbove} onChange={(e) => setNewColorNameAbove(e.target.value)} />
+                                <input type="color" value={newColorHexAbove} onChange={(e) => setNewColorHexAbove(e.target.value)} />
+                                <button type="button" onClick={handleAddColorAbove}>Add Color</button>
+                            </div>
 
-                    {colorOptions.map((color) => (
-                        <div key={color} className="color-option">
-                            <span>{color}</span>
+                            {colorOptionsAbove.map((color, index) => (
+                                <div key={index} className="color-item">
+                                <span style={{ color: color.hex }}>{color.name} ({color.hex})</span>
+                                    <input type="text" placeholder="Sizes (comma separated)" onBlur={(e) => handleAddSizeAbove(color.name, e.target.value)} />
+                                    <button type="button" onClick={() => handleRemoveColorAbove(color.name)}>Remove</button>
+                                    <div>
+                                        Sizes: {sizeOptionsAbove[color.name]?.map(size => (
+                                            <span key={size}>
+                                                {size}
+                                                <input
+                                                    type="number"
+                                                    placeholder="Quantity"
+                                                    value={quantitiesAbove[color.name]?.[size] || ''}
+                                                    onChange={(e) => handleQuantityChange(color.name, size, e.target.value, 'above')}
+                                                    min="0"
+                                                />
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Section for Below Height */}
+                        <div className="height-section">
+                            <h3>Below Height</h3>
+                            <div>
+                                <input type="text" placeholder="Color Name" value={newColorNameBelow} onChange={(e) => setNewColorNameBelow(e.target.value)} />
+                                <input type="color" value={newColorHexBelow} onChange={(e) => setNewColorHexBelow(e.target.value)} />
+                                <button type="button" onClick={handleAddColorBelow}>Add Color</button>
+                            </div>
+
+                            {colorOptionsBelow.map((color, index) => (
+                                <div key={index} className="color-item">
+                                <span style={{ color: color.hex }}>{color.name} ({color.hex})</span>
+                                    <input type="text" placeholder="Sizes (comma separated)" onBlur={(e) => handleAddSizeBelow(color.name, e.target.value)} />
+                                    <button type="button" onClick={() => handleRemoveColorBelow(color.name)}>Remove</button>
+                                    <div>
+                                        Sizes: {sizeOptionsBelow[color.name]?.map(size => (
+                                            <span key={size}>
+                                                {size}
+                                                <input
+                                                    type="number"
+                                                    placeholder="Quantity"
+                                                    value={quantitiesBelow[color.name]?.[size] || ''}
+                                                    onChange={(e) => handleQuantityChange(color.name, size, e.target.value, 'below')}
+                                                    min="0"
+                                                />
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </>
+                ) : (
+                    <div className="color-size-section">
+                        <h3>Colors and Sizes</h3>
+                        <div>
                             <input
                                 type="text"
-                                placeholder={`Sizes for ${color} (comma separated)`}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' && e.target.value.trim() !== '') {
-                                        handleAddSize(color, e.target.value);
-                                        e.target.value = '';
-                                    }
-                                }}
+                                placeholder="Color Name"
+                                value={newColorName}
+                                onChange={(e) => setNewColorName(e.target.value)}
                             />
-                            <button type="button" onClick={() => handleRemoveColor(color)}>Remove</button>
+                            <input
+                                type="color"
+                                value={newColorHex}
+                                onChange={(e) => setNewColorHex(e.target.value)}
+                            />
+                            <button type="button" onClick={handleAddColor}>Add Color</button>
                         </div>
-                    ))}
-                    {sizeError && <p className="error">{sizeError}</p>}
-                </div>
 
-                <button type="submit">Save Product</button>
+                        {colorOptions.map((color, index) => (
+                            <div key={index} className="color-item">
+                                <span style={{ color: color.hex }}>{color.name} ({color.hex})</span>
+                                <input
+                                    type="text"
+                                    placeholder="Sizes (comma separated)"
+                                    onBlur={(e) => handleAddSize(color.name, e.target.value)}
+                                />
+                                <button type="button" onClick={() => handleRemoveColor(color.name)}>Remove</button>
+                                <div>
+                                    Sizes: {sizeOptions[color.name]?.map(size => (
+                                        <span key={size}>
+                                            {size}
+                                            <input
+                                                type="number"
+                                                placeholder="Quantity"
+                                                value={quantities[color.name]?.[size] || ''}
+                                                onChange={(e) => handleQuantityChange(color.name, size, e.target.value)}
+                                                min="0"
+                                            />
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {sizeError && <div className="error">{sizeError}</div>}
+
+                <button type="submit" className="submit-btn">Save Product</button>
             </form>
         </div>
     );

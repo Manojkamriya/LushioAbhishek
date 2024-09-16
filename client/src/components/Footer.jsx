@@ -19,7 +19,7 @@ export default function Footer() {
       }
     };
     fetchUser();
-  }, []);
+  }, [user]);
   
   return (
     <footer>
