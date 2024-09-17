@@ -58,9 +58,7 @@
     border: none;
     padding: 10px;
     border-radius: 4px;
-    /* color: white;
-    background-color: tomato;
-    font-size: 15px; */
+  
 
 }
 
@@ -95,7 +93,7 @@
     margin-top: 5px;
     height: 15px;
     width: 15px;
-    /* accent-color: tomato; */
+   
     cursor: pointer;
 }
 
@@ -114,7 +112,7 @@
 }
 .login-method input{
     margin-right: 6px;
-    /* margin-top: 3px; */
+   
 }
 .button-style{
     background-color: tomato;

@@ -29,8 +29,11 @@
 .filter-container {
   display: flex;
   flex-direction: column;
+  /* margin-left: 20px; */
 }
 .filter-container div{
+  display: flex;
+  flex-direction: column;
     margin-block: 20px;
 }
 .filter-container  h4{
@@ -41,15 +44,16 @@
     font-size: 1rem;
     font-weight: 600;
 }
-.filter-container p{
+.filter-container label{
     color: #606060;
  
     font-family: "Montserrat", sans-serif;
     cursor: pointer;
-   
+   margin-block: 5px;
 }
-.filter-container p input{
+.filter-container label input{
 cursor: pointer;
+margin-inline: 6px;
 }
 .filter-container button{
     width: 150px;
@@ -64,20 +68,25 @@ cursor: pointer;
     margin-top: 19px;
     padding: 10px 0;
 }
+.filter-container button:active{
+  background-color: #606060;
+  box-shadow: 0 1px #666;
+}
 .shopcategory-products {
+  width: 73%;
   margin: 20px 50px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-gap: 30px;
   row-gap: 3px;
-
+ padding-inline: 20px;
   background-color: #efefef;
 }
 .shopcategory-loadmore {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 100px auto;
+  margin: 50px auto;
   width: 233px;
   height: 69px;
   border-radius: 75px;
@@ -90,16 +99,7 @@ cursor: pointer;
   color: white;
   cursor: pointer;
 }
-/* .filter-container{
-    display: flex;
-    justify-content: space-evenly;
-    height: 100%;
-    background-color: #f56325;
-}
-.filter-container button{
-    margin-top: 30px;
-    height: 30px;
-} */
+
 @media (max-width: 1350px) {
   .shopcategory-products {
     margin: 20px 10px;

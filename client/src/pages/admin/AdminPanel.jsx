@@ -139,7 +139,7 @@ const AdminPanel = () => {
     };
 
     return (
-        <div>
+        <div className="auth-container admin-auth">
             {isLoggedIn ? (
                 userType === "admin" ? (
                     <AdminComponent />
@@ -147,7 +147,7 @@ const AdminPanel = () => {
                     <SubAdminComponent />
                 )
             ) : (
-                <div>
+                <div className="auth-form">
                     <PhoneInput
                         country={"in"}
                         value={phoneNumber}
@@ -183,13 +183,14 @@ const AdminPanel = () => {
                         />
                     )}
                     {!isOTPRequested ? (
-                        <button onClick={requestOTP}>Request OTP</button>
+                        <button onClick={requestOTP} className="enabled">Request OTP</button>
                     ) : (
                         <>
-                            <button onClick={verifyOTP}>Verify OTP</button>
+                            <button onClick={verifyOTP} className="enabled">Verify OTP</button>
                             <button
                                 onClick={requestOTP}
                                 disabled={isResendDisabled}
+                                className={isResendDisabled?"disabled":"enabled"}
                             >
                                 Resend OTP {isResendDisabled ? `(${timer}s)` : ""}
                             </button>

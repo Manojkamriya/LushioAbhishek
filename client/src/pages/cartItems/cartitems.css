@@ -56,10 +56,7 @@ gap: 75px; */
   justify-content: space-between;
   padding: 15px 0px;
 }
-/* .cartitems-format img{
-height: 70px;
-width: 70px;
-} */
+
 .cartitems-total button {
   width: 262px;
   height: 58px;
@@ -80,9 +77,9 @@ width: 70px;
   color: #555;
 }
 .cartitems-promobox {
-  width: 504px;
+  width: 524px;
   margin-top: 15px;
-  padding-left: 20px;
+  padding-left: 0px;
   height: 58px;
   background-color: #eaeaea;
 }
@@ -92,7 +89,11 @@ width: 70px;
   background-color: transparent;
   font-size: 16px;
   width: 330px;
+  padding-inline: 10px;
   height: 50px;
+}
+.cartitems-promobox input:focus{
+  border: 1px solid #454545;
 }
 .cartitems-promobox button {
   width: 170px;

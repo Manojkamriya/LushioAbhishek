@@ -1,0 +1,70 @@
+.address-wrapper{
+    width: 100%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    margin: 50px auto;
+
+}
+.address-title h2{
+font-weight: 500;
+font-family: "Poppins";
+font-size: 29px;
+}
+.address-title hr{
+    float: left;
+    width: 100%;
+    margin: 15px 0 50px;
+    height: 2px;
+    max-width: 100px;
+    background: #fdd835;
+}
+.address-container{
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    grid-gap: 15px;
+}
+.myaddress{
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  
+    border: 1px solid #c9c9c9;
+}
+.myaddress h4{
+font-weight: 600;
+font-size: 16px;
+margin-bottom: 9px;
+}
+.myaddress p{
+    font-size: 14px;
+    font-weight: 400;
+}
+.myaddress h4+p{
+    margin-bottom: 20px;
+}
+.myaddress span{
+    margin: 7% auto;
+    font-size: 30px;
+}
+.myaddress span+p{
+    text-align: center;
+    font-size: 20px;
+    color: #fd9935;
+}
+.address-action{
+    margin-block: 10px;
+
+}
+.address-action{
+    display: flex;
+    justify-content: flex-start;
+gap: 20px;
+}
+.address-action button{
+    background-color: transparent;
+    color: rgb(255, 157, 0);
+    outline: none;
+    border: none;
+
+}

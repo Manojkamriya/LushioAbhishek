@@ -109,71 +109,7 @@
      background-color: rgb(249, 249, 249);
    }
  
-  .background-container {
-    position: relative;
-    width: 460px; /* Adjust as needed */
-    height: 700px; /* Adjust as needed */
-    overflow: hidden;
-    display: flex;
-   cursor: pointer;
-    flex-direction: column;
-    justify-content: flex-end;
-    /* align-items: center; */
-  }
-
-  .background-container::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url("/public/Images/card-image-4.webp");
-    background-size: cover;
-    background-position: center;
-    transition: transform 5s ease; /* Smooth transition for the scale effect */
-    /* z-index: -1; Ensure the pseudo-element is behind the content */
-  }
-
-  .background-container:hover::before {
-    transform: scale(1.1); 
-  }
-
-  .content {
-    position: relative;
-   
-    z-index: 1;
-    color: rgb(10, 1, 1);
-    padding: 20px;
-    /* Add any other content styling you need */
-  }
-  .content h1{
-    margin-block: 25px;
-    color: white;
-  }
-  .content button{
-    background-color: white;
-    margin-bottom: 20px;
-    color: #363636;
-    padding: 14px 28px;
-    border: none;
-    outline: none;
-    cursor: pointer;
-  }
-  .carousel-button{
-    position: absolute;
-    bottom: -2%;
-    left: 50%;
-    font-size: 18px;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    margin-bottom: 20px;
-    color: hsl(0, 0%, 21%);
-    padding: 18px 40px;
-    border: none;
-    outline: none;
-    cursor: pointer;
-  }
+  
   @media(max-width: 950px){
     .carousel{
       height: 480px;

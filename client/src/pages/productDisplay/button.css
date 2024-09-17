@@ -1,0 +1,79 @@
+:root {
+  --green: #1b1b1b;
+  --gray: #bbbbbb;
+}
+
+
+.container {
+ 
+  text-align: center;
+  margin-inline: auto;
+  margin-block: 20px;
+}
+
+.container button {
+  outline: none;
+  height: 50px;
+  text-align: center;
+  width: 330px;
+  border-radius: 50px;
+  background: var(--green);
+  border: 2px solid var(--green);
+  color: white;
+  letter-spacing: 1px;
+  text-shadow: 0;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-inline: auto;
+  transition: all 0.25s ease;
+}
+
+.container button:hover {
+  color: var(--green);
+  background: white;
+}
+
+.container button:active {
+  letter-spacing: 2px;
+}
+
+.container button::after {
+  content: "SUBMIT";
+}
+
+.container .onclic {
+  width: 50px;
+  border-color: rgb(191, 189, 189);
+  border-width: 3px;
+  font-size: 0;
+   background: white;
+ border-left-color: var(--green);
+  animation: rotating 2s 0.25s linear infinite;
+}
+
+.container .onclic::after {
+  content: "";
+}
+
+
+
+.container .validate {
+  font-size: 13px;
+  color: white;
+  background: var(--green);
+}
+
+.container .validate::after {
+  content: "\2713";
+ font-size: 20px;
+}
+
+@keyframes rotating {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

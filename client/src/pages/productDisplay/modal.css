@@ -1,0 +1,34 @@
+.feedback-container h2{
+
+margin-bottom: 10px;
+}
+.feedback-container p{
+font-size: 14px;
+margin-bottom: 5px;
+}
+.star-rating {
+    margin-bottom: 5px;
+}
+.star-rating input[type="radio"]{
+    display: none;
+    }
+    .star{
+        cursor: pointer;
+        transition: color 200ms;
+    }
+    .feedback-container label{
+        font-size: 14px;
+        font-weight: 500;
+        color: #2e2e2e;
+        font-family: "Poppins", sans-serif;
+        margin-block: 9px;
+    }
+    .feedback-container textarea{
+        outline: none;
+        border: 1px solid #c9c9c9;
+        border-radius: 4px;
+        padding: 10px;
+    }
+    .feedback-container textarea:focus{
+        border: 1px solid #434343;
+    }

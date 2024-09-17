@@ -1,8 +1,10 @@
 import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import "./cartitems.css";
 import { ShopContext } from "../../components/context/ShopContext";
 import EmptyCart from "./EmptyCart";
 const CartItems = () => {
+  const navigate = useNavigate();
   const { all_product, cartItems, removeFromCart, getTotalCartAmount } =
     useContext(ShopContext);
     const cartHasItems = Object.values(cartItems).some(quantity => quantity > 0);
@@ -54,7 +56,7 @@ const CartItems = () => {
         <div className="cartitems-total">
           <h1>Cart Totals</h1>
           <div>
-            <div className="cartitems-total-items">
+            <div className="cartitems-total-item">
               <p>Subtotal</p>
               <p>{getTotalCartAmount()}</p>
             </div>
@@ -69,7 +71,7 @@ const CartItems = () => {
               <h3>{getTotalCartAmount()}</h3>
             </div>
           </div>
-          <button>PROCEED TO PAYMENT</button>
+          <button onClick={()=>navigate("/place-order")}>PROCEED TO PAYMENT</button>
         </div>
         <div className="cartitems-promocode">
           <p>If you have a promocode, Enter it here</p>

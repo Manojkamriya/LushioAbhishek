@@ -9,9 +9,18 @@ const getDefaultCart = () => {
   }
   return cart;
 };
+const getDefaultWishlist = () => {
+  let wishlist = {};
+  for (let index = 0; index < all_product.length + 1; index++) {
+    wishlist[index] = false;  // Initially, no products are in the wishlist
+  }
+  return wishlist;
+};
+
 export const ShopContext = createContext(null);
 const ShopContextProvider = (props) => {
   const [cartItems, setCartItems] = useState(getDefaultCart());
+  const [wishlistItems, setWishlistItems] = useState(getDefaultWishlist());
 
   const addToCart = (itemId) => {
     setCartItems((prev) => ({ ...prev, [itemId]:prev[itemId] + 1 }));
@@ -43,9 +52,26 @@ for(const item in cartItems){
 }
 }
 
+const addToWishlist = (itemId) => {
+  setWishlistItems((prev) => ({ ...prev, [itemId]: true }));
+};
 
+// Function to remove an item from the wishlist
+const removeFromWishlist = (itemId) => {
+  setWishlistItems((prev) => ({ ...prev, [itemId]: false }));
+};
 
-  const contextValue = { all_product, cartItems, addToCart, removeFromCart , getTotalCartAmount, getTotalCartItems};
+// Function to toggle an item in the wishlist
+const toggleWishlistItem = (itemId) => {
+  setWishlistItems((prev) => ({ ...prev, [itemId]: !prev[itemId] }));
+};
+
+// Get all wishlist items
+const getWishlistItems = () => {
+  return all_product.filter((product) => wishlistItems[product.id]);
+};
+
+  const contextValue = { all_product, cartItems,wishlistItems, addToCart, removeFromCart , getTotalCartAmount, getTotalCartItems, addToWishlist, removeFromWishlist, getWishlistItems, toggleWishlistItem};
 
   return (
     <ShopContext.Provider value={contextValue}>

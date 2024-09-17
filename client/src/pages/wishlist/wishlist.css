@@ -22,3 +22,9 @@
     padding: 10px 0;
     border: 1px solid #42a2a2
 }
+
+.wishlist-container{
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    padding: 10px 40px;
+}

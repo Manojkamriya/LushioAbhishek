@@ -1,15 +1,16 @@
-import React from 'react'
+import React from "react";
 
+import { useNavigate } from "react-router-dom";
 function EmptyCart() {
+  const navigate = useNavigate();
+
   return (
-    
-       <div className="empty-cart">
-    <img src="./LushioFitness/Images/emptyCart.png" alt=""/>
-    <p>Nothing in the bag</p>
-    <button>Shop Now</button>
-  </div>
-    
-  )
+    <div className="empty-cart">
+      <img src="./LushioFitness/Images/emptyCart.png" alt="" />
+      <p>Nothing in the bag</p>
+      <button onClick={() => navigate("/LushioFitness")}>Shop Now</button>
+    </div>
+  );
 }
 
-export default EmptyCart
+export default EmptyCart;

@@ -1,20 +1,48 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./Navbar.css";
 import { Link } from "react-router-dom";
 import Dropdown from "./Dropdown";
-import Dropdown1 from "./Dropdown1";
-import Dropdown2 from "./Dropdown2";
 import Submenu from "./Submenu";
+import { getUser } from "../firebaseUtils";
 
 function Navbar() {
-  const [dropdown, setDropdown] = useState(false);
-  const [dropdown2, setDropdown2] = useState(false);
-  const [dropdown1, setDropdown1] = useState(false);
-  
-  const menuRef = useRef();
+ 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
 
+  const handleMouseEnter = (dropdownName) => {
+    setActiveDropdown(dropdownName);
+  };
+
+  const handleMouseLeave = () => {
+    setActiveDropdown(null);
+  };
+  const menuRef = useRef();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userData = await getUser(); // Fetch user data
+        if (userData) {
+        
+          setIsLoggedIn(true); // User is logged in
+          setUser(userData);
+         
+        } else {
+          setIsLoggedIn(false); // User is not logged in
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        setIsLoggedIn(false); 
+      }
+    };
+    
+    fetchUser();
+  }, []);
   const openMenu = () => {
     menuRef.current.style.left = "0";
+    console.log(user);
   };
   const closeMenu = () => {
     menuRef.current.style.left = "-550px";
@@ -44,7 +72,7 @@ function Navbar() {
             alt=""
             onClick={openMenu}
           />
-          <Link to="/wallet">
+          <Link to={isLoggedIn ? "/wallet" : "/login"}>
             <img src="./LushioFitness/Images/icons/wallet.png" alt="" />
           </Link>
           <img
@@ -56,33 +84,57 @@ function Navbar() {
         </div>
 
         <div className="list">
-          <ul>
-            <li
-              onMouseEnter={() => setDropdown(true)}
-              onMouseLeave={() => setDropdown(false)}
-            >
-              <Link to="/men">Men</Link>{" "}
-              <img src="./LushioFitness/Images/icons/dropdown2.png" alt="" />
-              {dropdown && <Dropdown />}
-            </li>
-            <li
-              onMouseEnter={() => setDropdown2(true)}
-              onMouseLeave={() => setDropdown2(false)}
-            >
-              <Link to="/women">Women</Link>{" "}
-              <img src="./LushioFitness/Images/icons/dropdown2.png" alt="" />
-              {dropdown2 && <Dropdown2 />}
-            </li>
-            <li
-              onMouseEnter={() => setDropdown1(true)}
-              onMouseLeave={() => setDropdown1(false)}
-            >
-              <Link to="/accessories">Accessories</Link>{" "}
-              <img src="./LushioFitness/Images/icons/dropdown2.png" alt="" />
-              {dropdown1 && <Dropdown1 />}
-            </li>
-          </ul>
-        </div>
+      <ul>
+        <li
+          onMouseEnter={() => handleMouseEnter("men")}
+          onMouseLeave={handleMouseLeave}
+        >
+          <Link to="/men">Men</Link>{" "}
+          <img src="./LushioFitness/Images/icons/dropdown2.png" alt="" />
+          {activeDropdown === "men" && (
+            <Dropdown
+              category="men"
+              topProducts={["Shirts", "Joggers", "Outerwear", "Pants", "Hats/Caps"]}
+              featured={["New Drop", "Coming Soon", "Restock", "Best Seller", "Sale"]}
+              imageSrc="./LushioFitness/Images/card-image-6.webp"
+              launchTitle="NEW LAUNCH FOR MEN"
+            />
+          )}
+        </li>
+        <li
+          onMouseEnter={() => handleMouseEnter("women")}
+          onMouseLeave={handleMouseLeave}
+        >
+          <Link to="/women">Women</Link>{" "}
+          <img src="./LushioFitness/Images/icons/dropdown2.png" alt="" />
+          {activeDropdown === "women" && (
+            <Dropdown
+              category="women"
+              topProducts={["Panty", "Tops", "Leggings", "Outerwear", "Matching Sets"]}
+              featured={["New Drop", "Coming Soon", "Restock", "Best Seller", "Sale"]}
+              imageSrc="./LushioFitness/Images/card-image-2.webp"
+              launchTitle="NEW LAUNCH FOR WOMEN"
+            />
+          )}
+        </li>
+        <li
+          onMouseEnter={() => handleMouseEnter("accessories")}
+          onMouseLeave={handleMouseLeave}
+        >
+          <Link to="/accessories">Accessories</Link>{" "}
+          <img src="./LushioFitness/Images/icons/dropdown2.png" alt="" />
+          {activeDropdown === "accessories" && (
+            <Dropdown
+              category="accessories"
+              topProducts={["Gloves", "Shakers", "Wrist Band", "Deadlift Band"]}
+              featured={["New Drop", "Coming Soon", "Restock", "Best Seller", "Sale"]}
+              imageSrc="./LushioFitness/Images/shopping.webp"
+              launchTitle="NEW LAUNCH"
+            />
+          )}
+        </li>
+      </ul>
+    </div>
         <div className="new-search">
 <input  type="text"
     name="productName"
@@ -94,20 +146,20 @@ function Navbar() {
         </Link>
         <div className="icons">
           
-          <Link to="/wishlist">
+          <Link  to={isLoggedIn ? "/wishlist" : "/login"}>
             <img src="./LushioFitness/Images/icons/wishlist.png" alt="" />
           </Link>
-          <Link to="/cart">
+          <Link  to={isLoggedIn ? "/cart" : "/login"}>
             <img src="./LushioFitness/Images/icons/cart.png" alt="" />
             {/* <span>{getTotalCartItems()}</span> */}
           </Link>
-          <Link to="/wallet" className="wallet-icon">
+          <Link className="wallet-icon" to={isLoggedIn ? "/wallet" : "/login"}>
             <img src="./LushioFitness/Images/icons/wallet.png" alt="" />
           </Link>
 
-          <Link to="/login">
-            <img src="./LushioFitness/Images/icons/profile.png" alt="" />
-          </Link>
+          <Link to={isLoggedIn ? "/user" : "/login"}>
+  <img src="./LushioFitness/Images/icons/profile.png" alt="Profile" />
+</Link>
         </div>
         <div ref={menuRef} className="submenu">
           <div className="responsive-navbar">

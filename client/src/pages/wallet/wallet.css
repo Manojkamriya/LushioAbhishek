@@ -23,3 +23,82 @@
         border: 1px solid #42a2a2
     
 }
+.wallet-container{
+    width: 100%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+ 
+    margin: 50px auto;
+}
+.wallet-title h2{
+    font-weight: 700;
+    font-family: "Poppins";
+    font-size: 29px;
+}
+.wallet-title hr{
+    float: left;
+    width: 100%;
+    margin: 15px 0 50px;
+    height: 4px;
+    max-width: 100px;
+    background: #fdd835;
+}
+.my-wallet{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.totalblock{
+    padding: 20px 30px;
+    background-color: #d3e8ce;
+}
+.credit-block , .cash-block{
+   
+    padding: 30px;
+    border: 1px solid #c9c9c9;
+  }
+  
+  .heading-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .heading-block {
+    display: flex;
+    align-items: center;
+  }
+  
+  .heading-icon {
+    width: 24px; 
+  }
+  
+  .heading-text {
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    margin-left: 8px; 
+  }
+  
+  .balance-block {
+    display: flex;
+    align-items: center;
+  }
+  
+  .balance-text {
+    font-size: 14px;
+    font-family: 'Montserrat-Bold', sans-serif;
+    color: rgb(66, 162, 162);
+  }
+  
+  .balance-icon {
+    margin-left: 8px;
+  }
+  
+  .description-block {
+    font-size: 12px;
+    font-family: 'Montserrat', sans-serif;
+    color: rgba(0, 0, 0, 0.5);
+    margin-top: 8px; 
+  }
+  

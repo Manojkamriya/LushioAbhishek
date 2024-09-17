@@ -16,6 +16,7 @@
     gap: 30px;
     max-width: 1000px;
     margin-inline: auto;
+    margin-bottom: 30px;
     flex-wrap: wrap;
 }
 .user-action{
@@ -54,6 +55,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding-block: 30px;
 }
 .edit-profile{
  display: flex;
@@ -62,6 +64,7 @@
     max-width: 400px;
    background-color: white;
    border: 1px solid #c9c9c9;
+   border-radius: 9px;
    padding: 20px;
 }
 .edit-profile label{
@@ -71,9 +74,7 @@
     font-family: "Poppins", sans-serif;
     margin-top: 9px;
 }
-.edit-profile input[type="text"]{
-    /* height: 300px; */
-}
+
 .edit-profile input[type="text"], .edit-profile input[type="email"], .edit-profile input[type="tel"]{
 
     outline: none;
@@ -103,4 +104,138 @@
     margin-top: 19px;
     outline: none;
     border: none;
+}
+/* General Styles */
+.user-greet {
+    text-align: center;
+    font-size: 55px;
+    font-weight: 600;
+    margin: 40px 1px 10px 1px;
+}
+
+.user-question {
+    text-align: center;
+    font-size: 25px;
+    font-weight: 400;
+    margin-block: 10px;
+}
+
+.user-action-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    max-width: 1000px;
+    margin-inline: auto;
+    flex-wrap: wrap;
+}
+
+.user-action {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    border: 1px solid #c9c9c9;
+    border-radius: 10px;
+    padding: 10px;
+    height: 120px;
+    width: 240px;
+    cursor: pointer;
+    gap: 10px;
+}
+
+.user-action img {
+    height: 90px;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.action-details h3 {
+    font-size: 20px;
+}
+
+.action-details p {
+    font-size: 15px;
+    color: #595656;
+}
+
+/* Responsive Styles */
+
+/* For screens 1200px and above */
+@media (min-width: 1200px) {
+    .user-greet {
+        font-size: 50px;
+    }
+
+    .user-question {
+        font-size: 24px;
+    }
+
+    .user-action {
+        height: 120px;
+        width: 240px;
+    }
+}
+
+/* For medium screens (tablets) - 768px to 1199px */
+@media (max-width: 1199px) {
+    .user-greet {
+        font-size: 40px;
+        margin: 30px 1px 10px 1px;
+    }
+
+    .user-question {
+        font-size: 22px;
+    }
+
+    .user-action {
+        height: 110px;
+        width: 220px;
+    }
+
+    .user-action-container {
+        gap: 20px;
+    }
+}
+
+/* For small screens (phones) - 767px and below */
+@media (max-width: 767px) {
+    .user-greet {
+        font-size: 35px;
+        margin: 20px 10px;
+    }
+
+    .user-question {
+        font-size: 20px;
+    }
+
+    .user-action {
+        height: auto; /* Allow height to adjust */
+        width: 100%; /* Full width */
+        padding: 20px;
+    }
+
+    .user-action img {
+        height: 60px; /* Smaller images on mobile */
+    }
+
+    .user-details {
+        text-align: left;
+    }
+
+    .action-details h3 {
+        font-size: 18px;
+    }
+
+    .action-details p {
+        font-size: 14px;
+    }
+
+    .user-action-container {
+        flex-direction: column;
+        gap: 15px;
+        max-width: 100%;
+    }
 }

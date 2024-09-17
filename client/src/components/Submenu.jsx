@@ -2,164 +2,96 @@ import React, { useState } from "react";
 import "./submenu.css";
 import "./search.css";
 import { Link } from "react-router-dom";
-function MenSubmenu() {
+
+
+function SubmenuItems({ items, imageSrc, description }) {
   return (
     <>
       <ul>
-      <li>
-          <Link to="/men">All</Link>
-        </li>
-        <li>
-          <Link to="/">Shirts</Link>
-        </li>
-        <li>
-          <Link to="/">Joggers</Link>
-        </li>
-        <li>
-          <Link to="/">Outerwear</Link>
-        </li>
-        <li>
-          <Link to="/">Pants</Link>
-        </li>
-        <li>
-          <Link to="/">Hats/Caps</Link>
-        </li>
-        <li>
-          <Link to="/">New Drop</Link>
-        </li>
-        <li>
-          <Link to="/">Comming Soon</Link>
-        </li>
-        <li>
-          <Link to="/">Restock</Link>
-        </li>
-        <li>
-          <Link to="/">Best Seller</Link>
-        </li>
-        <li>
-          <Link to="/">Sale</Link>
-        </li>
+        {items.map((item, index) => (
+          <li key={index}>
+            <Link to={item.link}>{item.label}</Link>
+          </li>
+        ))}
       </ul>
-      <img
-        className="res-submenu-image"
-        src="./LushioFitness/Images/card-image-6.webp"
-        alt=""
-      />
-      <p className="res-submenu-para">New Launch for him</p>
-    </>
-  );
-}
-function WomenSubmenu() {
-  return (
-    <>
-      <ul>
-      <li>
-          <Link to="/women">All</Link>
-        </li>
-        <li>
-          <Link to="/">Bras</Link>
-        </li>
-        <li>
-          <Link to="/">Tops</Link>
-        </li>
-        <li>
-          <Link to="/">Leggings</Link>
-        </li>
-        <li>
-          <Link to="/">OuterWear</Link>
-        </li>
-        <li>
-          <Link to="/">Matching Sets</Link>
-        </li>
-        <li>
-          <Link to="/">New Drop</Link>
-        </li>
-        <li>
-          <Link to="/">Comming Soon</Link>
-        </li>
-        <li>
-          <Link to="/">Restock</Link>
-        </li>
-        <li>
-          <Link to="/">Best Seller</Link>
-        </li>
-        <li>
-          <Link to="/">Sale</Link>
-        </li>
-      </ul>
-      <img
-        className="res-submenu-image"
-        src="./LushioFitness/Images/card-image-2.webp"
-        alt=""
-      />
-      <p className="res-submenu-para">New Launch for her</p>
-    </>
-  );
-}
-function AccesoriesSubmenu() {
-  return (
-    <>
-      <ul>
-      <li>
-          <Link to="/accessories">All</Link>
-        </li>
-        <li>
-          <Link to="/">Gloves</Link>
-        </li>
-        <li>
-          <Link to="/">Shakers</Link>
-        </li>
-        <li>
-          <Link to="/">Wrist Band</Link>
-        </li>
-        <li>
-          <Link to="/">Deadlift Band</Link>
-        </li>
-        <li>
-          <Link to="/">New Drop</Link>
-        </li>
-        <li>
-          <Link to="/">Comming Soon</Link>
-        </li>
-        <li>
-          <Link to="/">Restock</Link>
-        </li>
-        <li>
-          <Link to="/">Best Seller</Link>
-        </li>
-        <li>
-          <Link to="/">Sale</Link>
-        </li>
-      </ul>
-      <img
-        className="res-submenu-image"
-        src="./LushioFitness/Images/assets/product_303.webp"
-        alt=""
-      />
-      <p className="res-submenu-para">New Launch</p>
+      <img className="res-submenu-image" src={imageSrc} alt={description} />
+      <p className="res-submenu-para">{description}</p>
     </>
   );
 }
 
 function Submenu() {
   const [menu, setMenu] = useState("Men");
+
+ 
+  const menus = {
+    Men: {
+      items: [
+        { label: "All", link: "/men" },
+        { label: "Shirts", link: "/men" },
+        { label: "Joggers", link: "/men" },
+        { label: "Outerwear", link: "/men" },
+        { label: "Pants", link: "/men" },
+        { label: "Hats/Caps", link: "/men" },
+        { label: "New Drop", link: "/men" },
+        { label: "Coming Soon", link: "/men" },
+        { label: "Restock", link: "/men" },
+        { label: "Best Seller", link: "/men" },
+        { label: "Sale", link: "/men" },
+      ],
+      imageSrc: "./LushioFitness/Images/card-image-6.webp",
+      description: "New Launch for him",
+    },
+    Women: {
+      items: [
+        { label: "All", link: "/women" },
+        { label: "Bras", link: "/women" },
+        { label: "Tops", link: "/women" },
+        { label: "Leggings", link: "/women" },
+        { label: "OuterWear", link: "/women" },
+        { label: "Matching Sets", link: "/women" },
+        { label: "New Drop", link: "/women" },
+        { label: "Coming Soon", link: "/women" },
+        { label: "Restock", link: "/women" },
+        { label: "Best Seller", link: "/women" },
+        { label: "Sale", link: "/women" },
+      ],
+      imageSrc: "./LushioFitness/Images/card-image-2.webp",
+      description: "New Launch for her",
+    },
+    Accessories: {
+      items: [
+        { label: "All", link: "/accessories" },
+        { label: "Gloves", link: "/accessories" },
+        { label: "Shakers", link: "/accessories" },
+        { label: "Wrist Band", link: "/accessories" },
+        { label: "Deadlift Band", link: "/accessories" },
+        { label: "New Drop", link: "/accessories" },
+        { label: "Coming Soon", link: "/accessories" },
+        { label: "Restock", link: "/" },
+        { label: "Best Seller", link: "/accessories" },
+        { label: "Sale", link: "/accessories" },
+      ],
+      imageSrc: "./LushioFitness/Images/assets/product_303.webp",
+      description: "New Launch",
+    },
+  };
+
   return (
     <div className="res-navbar-headings">
       <ul className="res-navbar-headings-list">
-        <li onClick={() => setMenu("Men")}>
-         Men
-        </li>
-        <li onClick={() => setMenu("Women")}>
-        Women
-        </li>
-        <li onClick={() => setMenu("Accessories")}>
-          Accessories
-        </li>
+        {Object.keys(menus).map((menuKey) => (
+          <li key={menuKey} onClick={() => setMenu(menuKey)}>
+            {menuKey}
+          </li>
+        ))}
       </ul>
       <div className="res-navbar-links">
-        {menu === "Men" && <MenSubmenu />}
-        {menu === "Women" && <WomenSubmenu />}
-        {menu === "Accessories" && <AccesoriesSubmenu />}
+        <SubmenuItems
+          items={menus[menu].items}
+          imageSrc={menus[menu].imageSrc}
+          description={menus[menu].description}
+        />
       </div>
     </div>
   );
