@@ -104,9 +104,14 @@ router.post("/addresses/:uid", async (req, res) => {
 
     // Add a new address
     if (newAddress) {
+      // Check if there are any existing addresses
+      const addressesSnapshot = await addressesRef.get();
+      const isFirstAddress = addressesSnapshot.empty;
+
+      // Add the new address, making it default if it's the first address
       await addressesRef.add({
         ...newAddress,
-        isDefault: false,
+        isDefault: isFirstAddress ? true : false,
       });
     }
 
@@ -137,5 +142,51 @@ router.post("/addresses/:uid", async (req, res) => {
     return res.status(500).send(error.message);
   }
 });
+
+// Delete an address by ID
+router.delete("/addresses/delete/:uid/:id", async (req, res) => {
+  try {
+    const {uid, id} = req.params;
+    const addressDoc = db.collection("users").doc(uid).collection("addresses").doc(id);
+    const addressesRef = db.collection("users").doc(uid).collection("addresses");
+
+    const addressSnapshot = await addressDoc.get();
+    if (!addressSnapshot.exists) {
+      return res.status(404).send("Address not found");
+    }
+
+    const addressData = addressSnapshot.data();
+
+    // Check if the address to be deleted is the default address
+    if (addressData.isDefault) {
+      const addressesSnapshot = await addressesRef.get();
+
+      // If only one address exists (which is default), prevent deletion
+      if (addressesSnapshot.size === 1) {
+        return res.status(400).send("Cannot delete the default address. Add another address or change the default address.");
+      }
+
+      // If other addresses exist, find another address to set as default
+      let newDefaultAddress = null;
+      addressesSnapshot.forEach((doc) => {
+        if (doc.id !== id && !newDefaultAddress) {
+          newDefaultAddress = doc;
+        }
+      });
+
+      if (newDefaultAddress) {
+        // Set the new address as the default
+        await addressesRef.doc(newDefaultAddress.id).update({isDefault: true});
+      }
+    }
+
+    // Delete the address
+    await addressDoc.delete();
+    return res.status(200).send("Address deleted successfully");
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+});
+
 
 module.exports = router;

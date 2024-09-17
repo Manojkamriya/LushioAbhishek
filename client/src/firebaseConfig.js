@@ -1,6 +1,8 @@
+// firebaseConfig.js
 import { getApp, initializeApp } from "firebase/app";
 import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage"; // Importing Firebase Storage
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -15,6 +17,7 @@ const firebaseConfig = {
 let app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app); // Initialize Firebase Storage
 
 try {
   app = getApp();
@@ -31,4 +34,4 @@ setPersistence(auth, browserLocalPersistence)
     console.error("Error setting persistence:", error);
   });
 
-export { auth, db };
+export { auth, db, storage }; // Export storage as well
