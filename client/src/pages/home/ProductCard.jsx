@@ -9,8 +9,8 @@ function ProductCard(props) {
   const { addToCart, addToWishlist, removeFromWishlist } = useContext(ShopContext);
   const [liked, setLiked] = useState(props.liked);
   const [isRemoving, setIsRemoving] = useState(false);
+ const [isLoading, setIsLoading] = useState(false);
  
-  const [selectedColor, setSelectedColor] = useState(null);
   const [size, setSelectedSize] = useState(null);
 
   const colorSizesByHex = {
@@ -22,8 +22,12 @@ function ProductCard(props) {
     "#8B4513": { name: "saddleBrown", sizes: ["S", "L", "XL"] },
 };
 
- 
+const [selectedColor, setSelectedColor] = useState(Object.keys(colorSizesByHex)[0]);
 
+const handleChangeColor = (hex) => {
+  setSelectedColor(hex);
+  setSelectedSize(null);
+};
   useEffect(() => {
     setLiked(props.liked);
   }, [props.liked]);
@@ -42,17 +46,18 @@ function ProductCard(props) {
     }
   };
 
-  const handleChangeColor = (hex) => {
-    setSelectedColor(colorSizesByHex[hex]);
-    setSelectedSize(null);
-  }
+  // const handleChangeColor = (hex) => {
+  //   setSelectedColor(colorSizesByHex[hex]);
+  //   setSelectedSize(null);
+  // }
   const handleAddToCart = (id) => {
-   
+   setIsLoading(true);
     setTimeout(() => {
      
       addToCart(id);
+      setIsLoading(false);
       closeMenu();
-     
+   
     }, 2000);
   };
  
@@ -104,25 +109,28 @@ function ProductCard(props) {
         ></div>
     ))}
     <br />
-    {selectedColor && (
-        <>
-            <br />
-            <p>Selected Color: <span>{selectedColor.name}</span></p>
-            <br />
-            <p>Select Size</p>
-            {selectedColor.sizes.map((size) => (
-                <div key={size} onClick={() => setSelectedSize(size)}>{size}</div>
-            ))}
-        
-            <br/><br/>
-            <button onClick={() => handleAddToCart(props.id)} disabled={!size}>
-                {size ? "Add to cart" : "Select size to add to cart"}
-            </button>
-         
-           
-        </>
-    )}
   
+   {selectedColor && (
+    <>
+        <br />
+        <p>Selected Color: <span>{colorSizesByHex[selectedColor].name}</span></p>
+        <br />
+        <p>Select Size</p>
+        {colorSizesByHex[selectedColor].sizes.map((sizes) => (
+            <div 
+                key={sizes} 
+                onClick={() => setSelectedSize(sizes)}  
+                className={sizes === size ? "size-selected" : "size-not-selected"}
+            >
+                {sizes}
+            </div>
+        ))}
+        <br/><br/>
+        <button onClick={() => handleAddToCart(props.id)} disabled={!size}>
+            {isLoading ? <span className="spinner"></span> : <span>Add to Cart</span>}
+        </button>
+    </>
+)}
 </div>
 
       </div>

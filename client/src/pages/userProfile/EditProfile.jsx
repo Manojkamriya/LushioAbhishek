@@ -8,7 +8,7 @@ function EditProfile() {
     displayName: "",
     email: "",
     phoneNumber: "",
-    address: "",
+   
     gender: "",
   });
 
@@ -31,7 +31,7 @@ function EditProfile() {
     if (user) {
       const fetchUserData = async () => {
         try {
-         const response = await axios.get(`http://127.0.0.1:5001/lushio-fitness/us-central1/api/userDetails/details/${user.uid}`);
+         const response = await axios.get(`https://us-central1-lushio-fitness.cloudfunctions.net/api/user/details/${user.uid}`);
        
         setUserData(response.data);
         
@@ -48,7 +48,7 @@ function EditProfile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`http://127.0.0.1:5001/lushio-fitness/us-central1/api/userDetails/details/${user.uid}`, userData);
+      await axios.post(`https://us-central1-lushio-fitness.cloudfunctions.net/api/user/details/${user.uid}`, userData);
       alert("Profile updated successfully!");
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -98,15 +98,7 @@ function EditProfile() {
           required
         />
 
-        <label>Address</label>
-        <input
-          type="text"
-          name="address"
-          placeholder="Enter your address"
-          value={userData.address}
-          onChange={handleChange}
-          required
-        />
+    
 
         <div className="radio-input">
           <label>Gender</label>

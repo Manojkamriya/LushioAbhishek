@@ -1,79 +1,116 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './address.css';
-
-const initialAddressData = [
-  {
-    name: "Manoj Kamriya",
-    address: "73, P&T colony, Gali No. 05 Ratlam, Madhya Pradesh ",
-    pinCode: 457001,
-    contactNo: 7489236023,
-  },
-  {
-    name: "Pranit Mandloi",
-    address: "325 Sector B Scheme no 136 Behind Brilliant Aura",
-    pinCode: 452010,
-    contactNo: 7999658233,
-  }
-];
+import { getUser } from "../../firebaseUtils.js";
 
 export default function Address() {
-  const [addressData, setAddressData] = useState(initialAddressData);
-  const [editingIndex, setEditingIndex] = useState(null); // Track which address is being edited
+  const [addressData, setAddressData] = useState([]);
+  const [user, setUser] = useState(null);
+  const [editingIndex, setEditingIndex] = useState(null);
   const [newAddress, setNewAddress] = useState({
     name: '',
     address: '',
     pinCode: '',
     contactNo: '',
+    isDefault: false,
   });
-  const [isAddingNew, setIsAddingNew] = useState(false); // Track if adding a new address
+  const [isAddingNew, setIsAddingNew] = useState(false);
 
-  // Remove address
-  const handleRemove = (index) => {
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const currentUser = await getUser(); 
+        setUser(currentUser);
+        console.log(currentUser);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
+    if(user){
+      const fetchAddresses = async () => {
+        try {
+          const response = await axios.get(`https://us-central1-lushio-fitness.cloudfunctions.net/api/user/addresses/${user.uid}`);
+          // Sort addresses to ensure default address is first
+          const sortedAddresses = response.data.addresses.sort((a, b) => b.isDefault - a.isDefault);
+          setAddressData(sortedAddresses);
+        } catch (error) {
+          console.error('Error fetching addresses:', error);
+        }
+      };
+
+      fetchAddresses();
+    }
+  }, [user]);
+
+  const handleRemove = async (id) => {
     if (window.confirm("Are you sure you want to delete this address?")) {
-      const updatedData = addressData.filter((_, i) => i !== index);
-      setAddressData(updatedData);
+      try {
+        await axios.delete(`http://127.0.0.1:5001/lushio-fitness/us-central1/api/user/addresses/delete/${user.uid}/${id}`);
+        setAddressData(addressData.filter((address) => address.id !== id));
+      } catch (error) {
+        console.error('Error deleting address:', error);
+      }
     }
   };
 
-  // Edit address
   const handleEdit = (index) => {
     setEditingIndex(index);
-    setIsAddingNew(false); // Hide the add form if editing an existing address
-    setNewAddress(addressData[index]); // Load existing data into form for editing
+    setIsAddingNew(false);
+    setNewAddress(addressData[index]);
   };
 
-  // Save edited or new address
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!newAddress.name || !newAddress.address || !newAddress.pinCode || !newAddress.contactNo) {
       alert("Please fill in all fields!");
       return;
     }
 
-    if (editingIndex !== null) {
-      const updatedData = [...addressData];
-      updatedData[editingIndex] = newAddress;
-      setAddressData(updatedData);
-      setEditingIndex(null);
-    } else {
-      setAddressData([...addressData, newAddress]);
-    }
+    try {
+      if (editingIndex !== null) {
+        const updatedAddress = { ...newAddress };
+        await axios.post(`https://us-central1-lushio-fitness.cloudfunctions.net/api/user/addresses/${user.uid}`, { updateAddress: updatedAddress });
+        const updatedData = [...addressData];
+        updatedData[editingIndex] = updatedAddress;
+        setAddressData(updatedData.sort((a, b) => b.isDefault - a.isDefault));
+        setEditingIndex(null);
+      } else {
+        const response = await axios.post(`https://us-central1-lushio-fitness.cloudfunctions.net/api/user/addresses/${user.uid}`, { newAddress });
+        setAddressData(response.data.addresses.sort((a, b) => b.isDefault - a.isDefault));
+      }
 
-    // Reset form
-    setNewAddress({ name: '', address: '', pinCode: '', contactNo: '' });
-    setIsAddingNew(false); // Close the add new form
+      setNewAddress({ name: '', address: '', pinCode: '', contactNo: '', isDefault: false });
+      setIsAddingNew(false);
+    } catch (error) {
+      console.error('Error saving address:', error);
+    }
   };
 
-  // Handle input change for form fields
+  const handleSetDefault = async (id) => {
+    try {
+      const response = await axios.post(`https://us-central1-lushio-fitness.cloudfunctions.net/api/user/addresses/${user.uid}`, {
+        setDefaultAddress: {
+          id: id
+        }
+      });
+      setAddressData(response.data.addresses.sort((a, b) => b.isDefault - a.isDefault));
+    } catch (error) {
+      console.error('Error setting default address:', error);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewAddress((prevAddress) => ({ ...prevAddress, [name]: value }));
   };
 
-  // Show form to add a new address
   const handleAddNewAddress = () => {
-    setEditingIndex(null); // Reset edit state
-    setIsAddingNew(true); // Show the form for adding a new address
-    setNewAddress({ name: '', address: '', pinCode: '', contactNo: '' }); // Reset form
+    setEditingIndex(null);
+    setIsAddingNew(true);
+    setNewAddress({ name: '', address: '', pinCode: '', contactNo: '', isDefault: false });
   };
 
   return (
@@ -85,25 +122,21 @@ export default function Address() {
 
       <div className="address-container">
         {addressData.map((info, i) => (
-          <div className="myaddress" key={i}>
+          <div className="myaddress" key={info.id}>
             <h4>{info.name}</h4>
             <p>{info.address}</p>
             <p>Pin Code: {info.pinCode}</p>
             <p>Contact Number: {info.contactNo}</p>
+        
+            {info.isDefault && <h3 className="default-address">Default Address</h3>}
             <div className="address-action">
-              <button onClick={() => handleEdit(i)}>edit</button>
-              <button onClick={() => handleRemove(i)}>remove</button>
+              <button onClick={() => handleEdit(i)}>Edit</button>
+              <button onClick={() => handleRemove(info.id)}>Remove</button>
+              {!info.isDefault && <button onClick={() => handleSetDefault(info.id)}>Set as Default</button>}
             </div>
           </div>
         ))}
 
-        {/* Add New Address Button */}
-        <div className="myaddress add-new" onClick={handleAddNewAddress}>
-          <span>+</span>
-          <p>Add new address</p>
-        </div>
-
-        {/* Add / Edit Address Form */}
         {(isAddingNew || editingIndex !== null) && (
           <div className="myaddress edit-address">
             <h4>{editingIndex !== null ? "Edit Address" : "Add New Address"}</h4>
@@ -140,6 +173,10 @@ export default function Address() {
             </div>
           </div>
         )}
+        <div className="myaddress add-new" onClick={handleAddNewAddress}>
+          <span>+</span>
+          <p>Add new addresses</p>
+        </div>
       </div>
     </div>
   );

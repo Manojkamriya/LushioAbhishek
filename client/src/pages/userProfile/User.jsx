@@ -4,6 +4,8 @@ import { auth } from "../../firebaseConfig.js";
 import { signOut } from "firebase/auth";
 import { getUser } from "../../firebaseUtils.js";
 import { useNavigate } from "react-router-dom";
+// import Review from "./Review.jsx"
+// import MyReview from "./MyReview.jsx"
 import "./user.css";
 
 function User() {
@@ -106,6 +108,8 @@ function User() {
         </div>
       </div>
  
+   {/* <Review/>
+   <MyReview/> */}
     </>
   );
 }
