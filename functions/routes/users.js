@@ -1,18 +1,34 @@
+/* eslint-disable require-jsdoc */
 /* eslint-disable max-len */
 const express = require("express");
 const admin = require("firebase-admin");
+const moment = require("moment");
 
 const db = admin.firestore();
 
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
+// Helper function to convert date from DD-MM-YYYY to YYYY-MM-DD
+function convertToISODate(dateString) {
+  if (!dateString) return null;
+  const parsedDate = moment(dateString, "DD-MM-YYYY", true);
+  return parsedDate.isValid() ? parsedDate.format("YYYY-MM-DD") : null;
+}
+
+// Helper function to convert date from YYYY-MM-DD to DD-MM-YYYY
+function convertToDisplayDate(dateString) {
+  if (!dateString) return null;
+  const parsedDate = moment(dateString, "YYYY-MM-DD", true);
+  return parsedDate.isValid() ? parsedDate.format("DD-MM-YYYY") : null;
+}
+
 // Fetch user name by UID
 router.get("/name/:uid", async (req, res) => {
   try {
     const uid = req.params.uid;
     const userDoc = await db.collection("users").doc(uid).get();
-    console.log(`username : ${uid}`);
+    // console.log(`username : ${uid}`);
     if (!userDoc.exists) {
       return res.status(404).send("User not found");
     }
@@ -42,6 +58,8 @@ router.get("/details/:uid", async (req, res) => {
       phoneNumber: userData.phoneNumber || null,
       photoURL: userData.photoURL || null,
       gender: userData.gender || null,
+      dob: convertToDisplayDate(userData.dob) || null,
+      doa: convertToDisplayDate(userData.doa) || null,
     };
 
     return res.status(200).json(userDetails);
@@ -62,11 +80,18 @@ router.post("/details/:uid", async (req, res) => {
       email: req.body.email || userData.email || null,
       phoneNumber: req.body.phoneNumber || userData.phoneNumber || null,
       gender: req.body.gender || userData.gender || null,
+      dob: convertToISODate(req.body.dob) || userData.dob || null,
+      doa: convertToISODate(req.body.doa) || userData.doa || null,
     };
 
     await userDoc.set(updatedUserData, {merge: true});
+    const responseData = {
+      ...updatedUserData,
+      dob: convertToDisplayDate(updatedUserData.dob),
+      doa: convertToDisplayDate(updatedUserData.doa),
+    };
 
-    return res.status(200).json(updatedUserData);
+    return res.status(200).json(responseData);
   } catch (error) {
     return res.status(500).send(error.message);
   }

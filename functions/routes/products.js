@@ -187,4 +187,28 @@ router.delete("/delete/:id", async (req, res) => {
   }
 });
 
+// Update a product by ID
+router.put("/update/:id", async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const updatedData = req.body;
+
+    const productRef = db.collection("products").doc(productId);
+
+    // Check if the product exists
+    const doc = await productRef.get();
+    if (!doc.exists) {
+      return res.status(404).json({error: "Product not found"});
+    }
+
+    // Update the product
+    await productRef.update(updatedData);
+
+    return res.status(200).json({message: "Product updated successfully"});
+  } catch (error) {
+    console.error("Error updating product:", error);
+    return res.status(500).json({error: "Failed to update product"});
+  }
+});
+
 module.exports = router;
