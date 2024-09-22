@@ -1,0 +1,137 @@
+.order-wrapper{
+    width: 100%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+ 
+    margin: 50px auto;
+}
+.order-title h2{
+    font-weight: 700;
+    font-family: "Poppins";
+    font-size: 29px;
+}
+.order-title hr{
+    float: left;
+    width: 100%;
+    margin: 15px 0 50px;
+    height: 4px;
+    max-width: 100px;
+    background: #fdd835;
+}
+.orderID{
+    margin-bottom: 20px;
+}
+.order-details {
+    width: 100%;
+    max-width: 800px;
+    height: 400px;
+    display: flex;
+    border: 1px solid #c9c9c9;
+}
+.order-details img{
+    height: 100%;
+}
+.order-details-right{
+    padding: 20px 20px 20px 50px;
+}
+.order-details-right p{
+  
+   font-size: 17px;
+   padding-bottom: 10px;
+}
+.order-details-right span{
+    color: #181818;
+}
+.order-details-right img{
+    height: 14px;
+}
+.order-details-right div+span{
+   padding: 10px;
+background-color: #e7ffeb;
+    color: #128a27;
+    border-radius: 5px;
+    margin-top: 30px;
+}
+.order-delivery{
+    font-family: "montserrat", sans-serif;
+    font-size: 15x;
+    
+    display: flex;
+    gap: 10px;
+    color: #000;
+    margin-block: 22px;
+}
+.order-delivery img{
+    height: 40px;
+}
+.order-delivery span{
+    margin-top: 10px;
+}
+.order-details-right button{
+    /* float: right; */
+    display: block;
+    border: 3px solid #42a2a2;
+    background: transparent;
+    color: #42a2a2;
+ width: 150px;
+    letter-spacing: .67px;
+    padding: 17px;
+margin-top: 120px;
+    text-transform: uppercase;
+}
+
+
+.place-order{
+    display: flex;
+    align-items: start;
+    justify-content: center;
+    gap: 150px;
+    margin-block: 70px;
+
+}
+.place-order-left{
+    width: 100%;
+    max-width: max(30%, 500px);
+
+}
+
+.place-order-left .title{
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 50px;
+    
+}
+.place-order-left input{
+    margin-bottom: 15px;
+    width: 96%;
+    padding: 10px;
+    border: 1px solid #c5c5c5;
+    border-radius: 4px;
+    /* outline-color: #3e3e3e; */
+    outline: none;
+}
+.place-order-left input:focus{
+    border: 1px solid #434343;
+}
+.place-order-left .multi-fields{
+    display: flex;
+    gap: 10px;
+
+}
+.place-order-right{
+    width: 100%;
+    max-width: max(40%, 500px);
+}
+.place-order .cart-total button{
+    margin-top: 10px;
+    width: 131px;
+    height: 29px;
+    outline: none;
+    border: none;
+    background-color: #ff5a5a;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}

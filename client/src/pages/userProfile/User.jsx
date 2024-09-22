@@ -1,30 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link} from "react-router-dom";
 import { auth } from "../../firebaseConfig.js";
 import { signOut } from "firebase/auth";
+import { getUser } from "../../firebaseUtils.js";
+import { useNavigate } from "react-router-dom";
+// import Review from "./Review.jsx"
+// import MyReview from "./MyReview.jsx"
 import "./user.css";
 
 function User() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
+
   useEffect(() => {
-    // Check if the user is authenticated
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        // Log the UID in the console
-        console.log("User UID:", user.uid);
-        setUser(user.displayName);  
-      } else {
-        // If not authenticated, redirect to the login page
-        navigate("/login");
+    const fetchUser = async () => {
+      try {
+       
+        setUser(await getUser());
+       
+      } catch (error) {
+        console.error("Error fetching user:", error);
       }
-    });
-
-    // Clean up the subscription
-    return () => unsubscribe();
-  }, [navigate]);
-
+    };
+    fetchUser();
+  }, []);
+ 
   const handleLogout = () => {
     signOut(auth)
       .then(() => {
@@ -40,11 +41,11 @@ function User() {
 
   return (
     <>
-      <h1 className="user-greet">Welcome {user}</h1>
-      <p className="user-question">What would you like to do?</p>
-      <div className="user-action-container">
-        <div className="user-action">
-          <Link to="/user/editProfile">
+    {user &&  <h1 className="user-greet">Welcome {user.displayName}</h1>
+          }      <p className="user-question">What would you like to do?</p>
+      <div className="user-action-container" >
+        <div className="user-action" onClick={()=>{navigate("/user-editProfile")}}>
+          <Link to="/user-editProfile">
             <img
               src="./LushioFitness/Images/icons/editProfile.png"
               alt="logo"
@@ -56,7 +57,7 @@ function User() {
           </div>
         </div>
 
-        <div className="user-action">
+        <div className="user-action" onClick={()=>{navigate("/LushioFitness")}}>
           <Link to="/LushioFitness">
             <img
               src="./LushioFitness/Images/icons/continueShopping.png"
@@ -68,8 +69,8 @@ function User() {
             <p>Go to Home page</p>
           </div>
         </div>
-        <div className="user-action">
-          <Link to="/user/orders">
+        <div className="user-action" onClick={()=>{navigate("/user-orders")}}>
+          <Link to="/user-orders">
             <img src="./LushioFitness/Images/icons/orders.png" alt="logo" />
           </Link>
           <div className="action-details">
@@ -78,8 +79,8 @@ function User() {
           </div>
         </div>
         
-        <div className="user-action">
-        <Link to="/user/address">
+        <div className="user-action" onClick={()=>{navigate("/user-address")}}>
+        <Link to="/user-address">
             <img src="./LushioFitness/Images/icons/address.png" alt="logo" />{" "}
           </Link>
          
@@ -88,8 +89,8 @@ function User() {
             <p>Add, Remove or change your default address</p>
           </div>
         </div>
-        <div className="user-action">
-        <Link to="/user/refer-and-earn">
+        <div className="user-action" onClick={()=>{navigate("/user-referAndEarn")}}>
+        <Link to="/user-referAndEarn">
             <img src="./LushioFitness/Images/icons/referEarn.png" alt="logo" />{" "}
           </Link>
          
@@ -106,8 +107,9 @@ function User() {
           </div>
         </div>
       </div>
-    
-
+ 
+   {/* <Review/>
+   <MyReview/> */}
     </>
   );
 }

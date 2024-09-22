@@ -1,0 +1,147 @@
+:root {
+    --primary-color: #fd9935;
+    --secondary-color: #fdd835;
+    --text-color: #333;
+    --border-color: #e0e0e0;
+    --background-color: #f9f9f9;
+    --default-address-color: #e74c3c;
+  }
+  
+  body {
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-color);
+    background-color: var(--background-color);
+  }
+  
+  .address-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 0 20px;
+  }
+  
+  .address-title h2 {
+    font-weight: 600;
+    font-size: 32px;
+    margin-bottom: 15px;
+  }
+  
+  .address-title hr {
+    width: 100px;
+    height: 3px;
+    background: var(--secondary-color);
+    border: none;
+    margin-bottom: 30px;
+  }
+  
+  .address-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  .myaddress {
+    display: flex;
+    flex-direction: column;
+    padding: 25px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .myaddress:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  }
+  
+  .myaddress h4 {
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 12px;
+    color: var(--primary-color);
+  }
+  
+  .myaddress p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+  
+  .myaddress.add-new {
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    transition: background-color 0.3s ease;
+  }
+  
+  .myaddress.add-new:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .myaddress.add-new span {
+    font-size: 40px;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+  }
+  
+  .myaddress.add-new p {
+    font-size: 18px;
+    color: var(--primary-color);
+  }
+  
+  .address-action {
+    display: flex;
+    justify-content: flex-start;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  
+  .address-action button {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .address-action button:hover {
+    background-color: var(--primary-color);
+    color: white;
+  }
+  
+  .default-address {
+    background-color: var(--default-address-color);
+    color: white;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    align-self: flex-start;
+    margin-top: 10px;
+  }
+  
+  .edit-address input {
+    width: 90%;
+    padding: 10px;
+    margin-bottom: 10px;
+    outline: none;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    transition: border 0.1s ease;
+  }
+  .edit-address input:focus{
+    border-color: #333;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  }
+  @media (max-width: 768px) {
+    .address-container {
+      grid-template-columns: 1fr;
+    }
+    
+    .address-title h2 {
+      font-size: 24px;
+    }
+  }

@@ -45,7 +45,7 @@ export default function Footer() {
           <h4>SHOP WITH US</h4>
           <ul>
             <li>
-              <Link to="/">Serch</Link>
+              <Link to="/">Search</Link>
             </li>
             <li>
               <Link to="/">All Products</Link>

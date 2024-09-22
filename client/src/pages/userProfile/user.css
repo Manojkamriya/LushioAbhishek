@@ -1,106 +1,239 @@
-.user-greet{
+/* General Styles */
+.user-greet {
     text-align: center;
     font-size: 55px;
     font-weight: 600;
     margin: 40px 1px 10px 1px;
 }
-.user-question{
+
+.user-question {
     text-align: center;
     font-size: 25px;
     font-weight: 400;
     margin-block: 10px;
+
 }
-.user-action-container{
+
+.user-action-container {
     display: flex;
     justify-content: center;
     gap: 30px;
     max-width: 1000px;
     margin-inline: auto;
+    margin-bottom: 30px;
     flex-wrap: wrap;
 }
-.user-action{
+
+.user-action {
     display: flex;
     justify-content: space-evenly;
-     align-items: center;
-     border: 1px solid #c9c9c9;
-     border-radius: 10px;
-     padding: 10px;
-     height: 120px;
-     width: 240px;
-     cursor: pointer;
-     gap: 10px;
+    align-items: center;
+    border: 1px solid #c9c9c9;
+    border-radius: 10px;
+    padding: 10px;
+    height: 120px;
+    width: 240px;
+    cursor: pointer;
+    gap: 10px;
 }
-.user-action img{
+
+.user-action img {
     height: 90px;
-
 }
-.user-details{
-    display: column;
+
+.user-details {
+    display: flex;
+    flex-direction: column;
     justify-content: center;
-
 }
-.action-details h3{
+
+.action-details h3 {
     font-size: 20px;
 }
-.action-details p{
+
+.action-details p {
     font-size: 15px;
     color: #595656;
 }
-.edit-profile-container{
-    background-color: #ebebeb;
+
+/* Responsive Styles */
+
+/* For screens 1200px and above */
+@media (min-width: 1200px) {
+    .user-greet {
+        font-size: 50px;
+    }
+
+    .user-question {
+        font-size: 24px;
+    }
+
+    .user-action {
+        height: 120px;
+        width: 240px;
+    }
+}
+
+/* For medium screens (tablets) - 768px to 1199px */
+@media (max-width: 1199px) {
+    .user-greet {
+        font-size: 40px;
+        margin: 30px 1px 10px 1px;
+    }
+
+    .user-question {
+        font-size: 22px;
+    }
+
+    .user-action {
+        height: 110px;
+        width: 220px;
+    }
+
+    .user-action-container {
+        gap: 20px;
+    }
+}
+
+/* For small screens (phones) - 767px and below */
+@media (max-width: 767px) {
+    .user-greet {
+        font-size: 35px;
+        margin: 20px 10px;
+    }
+
+    .user-question {
+        font-size: 20px;
+    }
+
+    .user-action {
+        height: auto; /* Allow height to adjust */
+        width: 100%; /* Full width */
+        padding: 20px;
+    }
+
+    .user-action img {
+        height: 60px; /* Smaller images on mobile */
+    }
+
+    .user-details {
+        text-align: left;
+    }
+
+    .action-details h3 {
+        font-size: 18px;
+    }
+
+    .action-details p {
+        font-size: 14px;
+    }
+
+    .user-action-container {
+        flex-direction: column;
+        gap: 15px;
+        max-width: 100%;
+    }
+}
+
+.edit-profile-container {
+    background-color: #f5f5f5;
     width: 100%;
-   
+    /* min-height: 100vh; */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding-block: 40px;
 }
-.edit-profile{
- display: flex;
- flex-direction: column;
-    width: 100%;
-    max-width: 400px;
-   background-color: white;
-   border: 1px solid #c9c9c9;
-   padding: 20px;
-}
-.edit-profile label{
-    font-size: 14px;
-    font-weight: 500;
-    color: #2e2e2e;
-    font-family: "Poppins", sans-serif;
-    margin-top: 9px;
-}
-.edit-profile input[type="text"]{
-    /* height: 300px; */
-}
-.edit-profile input[type="text"], .edit-profile input[type="email"], .edit-profile input[type="tel"]{
 
-    outline: none;
-    border: 1px solid #c9c9c9;
-    border-radius: 4px;
-    padding: 10px;
-  
-}
-.edit-profile input:focus{
-   
-    border: 1px solid #434343;
-}
-.radio-input{
+.edit-profile {
     display: flex;
     flex-direction: column;
-    margin-top: 10px;
+    width: 100%;
+    max-width: 400px;
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
 }
-.radio-input label{
-   margin-right: 19px;
+
+.edit-profile:hover {
+    box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.15);
 }
-.edit-profile button{
-    width: 120px;
-    height: 35px;
-    font-size: 19px;
-    border-radius: 35px;
-    background-color: rgb(255, 221, 0);
-    margin-top: 19px;
+
+.edit-profile label {
+    font-size: 15px;
+    font-weight: 500;
+    color: #333;
+    font-family: "Poppins", sans-serif;
+    margin-top: 12px;
+}
+
+.edit-profile input[type="text"],
+.edit-profile input[type="email"],
+.edit-profile input[type="tel"] {
+    outline: none;
+    border: 1px solid #d1d1d1;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 14px;
+    color: #555;
+    transition: border 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.edit-profile input:focus {
+    border-color: #333;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.radio-input {
+    display: flex;
+    flex-direction: column;
+    margin-top: 15px;
+}
+
+.radio-input label {
+    margin-right: 20px;
+    font-size: 14px;
+    color: #444;
+}
+
+.edit-profile button {
+    width: 130px;
+    height: 40px;
+    font-size: 17px;
+    font-weight: 600;
+    border-radius: 40px;
+    background-color: #ffd700;
+    margin-top: 20px;
     outline: none;
     border: none;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
+
+.edit-profile button:hover {
+    background-color: #f0c900;
+    transform: translateY(-3px);
+}
+
+.edit-profile button:active {
+    transform: translateY(1px);
+}
+
+@media (max-width: 480px) {
+    .edit-profile {
+        padding: 20px;
+    }
+
+    .edit-profile button {
+        width: 100%;
+        font-size: 16px;
+    }
+}
+

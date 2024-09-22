@@ -1,31 +1,41 @@
-import React from "react";
+import React, { useState } from "react";
 import "./product.css";
-
+import { useNavigate } from "react-router-dom";
+import Modal from "./Modal"
 function ProductDisplayPage(props) {
- 
+ const [image, setImage]  =useState(props.image);
+ const [size, setSize] = useState("S");
+ const [height, setHeight]  =useState("");
+ const [color, setColor] = useState("");
+ const sizes = ["XS", "S", "M", "L", "XL"];
+ const heights = ["5.4 feet or more", "below 5.4 feet"];
+ const colors = ["#00FFFF","#0091FF","#5424A0","#C44E0E","#C40E97"]
+ const navigate = useNavigate(); 
   return (
+    <>
     <div className="productDisplay">
            
       <div className="productDisplay-left">
         <div className="productDisplay-img-list">
-          <img src={props.image_l1} alt="" />
-          <img src={props.image_l2} alt="" />
-          <img src={props.image_l3} alt="" />
-          <img src={props.image_l4} alt="" />
-          <img src={props.image_l5} alt="" />
+          <img onClick={()=>setImage(props.image_l1)}   className={props.image_l1===image?"size-selected":"size-not-selected"} src={props.image_l1} alt="" />
+          <img onClick={()=>setImage(props.image_l2)}  className={props.image_l2===image?"size-selected":"size-not-selected"}  src={props.image_l2} alt="" />
+          <img onClick={()=>setImage(props.image_l3)}   className={props.image_l3===image?"size-selected":"size-not-selected"} src={props.image_l3} alt="" />
+          <img onClick={()=>setImage(props.image_l4)}  className={props.image_l4===image?"size-selected":"size-not-selected"}  src={props.image_l4} alt="" />
+          <img onClick={()=>setImage(props.image_l4)}  className={props.image_l5===image?"size-selected":"size-not-selected"}  src={props.image_l5} alt="" />
+          
         </div>
         <div className="productDispaly-img">
-          <img className="productDisplay-main-img" src={props.image} alt="" />
+          <img className="productDisplay-main-img" src={image} alt="" />
         </div>
       </div>
       <div className="productDisplay-right">
         <h1>{props.name } </h1>
         <div className="productDisplay-right-stars">
-          <img src="./LushioFitness/Images/icons/star-icon.png" alt="" />
-          <img src="./LushioFitness/Images/icons/star-icon.png" alt="" />
-          <img src="./LushioFitness/Images/icons/star-icon.png" alt="" />
-          <img src="./LushioFitness/Images/icons/star-icon.png" alt="" />
-          <img src="./LushioFitness/Images/icons/star-icon.png" alt="" />
+         
+          <span >
+    <p> 4.7</p>
+            <img src="./LushioFitness/Images/icons/star.png" alt="icon" />
+          </span>
           <p>(122 reviews)</p> 
        
            
@@ -49,46 +59,70 @@ function ProductDisplayPage(props) {
         <div className="productDisplay-right-size">
           <h1>Select Size</h1>
           <div className="productDisplay-right-sizes">
-            <div>S</div>
-            <div>M</div>
-            <div>L</div>
-            <div>XL</div>
-            <div>XXL</div>
+          {sizes.map((item) => (
+            <button
+              key={item}
+            onClick={()=>setSize(item)}
+
+            className={item===size?"size-selected":"size-not-selected"}
+            >
+              {item}
+            </button>
+          ))}
           </div>
         </div>
         <div className="productDisplay-right-size">
           <h1>Select Color</h1>
           <div className="productDisplay-right-sizes select-color">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
+        
+            {
+              colors.map((colors, i)=>(
+                <div   onClick={()=>setColor(colors)} key={i}  className={colors===color?"size-selected outer-color":"size-not-selected outer-color"}>
+
+             
+                <div style={{background: colors}}   ></div>
+                </div>
+              ))
+            }
           </div>
         </div>
 
         <div className="productDisplay-right-size">
         <h1>Select Height</h1>
         <div className="women-size">
-          <button>5.6 feet or more</button>
-          <button>below 5.6 feet</button>
+        
+          {heights.map((item) => (
+            <button
+              key={item}
+              onClick={() => setHeight(item)}
+              className={item === height ? "height-selected" : "height-not-selected"}
+            >
+              {item}
+            </button>
+          ))}
         </div>
       </div>
         <div className="button-container">  <button>ADD TO CART</button>
         <button> WISHLIST</button></div>
-        <button className="buy-button">BUY NOW</button>
+        <button className="buy-button" onClick={()=>navigate("/place-order")}>BUY NOW</button>
      
         <p className="productDisplay-right-category">
           <span>Category :</span>
           {props.category}
         </p>
         <p className="productDisplay-right-category">
-          <span>Discription : </span>
+          <span>Description : </span>
           {props.tags}
         </p>
         <img className="trust-image" src="./LushioFitness/Images/trust.png" alt=""/>
         <div className="review-container">
-        <h5>Product Review</h5>
+          <div className="review-headings">
+          <h5>Product Review</h5> 
+        
+          <Modal/>
+
+          </div>
+    
       
         <h6>Review 1</h6>
         <h6>Review 2</h6>
@@ -98,6 +132,10 @@ function ProductDisplayPage(props) {
         </div>
       </div>
     </div>
+
+
+
+    </>
   );
 }
 

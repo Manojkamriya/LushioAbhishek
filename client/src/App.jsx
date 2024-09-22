@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/home/Home";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ProductDisplay from "./pages/productDisplay/ProductDisplay";
-import Cart from "./pages/cart/Cart";
+import Cart from "./pages/cartItems/CartItems"
 import WishList from "./pages/wishlist/WishList";
 import FinishEmailSignUp from "./auth/FinishEmailSignUp";
 import User from "./pages/userProfile/User";
@@ -20,7 +20,7 @@ import Register from "./pages/login/Register";
 import Login from "./pages/login/Login";
 import ReferAndEarn from "./pages/ReferAndEarn/ReferAndEarn";
 import Address from "./pages/userProfile/Address";
-
+import PlaceOrder from "./pages/orders/PlaceOrder";
 import AdminPanel from "./pages/admin/AdminPanel";
 import BackendAnalytics from "./pages/bakendAnalytics/BackendAnalytics";
 
@@ -47,7 +47,7 @@ function App() {
   }, []);
 
   if (backend === null || admin === null) {
-    return <div>Loading...</div>;
+    return <div className="loader-container"> <span className="loader"></span></div>;
   }
 
   if (admin) {
@@ -78,11 +78,12 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/wishlist" element={<WishList />} />
             <Route path="/user" element={<User />} />
-            <Route path="/user/editProfile" element={<EditProfile />} />
+            <Route path="/user-editProfile" element={<EditProfile />} />
             <Route path="/wallet" element={<Wallet />} />
-            <Route path="/user/orders" element={<Orders />} />
-            <Route path="/user/address" element={<Address />} />
-            <Route path="/user/refer-and-earn" element={<ReferAndEarn />} />
+            <Route path="/place-order" element={<PlaceOrder/>} />
+            <Route path="/user-orders" element={<Orders />} />
+            <Route path="/user-address" element={<Address />} />
+            <Route path="/user-referAndEarn" element={<ReferAndEarn />} />
             <Route path="/lushioGods" element={<AdminPanel />} />
           </Routes>
           <Footer />

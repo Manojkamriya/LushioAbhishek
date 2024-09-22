@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react";
+import { useSwipeable } from "react-swipeable";
 import "./Home.css";
 function Carousel({ images }) {
   const [current, setCurrent] = useState(0);
@@ -8,7 +9,8 @@ function Carousel({ images }) {
     setCurrent((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   }, [images.length]);
 
-  // useEffect to handle the timeout
+ 
+  
   useEffect(() => {
     timeOutRef.current = setTimeout(slideRight, 9000);
 
@@ -20,8 +22,14 @@ function Carousel({ images }) {
   const slideLeft = () => {
     setCurrent((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
+  const handlers = useSwipeable({
+    onSwipedLeft: slideRight, 
+    onSwipedRight: slideLeft,
+    preventDefaultTouchmoveEvent: true,
+    trackMouse: true,
+  });
   return (
-    <div className="carousel">
+    <div className="carousel" {...handlers}>
       <div className="carousel_wrapper">
         {images.map((image, index) => {
           return (
