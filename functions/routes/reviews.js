@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable new-cap */
 const express = require("express");
 const admin = require("firebase-admin");
@@ -52,6 +53,59 @@ router.post("/:productId", async (req, res) => {
   } catch (error) {
     console.error("Error adding review:", error);
     return res.status(500).json({error: "Failed to add review"});
+  }
+});
+
+// Get reviews for a product
+router.get("/:id", async (req, res) => {
+  try {
+    const {id} = req.params;
+    const productRef = db.collection("products").doc(id);
+    const reviewsRef = productRef.collection("reviews");
+
+    const reviewsSnapshot = await reviewsRef.get();
+
+    if (reviewsSnapshot.empty) {
+      return res.status(404).json({message: "No reviews found for this product"});
+    }
+
+    const reviewIds = reviewsSnapshot.docs.map((doc) => doc.id);
+
+    const reviewsData = await Promise.all(
+        reviewIds.map(async (reviewId) => {
+          const reviewDoc = await db.collection("reviews").doc(reviewId).get();
+          const reviewData = reviewDoc.data();
+
+          let formattedTimestamp = "Timestamp not available";
+
+          // Check if timestamp exists and is valid before formatting
+          if (reviewData && reviewData.timestamp && reviewData.timestamp.toDate) {
+            const timestamp = reviewData.timestamp.toDate();
+            formattedTimestamp = timestamp.toLocaleString("en-US", {
+              timeZone: "Asia/Kolkata",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              hour: "numeric",
+              minute: "numeric",
+              second: "numeric",
+              hour12: true,
+              timeZoneName: "short",
+            });
+          }
+
+          return {
+            id: reviewId,
+            ...reviewData,
+            timestamp: formattedTimestamp,
+          };
+        }),
+    );
+
+    return res.status(200).json(reviewsData);
+  } catch (error) {
+    console.error("Error getting reviews:", error);
+    return res.status(500).json({error: "Failed to get reviews"});
   }
 });
 

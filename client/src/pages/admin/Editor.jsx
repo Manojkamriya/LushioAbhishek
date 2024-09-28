@@ -6,18 +6,36 @@ import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebas
 const validSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 
 const Editor = ({ product, onClose, onUpdate }) => {
-  const [editedProduct, setEditedProduct] = useState(product);
+  const [editedProduct, setEditedProduct] = useState(initializeProduct(product));
   const [images, setImages] = useState([]);
   const [newImages, setNewImages] = useState([]);
   const [removedImageUrls, setRemovedImageUrls] = useState([]);
   const [useHeightClassification, setUseHeightClassification] = useState(!!product.height);
   const [sizeError, setSizeError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);  
 
   useEffect(() => {
+    setEditedProduct(initializeProduct(product));
+    setUseHeightClassification(!!product.height);
     if (product.imageUrls) {
       setImages(product.imageUrls.map(url => ({ url, isExisting: true })));
+    } else {
+      setImages([]);
     }
   }, [product]);
+
+  function initializeProduct(product) {
+    const initialProduct = { ...product };
+    if (initialProduct.height) {
+      initialProduct.aboveHeight = initialProduct.height.aboveHeight || { colorOptions: [], sizeOptions: {}, quantities: {} };
+      initialProduct.belowHeight = initialProduct.height.belowHeight || { colorOptions: [], sizeOptions: {}, quantities: {} };
+    } else {
+      initialProduct.colorOptions = initialProduct.colorOptions || [];
+      initialProduct.sizeOptions = initialProduct.sizeOptions || {};
+      initialProduct.quantities = initialProduct.quantities || {};
+    }
+    return initialProduct;
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -90,38 +108,52 @@ const Editor = ({ product, onClose, onUpdate }) => {
   const handleColorChange = (section, index, field, value) => {
     const sectionKey = section === 'above' ? 'aboveHeight' : section === 'below' ? 'belowHeight' : 'colorOptions';
     setEditedProduct(prev => {
-      const updatedColors = [...prev[sectionKey].colorOptions];
+      const updatedSection = { ...prev[sectionKey] };
+      const updatedColors = [...(updatedSection.colorOptions || [])];
       updatedColors[index] = { ...updatedColors[index], [field]: value };
-      return { ...prev, [sectionKey]: { ...prev[sectionKey], colorOptions: updatedColors } };
+      return { ...prev, [sectionKey]: { ...updatedSection, colorOptions: updatedColors } };
     });
   };
 
   const handleAddColor = (section) => {
-    const sectionKey = section === 'above' ? 'aboveHeight' : section === 'below' ? 'belowHeight' : 'colorOptions';
     const newColor = { name: '', hex: '#000000' };
-    setEditedProduct(prev => ({
-      ...prev,
-      [sectionKey]: {
-        ...prev[sectionKey],
-        colorOptions: [...prev[sectionKey].colorOptions, newColor],
-        sizeOptions: { ...prev[sectionKey].sizeOptions, [newColor.name]: [] },
-        quantities: { ...prev[sectionKey].quantities, [newColor.name]: {} }
+    setEditedProduct(prev => {
+      if (useHeightClassification) {
+        const sectionKey = section === 'above' ? 'aboveHeight' : 'belowHeight';
+        const updatedSection = { ...prev[sectionKey] };
+        return {
+          ...prev,
+          [sectionKey]: {
+            ...updatedSection,
+            colorOptions: [...(updatedSection.colorOptions || []), newColor],
+            sizeOptions: { ...(updatedSection.sizeOptions || {}), [newColor.name]: [] },
+            quantities: { ...(updatedSection.quantities || {}), [newColor.name]: {} }
+          }
+        };
+      } else {
+        return {
+          ...prev,
+          colorOptions: [...(prev.colorOptions || []), newColor],
+          sizeOptions: { ...(prev.sizeOptions || {}), [newColor.name]: [] },
+          quantities: { ...(prev.quantities || {}), [newColor.name]: {} }
+        };
       }
-    }));
+    });
   };
 
   const handleRemoveColor = (section, colorName) => {
     const sectionKey = section === 'above' ? 'aboveHeight' : section === 'below' ? 'belowHeight' : 'colorOptions';
     setEditedProduct(prev => {
-      const updatedColors = prev[sectionKey].colorOptions.filter(color => color.name !== colorName);
-      const updatedSizeOptions = { ...prev[sectionKey].sizeOptions };
+      const updatedSection = { ...prev[sectionKey] };
+      const updatedColors = (updatedSection.colorOptions || []).filter(color => color.name !== colorName);
+      const updatedSizeOptions = { ...(updatedSection.sizeOptions || {}) };
       delete updatedSizeOptions[colorName];
-      const updatedQuantities = { ...prev[sectionKey].quantities };
+      const updatedQuantities = { ...(updatedSection.quantities || {}) };
       delete updatedQuantities[colorName];
       return {
         ...prev,
         [sectionKey]: {
-          ...prev[sectionKey],
+          ...updatedSection,
           colorOptions: updatedColors,
           sizeOptions: updatedSizeOptions,
           quantities: updatedQuantities
@@ -140,23 +172,24 @@ const Editor = ({ product, onClose, onUpdate }) => {
     } else {
       setSizeError('');
       setEditedProduct(prev => {
-        const currentSizes = prev[sectionKey].sizeOptions[colorName] || [];
+        const updatedSection = { ...prev[sectionKey] };
+        const currentSizes = updatedSection.sizeOptions?.[colorName] || [];
         const uniqueSizes = [...new Set([...currentSizes, ...sizesArray])];
         const updatedSizeOptions = {
-          ...prev[sectionKey].sizeOptions,
+          ...(updatedSection.sizeOptions || {}),
           [colorName]: uniqueSizes
         };
         const updatedQuantities = {
-          ...prev[sectionKey].quantities,
+          ...(updatedSection.quantities || {}),
           [colorName]: uniqueSizes.reduce((acc, size) => ({
             ...acc,
-            [size]: prev[sectionKey].quantities[colorName]?.[size] || 0
+            [size]: updatedSection.quantities?.[colorName]?.[size] || 0
           }), {})
         };
         return {
           ...prev,
           [sectionKey]: {
-            ...prev[sectionKey],
+            ...updatedSection,
             sizeOptions: updatedSizeOptions,
             quantities: updatedQuantities
           }
@@ -168,35 +201,119 @@ const Editor = ({ product, onClose, onUpdate }) => {
   const handleQuantityChange = (section, colorName, size, value) => {
     const sectionKey = section === 'above' ? 'aboveHeight' : section === 'below' ? 'belowHeight' : 'colorOptions';
     const newValue = parseInt(value, 10) || 0;
-    setEditedProduct(prev => ({
-      ...prev,
-      [sectionKey]: {
-        ...prev[sectionKey],
-        quantities: {
-          ...prev[sectionKey].quantities,
-          [colorName]: {
-            ...prev[sectionKey].quantities[colorName],
-            [size]: newValue
+    setEditedProduct(prev => {
+      const updatedSection = { ...prev[sectionKey] };
+      return {
+        ...prev,
+        [sectionKey]: {
+          ...updatedSection,
+          quantities: {
+            ...(updatedSection.quantities || {}),
+            [colorName]: {
+              ...(updatedSection.quantities?.[colorName] || {}),
+              [size]: newValue
+            }
           }
         }
+      };
+    });
+  };
+
+  const handleHeightClassificationChange = (e) => {
+    const newUseHeightClassification = e.target.checked;
+    setUseHeightClassification(newUseHeightClassification);
+
+    setEditedProduct(prev => {
+      if (newUseHeightClassification) {
+        return {
+          ...prev,
+          height: { value: '', aboveHeight: { colorOptions: [], sizeOptions: {}, quantities: {} }, belowHeight: { colorOptions: [], sizeOptions: {}, quantities: {} } },
+          aboveHeight: { colorOptions: [], sizeOptions: {}, quantities: {} },
+          belowHeight: { colorOptions: [], sizeOptions: {}, quantities: {} },
+          colorOptions: undefined,
+          sizeOptions: undefined,
+          quantities: undefined
+        };
+      } else {
+        return {
+          ...prev,
+          height: undefined,
+          aboveHeight: undefined,
+          belowHeight: undefined,
+          colorOptions: [],
+          sizeOptions: {},
+          quantities: {}
+        };
       }
-    }));
+    });
+  };
+
+  const formatProductData = (product) => {
+    const formattedProduct = { ...product };
+
+    // Convert categories to array if it's a string
+    if (typeof formattedProduct.categories === 'string') {
+      formattedProduct.categories = formattedProduct.categories.split(',').map(cat => cat.trim());
+    }
+
+    // Ensure numeric fields are numbers
+    ['price', 'gst', 'discount'].forEach(field => {
+      formattedProduct[field] = Number(formattedProduct[field]);
+    });
+
+    // Format height data
+    if (useHeightClassification) {
+      formattedProduct.height = {
+        value: Number(formattedProduct.height?.value || 0),
+        aboveHeight: formattedProduct.aboveHeight || { colorOptions: [], sizeOptions: {}, quantities: {} },
+        belowHeight: formattedProduct.belowHeight || { colorOptions: [], sizeOptions: {}, quantities: {} }
+      };
+      delete formattedProduct.colorOptions;
+      delete formattedProduct.sizeOptions;
+      delete formattedProduct.quantities;
+    } else {
+      delete formattedProduct.height;
+      delete formattedProduct.aboveHeight;
+      delete formattedProduct.belowHeight;
+    }
+
+    // Ensure quantities are numbers
+    const processQuantities = (section) => {
+      if (formattedProduct[section]) {
+        Object.keys(formattedProduct[section].quantities).forEach(color => {
+          Object.keys(formattedProduct[section].quantities[color]).forEach(size => {
+            formattedProduct[section].quantities[color][size] = Number(formattedProduct[section].quantities[color][size]);
+          });
+        });
+      }
+    };
+
+    if (useHeightClassification) {
+      processQuantities('aboveHeight');
+      processQuantities('belowHeight');
+    } else {
+      processQuantities('colorOptions');
+    }
+
+    return formattedProduct;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       await removeImagesFromFirebase();
       const newImageUrls = await uploadImagesToFirebase();
-      
-      const updatedProduct = {
+
+      const updatedProduct = formatProductData({
         ...editedProduct,
         imageUrls: [...images.filter(img => img.isExisting).map(img => img.url), ...newImageUrls],
-        categories: editedProduct.categories.join(', '),
-      };
+      });
+
+      console.log(updatedProduct);    
 
       const response = await axios.put(`http://127.0.0.1:5001/lushio-fitness/us-central1/api/products/update/${editedProduct.id}`, updatedProduct);
-      
+
       if (response.status === 200) {
         onUpdate(updatedProduct);
         onClose();
@@ -250,68 +367,68 @@ const Editor = ({ product, onClose, onUpdate }) => {
             <input
               type="checkbox"
               checked={useHeightClassification}
-              onChange={(e) => setUseHeightClassification(e.target.checked)}
+              onChange={handleHeightClassificationChange}
             />
             Use height-based classification
           </label>
         </div>
 
         {useHeightClassification ? (
-          <>
+  <>
+    <input
+      type="number"
+      name="height"
+      value={editedProduct.height?.value || ''}
+      onChange={(e) => handleNestedChange(e, 'height', 'value')}
+      placeholder="Height (in cm)"
+    />
+    {['above', 'below'].map(section => (
+      <div key={section} className="height-section">
+        <h3>{section === 'above' ? 'Above Height' : 'Below Height'}</h3>
+        <button type="button" onClick={() => handleAddColor(section)}>Add Color</button>
+        {(editedProduct[section === 'above' ? 'aboveHeight' : 'belowHeight']?.colorOptions || []).map((color, index) => (
+          <div key={index} className="color-item">
             <input
-              type="number"
-              name="height"
-              value={editedProduct.height?.value || ''}
-              onChange={(e) => handleNestedChange(e, 'height', 'value')}
-              placeholder="Height (in cm)"
+              type="text"
+              value={color.name}
+              onChange={(e) => handleColorChange(section, index, 'name', e.target.value)}
+              placeholder="Color Name"
             />
-            {['above', 'below'].map(section => (
-              <div key={section} className="height-section">
-                <h3>{section === 'above' ? 'Above Height' : 'Below Height'}</h3>
-                <button type="button" onClick={() => handleAddColor(section)}>Add Color</button>
-                {editedProduct[section === 'above' ? 'aboveHeight' : 'belowHeight'].colorOptions.map((color, index) => (
-                  <div key={index} className="color-item">
-                    <input
-                      type="text"
-                      value={color.name}
-                      onChange={(e) => handleColorChange(section, index, 'name', e.target.value)}
-                      placeholder="Color Name"
-                    />
-                    <input
-                      type="color"
-                      value={color.hex}
-                      onChange={(e) => handleColorChange(section, index, 'hex', e.target.value)}
-                    />
-                    <button type="button" onClick={() => handleRemoveColor(section, color.name)}>Remove Color</button>
-                    <input
-                      type="text"
-                      placeholder="Sizes (comma separated)"
-                      onBlur={(e) => handleAddSize(section, color.name, e.target.value)}
-                    />
-                    <div>
-                      Sizes: {editedProduct[section === 'above' ? 'aboveHeight' : 'belowHeight'].sizeOptions[color.name]?.map(size => (
-                        <span key={size}>
-                          {size}
-                          <input
-                            type="number"
-                            value={editedProduct[section === 'above' ? 'aboveHeight' : 'belowHeight'].quantities[color.name]?.[size] || ''}
-                            onChange={(e) => handleQuantityChange(section, color.name, size, e.target.value)}
-                            min="0"
-                            placeholder="Quantity"
-                          />
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </>
-        ) : (
+            <input
+              type="color"
+              value={color.hex}
+              onChange={(e) => handleColorChange(section, index, 'hex', e.target.value)}
+            />
+            <button type="button" onClick={() => handleRemoveColor(section, color.name)}>Remove Color</button>
+            <input
+              type="text"
+              placeholder="Sizes (comma separated)"
+              onBlur={(e) => handleAddSize(section, color.name, e.target.value)}
+            />
+            <div>
+              Sizes: {editedProduct[section === 'above' ? 'aboveHeight' : 'belowHeight']?.sizeOptions[color.name]?.map(size => (
+                <span key={size}>
+                  {size}
+                  <input
+                    type="number"
+                    value={editedProduct[section === 'above' ? 'aboveHeight' : 'belowHeight']?.quantities[color.name]?.[size] || ''}
+                    onChange={(e) => handleQuantityChange(section, color.name, size, e.target.value)}
+                    min="0"
+                    placeholder="Quantity"
+                  />
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    ))}
+  </>
+) : (
           <div className="color-size-section">
             <h3>Colors and Sizes</h3>
             <button type="button" onClick={() => handleAddColor()}>Add Color</button>
-            {editedProduct.colorOptions.map((color, index) => (
+            {(editedProduct.colorOptions || []).map((color, index) => (
               <div key={index} className="color-item">
                 <input
                   type="text"
@@ -346,14 +463,16 @@ const Editor = ({ product, onClose, onUpdate }) => {
                 </div>
               </div>
             ))}
-            </div>
+          </div>
         )}
 
         {sizeError && <div className="error">{sizeError}</div>}
 
         <div className="button-group">
-          <button type="submit" className="submit-btn">Update Product</button>
-          <button type="button" onClick={onClose} className="cancel-btn">Cancel</button>
+          <button type="submit" className="submit-btn" disabled={isSubmitting}>
+            {isSubmitting ? 'Updating...' : 'Update Product'}
+          </button>
+          <button type="button" onClick={onClose} className="cancel-btn" disabled={isSubmitting}>Cancel</button>
         </div>
       </form>
     </div>

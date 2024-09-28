@@ -7,7 +7,6 @@ const EditProduct = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [error, setError] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -30,6 +29,7 @@ const EditProduct = () => {
         await axios.delete(`http://127.0.0.1:5001/lushio-fitness/us-central1/api/products/delete/${id}`);
         fetchProducts();
         setError(null);
+        setSelectedProduct(null);
       } catch (error) {
         console.error('Error deleting product:', error);
         setError('Failed to delete product. Please try again.');
@@ -48,12 +48,8 @@ const EditProduct = () => {
     }
   };
 
-  const handleEditClick = () => {
-    setIsEditing(true);
-  };
-
   const handleEditorClose = () => {
-    setIsEditing(false);
+    setSelectedProduct(null);
   };
 
   const handleProductUpdate = (updatedProduct) => {
@@ -66,7 +62,14 @@ const EditProduct = () => {
   );
 
   return (
-    <div style={{ padding: '1rem', backgroundColor: 'white' }}>
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      height: 'calc(100vh - 60px)',
+      padding: '1rem',
+      backgroundColor: 'white',
+      overflow: 'hidden'
+    }}>
       <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>Edit Product</h1>
       <input
         type="text"
@@ -76,35 +79,59 @@ const EditProduct = () => {
         style={{ width: '100%', padding: '0.5rem', marginBottom: '1rem' }}
       />
       {error && <div style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
-      <div>
-        {filteredProducts.map(product => (
-          <div key={product.id} style={{ border: '1px solid #ccc', borderRadius: '4px', padding: '1rem', marginBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }} onClick={() => handleProductClick(product.id)}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <img src={product.imageUrls[0]} alt={product.name} style={{ width: '4rem', height: '4rem', objectFit: 'cover', marginRight: '1rem' }} />
-              <span>{product.name}</span>
+      <div style={{
+        display: 'flex',
+        height: '100%',
+        overflow: 'hidden'
+      }}>
+        <div style={{
+          flex: '1',
+          overflowY: 'auto',
+          marginRight: '1rem',
+          paddingRight: '1rem'
+        }}>
+          {filteredProducts.map(product => (
+            <div key={product.id} 
+                 style={{ 
+                   border: '1px solid #ccc', 
+                   borderRadius: '4px', 
+                   padding: '1rem', 
+                   marginBottom: '0.5rem', 
+                   display: 'flex', 
+                   justifyContent: 'space-between', 
+                   alignItems: 'center', 
+                   cursor: 'pointer' 
+                 }} 
+                 onClick={() => handleProductClick(product.id)}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <img src={product.imageUrls[0]} alt={product.name} style={{ width: '4rem', height: '4rem', objectFit: 'cover', marginRight: '1rem' }} />
+                <span>{product.name}</span>
+              </div>
+              <button 
+                onClick={(e) => { e.stopPropagation(); handleDelete(product.id); }} 
+                style={{ 
+                  backgroundColor: 'red', 
+                  color: 'white', 
+                  border: 'none', 
+                  padding: '0.5rem', 
+                  borderRadius: '4px', 
+                  cursor: 'pointer' 
+                }}>
+                Delete
+              </button>
             </div>
-            <button onClick={(e) => { e.stopPropagation(); handleDelete(product.id); }} style={{ backgroundColor: 'red', color: 'white', border: 'none', padding: '0.5rem', borderRadius: '4px', cursor: 'pointer' }}>
-              Delete
-            </button>
-          </div>
-        ))}
-      </div>
-      {selectedProduct && !isEditing && (
-        <div style={{ marginTop: '1rem' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Product Details</h2>
-          <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{JSON.stringify(selectedProduct, null, 2)}</pre>
-          <button onClick={handleEditClick} style={{ backgroundColor: 'blue', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer', marginTop: '1rem' }}>
-            Edit Product
-          </button>
+          ))}
         </div>
-      )}
-      {isEditing && (
-        <Editor
-          product={selectedProduct}
-          onClose={handleEditorClose}
-          onUpdate={handleProductUpdate}
-        />
-      )}
+        {selectedProduct && (
+          <div style={{ flex: '1', overflowY: 'auto' }}>
+            <Editor
+              product={selectedProduct}
+              onClose={handleEditorClose}
+              onUpdate={handleProductUpdate}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
