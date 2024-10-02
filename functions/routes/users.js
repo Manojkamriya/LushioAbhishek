@@ -113,8 +113,6 @@ router.post("/details/:uid", async (req, res) => {
     // Prepare the response data with display dates
     const responseData = {
       ...updatedUserData,
-      // dob: convertToDisplayDate(updatedUserData.dob),
-      // doa: convertToDisplayDate(updatedUserData.doa),
     };
 
     return res.status(200).json(responseData);
