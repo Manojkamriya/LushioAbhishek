@@ -68,27 +68,53 @@ router.get("/details/:uid", async (req, res) => {
   }
 });
 
-// Update user details by UID
+// Update user details by UID (limited DOB and DOA to 2 updates)
 router.post("/details/:uid", async (req, res) => {
   try {
     const uid = req.params.uid;
     const userDoc = db.collection("users").doc(uid);
     const userData = (await userDoc.get()).data() || {};
 
+    // Initialize update counts if they don't exist
+    const dobUpdateCount = userData.dobUpdateCount || 0;
+    const doaUpdateCount = userData.doaUpdateCount || 0;
+
+    // Check if the user has exceeded the allowed updates for dob and doa
+    if (req.body.dob && dobUpdateCount >= 2) {
+      return res.status(400).send("DOB can only be updated twice.");
+    }
+
+    if (req.body.doa && doaUpdateCount >= 2) {
+      return res.status(400).send("DOA can only be updated twice.");
+    }
+
+    // Prepare updated user data
     const updatedUserData = {
       displayName: req.body.displayName || userData.displayName || null,
       email: req.body.email || userData.email || null,
       phoneNumber: req.body.phoneNumber || userData.phoneNumber || null,
       gender: req.body.gender || userData.gender || null,
-      dob: convertToISODate(req.body.dob) || userData.dob || null,
-      doa: convertToISODate(req.body.doa) || userData.doa || null,
+      dob: req.body.dob ? convertToISODate(req.body.dob) : userData.dob || null,
+      doa: req.body.doa ? convertToISODate(req.body.doa) : userData.doa || null,
     };
 
+    // Increment the update counters if dob or doa is updated
+    if (req.body.dob && dobUpdateCount < 2) {
+      updatedUserData.dobUpdateCount = dobUpdateCount + 1;
+    }
+
+    if (req.body.doa && doaUpdateCount < 2) {
+      updatedUserData.doaUpdateCount = doaUpdateCount + 1;
+    }
+
+    // Save the updated user data
     await userDoc.set(updatedUserData, {merge: true});
+
+    // Prepare the response data with display dates
     const responseData = {
       ...updatedUserData,
-      dob: convertToDisplayDate(updatedUserData.dob),
-      doa: convertToDisplayDate(updatedUserData.doa),
+      // dob: convertToDisplayDate(updatedUserData.dob),
+      // doa: convertToDisplayDate(updatedUserData.doa),
     };
 
     return res.status(200).json(responseData);
