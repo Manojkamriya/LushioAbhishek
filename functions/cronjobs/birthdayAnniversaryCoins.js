@@ -3,14 +3,34 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const db = admin.firestore();
 
+// Helper function to fetch dynamic control values (e.g., amount, message, expiry)
+const getControlValues = async (type) => {
+  const controlsRef = db.collection("controls").doc("admin");
+  const controlDoc = await controlsRef.get();
+
+  if (!controlDoc.exists) {
+    console.error(`Control document for ${type} does not exist.`);
+    throw new Error(`Control document for ${type} does not exist.`);
+  }
+
+  const data = controlDoc.data();
+  return {
+    amount: data[`${type}Coins`] || 100, // Default to 100 if not found
+    message: data[`${type}Message`] || `${type} gift`, // Default message if not found
+    expiryDays: data[`${type}Expiry`] || 30, // Default to 30 days expiry if not found
+  };
+};
+
 // cron job for birthday coins on 1st of every month
 const assignBirthdayCoins = functions.pubsub.schedule("0 0 1 * *").onRun(async (context) => {
   const currentDate = new Date();
   const currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, "0"); // Current month in 'MM' format
-  const expiryDate = new Date();
-  expiryDate.setDate(currentDate.getDate() + 30); // Coins will expire after 30 days
 
   try {
+    const {amount, message, expiryDays} = await getControlValues("dob");
+    const expiryDate = new Date();
+    expiryDate.setDate(currentDate.getDate() + expiryDays); // Coins will expire after `expiryDays` days
+
     const usersRef = db.collection("users");
     const snapshot = await usersRef.get();
 
@@ -35,8 +55,8 @@ const assignBirthdayCoins = functions.pubsub.schedule("0 0 1 * *").onRun(async (
           try {
             // Add a new document to the user's coins subcollection
             await coinsRef.add({
-              amount: 100, // Adjust the amount as needed
-              message: "Birthday gift",
+              amount: amount, // Using fetched amount
+              message: message, // Using fetched message
               expiry: expiryDate,
             });
 
@@ -62,10 +82,12 @@ const assignBirthdayCoins = functions.pubsub.schedule("0 0 1 * *").onRun(async (
 const assignAnniversaryCoins = functions.pubsub.schedule("0 0 1 * *").onRun(async (context) => {
   const currentDate = new Date();
   const currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, "0"); // Current month in 'MM' format
-  const expiryDate = new Date();
-  expiryDate.setDate(currentDate.getDate() + 30); // Coins will expire after 30 days
 
   try {
+    const {amount, message, expiryDays} = await getControlValues("doa");
+    const expiryDate = new Date();
+    expiryDate.setDate(currentDate.getDate() + expiryDays); // Coins will expire after `expiryDays` days
+
     const usersRef = db.collection("users");
     const snapshot = await usersRef.get();
 
@@ -79,19 +101,19 @@ const assignAnniversaryCoins = functions.pubsub.schedule("0 0 1 * *").onRun(asyn
       const user = doc.data();
       const userDOA = user.doa; // Expected format: "YYYY-MM-DD"
 
-      // Ensure DOB exists and is in the correct format
+      // Ensure DOA exists and is in the correct format
       if (userDOA && userDOA.length === 10) {
-        const dobMonth = userDOA.substring(5, 7); // Extracting the birth month 'MM'
+        const doaMonth = userDOA.substring(5, 7); // Extracting the birth month 'MM'
 
         // Check if the current month matches the user's birth month
-        if (dobMonth === currentMonth) {
+        if (doaMonth === currentMonth) {
           const coinsRef = usersRef.doc(doc.id).collection("coins");
 
           try {
             // Add a new document to the user's coins subcollection
             await coinsRef.add({
-              amount: 100, // Adjust the amount as needed
-              message: "Anniversary gift",
+              amount: amount, // Using fetched amount
+              message: message, // Using fetched message
               expiry: expiryDate,
             });
 
