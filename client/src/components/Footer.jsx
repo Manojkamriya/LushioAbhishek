@@ -71,7 +71,7 @@ export default function Footer() {
               <Link to="/">Careers</Link>
             </li>
             <li>
-              <Link to="/">Account</Link>
+              <Link to="/user">Account</Link>
             </li>
           </ul>
         </div>

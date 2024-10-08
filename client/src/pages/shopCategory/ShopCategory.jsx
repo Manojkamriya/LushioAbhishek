@@ -1,17 +1,30 @@
-import React, { useContext, useEffect, useState, useCallback } from "react";
+import React, { useContext, useEffect, useState, useCallback, useRef } from "react";
 import "./ShopCategory.css";
 import { ShopContext } from "../../components/context/ShopContext";
 import ProductCard from "../home/ProductCard";
-
 function ShopCategory(props) {
-  const { all_product } = useContext(ShopContext);
+  const { all_product, clearAllData } = useContext(ShopContext);
   const [filterProducts, setFilterProducts] = useState([]);
   const [sortType, setSortType] = useState("rating");
   const [subCategory, setSubCategory] = useState([]);
   const [priceRange, setPriceRange] = useState("");
   const [color, setColor] = useState([]);
+const filterRef  = useRef();
+  const openFilter = () => {
+    if (filterRef.current) {
+      filterRef.current.style.left = "0";
+      document.body.classList.add('no-scroll');
+    
+    }
+  };
 
-  
+  const closeFilter = () => {
+    if (filterRef.current) {
+      filterRef.current.style.left = "-550px";
+      document.body.classList.remove('no-scroll');
+    }
+  };
+
   const subCategoryOptions = {
     men: ["Shirts", "Joggers", "Outerwear", "Pants", "Hats/Caps"],
     women: ["Panty", "Tops", "Leggings", "Outerwear", "Matching Sets"],
@@ -132,7 +145,13 @@ function ShopCategory(props) {
       <img className="shopcategory-banner" src={props.banner} alt="" />
       <div className="shopcategory-indexSort">
         <p>
-          <span>Showing 1-6</span> out of {filterProducts.length} products
+          {/* <span>Showing 1-6</span> out of {filterProducts.length} products */}
+          <img
+            className="menu-open"
+            src="./LushioFitness/Images/icons/filter.png"
+            alt=""
+            onClick={()=>openFilter()}
+          />
         </p>
         <div className="shopcategory-sort">
           <select
@@ -149,7 +168,13 @@ function ShopCategory(props) {
       </div>
 
       <div className="shopcategory-container">
-        <div className="filter-container">
+        <div className="filter-container" ref={filterRef}>
+        <img
+              className="filter-cross-icon"
+              src="./LushioFitness/Images/icons/cross.png"
+              alt=""
+              onClick={closeFilter}
+            />
           {/* Dynamic Subcategory Filter */}
           <div className="subCategory">
             <h4>Subcategory</h4>
@@ -233,8 +258,9 @@ function ShopCategory(props) {
               Over ₹900
             </label>
           </div>
-
+          <button onClick={closeFilter} className="apply-filter-button">Apply Filters</button>
           <button onClick={clearFilter}>Clear Filters</button>
+       
         </div>
 
         {/* Product Display */}
@@ -253,12 +279,16 @@ function ShopCategory(props) {
               )}
               rating={item.rating}
               liked={false}
+              productOptions={item.productOptions}
             />
           ))}
+          
         </div>
       </div>
 
-      <div className="shopcategory-loadmore">Explore More</div>
+      <div className="shopcategory-loadmore" onClick={()=>clearAllData()}>Explore More</div>
+      {/* <MultiStepForm/> */}
+      {/* <StarRating/> */}
     </div>
   );
 }

@@ -1,0 +1,131 @@
+.multi-step-form {
+    max-width: 400px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .form-step {
+    display: flex;
+    flex-direction: column;
+  }
+  
+ .form-step h2 {
+    margin-bottom: 20px;
+    font-size: 20px;
+    text-align: center;
+  }
+  
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .option {
+    padding: 15px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    background-color: #e2e2e2;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .option:hover {
+    background-color: #e6e6e6;
+  }
+  
+  .option.selected {
+    background-color: #000;
+    color: #fff;
+    border-color: #000;
+  }
+  
+ .options input[type="radio"] {
+    cursor: pointer;
+    accent-color: white;
+    height: 20px;
+    width: 20px;
+  }
+ 
+  .pagination {
+    margin-top: 10px;
+    text-align: center;
+  }
+  
+  .pagination span {
+    display: inline-block;
+    width: 50px;
+    height: 8px;
+    margin: 0 5px;
+    background-color: #ccc;
+  
+    border-radius: 5px;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .pagination span.active {
+    background-color: #1c1c1c;
+  }
+  
+  .fade-enter {
+    opacity: 0;
+    transform: translateX(20%);
+  }
+  
+  .fade-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity 300ms, transform 300ms;
+  }
+  
+  .fade-exit {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  
+  .fade-exit-active {
+    opacity: 0;
+    transform: translateX(-20%);
+    transition: opacity 300ms, transform 300ms;
+  }
+  
+
+  .form-button-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  button.btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #1c1c1c;
+    color: white;
+    transition: background-color 0.3s ease;
+  }
+  
+  button.btn:hover {
+    background-color: #1c1c1c;
+  }
+  
+  button.prev {
+  
+  }
+  
+  button.submit {
+    margin-top: 20px;
+    align-self: center;
+  }

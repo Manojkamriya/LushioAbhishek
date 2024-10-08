@@ -1,7 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "./wallet.css";
 
-function wallet() {
+export default function Wallet() {
+  const navigate = useNavigate();
   return (
 <>
     <div className="empty-wallet">
@@ -11,7 +13,7 @@ function wallet() {
       <p>Invite your friends to shop on Lushio and
       </p>
       <h4>win credits worth Rs. 100 on every referral</h4>
-      <button>Send Invite</button>
+      <button onClick={()=>navigate("/user-referAndEarn")}>Send Invite</button>
     </div>
     <div className="wallet-container">
     <div className="wallet-title">
@@ -68,4 +70,4 @@ function wallet() {
     )
 }
 
-export default wallet;
+

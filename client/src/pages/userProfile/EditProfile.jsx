@@ -8,7 +8,8 @@ function EditProfile() {
     displayName: "",
     email: "",
     phoneNumber: "",
-   
+   dob: "",
+   anniversary:"",
     gender: "",
   });
 
@@ -98,7 +99,24 @@ function EditProfile() {
           required
         />
 
-    
+<label>BirthDay Date</label>
+        <input
+          type="date"
+          name="dob"
+          placeholder="date"
+          value={userData.dob}
+          onChange={handleChange}
+          required
+        />
+        <label>Anniversary Date </label>
+        <input
+          type="date"
+          name="anniversary"
+          placeholder="date"
+          value={userData.anniversary}
+          onChange={handleChange}
+          required
+        />
 
         <div className="radio-input">
           <label>Gender</label>

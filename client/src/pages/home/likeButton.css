@@ -2,6 +2,8 @@
   .heart-button-container {
     display: inline-block;
     cursor: pointer;
+    height: 100%;
+    width: 100%;
   }
   
   .heart-icon {
@@ -35,17 +37,60 @@
   .spinner {
     outline: none;
     display: inline-block;
-    border: 3px solid  rgb(8, 8, 8);
+    border: 3px solid  #1c1c1c;
   
     border-left-color: #c8c7c7;
     border-radius: 50%;
     width: 26px;
     height: 26px;
-    background-color: rgb(15, 15, 15);
+    background-color: #1c1c1c;
     animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+@media(max-width: 1350px){
+  .heart-icon{
+    font-size: 1.5rem;
+  }
+}
+@media(max-width: 1017px){
+  .heart-icon{
+    font-size: 2rem;
+  }
+}
+@media(max-width: 917px){
+  .heart-icon{
+    font-size: 1.6rem;
+  }
+}
+@media(max-width: 847px){
+  .heart-icon{
+    font-size: 1.8rem;
+  }
+}
+@media(max-width: 600px){
+  .heart-icon{
+    font-size: 1.5rem;
+  }
+}
+@media(max-width: 520px){
+  .heart-icon{
+    font-size: 1.3rem;
+  }
+}
+@media(max-width: 430px){
+  .heart-icon{
+    font-size: 1.1rem;
+  }
+}
+@media(350px<= width <=500px) {
+  .spinner{
+    width: 14px;
+    height: 14px;
+    border: 1px solid  #1c1c1c;
+    border-left-color: #c8c7c7;
+  }
 }

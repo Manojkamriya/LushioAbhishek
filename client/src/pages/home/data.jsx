@@ -14,6 +14,12 @@ const media = [
     image: "./LushioFitness/Images/carousel/carousel_image_8.webp",
    
   },
+  
+  
+  {
+    image: "./LushioFitness/Images/carousel/carousel_image_11.webp",
+    
+  },
   {
     image: "./LushioFitness/Images/carousel/carousel-image-1.webp",
    
@@ -21,17 +27,8 @@ const media = [
   {
     image: "./LushioFitness/Images/carousel/carousel-image-2.webp",
    
-  },
- 
- 
-  {
-    image: "./LushioFitness/Images/carousel/carousel-image-4.webp",
-    
-  },
-  {
-    image: "./LushioFitness/Images/carousel/carousel-image-5.webp",
-   
   }
+ 
 ];
 
 export default media;

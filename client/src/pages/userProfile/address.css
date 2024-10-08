@@ -1,18 +1,4 @@
-:root {
-    --primary-color: #fd9935;
-    --secondary-color: #fdd835;
-    --text-color: #333;
-    --border-color: #e0e0e0;
-    --background-color: #f9f9f9;
-    --default-address-color: #e74c3c;
-  }
-  
-  body {
-    font-family: 'Poppins', sans-serif;
-    color: var(--text-color);
-    background-color: var(--background-color);
-  }
-  
+
   .address-wrapper {
     width: 100%;
     max-width: 1200px;
@@ -29,7 +15,7 @@
   .address-title hr {
     width: 100px;
     height: 3px;
-    background: var(--secondary-color);
+    background: #fdd835;
     border: none;
     margin-bottom: 30px;
   }
@@ -50,16 +36,16 @@
     transition: all 0.3s ease;
   }
   
-  .myaddress:hover {
+  /* .myaddress:hover {
     transform: translateY(-5px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
   }
-  
+   */
   .myaddress h4 {
     font-weight: 600;
     font-size: 18px;
     margin-bottom: 12px;
-    color: var(--primary-color);
+    color: #fd9935;
   }
   
   .myaddress p {
@@ -82,13 +68,13 @@
   
   .myaddress.add-new span {
     font-size: 40px;
-    color: var(--primary-color);
+    color: #fd9935;
     margin-bottom: 10px;
   }
   
   .myaddress.add-new p {
     font-size: 18px;
-    color: var(--primary-color);
+    color: #fd9935;
   }
   
   .address-action {
@@ -100,8 +86,8 @@
   
   .address-action button {
     background-color: transparent;
-    color: var(--primary-color);
-    border: 1px solid var(--primary-color);
+    color: #fd9935;
+    border: 1px solid #fd9935;
     padding: 8px 12px;
     border-radius: 4px;
     cursor: pointer;
@@ -109,12 +95,12 @@
   }
   
   .address-action button:hover {
-    background-color: var(--primary-color);
+    background-color: #fd9935;
     color: white;
   }
   
   .default-address {
-    background-color: var(--default-address-color);
+    background-color: #e74c3c;
     color: white;
     font-size: 12px;
     padding: 4px 8px;
@@ -128,13 +114,42 @@
     padding: 10px;
     margin-bottom: 10px;
     outline: none;
-    border: 1px solid var(--border-color);
+    border: 1px solid #e0e0e0;
     border-radius: 4px;
     transition: border 0.1s ease;
   }
-  .edit-address input:focus{
+  
+  .edit-address input:focus {
     border-color: #333;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  }
+  .spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Ensure the spinner appears on top */
+  }
+  
+  /* Spinner */
+  .spinner-overlay div {
+    border: 6px solid rgba(255, 255, 255, 0.3); /* Light semi-transparent border */
+    border-top: 6px solid #ffffff; /* White top border for the rotating effect */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: transParentSpin 1s linear infinite;
+  }
+  
+  /* Spinner animation */
+  @keyframes transParentSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
   @media (max-width: 768px) {
     .address-container {

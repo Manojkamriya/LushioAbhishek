@@ -1,27 +1,34 @@
-.empty-wallet{
-    height: 450px;
-    width: 450px;
-    margin: 100px auto;
-    text-align: center;
+.empty-wallet {
+  height: clamp(300px, 60vw, 450px);
+  width: clamp(300px, 60vw, 450px);
+  margin: clamp(50px, 10vw, 100px) auto;
+  text-align: center;
 }
-.empty-wallet img{
-    width: 90%;
-    height: 70%;
+
+.empty-wallet img {
+  width: 90%;
+  height: 70%;
+  object-fit: contain;
 }
-.empty-wallet button{
-  
-        width: 320px;
-        height: 40px;
-        border-radius: 5px;
-        background-color: #42a2a2;
-        color: #fff;
-        text-align: center;
-        font-family: montserrat,sans-serif;
-        font-size: 16px;
-        margin-top: 19px;
-        padding: 10px 0;
-        border: 1px solid #42a2a2
-    
+
+.empty-wallet button {
+  width: clamp(200px, 80%, 320px);
+  height: clamp(35px, 5vw, 40px);
+  border-radius: 5px;
+  background-color: #42a2a2;
+  color: #fff;
+  text-align: center;
+  font-family: montserrat, sans-serif;
+  font-size: clamp(14px, 2vw, 16px);
+  margin-top: clamp(10px, 2vw, 19px);
+  padding: 10px 0;
+  border: 1px solid #42a2a2;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.empty-wallet button:hover {
+  background-color: #378787;
 }
 .wallet-container{
     width: 100%;

@@ -1,12 +1,15 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect,useContext } from "react";
+import { ShopContext } from "./context/ShopContext";
 import "./Navbar.css";
 import { Link } from "react-router-dom";
 import Dropdown from "./Dropdown";
 import Submenu from "./Submenu";
 import { getUser } from "../firebaseUtils";
+import Search from "./Search";
 
 function Navbar() {
- 
+  const { getCartItemCount} =
+  useContext(ShopContext);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
 
@@ -40,14 +43,28 @@ function Navbar() {
     
     fetchUser();
   }, []);
+ 
   const openMenu = () => {
-    menuRef.current.style.left = "0";
-    console.log(user);
-  };
-  const closeMenu = () => {
-    menuRef.current.style.left = "-550px";
+    if (menuRef.current) {
+      menuRef.current.style.left = "0";
+      document.body.classList.add('no-scroll');
+      console.log(user);
+    }
   };
 
+  const closeMenu = () => {
+    if (menuRef.current) {
+      menuRef.current.style.left = "-550px";
+      document.body.classList.remove('no-scroll');
+    }
+  };
+
+  // Cleanup function to ensure scrolling is re-enabled if the component unmounts while the menu is open
+  useEffect(() => {
+    return () => {
+      document.body.classList.remove('no-scroll');
+    };
+  }, []);
   const searchRef = useRef();
 
   const openSearch = () => {
@@ -151,7 +168,7 @@ function Navbar() {
           </Link>
           <Link  to={isLoggedIn ? "/cart" : "/login"}>
             <img src="./LushioFitness/Images/icons/cart.png" alt="" />
-            {/* <span>{getTotalCartItems()}</span> */}
+          {getCartItemCount() > 0 &&  <span>{getCartItemCount()}</span>}
           </Link>
           <Link className="wallet-icon" to={isLoggedIn ? "/wallet" : "/login"}>
             <img src="./LushioFitness/Images/icons/wallet.png" alt="" />
@@ -161,28 +178,11 @@ function Navbar() {
   <img src="./LushioFitness/Images/icons/profile.png" alt="Profile" />
 </Link>
         </div>
-        <div ref={menuRef} className="submenu">
-          <div className="responsive-navbar">
-            <img
-              className="cross-icon"
-              src="./LushioFitness/Images/icons/cross_icon.svg"
-              alt=""
-              onClick={closeMenu}
-            />
-            <Submenu />
-          </div>
-        </div>
-        <div ref={searchRef} className="header-search">
-          <div className="header-search-form-control">
-            <img src="./LushioFitness/Images/icons/search.svg" alt="" />
-            <input type="search" placeholder="SEARCH FOR..." />
-            <img
-              src="./LushioFitness/Images/icons/cross.png"
-              alt=""
-              onClick={closeSearch}
-            />
-          </div>
-        </div>
+       
+            <Submenu menuRef={menuRef} closeMenu={closeMenu}/>
+        
+      
+        <Search searchRef={searchRef} closeSearch={closeSearch}/>
       </div>
     </nav>
   );

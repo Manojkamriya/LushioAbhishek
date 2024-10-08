@@ -82,7 +82,64 @@
    .carousel_arrow_right {
      right: 15px;
    }
-   
+   .carousel_arrow_left,
+.carousel_arrow_right {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.carousel_arrow_left {
+  left: 20px;
+}
+
+.carousel_arrow_right {
+  right: 20px;
+}
+
+.carousel_arrow_left p,
+.carousel_arrow_right p {
+  font-size: 40px;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  transition: all 0.3s ease;
+}
+
+.carousel_arrow_left:hover,
+.carousel_arrow_right:hover {
+  background-color: rgba(255, 255, 255, 1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.carousel_arrow_left:hover p,
+.carousel_arrow_right:hover p {
+  color: #000;
+ 
+}
+
+/* Optional: Adjust the left arrow slightly */
+.carousel_arrow_left p {
+  margin-right: 3px;
+}
+
+/* Optional: Adjust the right arrow slightly */
+.carousel_arrow_right p {
+  margin-left: 3px;
+}
    .carousel_pagination {
      position: absolute;
      bottom: 5px;
@@ -109,7 +166,7 @@
      background-color: rgb(249, 249, 249);
    }
  
-  
+ 
   @media(max-width: 950px){
     .carousel{
       height: 480px;

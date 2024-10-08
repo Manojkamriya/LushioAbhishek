@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./submenu.css";
-import "./search.css";
+// import "./search.css";
 import { Link } from "react-router-dom";
 
 
@@ -20,7 +20,7 @@ function SubmenuItems({ items, imageSrc, description }) {
   );
 }
 
-function Submenu() {
+function Submenu({menuRef, closeMenu}) {
   const [menu, setMenu] = useState("Men");
 
  
@@ -78,10 +78,18 @@ function Submenu() {
   };
 
   return (
+    <div ref={menuRef} className="submenu">
+    <div className="responsive-navbar">
+      <img
+        className="cross-icon"
+        src="./LushioFitness/Images/icons/cross_icon.svg"
+        alt=""
+        onClick={closeMenu}
+      />
     <div className="res-navbar-headings">
       <ul className="res-navbar-headings-list">
         {Object.keys(menus).map((menuKey) => (
-          <li key={menuKey} onClick={() => setMenu(menuKey)}>
+          <li key={menuKey} onClick={() => setMenu(menuKey)} className={menuKey===menu?"submenu-category-selected":""}>
             {menuKey}
           </li>
         ))}
@@ -93,6 +101,8 @@ function Submenu() {
           description={menus[menu].description}
         />
       </div>
+    </div>
+    </div>
     </div>
   );
 }

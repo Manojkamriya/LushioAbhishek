@@ -3,6 +3,7 @@ import { Modal, Box, Fade, Backdrop } from "@mui/material";
 import StarRating from "./StarRating";
 import "./button.css"; 
 // import "../userProfile/user.css";
+import MultiStepForm from "../shopCategory/MultiStepForm";
 import "./modal.css";
 const AnimatedModal = () => {
   const [open, setOpen] = useState(false);
@@ -58,7 +59,7 @@ const AnimatedModal = () => {
               p: 4,
             }}
           >
-            <div className="feedback-container">
+            {/* <div className="feedback-container">
             <h2>Rate Us</h2>
             <p>
               Rate us to improve user experience and give your suggestion also
@@ -72,7 +73,8 @@ const AnimatedModal = () => {
 
 <textarea id="review" name="review" rows="4" cols="50"/>
 
-</div>
+</div> */}
+<MultiStepForm/>
 <div className="container">
       <button 
         className={buttonState} 

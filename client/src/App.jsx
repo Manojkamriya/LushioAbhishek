@@ -74,7 +74,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/finishSignIn" element={<FinishEmailSignUp />} />
-            <Route path="/product" element={<ProductDisplay />} />
+            <Route path="/:productID" element={<ProductDisplay />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/wishlist" element={<WishList />} />
             <Route path="/user" element={<User />} />
