@@ -24,6 +24,7 @@ const userRoutes = require("./routes/users.js");
 const productsRoute = require("./routes/products.js");
 const reviewRoute = require("./routes/reviews.js");
 const walletRoute = require("./routes/wallet.js");
+const cartRoute = require("./routes/cart.js");
 
 // User routes
 app.use("/user", userRoutes);
@@ -36,6 +37,9 @@ app.use("/reviews", reviewRoute);
 
 // Wallet routes
 app.use("/wallet", walletRoute);
+
+// Cart routes
+app.use("/cart", cartRoute);
 
 // Export the API
 exports.api = functions.https.onRequest(app);

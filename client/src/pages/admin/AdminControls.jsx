@@ -11,6 +11,12 @@ const AdminControls = () => {
   const [doaCoins, setDoaCoins] = useState(0);
   const [doaMessage, setDoaMessage] = useState('');
   const [doaExpiry, setDoaExpiry] = useState(30);
+  const [ageCoins, setAgeCoins] = useState({
+    oneMonth: { coins: 0, message: '', expiry: 30 },
+    oneYear: { coins: 0, message: '', expiry: 30 },
+    twoYears: { coins: 0, message: '', expiry: 30 },
+    fiveYears: { coins: 0, message: '', expiry: 30 },
+  });
 
   const docRef = doc(db, "controls", "admin");
 
@@ -28,6 +34,7 @@ const AdminControls = () => {
           setDoaCoins(data.doaCoins);
           setDoaMessage(data.doaMessage);
           setDoaExpiry(data.doaExpiry);
+          setAgeCoins(data.coinSettings || ageCoins);
         } else {
           console.log("No such document!");
         }
@@ -37,6 +44,16 @@ const AdminControls = () => {
     };
     fetchData();
   }, []);
+
+  const handleCoinSettingChange = (milestone, field, value) => {
+    setAgeCoins(prevSettings => ({
+      ...prevSettings,
+      [milestone]: {
+        ...prevSettings[milestone],
+        [field]: field === 'coins' || field === 'expiry' ? Number(value) : value
+      }
+    }));
+  };
 
   const handleUpdate = async () => {
     try {
@@ -48,6 +65,7 @@ const AdminControls = () => {
         doaCoins: Number(doaCoins), // Ensure number type
         doaMessage,
         doaExpiry: Number(doaExpiry), // Ensure number type
+        coinSettings: ageCoins,
       });
       alert("Data successfully updated!");
     } catch (error) {
@@ -122,6 +140,36 @@ const AdminControls = () => {
           onChange={(e) => setDoaExpiry(e.target.value)} // Correctly updating doaExpiry
         />
       </div>
+
+      {Object.entries(ageCoins).map(([milestone, settings]) => (
+        <div key={milestone} className="milestone-settings">
+          <h3>{milestone.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</h3>
+          <div className="control-item">
+            <label>Coins:</label>
+            <input
+              type="number"
+              value={settings.coins}
+              onChange={(e) => handleCoinSettingChange(milestone, 'coins', e.target.value)}
+            />
+          </div>
+          <div className="control-item">
+            <label>Message:</label>
+            <input
+              type="text"
+              value={settings.message}
+              onChange={(e) => handleCoinSettingChange(milestone, 'message', e.target.value)}
+            />
+          </div>
+          <div className="control-item">
+            <label>Expiry (days):</label>
+            <input
+              type="number"
+              value={settings.expiry}
+              onChange={(e) => handleCoinSettingChange(milestone, 'expiry', e.target.value)}
+            />
+          </div>
+        </div>
+      ))}
 
       <button className="update-btn" onClick={handleUpdate}>
         Update

@@ -36,6 +36,7 @@ router.post("/addProduct", async (req, res) => {
 
     // Prepare the new product data
     const productData = {
+      addedOn: new Date(),
       name: name.trim(),
       displayName: displayName.trim(),
       description: description.trim(),

@@ -7,18 +7,18 @@ const db = admin.firestore();
 const assignAccountAgeCoins = functions.pubsub.schedule("0 0 * * *").onRun(async (context) => {
   const currentDate = new Date();
 
-  // Coin amounts for different milestones
-  const coinsForMilestones = {
-    oneMonth: 50, // Hardcoded amounts for now
-    oneYear: 100,
-    twoYears: 200,
-    fiveYears: 500,
-  };
-
-  const expiryDate = new Date();
-  expiryDate.setDate(currentDate.getDate() + 30); // Coins expire in 30 days
-
   try {
+    // Fetch admin controls
+    const adminControlsDoc = await db.collection("controls").doc("admin").get();
+    const adminControls = adminControlsDoc.data();
+
+    if (!adminControls || !adminControls.engine) {
+      console.log("Coin assignment is turned off or admin controls not found.");
+      return null;
+    }
+
+    const {coinSettings} = adminControls;
+
     const usersRef = db.collection("users");
     const snapshot = await usersRef.get();
 
@@ -34,45 +34,25 @@ const assignAccountAgeCoins = functions.pubsub.schedule("0 0 * * *").onRun(async
 
         const coinsRef = usersRef.doc(doc.id).collection("coins");
 
-        // Check if the account has reached certain milestones
-        if (Math.floor(diffInMonths) === 1) {
-          // Add coins for 1-month-old account
-          await coinsRef.add({
-            amount: coinsForMilestones.oneMonth,
-            message: "1 Month Account Anniversary",
-            expiry: expiryDate,
-          });
-          console.log(`1 month coins added for user: ${doc.id}`);
-        }
+        const milestones = [
+          {name: "oneMonth", condition: Math.floor(diffInMonths) === 1},
+          {name: "oneYear", condition: Math.floor(diffInYears) === 1},
+          {name: "twoYears", condition: Math.floor(diffInYears) === 2},
+          {name: "fiveYears", condition: Math.floor(diffInYears) === 5},
+        ];
 
-        if (Math.floor(diffInYears) === 1) {
-          // Add coins for 1-year-old account
-          await coinsRef.add({
-            amount: coinsForMilestones.oneYear,
-            message: "1 Year Account Anniversary",
-            expiry: expiryDate,
-          });
-          console.log(`1 year coins added for user: ${doc.id}`);
-        }
+        for (const milestone of milestones) {
+          if (milestone.condition) {
+            const settings = coinSettings[milestone.name];
+            const expiryDate = new Date(currentDate.getTime() + settings.expiry * 24 * 60 * 60 * 1000);
 
-        if (Math.floor(diffInYears) === 2) {
-          // Add coins for 2-year-old account
-          await coinsRef.add({
-            amount: coinsForMilestones.twoYears,
-            message: "2 Years Account Anniversary",
-            expiry: expiryDate,
-          });
-          console.log(`2 year coins added for user: ${doc.id}`);
-        }
-
-        if (Math.floor(diffInYears) === 5) {
-          // Add coins for 5-year-old account
-          await coinsRef.add({
-            amount: coinsForMilestones.fiveYears,
-            message: "5 Years Account Anniversary",
-            expiry: expiryDate,
-          });
-          console.log(`5 year coins added for user: ${doc.id}`);
+            await coinsRef.add({
+              amount: settings.coins,
+              message: settings.message,
+              expiry: expiryDate,
+            });
+            console.log(`${milestone.name} coins added for user: ${doc.id}`);
+          }
         }
       }
     });
