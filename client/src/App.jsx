@@ -42,9 +42,8 @@ function App() {
         console.error("Error fetching control values:", error);
       }
     };
-
     fetchControls();
-  }, []);
+  }, [backend, admin]);
 
   if (backend === null || admin === null) {
     return <div className="loader-container"> <span className="loader"></span></div>;
