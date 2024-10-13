@@ -77,11 +77,12 @@ function App() {
             <Route path="/:productID" element={<ProductDisplay />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/wishlist" element={<WishList />} />
+            <Route exact path="/user/orders" element={<Orders />} />
             <Route path="/user" element={<User />} />
             <Route path="/user-editProfile" element={<EditProfile />} />
             <Route path="/wallet" element={<Wallet />} />
             <Route path="/place-order" element={<PlaceOrder/>} />
-            <Route path="/user-orders" element={<Orders />} />
+          
             <Route path="/user-address" element={<Address />} />
             <Route path="/user-referAndEarn" element={<ReferAndEarn />} />
             <Route path="/lushioGods" element={<AdminPanel />} />

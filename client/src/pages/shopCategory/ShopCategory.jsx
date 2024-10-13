@@ -9,6 +9,7 @@ function ShopCategory(props) {
   const [subCategory, setSubCategory] = useState([]);
   const [priceRange, setPriceRange] = useState("");
   const [color, setColor] = useState([]);
+  const [isFilterApplied, setIsFilterApplied]  = useState(false);
 const filterRef  = useRef();
   const openFilter = () => {
     if (filterRef.current) {
@@ -44,10 +45,12 @@ const filterRef  = useRef();
       productsCopy = productsCopy.filter((item) =>
         subCategory.includes(item.subCategory)
       );
+      setIsFilterApplied(true);
     }
 
     if (color.length > 0) {
       productsCopy = productsCopy.filter((item) => color.includes(item.color));
+      setIsFilterApplied(true);
     }
 
     if (priceRange) {
@@ -69,6 +72,7 @@ const filterRef  = useRef();
         default:
           break;
       }
+      setIsFilterApplied(true);
     }
 
     setFilterProducts(productsCopy);
@@ -87,9 +91,13 @@ const filterRef  = useRef();
       case "rating":
         setFilterProducts([...fpCopy].sort((a, b) => b.rating - a.rating));
         break;
+        case "discount":
+          setFilterProducts([...fpCopy].sort((a, b) => b.discount - a.discount));
+          break;
       default:
         break;
     }
+   
   }, [filterProducts, sortType]);
 
   useEffect(() => {
@@ -106,8 +114,9 @@ const filterRef  = useRef();
     setSubCategory([]);
     setPriceRange("");
     setColor([]);
+    setIsFilterApplied(false);
   }, [props.category, all_product]);
-
+  
   // Clear all filters
   const clearFilter = () => {
     let categoryProducts = all_product.filter(
@@ -118,6 +127,7 @@ const filterRef  = useRef();
     setSubCategory([]);
     setPriceRange("");
     setColor([]);
+    setIsFilterApplied(false);
   };
 
   // Toggle subcategory filter
@@ -145,7 +155,8 @@ const filterRef  = useRef();
       <img className="shopcategory-banner" src={props.banner} alt="" />
       <div className="shopcategory-indexSort">
         <p>
-          {/* <span>Showing 1-6</span> out of {filterProducts.length} products */}
+    {  isFilterApplied &&   <button onClick={clearFilter}>Clear Filters</button>}
+        
           <img
             className="menu-open"
             src="./LushioFitness/Images/icons/filter.png"
@@ -163,6 +174,7 @@ const filterRef  = useRef();
             <option value="rating">Sort by: Rating</option>
             <option value="low-high">Sort by: Low to High</option>
             <option value="high-low">Sort by: High to Low</option>
+            <option value="discount">Sort by: Discount</option>
           </select>
         </div>
       </div>
@@ -274,12 +286,14 @@ const filterRef  = useRef();
               image2={item.image}
               newPrice={item.new_price}
               oldPrice={item.old_price}
-              discount={Math.round(
-                ((item.old_price - item.new_price) / item.old_price) * 100
-              )}
+              // discount={Math.round(
+              //   ((item.old_price - item.new_price) / item.old_price) * 100
+              // )}
+              discount = {item.discount}
               rating={item.rating}
               liked={false}
               productOptions={item.productOptions}
+              data={item.data || {}}
             />
           ))}
           

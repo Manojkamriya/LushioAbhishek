@@ -18,6 +18,9 @@ import p29_img from "./product_305.webp";
 import p30_img from "./product_306.webp";
 
 
+const calculateDiscount = (oldPrice, newPrice) => {
+  return Math.round(((oldPrice - newPrice) / oldPrice) * 100);
+};
 
 let all_product = [
   {
@@ -29,9 +32,80 @@ let all_product = [
     color:"black",
     new_price: 500,
     old_price: 800,
+   
+    get discount() {
+      return calculateDiscount(this.old_price, this.new_price)
+    },
     rating: 4.6,
     inStock:true,
     productOptions: null,
+    data: {
+      height: { value: '170' },
+      aboveHeight: {
+        colorOptions: [
+          { name: 'Crimson Blush', hex: '#DC143C' },
+          { name: 'Emerald Dream', hex: '#50C878' },
+          { name: 'Sapphire Mist', hex: '#082567' },
+          { name: 'Sunset Orange', hex: '#FD5E53' },
+          { name: 'Lavender Haze', hex: '#B57EDC' },
+          { name: 'Golden Rays', hex: '#FFAA33' },
+          { name: 'Turquoise Breeze', hex: '#40E0D0' },
+          { name: 'Midnight Plum', hex: '#3C1361' }
+        ],
+        sizeOptions: {
+          'Crimson Blush': ['S', 'M', 'L', 'XL'],
+          'Emerald Dream': ['M', 'L', 'XL'],
+          'Sapphire Mist': ['S', 'M', 'L'],
+          'Sunset Orange': ['XS', 'S', 'M', 'L'],
+          'Lavender Haze': ['S', 'M', 'L', 'XL'],
+          'Golden Rays': ['M', 'L', 'XL'],
+          'Turquoise Breeze': ['XS', 'S', 'M', 'L'],
+          'Midnight Plum': ['S', 'M', 'L']
+        },
+        quantities: {
+          'Crimson Blush': { S: 5, M: 8, L: 12, XL: 6 },
+          'Emerald Dream': { M: 10, L: 15, XL: 7 },
+          'Sapphire Mist': { S: 4, M: 9, L: 11 },
+          'Sunset Orange': { XS: 3, S: 6, M: 8, L: 5 },
+          'Lavender Haze': { S: 7, M: 13, L: 9, XL: 4 },
+          'Golden Rays': { M: 11, L: 14, XL: 8 },
+          'Turquoise Breeze': { XS: 2, S: 5, M: 7, L: 6 },
+          'Midnight Plum': { S: 6, M: 10, L: 8 }
+        }
+      },
+      belowHeight: {
+        colorOptions: [
+          { name: 'Cherry Blossom', hex: '#FFB7C5' },
+          { name: 'Ocean Depths', hex: '#008080' },
+          { name: 'Sunflower Fields', hex: '#FFC300' },
+          { name: 'Amethyst Charm', hex: '#9966CC' },
+          { name: 'Coral Reef', hex: '#FF7F50' },
+          { name: 'Mint Frost', hex: '#98FF98' },
+          { name: 'Dusty Rose', hex: '#DCAE96' },
+          { name: 'Indigo Twilight', hex: '#4B0082' }
+        ],
+        sizeOptions: {
+          'Cherry Blossom': ['XS', 'S', 'M'],
+          'Ocean Depths': ['S', 'M', 'L'],
+          'Sunflower Fields': ['XS', 'S', 'M', 'L'],
+          'Amethyst Charm': ['S', 'M', 'L'],
+          'Coral Reef': ['XS', 'S', 'M'],
+          'Mint Frost': ['S', 'M', 'L'],
+          'Dusty Rose': ['XS', 'S', 'M', 'L'],
+          'Indigo Twilight': ['S', 'M', 'L']
+        },
+        quantities: {
+          'Cherry Blossom': { XS: 3, S: 7, M: 9 },
+          'Ocean Depths': { S: 6, M: 11, L: 8 },
+          'Sunflower Fields': { XS: 2, S: 5, M: 8, L: 4 },
+          'Amethyst Charm': { S: 7, M: 12, L: 9 },
+          'Coral Reef': { XS: 4, S: 8, M: 10 },
+          'Mint Frost': { S: 5, M: 9, L: 7 },
+          'Dusty Rose': { XS: 3, S: 6, M: 9, L: 5 },
+          'Indigo Twilight': { S: 8, M: 13, L: 10 }
+        }
+      }
+    }
   },
   {
     id: 2,
@@ -42,10 +116,79 @@ let all_product = [
     color:"black",
     new_price: 850,
     old_price: 1200,
+    get discount() {
+      return calculateDiscount(this.old_price, this.new_price)
+    },
     rating: 4.7,
     inStock:false,
     productOptions: null,
-  
+    data: {
+      height: { value: '170' },
+      aboveHeight: {
+        colorOptions: [
+          { name: 'Crimson Blush', hex: '#DC143C' },
+          { name: 'Emerald Dream', hex: '#50C878' },
+          { name: 'Sapphire Mist', hex: '#082567' },
+          { name: 'Sunset Orange', hex: '#FD5E53' },
+          { name: 'Lavender Haze', hex: '#B57EDC' },
+          { name: 'Golden Rays', hex: '#FFAA33' },
+          { name: 'Turquoise Breeze', hex: '#40E0D0' },
+          { name: 'Midnight Plum', hex: '#3C1361' }
+        ],
+        sizeOptions: {
+          'Crimson Blush': ['S', 'M', 'L', 'XL'],
+          'Emerald Dream': ['M', 'L', 'XL'],
+          'Sapphire Mist': ['S', 'M', 'L'],
+          'Sunset Orange': ['XS', 'S', 'M', 'L'],
+          'Lavender Haze': ['S', 'M', 'L', 'XL'],
+          'Golden Rays': ['M', 'L', 'XL'],
+          'Turquoise Breeze': ['XS', 'S', 'M', 'L'],
+          'Midnight Plum': ['S', 'M', 'L']
+        },
+        quantities: {
+          'Crimson Blush': { S: 5, M: 8, L: 12, XL: 6 },
+          'Emerald Dream': { M: 10, L: 15, XL: 7 },
+          'Sapphire Mist': { S: 4, M: 9, L: 11 },
+          'Sunset Orange': { XS: 3, S: 6, M: 8, L: 5 },
+          'Lavender Haze': { S: 7, M: 13, L: 9, XL: 4 },
+          'Golden Rays': { M: 11, L: 14, XL: 8 },
+          'Turquoise Breeze': { XS: 2, S: 5, M: 7, L: 6 },
+          'Midnight Plum': { S: 6, M: 10, L: 8 }
+        }
+      },
+      belowHeight: {
+        colorOptions: [
+          { name: 'Cherry Blossom', hex: '#FFB7C5' },
+          { name: 'Ocean Depths', hex: '#008080' },
+          { name: 'Sunflower Fields', hex: '#FFC300' },
+          { name: 'Amethyst Charm', hex: '#9966CC' },
+          { name: 'Coral Reef', hex: '#FF7F50' },
+          { name: 'Mint Frost', hex: '#98FF98' },
+          { name: 'Dusty Rose', hex: '#DCAE96' },
+          { name: 'Indigo Twilight', hex: '#4B0082' }
+        ],
+        sizeOptions: {
+          'Cherry Blossom': ['XS', 'S', 'M'],
+          'Ocean Depths': ['S', 'M', 'L'],
+          'Sunflower Fields': ['XS', 'S', 'M', 'L'],
+          'Amethyst Charm': ['S', 'M', 'L'],
+          'Coral Reef': ['XS', 'S', 'M'],
+          'Mint Frost': ['S', 'M', 'L'],
+          'Dusty Rose': ['XS', 'S', 'M', 'L'],
+          'Indigo Twilight': ['S', 'M', 'L']
+        },
+        quantities: {
+          'Cherry Blossom': { XS: 3, S: 7, M: 9 },
+          'Ocean Depths': { S: 6, M: 11, L: 8 },
+          'Sunflower Fields': { XS: 2, S: 5, M: 8, L: 4 },
+          'Amethyst Charm': { S: 7, M: 12, L: 9 },
+          'Coral Reef': { XS: 4, S: 8, M: 10 },
+          'Mint Frost': { S: 5, M: 9, L: 7 },
+          'Dusty Rose': { XS: 3, S: 6, M: 9, L: 5 },
+          'Indigo Twilight': { S: 8, M: 13, L: 10 }
+        }
+      }
+    }
   },
   {
     id: 3,
@@ -56,134 +199,75 @@ let all_product = [
     color:"red",
     new_price: 600,
     old_price: 1000,
+    get discount() {
+      return calculateDiscount(this.old_price, this.new_price)
+    },
     rating: 4.9,
     inStock:false,
-    productOptions: {
-      "above5.6": {
-        colors: {
-          "#FF5733": { 
-            name: "ManojOrange", 
-            sizes: [
-              { size: "XS", quantity: 10 }, 
-              { size: "S", quantity: 10 }, 
-              { size: "M", quantity: 10 },
-              { size: "L", quantity: 10 }, 
-              { size: "XL", quantity: 10}, 
-              { size: "XXL", quantity: 5 }
-            ]
-          },
-          "#6A0DAD": { 
-            name: "royalPurple", 
-            sizes: [
-              { size: "M", quantity: 0 }, 
-              { size: "L", quantity: 3 }
-            ] 
-          },
-          "#FFD700": { 
-            name: "goldenYellow", 
-            sizes: [
-              { size: "L", quantity: 12 }, 
-              { size: "XL", quantity: 9 }
-            ]
-          },
-          // New colors added below
-          "#1E90FF": { 
-            name: "dodgerBlue", 
-            sizes: [
-              { size: "M", quantity: 14 }, 
-              { size: "L", quantity: 7 }
-            ]
-          },
-          "#32CD32": { 
-            name: "limeGreen", 
-            sizes: [
-              { size: "M", quantity: 8 }, 
-              { size: "XL", quantity: 6 }
-            ] 
-          },
-          "#FF4500": { 
-            name: "orangeRed", 
-            sizes: [
-              { size: "M", quantity: 5 }, 
-              { size: "L", quantity: 4 }, 
-              { size: "XL", quantity: 2 }
-            ]
-          },
-          "#C71585": { 
-            name: "mediumVioletRed", 
-            sizes: [
-              { size: "M", quantity: 3 }, 
-              { size: "L", quantity: 10 }
-            ]
-          },
-          "#8A2BE2": { 
-            name: "blueViolet", 
-            sizes: [
-              { size: "M", quantity: 12 }, 
-              { size: "XL", quantity: 4 }
-            ]
-          }
+    data: {
+      height: { value: '170' },
+      aboveHeight: {
+        colorOptions: [
+          { name: 'Crimson Blush', hex: '#DC143C' },
+          { name: 'Emerald Dream', hex: '#50C878' },
+          { name: 'Sapphire Mist', hex: '#082567' },
+          { name: 'Sunset Orange', hex: '#FD5E53' },
+          { name: 'Lavender Haze', hex: '#B57EDC' },
+          { name: 'Golden Rays', hex: '#FFAA33' },
+          { name: 'Turquoise Breeze', hex: '#40E0D0' },
+          { name: 'Midnight Plum', hex: '#3C1361' }
+        ],
+        sizeOptions: {
+          'Crimson Blush': ['S', 'M', 'L', 'XL'],
+          'Emerald Dream': ['M', 'L', 'XL'],
+          'Sapphire Mist': ['S', 'M', 'L'],
+          'Sunset Orange': ['XS', 'S', 'M', 'L'],
+          'Lavender Haze': ['S', 'M', 'L', 'XL'],
+          'Golden Rays': ['M', 'L', 'XL'],
+          'Turquoise Breeze': ['XS', 'S', 'M', 'L'],
+          'Midnight Plum': ['S', 'M', 'L']
+        },
+        quantities: {
+          'Crimson Blush': { S: 5, M: 8, L: 12, XL: 6 },
+          'Emerald Dream': { M: 10, L: 15, XL: 7 },
+          'Sapphire Mist': { S: 4, M: 9, L: 11 },
+          'Sunset Orange': { XS: 3, S: 6, M: 8, L: 5 },
+          'Lavender Haze': { S: 7, M: 13, L: 9, XL: 4 },
+          'Golden Rays': { M: 11, L: 14, XL: 8 },
+          'Turquoise Breeze': { XS: 2, S: 5, M: 7, L: 6 },
+          'Midnight Plum': { S: 6, M: 10, L: 8 }
         }
       },
-      "below5.6": {
-        colors: {
-          "#00CED1": { 
-            name: "darkTurquoise", 
-            sizes: [
-              { size: "S", quantity: 15 }, 
-              { size: "M", quantity: 7 }
-            ] 
-          },
-          "#FF69B4": { 
-            name: "hotPink", 
-            sizes: [
-              { size: "S", quantity: 12 }, 
-              { size: "M", quantity: 10 }
-            ] 
-          },
-          "#8B4513": { 
-            name: "saddleBrown", 
-            sizes: [
-              { size: "S", quantity: 6 }, 
-              { size: "M", quantity: 9 }
-            ] 
-          },
-          // New colors added below
-          "#4682B4": { 
-            name: "steelBlue", 
-            sizes: [
-              { size: "S", quantity: 10 }, 
-              { size: "M", quantity: 5 }
-            ] 
-          },
-          "#FA8072": { 
-            name: "salmon", 
-            sizes: [
-              { size: "S", quantity: 8 }, 
-              { size: "M", quantity: 3 }
-            ]
-          },
-          "#20B2AA": { 
-            name: "lightSeaGreen", 
-            sizes: [
-              { size: "S", quantity: 13 }, 
-              { size: "M", quantity: 6 }
-            ]
-          },
-          "#DC143C": { 
-            name: "crimsonRed", 
-            sizes: [
-              { size: "S", quantity: 9 }, 
-              { size: "M", quantity: 7 }
-            ]
-          },
-          "#B8860B": { 
-            name: "darkGoldenrod", 
-            sizes: [
-              { size: "S", quantity: 11 }, 
-              { size: "M", quantity: 4 }
-            ]
-          }
+      belowHeight: {
+        colorOptions: [
+          { name: 'Cherry Blossom', hex: '#FFB7C5' },
+          { name: 'Ocean Depths', hex: '#008080' },
+          { name: 'Sunflower Fields', hex: '#FFC300' },
+          { name: 'Amethyst Charm', hex: '#9966CC' },
+          { name: 'Coral Reef', hex: '#FF7F50' },
+          { name: 'Mint Frost', hex: '#98FF98' },
+          { name: 'Dusty Rose', hex: '#DCAE96' },
+          { name: 'Indigo Twilight', hex: '#4B0082' }
+        ],
+        sizeOptions: {
+          'Cherry Blossom': ['XS', 'S', 'M'],
+          'Ocean Depths': ['S', 'M', 'L'],
+          'Sunflower Fields': ['XS', 'S', 'M', 'L'],
+          'Amethyst Charm': ['S', 'M', 'L'],
+          'Coral Reef': ['XS', 'S', 'M'],
+          'Mint Frost': ['S', 'M', 'L'],
+          'Dusty Rose': ['XS', 'S', 'M', 'L'],
+          'Indigo Twilight': ['S', 'M', 'L']
+        },
+        quantities: {
+          'Cherry Blossom': { XS: 3, S: 7, M: 9 },
+          'Ocean Depths': { S: 6, M: 11, L: 8 },
+          'Sunflower Fields': { XS: 2, S: 5, M: 8, L: 4 },
+          'Amethyst Charm': { S: 7, M: 12, L: 9 },
+          'Coral Reef': { XS: 4, S: 8, M: 10 },
+          'Mint Frost': { S: 5, M: 9, L: 7 },
+          'Dusty Rose': { XS: 3, S: 6, M: 9, L: 5 },
+          'Indigo Twilight': { S: 8, M: 13, L: 10 }
         }
       }
     }
@@ -198,9 +282,50 @@ let all_product = [
     color:"red",
     new_price: 1000,
     old_price: 1500,
+    get discount() {
+      return calculateDiscount(this.old_price, this.new_price)
+    },
     rating: 4.4,
     inStock:true,
     productOptions: null,
+    data: {
+      colorOptions: [
+        { name: 'red', hex: '#e91616' },
+        { name: 'forestGreen', hex: '#0adb34' },
+        { name: 'royalBlue', hex: '#4169E1' },
+        { name: 'sunflowerYellow', hex: '#FFD700' },
+        { name: 'orchidPurple', hex: '#DA70D6' },
+        { name: 'coralOrange', hex: '#FF7F50' },
+        { name: 'tealBlue', hex: '#008080' },
+        { name: 'burgundy', hex: '#800020' },
+        { name: 'mintGreen', hex: '#98FF98' },
+        { name: 'navyBlue', hex: '#000080' }
+      ],
+      sizeOptions: {
+        red: ['S', 'L'],
+        forestGreen: ['XL', 'L'],
+        royalBlue: ['M', 'L', 'XL'],
+        sunflowerYellow: ['S', 'M', 'L'],
+        orchidPurple: ['XS', 'S', 'M'],
+        coralOrange: ['M', 'L', 'XL'],
+        tealBlue: ['S', 'M', 'L'],
+        burgundy: ['S', 'M', 'L', 'XL'],
+        mintGreen: ['XS', 'S', 'M'],
+        navyBlue: ['M', 'L', 'XL']
+      },
+      quantities: {
+        red: { S: 3, L: 5 },
+        forestGreen: { XL: 5, L: 10 },
+        royalBlue: { M: 7, L: 8, XL: 6 },
+        sunflowerYellow: { S: 4, M: 6, L: 5 },
+        orchidPurple: { XS: 3, S: 5, M: 4 },
+        coralOrange: { M: 6, L: 7, XL: 4 },
+        tealBlue: { S: 5, M: 8, L: 6 },
+        burgundy: { S: 4, M: 7, L: 6, XL: 3 },
+        mintGreen: { XS: 2, S: 6, M: 5 },
+        navyBlue: { M: 8, L: 9, XL: 5 }
+      }
+    }
   },
   {
     id: 5,
@@ -211,8 +336,49 @@ let all_product = [
     color:"red",
     new_price: 830,
     old_price: 1205,
+    get discount() {
+      return calculateDiscount(this.old_price, this.new_price)
+    },
     rating: 4.3,
     inStock:true,
+    data: {
+      colorOptions: [
+        { name: 'red', hex: '#e91616' },
+        { name: 'forestGreen', hex: '#0adb34' },
+        { name: 'royalBlue', hex: '#4169E1' },
+        { name: 'sunflowerYellow', hex: '#FFD700' },
+        { name: 'orchidPurple', hex: '#DA70D6' },
+        { name: 'coralOrange', hex: '#FF7F50' },
+        { name: 'tealBlue', hex: '#008080' },
+        { name: 'burgundy', hex: '#800020' },
+        { name: 'mintGreen', hex: '#98FF98' },
+        { name: 'navyBlue', hex: '#000080' }
+      ],
+      sizeOptions: {
+        red: ['S', 'L'],
+        forestGreen: ['XL', 'L'],
+        royalBlue: ['M', 'L', 'XL'],
+        sunflowerYellow: ['S', 'M', 'L'],
+        orchidPurple: ['XS', 'S', 'M'],
+        coralOrange: ['M', 'L', 'XL'],
+        tealBlue: ['S', 'M', 'L'],
+        burgundy: ['S', 'M', 'L', 'XL'],
+        mintGreen: ['XS', 'S', 'M'],
+        navyBlue: ['M', 'L', 'XL']
+      },
+      quantities: {
+        red: { S: 3, L: 5 },
+        forestGreen: { XL: 5, L: 10 },
+        royalBlue: { M: 7, L: 8, XL: 6 },
+        sunflowerYellow: { S: 4, M: 6, L: 5 },
+        orchidPurple: { XS: 3, S: 5, M: 4 },
+        coralOrange: { M: 6, L: 7, XL: 4 },
+        tealBlue: { S: 5, M: 8, L: 6 },
+        burgundy: { S: 4, M: 7, L: 6, XL: 3 },
+        mintGreen: { XS: 2, S: 6, M: 5 },
+        navyBlue: { M: 8, L: 9, XL: 5 }
+      }
+    }
   },
   {
     id: 6,
@@ -223,9 +389,50 @@ let all_product = [
     color:"red",
     new_price: 880,
     old_price: 1200,
+    get discount() {
+      return calculateDiscount(this.old_price, this.new_price)
+    },
     rating: 5.0,
     inStock:false,
     productOptions: null,
+       data: {
+            colorOptions: [
+              { name: 'red', hex: '#e91616' },
+              { name: 'forestGreen', hex: '#0adb34' },
+              { name: 'royalBlue', hex: '#4169E1' },
+              { name: 'sunflowerYellow', hex: '#FFD700' },
+              { name: 'orchidPurple', hex: '#DA70D6' },
+              { name: 'coralOrange', hex: '#FF7F50' },
+              { name: 'tealBlue', hex: '#008080' },
+              { name: 'burgundy', hex: '#800020' },
+              { name: 'mintGreen', hex: '#98FF98' },
+              { name: 'navyBlue', hex: '#000080' }
+            ],
+            sizeOptions: {
+              red: ['S', 'L'],
+              forestGreen: ['XL', 'L'],
+              royalBlue: ['M', 'L', 'XL'],
+              sunflowerYellow: ['S', 'M', 'L'],
+              orchidPurple: ['XS', 'S', 'M'],
+              coralOrange: ['M', 'L', 'XL'],
+              tealBlue: ['S', 'M', 'L'],
+              burgundy: ['S', 'M', 'L', 'XL'],
+              mintGreen: ['XS', 'S', 'M'],
+              navyBlue: ['M', 'L', 'XL']
+            },
+            quantities: {
+              red: { S: 3, L: 5 },
+              forestGreen: { XL: 5, L: 10 },
+              royalBlue: { M: 7, L: 8, XL: 6 },
+              sunflowerYellow: { S: 4, M: 6, L: 5 },
+              orchidPurple: { XS: 3, S: 5, M: 4 },
+              coralOrange: { M: 6, L: 7, XL: 4 },
+              tealBlue: { S: 5, M: 8, L: 6 },
+              burgundy: { S: 4, M: 7, L: 6, XL: 3 },
+              mintGreen: { XS: 2, S: 6, M: 5 },
+              navyBlue: { M: 8, L: 9, XL: 5 }
+            }
+          }
   },
   {
     id: 7,
@@ -236,6 +443,9 @@ let all_product = [
     color:"red",
     new_price: 450,
     old_price: 1200,
+    get discount() {
+      return calculateDiscount(this.old_price, this.new_price)
+    },
     rating: 4.6,
     inStock:true,
     productOptions: null,
@@ -249,6 +459,9 @@ let all_product = [
     color:"red",
     new_price: 470,
     old_price: 1200,
+    get discount() {
+      return calculateDiscount(this.old_price, this.new_price)
+    },
     rating: 4.8,
     inStock:false,
     productOptions: null,
@@ -262,6 +475,9 @@ let all_product = [
     color:"red",
     new_price: 490,
     old_price: 1200,
+    get discount() {
+      return calculateDiscount(this.old_price, this.new_price)
+    },
     rating: 4.3,
     inStock:true,
     productOptions: null,
@@ -275,6 +491,9 @@ let all_product = [
     image: p28_img,
     new_price: 510,
     old_price: 1200,
+    get discount() {
+      return calculateDiscount(this.old_price, this.new_price)
+    },
     rating: 5.0,
     inStock:false,
     productOptions: null,
@@ -288,6 +507,9 @@ let all_product = [
     image: p29_img,
     new_price: 630,
     old_price: 1200,
+    get discount() {
+      return calculateDiscount(this.old_price, this.new_price)
+    },
     rating: 4.1,
     inStock:true,
     productOptions: null,
@@ -301,6 +523,9 @@ let all_product = [
     image: p30_img,
     new_price: 650,
     old_price: 1200,
+    get discount() {
+      return calculateDiscount(this.old_price, this.new_price)
+    },
     rating: 4.7,
     inStock:true,
     productOptions: null,
@@ -315,8 +540,49 @@ let all_product = [
     color:"red",
     new_price: 590,
     old_price: 1200,
+    get discount() {
+      return calculateDiscount(this.old_price, this.new_price)
+    },
     rating: 4.8,
     inStock:false,
+    data: {
+      colorOptions: [
+        { name: 'red', hex: '#e91616' },
+        { name: 'forestGreen', hex: '#0adb34' },
+        { name: 'royalBlue', hex: '#4169E1' },
+        { name: 'sunflowerYellow', hex: '#FFD700' },
+        { name: 'orchidPurple', hex: '#DA70D6' },
+        { name: 'coralOrange', hex: '#FF7F50' },
+        { name: 'tealBlue', hex: '#008080' },
+        { name: 'burgundy', hex: '#800020' },
+        { name: 'mintGreen', hex: '#98FF98' },
+        { name: 'navyBlue', hex: '#000080' }
+      ],
+      sizeOptions: {
+        red: ['S', 'L'],
+        forestGreen: ['XL', 'L'],
+        royalBlue: ['M', 'L', 'XL'],
+        sunflowerYellow: ['S', 'M', 'L'],
+        orchidPurple: ['XS', 'S', 'M'],
+        coralOrange: ['M', 'L', 'XL'],
+        tealBlue: ['S', 'M', 'L'],
+        burgundy: ['S', 'M', 'L', 'XL'],
+        mintGreen: ['XS', 'S', 'M'],
+        navyBlue: ['M', 'L', 'XL']
+      },
+      quantities: {
+        red: { S: 3, L: 5 },
+        forestGreen: { XL: 5, L: 10 },
+        royalBlue: { M: 7, L: 8, XL: 6 },
+        sunflowerYellow: { S: 4, M: 6, L: 5 },
+        orchidPurple: { XS: 3, S: 5, M: 4 },
+        coralOrange: { M: 6, L: 7, XL: 4 },
+        tealBlue: { S: 5, M: 8, L: 6 },
+        burgundy: { S: 4, M: 7, L: 6, XL: 3 },
+        mintGreen: { XS: 2, S: 6, M: 5 },
+        navyBlue: { M: 8, L: 9, XL: 5 }
+      }
+    }
   },
   {
     id: 14,
@@ -327,8 +593,49 @@ let all_product = [
     color:"red",
     new_price: 550,
     old_price: 1200,
+    get discount() {
+      return calculateDiscount(this.old_price, this.new_price)
+    },
     rating: 4.2,
     inStock:true,
+    data: {
+      colorOptions: [
+        { name: 'red', hex: '#e91616' },
+        { name: 'forestGreen', hex: '#0adb34' },
+        { name: 'royalBlue', hex: '#4169E1' },
+        { name: 'sunflowerYellow', hex: '#FFD700' },
+        { name: 'orchidPurple', hex: '#DA70D6' },
+        { name: 'coralOrange', hex: '#FF7F50' },
+        { name: 'tealBlue', hex: '#008080' },
+        { name: 'burgundy', hex: '#800020' },
+        { name: 'mintGreen', hex: '#98FF98' },
+        { name: 'navyBlue', hex: '#000080' }
+      ],
+      sizeOptions: {
+        red: ['S', 'L'],
+        forestGreen: ['XL', 'L'],
+        royalBlue: ['M', 'L', 'XL'],
+        sunflowerYellow: ['S', 'M', 'L'],
+        orchidPurple: ['XS', 'S', 'M'],
+        coralOrange: ['M', 'L', 'XL'],
+        tealBlue: ['S', 'M', 'L'],
+        burgundy: ['S', 'M', 'L', 'XL'],
+        mintGreen: ['XS', 'S', 'M'],
+        navyBlue: ['M', 'L', 'XL']
+      },
+      quantities: {
+        red: { S: 3, L: 5 },
+        forestGreen: { XL: 5, L: 10 },
+        royalBlue: { M: 7, L: 8, XL: 6 },
+        sunflowerYellow: { S: 4, M: 6, L: 5 },
+        orchidPurple: { XS: 3, S: 5, M: 4 },
+        coralOrange: { M: 6, L: 7, XL: 4 },
+        tealBlue: { S: 5, M: 8, L: 6 },
+        burgundy: { S: 4, M: 7, L: 6, XL: 3 },
+        mintGreen: { XS: 2, S: 6, M: 5 },
+        navyBlue: { M: 8, L: 9, XL: 5 }
+      }
+    }
   },
   {
     id: 15,
@@ -339,8 +646,49 @@ let all_product = [
     color:"black",
     new_price: 950,
     old_price: 1200,
+    get discount() {
+      return calculateDiscount(this.old_price, this.new_price)
+    },
     rating: 4.7,
     inStock:true,
+    data: {
+      colorOptions: [
+        { name: 'red', hex: '#e91616' },
+        { name: 'forestGreen', hex: '#0adb34' },
+        { name: 'royalBlue', hex: '#4169E1' },
+        { name: 'sunflowerYellow', hex: '#FFD700' },
+        { name: 'orchidPurple', hex: '#DA70D6' },
+        { name: 'coralOrange', hex: '#FF7F50' },
+        { name: 'tealBlue', hex: '#008080' },
+        { name: 'burgundy', hex: '#800020' },
+        { name: 'mintGreen', hex: '#98FF98' },
+        { name: 'navyBlue', hex: '#000080' }
+      ],
+      sizeOptions: {
+        red: ['S', 'L'],
+        forestGreen: ['XL', 'L'],
+        royalBlue: ['M', 'L', 'XL'],
+        sunflowerYellow: ['S', 'M', 'L'],
+        orchidPurple: ['XS', 'S', 'M'],
+        coralOrange: ['M', 'L', 'XL'],
+        tealBlue: ['S', 'M', 'L'],
+        burgundy: ['S', 'M', 'L', 'XL'],
+        mintGreen: ['XS', 'S', 'M'],
+        navyBlue: ['M', 'L', 'XL']
+      },
+      quantities: {
+        red: { S: 3, L: 5 },
+        forestGreen: { XL: 5, L: 10 },
+        royalBlue: { M: 7, L: 8, XL: 6 },
+        sunflowerYellow: { S: 4, M: 6, L: 5 },
+        orchidPurple: { XS: 3, S: 5, M: 4 },
+        coralOrange: { M: 6, L: 7, XL: 4 },
+        tealBlue: { S: 5, M: 8, L: 6 },
+        burgundy: { S: 4, M: 7, L: 6, XL: 3 },
+        mintGreen: { XS: 2, S: 6, M: 5 },
+        navyBlue: { M: 8, L: 9, XL: 5 }
+      }
+    }
   },
   {
     id: 16,
@@ -351,8 +699,78 @@ let all_product = [
     color:"black",
     new_price: 810,
     old_price: 1200,
+    get discount() {
+      return calculateDiscount(this.old_price, this.new_price)
+    },
     rating: 4.5,
     inStock:true,
+    data: {
+      height: { value: '170' },
+      aboveHeight: {
+        colorOptions: [
+          { name: 'Crimson Blush', hex: '#DC143C' },
+          { name: 'Emerald Dream', hex: '#50C878' },
+          { name: 'Sapphire Mist', hex: '#082567' },
+          { name: 'Sunset Orange', hex: '#FD5E53' },
+          { name: 'Lavender Haze', hex: '#B57EDC' },
+          { name: 'Golden Rays', hex: '#FFAA33' },
+          { name: 'Turquoise Breeze', hex: '#40E0D0' },
+          { name: 'Midnight Plum', hex: '#3C1361' }
+        ],
+        sizeOptions: {
+          'Crimson Blush': ['S', 'M', 'L', 'XL'],
+          'Emerald Dream': ['M', 'L', 'XL'],
+          'Sapphire Mist': ['S', 'M', 'L'],
+          'Sunset Orange': ['XS', 'S', 'M', 'L'],
+          'Lavender Haze': ['S', 'M', 'L', 'XL'],
+          'Golden Rays': ['M', 'L', 'XL'],
+          'Turquoise Breeze': ['XS', 'S', 'M', 'L'],
+          'Midnight Plum': ['S', 'M', 'L']
+        },
+        quantities: {
+          'Crimson Blush': { S: 5, M: 8, L: 12, XL: 6 },
+          'Emerald Dream': { M: 10, L: 15, XL: 7 },
+          'Sapphire Mist': { S: 4, M: 9, L: 11 },
+          'Sunset Orange': { XS: 3, S: 6, M: 8, L: 5 },
+          'Lavender Haze': { S: 7, M: 13, L: 9, XL: 4 },
+          'Golden Rays': { M: 11, L: 14, XL: 8 },
+          'Turquoise Breeze': { XS: 2, S: 5, M: 7, L: 6 },
+          'Midnight Plum': { S: 6, M: 10, L: 8 }
+        }
+      },
+      belowHeight: {
+        colorOptions: [
+          { name: 'Cherry Blossom', hex: '#FFB7C5' },
+          { name: 'Ocean Depths', hex: '#008080' },
+          { name: 'Sunflower Fields', hex: '#FFC300' },
+          { name: 'Amethyst Charm', hex: '#9966CC' },
+          { name: 'Coral Reef', hex: '#FF7F50' },
+          { name: 'Mint Frost', hex: '#98FF98' },
+          { name: 'Dusty Rose', hex: '#DCAE96' },
+          { name: 'Indigo Twilight', hex: '#4B0082' }
+        ],
+        sizeOptions: {
+          'Cherry Blossom': ['XS', 'S', 'M'],
+          'Ocean Depths': ['S', 'M', 'L'],
+          'Sunflower Fields': ['XS', 'S', 'M', 'L'],
+          'Amethyst Charm': ['S', 'M', 'L'],
+          'Coral Reef': ['XS', 'S', 'M'],
+          'Mint Frost': ['S', 'M', 'L'],
+          'Dusty Rose': ['XS', 'S', 'M', 'L'],
+          'Indigo Twilight': ['S', 'M', 'L']
+        },
+        quantities: {
+          'Cherry Blossom': { XS: 3, S: 7, M: 9 },
+          'Ocean Depths': { S: 6, M: 11, L: 8 },
+          'Sunflower Fields': { XS: 2, S: 5, M: 8, L: 4 },
+          'Amethyst Charm': { S: 7, M: 12, L: 9 },
+          'Coral Reef': { XS: 4, S: 8, M: 10 },
+          'Mint Frost': { S: 5, M: 9, L: 7 },
+          'Dusty Rose': { XS: 3, S: 6, M: 9, L: 5 },
+          'Indigo Twilight': { S: 8, M: 13, L: 10 }
+        }
+      }
+    }
   },
   {
     id: 17,
@@ -362,9 +780,80 @@ let all_product = [
     subCategory: "upperwear",
     color:"black",
     new_price: 670,
+    
     old_price: 1200,
+    get discount() {
+      return calculateDiscount(this.old_price, this.new_price)
+    },
     rating: 4.3,
     inStock:true,
+    data: {
+      height: { value: '170' },
+      aboveHeight: {
+        colorOptions: [
+          { name: 'Crimson Blush', hex: '#DC143C' },
+          { name: 'Emerald Dream', hex: '#50C878' },
+          { name: 'Sapphire Mist', hex: '#082567' },
+          { name: 'Sunset Orange', hex: '#FD5E53' },
+          { name: 'Lavender Haze', hex: '#B57EDC' },
+          { name: 'Golden Rays', hex: '#FFAA33' },
+          { name: 'Turquoise Breeze', hex: '#40E0D0' },
+          { name: 'Midnight Plum', hex: '#3C1361' }
+        ],
+        sizeOptions: {
+          'Crimson Blush': ['S', 'M', 'L', 'XL'],
+          'Emerald Dream': ['M', 'L', 'XL'],
+          'Sapphire Mist': ['S', 'M', 'L'],
+          'Sunset Orange': ['XS', 'S', 'M', 'L'],
+          'Lavender Haze': ['S', 'M', 'L', 'XL'],
+          'Golden Rays': ['M', 'L', 'XL'],
+          'Turquoise Breeze': ['XS', 'S', 'M', 'L'],
+          'Midnight Plum': ['S', 'M', 'L']
+        },
+        quantities: {
+          'Crimson Blush': { S: 5, M: 8, L: 12, XL: 6 },
+          'Emerald Dream': { M: 10, L: 15, XL: 7 },
+          'Sapphire Mist': { S: 4, M: 9, L: 11 },
+          'Sunset Orange': { XS: 3, S: 6, M: 8, L: 5 },
+          'Lavender Haze': { S: 7, M: 13, L: 9, XL: 4 },
+          'Golden Rays': { M: 11, L: 14, XL: 8 },
+          'Turquoise Breeze': { XS: 2, S: 5, M: 7, L: 6 },
+          'Midnight Plum': { S: 6, M: 10, L: 8 }
+        }
+      },
+      belowHeight: {
+        colorOptions: [
+          { name: 'Cherry Blossom', hex: '#FFB7C5' },
+          { name: 'Ocean Depths', hex: '#008080' },
+          { name: 'Sunflower Fields', hex: '#FFC300' },
+          { name: 'Amethyst Charm', hex: '#9966CC' },
+          { name: 'Coral Reef', hex: '#FF7F50' },
+          { name: 'Mint Frost', hex: '#98FF98' },
+          { name: 'Dusty Rose', hex: '#DCAE96' },
+          { name: 'Indigo Twilight', hex: '#4B0082' }
+        ],
+        sizeOptions: {
+          'Cherry Blossom': ['XS', 'S', 'M'],
+          'Ocean Depths': ['S', 'M', 'L'],
+          'Sunflower Fields': ['XS', 'S', 'M', 'L'],
+          'Amethyst Charm': ['S', 'M', 'L'],
+          'Coral Reef': ['XS', 'S', 'M'],
+          'Mint Frost': ['S', 'M', 'L'],
+          'Dusty Rose': ['XS', 'S', 'M', 'L'],
+          'Indigo Twilight': ['S', 'M', 'L']
+        },
+        quantities: {
+          'Cherry Blossom': { XS: 3, S: 7, M: 9 },
+          'Ocean Depths': { S: 6, M: 11, L: 8 },
+          'Sunflower Fields': { XS: 2, S: 5, M: 8, L: 4 },
+          'Amethyst Charm': { S: 7, M: 12, L: 9 },
+          'Coral Reef': { XS: 4, S: 8, M: 10 },
+          'Mint Frost': { S: 5, M: 9, L: 7 },
+          'Dusty Rose': { XS: 3, S: 6, M: 9, L: 5 },
+          'Indigo Twilight': { S: 8, M: 13, L: 10 }
+        }
+      }
+    }
   },
   {
     id: 18,
@@ -375,8 +864,78 @@ let all_product = [
     color:"black",
     new_price: 910,
     old_price: 1200,
+    get discount() {
+      return calculateDiscount(this.old_price, this.new_price)
+    },
     rating: 4.9,
     inStock:false,
+    data: {
+      height: { value: '170' },
+      aboveHeight: {
+        colorOptions: [
+          { name: 'Crimson Blush', hex: '#DC143C' },
+          { name: 'Emerald Dream', hex: '#50C878' },
+          { name: 'Sapphire Mist', hex: '#082567' },
+          { name: 'Sunset Orange', hex: '#FD5E53' },
+          { name: 'Lavender Haze', hex: '#B57EDC' },
+          { name: 'Golden Rays', hex: '#FFAA33' },
+          { name: 'Turquoise Breeze', hex: '#40E0D0' },
+          { name: 'Midnight Plum', hex: '#3C1361' }
+        ],
+        sizeOptions: {
+          'Crimson Blush': ['S', 'M', 'L', 'XL'],
+          'Emerald Dream': ['M', 'L', 'XL'],
+          'Sapphire Mist': ['S', 'M', 'L'],
+          'Sunset Orange': ['XS', 'S', 'M', 'L'],
+          'Lavender Haze': ['S', 'M', 'L', 'XL'],
+          'Golden Rays': ['M', 'L', 'XL'],
+          'Turquoise Breeze': ['XS', 'S', 'M', 'L'],
+          'Midnight Plum': ['S', 'M', 'L']
+        },
+        quantities: {
+          'Crimson Blush': { S: 5, M: 8, L: 12, XL: 6 },
+          'Emerald Dream': { M: 10, L: 15, XL: 7 },
+          'Sapphire Mist': { S: 4, M: 9, L: 11 },
+          'Sunset Orange': { XS: 3, S: 6, M: 8, L: 5 },
+          'Lavender Haze': { S: 7, M: 13, L: 9, XL: 4 },
+          'Golden Rays': { M: 11, L: 14, XL: 8 },
+          'Turquoise Breeze': { XS: 2, S: 5, M: 7, L: 6 },
+          'Midnight Plum': { S: 6, M: 10, L: 8 }
+        }
+      },
+      belowHeight: {
+        colorOptions: [
+          { name: 'Cherry Blossom', hex: '#FFB7C5' },
+          { name: 'Ocean Depths', hex: '#008080' },
+          { name: 'Sunflower Fields', hex: '#FFC300' },
+          { name: 'Amethyst Charm', hex: '#9966CC' },
+          { name: 'Coral Reef', hex: '#FF7F50' },
+          { name: 'Mint Frost', hex: '#98FF98' },
+          { name: 'Dusty Rose', hex: '#DCAE96' },
+          { name: 'Indigo Twilight', hex: '#4B0082' }
+        ],
+        sizeOptions: {
+          'Cherry Blossom': ['XS', 'S', 'M'],
+          'Ocean Depths': ['S', 'M', 'L'],
+          'Sunflower Fields': ['XS', 'S', 'M', 'L'],
+          'Amethyst Charm': ['S', 'M', 'L'],
+          'Coral Reef': ['XS', 'S', 'M'],
+          'Mint Frost': ['S', 'M', 'L'],
+          'Dusty Rose': ['XS', 'S', 'M', 'L'],
+          'Indigo Twilight': ['S', 'M', 'L']
+        },
+        quantities: {
+          'Cherry Blossom': { XS: 3, S: 7, M: 9 },
+          'Ocean Depths': { S: 6, M: 11, L: 8 },
+          'Sunflower Fields': { XS: 2, S: 5, M: 8, L: 4 },
+          'Amethyst Charm': { S: 7, M: 12, L: 9 },
+          'Coral Reef': { XS: 4, S: 8, M: 10 },
+          'Mint Frost': { S: 5, M: 9, L: 7 },
+          'Dusty Rose': { XS: 3, S: 6, M: 9, L: 5 },
+          'Indigo Twilight': { S: 8, M: 13, L: 10 }
+        }
+      }
+    }
   },
  
  ];

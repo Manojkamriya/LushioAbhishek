@@ -3,7 +3,7 @@
 const express = require("express");
 const admin = require("firebase-admin");
 const db = admin.firestore();
-
+const storage = admin.storage();
 const router = express.Router();
 
 // Add a new product
@@ -158,6 +158,8 @@ router.delete("/delete/:id", async (req, res) => {
       return res.status(404).json({error: "Product not found"});
     }
 
+    const productData = doc.data();
+
     // Get review references
     const reviewRefsSnapshot = await productRef.collection("reviews").get();
     const reviewIds = reviewRefsSnapshot.docs.map((doc) => doc.id);
@@ -177,13 +179,55 @@ router.delete("/delete/:id", async (req, res) => {
     // Delete the product document
     batch.delete(productRef);
 
+    // Delete images from Firebase Storage
+    if (productData.imageUrls && Array.isArray(productData.imageUrls)) {
+      const deletePromises = productData.imageUrls.map(async (imageUrl) => {
+        try {
+          // Extract the path from the full URL
+          const path = imageUrl.split("/o/")[1].split("?")[0];
+          const decodedPath = decodeURIComponent(path);
+          const fileRef = storage.bucket().file(decodedPath);
+          await fileRef.delete();
+        } catch (error) {
+          console.error(`Failed to delete image: ${imageUrl}`, error);
+        }
+      });
+
+      await Promise.all(deletePromises);
+    }
+
     // Commit the batch
     await batch.commit();
 
-    return res.status(200).json({message: "Product and associated reviews successfully deleted"});
+    return res.status(200).json({message: "Product, associated reviews, and images successfully deleted"});
   } catch (error) {
     console.error("Error deleting product:", error);
     return res.status(500).json({error: "Failed to delete product"});
+  }
+});
+
+
+// Update a product by ID
+router.put("/update/:id", async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const updatedData = req.body;
+
+    const productRef = db.collection("products").doc(productId);
+
+    // Check if the product exists
+    const doc = await productRef.get();
+    if (!doc.exists) {
+      return res.status(404).json({error: "Product not found"});
+    }
+
+    // Update the product
+    await productRef.update(updatedData);
+
+    return res.status(200).json({message: "Product updated successfully"});
+  } catch (error) {
+    console.error("Error updating product:", error);
+    return res.status(500).json({error: "Failed to update product"});
   }
 });
 

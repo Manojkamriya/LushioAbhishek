@@ -217,3 +217,18 @@ gap: 75px; */
 .cartitems-format.sold-out:hover {
   opacity: 0.85;
 }
+.remove-cart-buttons{
+display: flex;
+gap: 20px;
+
+}
+.remove-cart-buttons button{
+  background-color: #1c1c1c;
+  height: 40px;
+  width: 120px;
+  border-radius: 13px;
+  outline: none;
+  border: none;
+  color: white;
+  opacity: 1;
+  }

@@ -11,7 +11,7 @@ export default function Orders() {
         <div className="order">
           <div className="orderID">Order ID:  #54477622</div>
           <div className="order-details">
-            <img src="./LushioFitness/Images/assets/product_102.webp" alt="" />
+            <img src="/LushioFitness/Images/assets/product_102.webp" alt="" />
             <div className="order-details-right">
               <p>Pack of 2 Men's Grey & Blue Cargo Joggers</p>
               <p>size: M</p>

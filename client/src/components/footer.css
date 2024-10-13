@@ -1,8 +1,9 @@
 footer{
-    /* margin-top: 10px; */
+   
   display: flex;
   flex-direction: column;
   margin-bottom: 0;
+  margin-top: auto;
 }
 .primary{
     display: flex;
@@ -138,7 +139,7 @@ margin-block: 10px;
     margin: 10px;
     height: 28px;
     width: 28px;
-    fill: #1c1b1b;
+  
 }
 /* .secondary ul{
     display: flex;

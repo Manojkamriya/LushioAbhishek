@@ -8,7 +8,7 @@ import { getUser } from "../firebaseUtils";
 import Search from "./Search";
 
 function Navbar() {
-  const { getCartItemCount} =
+  const { getCartItemCount, getWishlistItemCount} =
   useContext(ShopContext);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -42,7 +42,7 @@ function Navbar() {
     };
     
     fetchUser();
-  }, []);
+  }, [user]);
  
   const openMenu = () => {
     if (menuRef.current) {
@@ -165,10 +165,11 @@ function Navbar() {
           
           <Link  to={isLoggedIn ? "/wishlist" : "/login"}>
             <img src="./LushioFitness/Images/icons/wishlist.png" alt="" />
+            { user && getWishlistItemCount() > 0 &&  <span>{getWishlistItemCount()}</span>}
           </Link>
           <Link  to={isLoggedIn ? "/cart" : "/login"}>
             <img src="./LushioFitness/Images/icons/cart.png" alt="" />
-          {getCartItemCount() > 0 &&  <span>{getCartItemCount()}</span>}
+          { user && getCartItemCount() > 0 &&  <span>{getCartItemCount()}</span>}
           </Link>
           <Link className="wallet-icon" to={isLoggedIn ? "/wallet" : "/login"}>
             <img src="./LushioFitness/Images/icons/wallet.png" alt="" />

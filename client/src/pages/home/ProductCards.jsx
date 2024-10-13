@@ -18,12 +18,14 @@ function ProductCards() {
               image2={item.image}
               newPrice={item.new_price}
               oldPrice={item.old_price}
-              discount={Math.round(
-                ((item.old_price - item.new_price) / item.old_price) * 100
-              )}
+              // discount={Math.round(
+              //   ((item.old_price - item.new_price) / item.old_price) * 100
+              // )}
+              discount = {item.discount}
               rating={item.rating}
               liked={false}
-              productOptions={item.productOptions}
+              // productOptions={item.productOptions}
+              data={item.data || {}}
               />
             );
           } else {

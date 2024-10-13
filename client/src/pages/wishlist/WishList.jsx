@@ -25,11 +25,12 @@ function WishList() {
               image2={e.image}
               newPrice={e.new_price}
               oldPrice={e.old_price}
-              discount={Math.round(
-                ((e.old_price - e.new_price) / e.old_price) * 100
-              )}
+              // discount={Math.round(
+              //   ((e.old_price - e.new_price) / e.old_price) * 100
+              // )}
               rating={e.rating}
               liked={true} 
+              data={e.data || {}}
             />
           );
         }

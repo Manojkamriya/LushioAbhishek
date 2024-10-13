@@ -67,7 +67,7 @@ function User() {
             <p>Go to Home page</p>
           </div>
         </div>
-        <div className="user-action" onClick={()=>{navigate("/user-orders")}}>
+        <div className="user-action" onClick={()=>{navigate("/user/orders")}}>
           <Link to="/user-orders">
             <img src="./LushioFitness/Images/icons/orders.png" alt="logo" />
           </Link>

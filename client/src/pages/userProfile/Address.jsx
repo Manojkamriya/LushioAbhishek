@@ -68,11 +68,11 @@ export default function Address() {
   };
 
   const handleSave = async () => {
-    if (!newAddress.name || !newAddress.address || !newAddress.pinCode || !newAddress.contactNo) {
+    if (!newAddress.name ||  !newAddress.pinCode || !newAddress.contactNo) {
       alert("Please fill in all fields!");
       return;
     }
-
+    setISChangingDefault(true);
     try {
       if (editingIndex !== null) {
         const updatedAddress = { ...newAddress };
@@ -86,10 +86,13 @@ export default function Address() {
         setAddressData(response.data.addresses.sort((a, b) => b.isDefault - a.isDefault));
       }
 
-      setNewAddress({ name: '', address: '', pinCode: '', contactNo: '', isDefault: false });
+      setNewAddress({ name: '', pinCode: '', contactNo: '', isDefault: false });
       setIsAddingNew(false);
     } catch (error) {
       console.error('Error saving address:', error);
+    }
+    finally {
+      setISChangingDefault(false); // Always set loading to false when done
     }
   };
 
@@ -199,7 +202,107 @@ export default function Address() {
   <h2>My Addresses</h2>
   <hr />
 </div>
+{(isAddingNew || editingIndex !== null) && (
+  <div className="edit-address">
+  <h4>{editingIndex !== null ? "Edit Address" : "Add New Address"}</h4>
 
+  {/* Existing Fields */}
+  <label htmlFor="name">Name</label>
+  <input
+    type="text"
+    name="name"
+    placeholder="Name"
+    id="name"
+    value={newAddress.name}
+    onChange={handleInputChange}
+  />
+
+  <label htmlFor="contactNo">Contact Number</label>
+  <input
+    type="tel"
+    name="contactNo"
+    placeholder="Contact Number"
+    id="contactNo"
+    value={newAddress.contactNo}
+    onChange={handleInputChange}
+  />
+
+  <label htmlFor="pinCode">Pin Code</label>
+  <input
+    type="number"
+    name="pinCode"
+    placeholder="Pin Code"
+    id="pinCode"
+    value={newAddress.pinCode}
+    onChange={handleInputChange}
+  />
+
+  {/* New Fields */}
+  <label htmlFor="flatDetails">Flat, House no., Building, Company, Apartment</label>
+  <input
+    type="text"
+    name="flatDetails"
+    placeholder="Flat, House no., Building, Company, Apartment"
+    id="flatDetails"
+    value={newAddress.flatDetails}
+    onChange={handleInputChange}
+  />
+
+  <label htmlFor="areaDetails">Area, Street, Sector, Village</label>
+  <input
+    type="text"
+    name="areaDetails"
+    placeholder="Area, Street, Sector, Village"
+    id="areaDetails"
+    value={newAddress.areaDetails}
+    onChange={handleInputChange}
+  />
+
+  <label htmlFor="landmark">Landmark</label>
+  <input
+    type="text"
+    name="landmark"
+    placeholder="Landmark"
+    id="landmark"
+    value={newAddress.landmark}
+    onChange={handleInputChange}
+  />
+
+  <label htmlFor="townCity">Town/City</label>
+  <input
+    type="text"
+    name="townCity"
+    placeholder="Town/City"
+    id="townCity"
+    value={newAddress.townCity}
+    onChange={handleInputChange}
+  />
+
+  <label htmlFor="state">State</label>
+  <input
+    type="text"
+    name="state"
+    placeholder="State"
+    id="state"
+    value={newAddress.state}
+    onChange={handleInputChange}
+  />
+
+  <div className="address-action">
+    <button onClick={handleSave}>Save</button>
+    <button
+      onClick={() => {
+        setIsAddingNew(false);
+        setEditingIndex(null);
+      }}
+    >
+      Cancel
+    </button>
+  </div>
+</div>
+
+ 
+  )}
 <div className="address-container">
   {/* Conditionally render address list only if not adding or editing */}
   {!(isAddingNew || editingIndex !== null) && (
@@ -207,7 +310,7 @@ export default function Address() {
       {addressData.map((info, i) => (
         <div className="myaddress" key={info.id}>
           <h4>{info.name}</h4>
-          <p>{info.address}</p>
+         <span>{info.flatDetails}{", "}{info.areaDetails}{", "}{info.landmark}{", "}{info.townCity}{", "}{info.state}</span>
           <p>Pin Code: {info.pinCode}</p>
           <p>Contact Number: {info.contactNo}</p>
           
@@ -223,42 +326,7 @@ export default function Address() {
   )}
 
   {/* Show the form when adding or editing an address */}
-  {(isAddingNew || editingIndex !== null) && (
-    <div className="myaddress edit-address">
-      <h4>{editingIndex !== null ? "Edit Address" : "Add New Address"}</h4>
-      <input
-        type="text"
-        name="name"
-        placeholder="Name"
-        value={newAddress.name}
-        onChange={handleInputChange}
-      />
-      <input
-        type="text"
-        name="address"
-        placeholder="Address"
-        value={newAddress.address}
-        onChange={handleInputChange}
-      />
-      <input
-        type="text"
-        name="pinCode"
-        placeholder="Pin Code"
-        value={newAddress.pinCode}
-        onChange={handleInputChange}
-      />
-      <input
-        type="text"
-        name="contactNo"
-        placeholder="Contact Number"
-        value={newAddress.contactNo}
-        onChange={handleInputChange}
-      />
-      <div className="address-action">
-        <button onClick={handleSave}>Save</button>
-      </div>
-    </div>
-  )}
+ 
 
   {/* Show add new button only when not adding or editing */}
   {!(isAddingNew || editingIndex !== null) && (

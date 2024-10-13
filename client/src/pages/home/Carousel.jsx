@@ -12,7 +12,7 @@ function Carousel({ images }) {
  
   
   useEffect(() => {
-    timeOutRef.current = setTimeout(slideRight, 9000);
+    timeOutRef.current = setTimeout(slideRight, 2000);
 
     return () => {
       clearTimeout(timeOutRef.current);
@@ -45,7 +45,9 @@ function Carousel({ images }) {
             </div>
           );
         })}
-        <div className="carousel_arrow_left" onClick={slideLeft}>
+        {
+
+          images.length > 1 && <>  <div className="carousel_arrow_left" onClick={slideLeft}>
           <p>&lsaquo;</p>
         </div>
         {/* <button className="carousel-button">SHOP NOW</button> */}
@@ -67,6 +69,9 @@ function Carousel({ images }) {
             );
           })}
         </div>
+          </>
+        }
+      
       </div>
     </div>
   );
