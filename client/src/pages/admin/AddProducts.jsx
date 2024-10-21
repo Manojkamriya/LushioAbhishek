@@ -1,594 +1,418 @@
-// AddProducts.jsx
-import React, { useState } from "react";
-import axios from "axios";
-import "./AddProducts.css";
+import React, { useState } from 'react';
+import axios from 'axios';
 import { storage } from "../../firebaseConfig"; // Import storage from Firebase config
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
-const validSizes = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
-
 const AddProducts = () => {
-  const [name, setName] = useState("");
-  const [displayName, setDisplayName] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [gst, setGst] = useState(5); // Default GST to 5%
-  const [discount, setDiscount] = useState("");
-  const [categories, setCategories] = useState([]);
-  const [images, setImages] = useState([]);
-  const [uploadedImageUrls, setUploadedImageUrls] = useState([]); // To hold uploaded image URLs
-  const [height, setHeight] = useState(""); // New height field
-  const [colorOptionsAbove, setColorOptionsAbove] = useState([]); // Colors for "Above" height
-  const [sizeOptionsAbove, setSizeOptionsAbove] = useState({});
-  const [quantitiesAbove, setQuantitiesAbove] = useState({});
-  const [colorOptionsBelow, setColorOptionsBelow] = useState([]); // Colors for "Below" height
-  const [sizeOptionsBelow, setSizeOptionsBelow] = useState({});
-  const [quantitiesBelow, setQuantitiesBelow] = useState({});
-  const [newColorNameAbove, setNewColorNameAbove] = useState("");
-  const [newColorHexAbove, setNewColorHexAbove] = useState("#000000");
-  const [newColorNameBelow, setNewColorNameBelow] = useState("");
-  const [newColorHexBelow, setNewColorHexBelow] = useState("#000000");
-  const [sizeError, setSizeError] = useState("");
-  const [useHeightClassification, setUseHeightClassification] = useState(false);
-  const [colorOptions, setColorOptions] = useState([]);
-  const [sizeOptions, setSizeOptions] = useState({});
-  const [quantities, setQuantities] = useState({});
-  const [newColorName, setNewColorName] = useState("");
-  const [newColorHex, setNewColorHex] = useState("#000000");
+  const [product, setProduct] = useState({
+    name: '',
+    displayName: '',
+    description: '',
+    price: '',
+    gst: '',
+    discount: '',
+    categories: '',
+    height: '',
+    aboveHeight: { colorOptions: [], quantities: {} },
+    belowHeight: { colorOptions: [], quantities: {} },
+    colorOptions: [],
+    quantities: {},
+    cardImages: [],
+  });
 
-  // Image Upload Logic
-  const handleImageUpload = (e) => {
-    const files = Array.from(e.target.files);
-    setImages([...images, ...files]);
+  const [isHeightBased, setIsHeightBased] = useState(false);
+  const [colorImages, setColorImages] = useState({});
+  const [newColor, setNewColor] = useState({ name: '', code: '#000000' });
+
+  const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setProduct({ ...product, [name]: value });
   };
 
-  const handleRemoveImage = (index) => {
-    setImages(images.filter((_, i) => i !== index));
-    setUploadedImageUrls(uploadedImageUrls.filter((_, i) => i !== index)); // Remove from uploaded URLs if needed
+  const handleCategoryChange = (e) => {
+    setProduct({ ...product, categories: e.target.value.split(',').map(cat => cat.trim()) });
   };
 
-  // Color Handling for Above
-  const handleAddColorAbove = () => {
-    if (
-      newColorNameAbove &&
-      !colorOptionsAbove.some((color) => color.name === newColorNameAbove)
-    ) {
-      setColorOptionsAbove([
-        ...colorOptionsAbove,
-        { name: newColorNameAbove, hex: newColorHexAbove },
-      ]);
-      setSizeOptionsAbove({ ...sizeOptionsAbove, [newColorNameAbove]: [] });
-      setQuantitiesAbove({ ...quantitiesAbove, [newColorNameAbove]: {} });
-      setNewColorNameAbove("");
-      setNewColorHexAbove("#000000");
-    }
-  };
-
-  const handleRemoveColorAbove = (colorName) => {
-    setColorOptionsAbove(
-      colorOptionsAbove.filter((color) => color.name !== colorName)
-    );
-    const newSizeOptions = { ...sizeOptionsAbove };
-    delete newSizeOptions[colorName];
-    setSizeOptionsAbove(newSizeOptions);
-    const newQuantities = { ...quantitiesAbove };
-    delete newQuantities[colorName];
-    setQuantitiesAbove(newQuantities);
-  };
-
-  // Color Handling for Below
-  const handleAddColorBelow = () => {
-    if (
-      newColorNameBelow &&
-      !colorOptionsBelow.some((color) => color.name === newColorNameBelow)
-    ) {
-      setColorOptionsBelow([
-        ...colorOptionsBelow,
-        { name: newColorNameBelow, hex: newColorHexBelow },
-      ]);
-      setSizeOptionsBelow({ ...sizeOptionsBelow, [newColorNameBelow]: [] });
-      setQuantitiesBelow({ ...quantitiesBelow, [newColorNameBelow]: {} });
-      setNewColorNameBelow("");
-      setNewColorHexBelow("#000000");
-    }
-  };
-
-  const handleRemoveColorBelow = (colorName) => {
-    setColorOptionsBelow(
-      colorOptionsBelow.filter((color) => color.name !== colorName)
-    );
-    const newSizeOptions = { ...sizeOptionsBelow };
-    delete newSizeOptions[colorName];
-    setSizeOptionsBelow(newSizeOptions);
-    const newQuantities = { ...quantitiesBelow };
-    delete newQuantities[colorName];
-    setQuantitiesBelow(newQuantities);
-  };
-
-  // Size Handling for Above
-  const handleAddSizeAbove = (colorName, size) => {
-    const sizesArray = size.split(",").map((s) => s.trim());
-    const invalidSizes = sizesArray.filter((s) => !validSizes.includes(s));
-
-    if (invalidSizes.length > 0) {
-      setSizeError(`Invalid sizes: ${invalidSizes.join(", ")}`);
-    } else {
-      setSizeError("");
-      const uniqueSizes = [
-        ...new Set([...(sizeOptionsAbove[colorName] || []), ...sizesArray]),
-      ]; // Ensure no duplicates
-      setSizeOptionsAbove({ ...sizeOptionsAbove, [colorName]: uniqueSizes });
-      // Initialize quantities for new sizes
-      const newQuantities = { ...quantitiesAbove[colorName] };
-      uniqueSizes.forEach((size) => {
-        if (!newQuantities[size]) newQuantities[size] = 0;
-      });
-      setQuantitiesAbove({ ...quantitiesAbove, [colorName]: newQuantities });
-    }
-  };
-
-  // Size Handling for Below
-  const handleAddSizeBelow = (colorName, size) => {
-    const sizesArray = size.split(",").map((s) => s.trim());
-    const invalidSizes = sizesArray.filter((s) => !validSizes.includes(s));
-
-    if (invalidSizes.length > 0) {
-      setSizeError(`Invalid sizes: ${invalidSizes.join(", ")}`);
-    } else {
-      setSizeError("");
-      const uniqueSizes = [
-        ...new Set([...(sizeOptionsBelow[colorName] || []), ...sizesArray]),
-      ]; // Ensure no duplicates
-      setSizeOptionsBelow({ ...sizeOptionsBelow, [colorName]: uniqueSizes });
-      // Initialize quantities for new sizes
-      const newQuantities = { ...quantitiesBelow[colorName] };
-      uniqueSizes.forEach((size) => {
-        if (!newQuantities[size]) newQuantities[size] = 0;
-      });
-      setQuantitiesBelow({ ...quantitiesBelow, [colorName]: newQuantities });
-    }
-  };
-
-  const handleAddColor = () => {
-    if (
-      newColorName &&
-      !colorOptions.some((color) => color.name === newColorName)
-    ) {
-      setColorOptions([
-        ...colorOptions,
-        { name: newColorName, hex: newColorHex },
-      ]);
-      setSizeOptions({ ...sizeOptions, [newColorName]: [] });
-      setQuantities({ ...quantities, [newColorName]: {} });
-      setNewColorName("");
-      setNewColorHex("#000000");
-    }
-  };
-
-  const handleRemoveColor = (colorName) => {
-    setColorOptions(colorOptions.filter((color) => color.name !== colorName));
-    const newSizeOptions = { ...sizeOptions };
-    delete newSizeOptions[colorName];
-    setSizeOptions(newSizeOptions);
-    const newQuantities = { ...quantities };
-    delete newQuantities[colorName];
-    setQuantities(newQuantities);
-  };
-
-  const handleAddSize = (colorName, size) => {
-    const sizesArray = size.split(",").map((s) => s.trim());
-    const invalidSizes = sizesArray.filter((s) => !validSizes.includes(s));
-
-    if (invalidSizes.length > 0) {
-      setSizeError(`Invalid sizes: ${invalidSizes.join(", ")}`);
-    } else {
-      setSizeError("");
-      const uniqueSizes = [
-        ...new Set([...(sizeOptions[colorName] || []), ...sizesArray]),
-      ];
-      setSizeOptions({ ...sizeOptions, [colorName]: uniqueSizes });
-      // Initialize quantities for new sizes
-      const newQuantities = { ...quantities[colorName] };
-      uniqueSizes.forEach((size) => {
-        if (!newQuantities[size]) newQuantities[size] = 0;
-      });
-      setQuantities({ ...quantities, [colorName]: newQuantities });
-    }
-  };
-
-  // handle quantity changes
-  const handleQuantityChange = (colorName, size, value, section = null) => {
-    const newValue = parseInt(value, 10) || 0;
-    if (section === "above") {
-      setQuantitiesAbove({
-        ...quantitiesAbove,
-        [colorName]: { ...quantitiesAbove[colorName], [size]: newValue },
-      });
-    } else if (section === "below") {
-      setQuantitiesBelow({
-        ...quantitiesBelow,
-        [colorName]: { ...quantitiesBelow[colorName], [size]: newValue },
-      });
-    } else {
-      setQuantities({
-        ...quantities,
-        [colorName]: { ...quantities[colorName], [size]: newValue },
-      });
-    }
-  };
-
-  // Image Upload Logic to Firebase
-  const uploadImagesToFirebase = async () => {
-    return Promise.all(
-      images.map((image) => {
-        const storageRef = ref(storage, `products/${Date.now()}_${image.name}`);
-        const uploadTask = uploadBytesResumable(storageRef, image);
-
-        return new Promise((resolve, reject) => {
-          uploadTask.on(
-            "state_changed",
-            (snapshot) => {
-              const progress =
-                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-              console.log(`Upload is ${progress}% done`);
-            },
-            (error) => {
-              console.error("Error uploading image:", error);
-              reject(error);
-            },
-            () => {
-              getDownloadURL(uploadTask.snapshot.ref)
-                .then((downloadURL) => {
-                  resolve(downloadURL);
-                })
-                .catch((error) => {
-                  console.error("Error getting download URL:", error);
-                  reject(error);
-                });
-            }
-          );
+  const handleColorAdd = (type = 'normal') => {
+    if (newColor.name && newColor.code) {
+      if (type === 'above') {
+        setProduct({
+          ...product,
+          aboveHeight: {
+            ...product.aboveHeight,
+            colorOptions: [...product.aboveHeight.colorOptions, newColor]
+          }
         });
-      })
-    );
+      } else if (type === 'below') {
+        setProduct({
+          ...product,
+          belowHeight: {
+            ...product.belowHeight,
+            colorOptions: [...product.belowHeight.colorOptions, newColor]
+          }
+        });
+      } else {
+        setProduct({
+          ...product,
+          colorOptions: [...product.colorOptions, newColor]
+        });
+      }
+      setNewColor({ name: '', code: '#000000' });
+    }
   };
 
-  // Form Submission Handler
+  const handleQuantityChange = (color, size, value, type = 'normal') => {
+    if (type === 'above') {
+      setProduct({
+        ...product,
+        aboveHeight: {
+          ...product.aboveHeight,
+          quantities: {
+            ...product.aboveHeight.quantities,
+            [color]: { ...product.aboveHeight.quantities[color], [size]: parseInt(value) }
+          }
+        }
+      });
+    } else if (type === 'below') {
+      setProduct({
+        ...product,
+        belowHeight: {
+          ...product.belowHeight,
+          quantities: {
+            ...product.belowHeight.quantities,
+            [color]: { ...product.belowHeight.quantities[color], [size]: parseInt(value) }
+          }
+        }
+      });
+    } else {
+      setProduct(prevProduct => ({
+        ...prevProduct,
+        quantities: {
+          ...prevProduct.quantities,
+          [color]: {
+            ...prevProduct.quantities[color],
+            [size]: parseInt(value)
+          }
+        }
+      }));
+    }
+  };
+
+  const handleImageUpload = async (e, colorName = null, heightType = null) => {
+    const files = Array.from(e.target.files);
+    const uploadPromises = files.map(async (file) => {
+      const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
+  
+      try {
+        const snapshot = await uploadBytesResumable(storageRef, file);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        return downloadURL;
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        return null;
+      }
+    });
+  
+    try {
+      const imageUrls = await Promise.all(uploadPromises);
+      const validUrls = imageUrls.filter(url => url !== null);
+  
+      if (colorName) {
+        if (heightType) {
+          // Height-based images
+          setColorImages(prevImages => ({
+            ...prevImages,
+            [heightType]: {
+              ...prevImages[heightType],
+              [colorName]: validUrls
+            }
+          }));
+        } else {
+          // Regular color images
+          setColorImages(prevImages => ({
+            ...prevImages,
+            [colorName]: validUrls
+          }));
+        }
+      } else {
+        setProduct(prevProduct => ({
+          ...prevProduct,
+          cardImages: validUrls
+        }));
+      }
+  
+      console.log('Uploaded images:', validUrls);
+    } catch (error) {
+      console.error('Error handling image uploads:', error);
+    }
+  };
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      const urls = await uploadImagesToFirebase();
-      setUploadedImageUrls(urls);
+      let productData = { ...product };
 
-      const productData = {
-        name,
-        displayName,
-        description,
-        price,
-        gst,
-        discount,
-        categories: categories.join(", "),
-        imageUrls: urls,
-      };
-
-      if (useHeightClassification) {
-        productData.height = { value: height };
-        productData.aboveHeight = {
-          colorOptions: colorOptionsAbove,
-          sizeOptions: sizeOptionsAbove,
-          quantities: quantitiesAbove,
-        };
-        productData.belowHeight = {
-          colorOptions: colorOptionsBelow,
-          sizeOptions: sizeOptionsBelow,
-          quantities: quantitiesBelow,
-        };
+      if (isHeightBased) {
+        productData.aboveHeight.colorImages = colorImages.above;
+        productData.belowHeight.colorImages = colorImages.below;
       } else {
-        productData.colorOptions = colorOptions;
-        productData.sizeOptions = sizeOptions;
-        productData.quantities = quantities;
+        productData.colorOptions = productData.colorOptions.map(color => ({
+          ...color,
+          images: colorImages[color.name] || []
+        }));
       }
 
-      // console.log(productData);
-      const response = await axios.post(
-        "http://127.0.0.1:5001/lushio-fitness/us-central1/api/products/addProduct",
-        productData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.status === 201) {
-        alert("Product saved successfully!");
-        console.log("Product added:", response.data);
-      } else {
-        alert("Failed to save product.");
-      }
+      const response = await axios.post('http://127.0.0.1:5001/lushio-fitness/us-central1/api/products/addProduct', productData);
+      console.log('Product added:', response.data);
+      // Reset form or show success message
+      alert("Added");
+      window.location.reload();
     } catch (error) {
-      console.error("Error saving product:", error);
-      alert("Failed to save product. Please try again.");
+      console.error('Error adding product:', error);
+      // Show error message
+      alert("Failed");
     }
   };
 
   return (
-    <div className="add-product-container">
-      <h2>Add Products</h2>
-      <form
-        onSubmit={handleSubmit}
-        className="add-product-form"
-        onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
-      >
-        <div className="image-upload">
-          <label>Choose or Drop Images</label>
-          <input type="file" multiple onChange={handleImageUpload} />
+    <div className="max-w-4xl mx-auto p-4">
+      <h2 className="text-2xl font-bold mb-4">Add New Product</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="name" className="block mb-1">Name</label>
+            <input
+              id="name"
+              name="name"
+              value={product.name}
+              onChange={handleInputChange}
+              required
+              className="w-full p-2 border rounded"
+            />
+          </div>
+          <div>
+            <label htmlFor="displayName" className="block mb-1">Display Name</label>
+            <input
+              id="displayName"
+              name="displayName"
+              value={product.displayName}
+              onChange={handleInputChange}
+              required
+              className="w-full p-2 border rounded"
+            />
+          </div>
         </div>
 
-        <div className="image-preview">
-          {images.map((image, index) => (
-            <div key={index} className="image-item">
-              <img src={URL.createObjectURL(image)} alt={`Preview ${index}`} />
-              <button type="button" onClick={() => handleRemoveImage(index)}>
-                Remove
-              </button>
-            </div>
-          ))}
-        </div>
-
-        <div className="form-fields">
-          <input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Display Name"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-          />
+        <div>
+          <label htmlFor="description" className="block mb-1">Description</label>
           <textarea
-            placeholder="Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            id="description"
+            name="description"
+            value={product.description}
+            onChange={handleInputChange}
+            required
+            className="w-full p-2 border rounded"
           />
-          <input
-            type="number"
-            placeholder="Price"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-          />
-          <input
-            type="number"
-            placeholder="GST Percentage"
-            value={gst}
-            onChange={(e) => setGst(e.target.value)}
-          />
-          <input
-            type="number"
-            placeholder="Discount Percentage"
-            value={discount}
-            onChange={(e) => setDiscount(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Categories (comma separated)"
-            value={categories}
-            onChange={(e) => setCategories(e.target.value.split(","))}
-          />
-        </div>
-        <div className="height-classification">
-          <label>
-            <input
-              type="checkbox"
-              checked={useHeightClassification}
-              onChange={(e) => setUseHeightClassification(e.target.checked)}
-            />
-            Use height-based classification
-          </label>
         </div>
 
-        {useHeightClassification ? (
-          <>
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <label htmlFor="price" className="block mb-1">Price</label>
             <input
+              id="price"
+              name="price"
               type="number"
-              placeholder="Height (in cm)"
-              value={height}
-              onChange={(e) => setHeight(e.target.value)}
+              value={product.price}
+              onChange={handleInputChange}
+              required
+              className="w-full p-2 border rounded"
             />
-            {/* Section for Above Height */}
-            <div className="height-section">
-              <h3>Above Height</h3>
-              <div>
-                <input
-                  type="text"
-                  placeholder="Color Name"
-                  value={newColorNameAbove}
-                  onChange={(e) => setNewColorNameAbove(e.target.value)}
-                />
-                <input
-                  type="color"
-                  value={newColorHexAbove}
-                  onChange={(e) => setNewColorHexAbove(e.target.value)}
-                />
-                <button type="button" onClick={handleAddColorAbove}>
-                  Add Color
-                </button>
-              </div>
+          </div>
+          <div>
+            <label htmlFor="gst" className="block mb-1">GST (%)</label>
+            <input
+              id="gst"
+              name="gst"
+              type="number"
+              value={product.gst}
+              onChange={handleInputChange}
+              required
+              className="w-full p-2 border rounded"
+            />
+          </div>
+          <div>
+            <label htmlFor="discount" className="block mb-1">Discount (%)</label>
+            <input
+              id="discount"
+              name="discount"
+              type="number"
+              value={product.discount}
+              onChange={handleInputChange}
+              required
+              className="w-full p-2 border rounded"
+            />
+          </div>
+        </div>
 
-              {colorOptionsAbove.map((color, index) => (
-                <div key={index} className="color-item">
-                  <span style={{ color: color.hex }}>
-                    {color.name} ({color.hex})
-                  </span>
-                  <input
-                    type="text"
-                    placeholder="Sizes (comma separated)"
-                    onBlur={(e) =>
-                      handleAddSizeAbove(color.name, e.target.value)
-                    }
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveColorAbove(color.name)}
-                  >
-                    Remove
-                  </button>
-                  <div>
-                    Sizes:{" "}
-                    {sizeOptionsAbove[color.name]?.map((size) => (
-                      <span key={size}>
-                        {size}
-                        <input
-                          type="number"
-                          placeholder="Quantity"
-                          value={quantitiesAbove[color.name]?.[size] || ""}
-                          onChange={(e) =>
-                            handleQuantityChange(
-                              color.name,
-                              size,
-                              e.target.value,
-                              "above"
-                            )
-                          }
-                          min="0"
-                        />
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+        <div>
+          <label htmlFor="categories" className="block mb-1">Categories (comma-separated)</label>
+          <input
+            id="categories"
+            name="categories"
+            value={product.categories}
+            onChange={handleCategoryChange}
+            required
+            className="w-full p-2 border rounded"
+          />
+        </div>
 
-            {/* Section for Below Height */}
-            <div className="height-section">
-              <h3>Below Height</h3>
-              <div>
-                <input
-                  type="text"
-                  placeholder="Color Name"
-                  value={newColorNameBelow}
-                  onChange={(e) => setNewColorNameBelow(e.target.value)}
-                />
-                <input
-                  type="color"
-                  value={newColorHexBelow}
-                  onChange={(e) => setNewColorHexBelow(e.target.value)}
-                />
-                <button type="button" onClick={handleAddColorBelow}>
-                  Add Color
-                </button>
-              </div>
+        <div>
+          <label htmlFor="cardImages" className="block mb-1">Card Images (2 required)</label>
+          <input
+            id="cardImages"
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={(e) => handleImageUpload(e)}
+            required
+            className="w-full p-2 border rounded"
+          />
+        </div>
 
-              {colorOptionsBelow.map((color, index) => (
-                <div key={index} className="color-item">
-                  <span style={{ color: color.hex }}>
-                    {color.name} ({color.hex})
-                  </span>
-                  <input
-                    type="text"
-                    placeholder="Sizes (comma separated)"
-                    onBlur={(e) =>
-                      handleAddSizeBelow(color.name, e.target.value)
-                    }
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveColorBelow(color.name)}
-                  >
-                    Remove
-                  </button>
-                  <div>
-                    Sizes:{" "}
-                    {sizeOptionsBelow[color.name]?.map((size) => (
-                      <span key={size}>
-                        {size}
-                        <input
-                          type="number"
-                          placeholder="Quantity"
-                          value={quantitiesBelow[color.name]?.[size] || ""}
-                          onChange={(e) =>
-                            handleQuantityChange(
-                              color.name,
-                              size,
-                              e.target.value,
-                              "below"
-                            )
-                          }
-                          min="0"
-                        />
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
-        ) : (
-          <div className="color-size-section">
-            <h3>Colors and Sizes</h3>
+        <div className="flex items-center space-x-2">
+          <input
+            id="isHeightBased"
+            type="checkbox"
+            checked={isHeightBased}
+            onChange={(e) => setIsHeightBased(e.target.checked)}
+            className="rounded"
+          />
+          <label htmlFor="isHeightBased">Height-based classification</label>
+        </div>
+
+        {isHeightBased ? (
+          <div className="space-y-4">
             <div>
+              <label htmlFor="height" className="block mb-1">Height (cm)</label>
               <input
-                type="text"
-                placeholder="Color Name"
-                value={newColorName}
-                onChange={(e) => setNewColorName(e.target.value)}
+                id="height"
+                name="height"
+                type="number"
+                value={product.height}
+                onChange={handleInputChange}
+                required
+                className="w-full p-2 border rounded"
               />
-              <input
-                type="color"
-                value={newColorHex}
-                onChange={(e) => setNewColorHex(e.target.value)}
-              />
-              <button type="button" onClick={handleAddColor}>
-                Add Color
-              </button>
             </div>
-
-            {colorOptions.map((color, index) => (
-              <div key={index} className="color-item">
-                <span style={{ color: color.hex }}>
-                  {color.name} ({color.hex})
-                </span>
-                <input
-                  type="text"
-                  placeholder="Sizes (comma separated)"
-                  onBlur={(e) => handleAddSize(color.name, e.target.value)}
-                />
-                <button
-                  type="button"
-                  onClick={() => handleRemoveColor(color.name)}
-                >
-                  Remove
-                </button>
-                <div>
-                  Sizes:{" "}
-                  {sizeOptions[color.name]?.map((size) => (
-                    <span key={size}>
-                      {size}
-                      <input
-                        type="number"
-                        placeholder="Quantity"
-                        value={quantities[color.name]?.[size] || ""}
-                        onChange={(e) =>
-                          handleQuantityChange(color.name, size, e.target.value)
-                        }
-                        min="0"
-                      />
-                    </span>
-                  ))}
+            {['above', 'below'].map((heightType) => (
+              <div key={heightType}>
+                <h3 className="font-semibold">{heightType === 'above' ? 'Above' : 'Below'} Height</h3>
+                <div className="flex space-x-2 mb-2">
+                  <input
+                    type="text"
+                    placeholder="Color name"
+                    value={newColor.name}
+                    onChange={(e) => setNewColor({ ...newColor, name: e.target.value })}
+                    className="p-2 border rounded"
+                  />
+                  <input
+                    type="color"
+                    value={newColor.code}
+                    onChange={(e) => setNewColor({ ...newColor, code: e.target.value })}
+                    className="p-1 border rounded"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleColorAdd(heightType)}
+                    className="px-4 py-2 bg-blue-500 text-white rounded"
+                  >
+                    Add Color
+                  </button>
                 </div>
+                {product[`${heightType}Height`].colorOptions.map((color) => (
+                  <div key={color.name} className="mt-2">
+                    <div className="flex items-center space-x-2">
+                      <span style={{ color: color.code }} className="w-6 h-6 rounded-full">{color.name}</span>
+                    </div>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(e, color.name, heightType)}
+                      className="mt-1 w-full p-2 border rounded"
+                    />
+                    {sizeOptions.map((size) => (
+                      <div key={size} className="flex items-center mt-1">
+                        <label className="w-10">{size}</label>
+                        <input
+                          type="number"
+                          value={product[`${heightType}Height`].quantities[color.name]?.[size] || ''}
+                          onChange={(e) => handleQuantityChange(color.name, size, e.target.value, heightType)}
+                          className="w-20 p-1 border rounded"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ))}
               </div>
             ))}
           </div>
+        ) : (
+          <div className="space-y-4">
+            <div>
+              <h3 className="font-semibold">Colors</h3>
+              <div className="flex space-x-2 mb-2">
+                <input
+                  type="text"
+                  placeholder="Color name"
+                  value={newColor.name}
+                  onChange={(e) => setNewColor({ ...newColor, name: e.target.value })}
+                  className="p-2 border rounded"
+                />
+                <input
+                  type="color"
+                  value={newColor.code}
+                  onChange={(e) => setNewColor({ ...newColor, code: e.target.value })}
+                  className="p-1 border rounded"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleColorAdd()}
+                  className="px-4 py-2 bg-blue-500 text-white rounded"
+                >
+                  Add Color
+                </button>
+              </div>
+              {product.colorOptions.map(color => (
+                <div key={color.name}>
+                  <h4 className="flex items-center space-x-2"><span style={{ color: color.code }} className="w-6 h-6 rounded-full">{color.name}</span></h4>
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, color.name)}
+                    className="mt-1 w-full p-2 border rounded"
+                  />
+                  {sizeOptions.map(size => (
+                    <div key={size}>
+                      <label>{size}</label>
+                      <input
+                        type="number"
+                        value={product.quantities[color.name]?.[size] || ''}
+                        onChange={(e) => handleQuantityChange(color.name, size, e.target.value)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
         )}
 
-        {sizeError && <div className="error">{sizeError}</div>}
-
-        <button type="submit" className="submit-btn">
-          Save Product
-        </button>
+        <button type="submit" className="px-4 py-2 bg-green-500 text-white rounded">Add Product</button>
       </form>
     </div>
   );

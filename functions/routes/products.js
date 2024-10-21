@@ -11,7 +11,6 @@ router.post("/addProduct", async (req, res) => {
   try {
     console.log("Received product data:", req.body);
 
-    // Extract form data sent from the frontend
     const {
       name,
       displayName,
@@ -20,23 +19,22 @@ router.post("/addProduct", async (req, res) => {
       gst,
       discount,
       categories,
-      imageUrls,
       height,
       aboveHeight,
       belowHeight,
       colorOptions,
-      sizeOptions,
       quantities,
+      cardImages,
     } = req.body;
 
-    // validation checks
-    if (!name || !displayName || !description || !price || !gst || !discount || !categories || !imageUrls) {
-      return res.status(400).json({error: "All required fields must be filled"});
+    // Validation checks
+    if (!name || !displayName || !description || !price || !gst || !discount || !categories || !cardImages || cardImages.length !== 2) {
+      return res.status(400).json({error: "All required fields must be filled, including only two card images"});
     }
 
     // Prepare the new product data
     const productData = {
-      addedOn: new Date(),
+      createdAt: new Date(),
       name: name.trim(),
       displayName: displayName.trim(),
       description: description.trim(),
@@ -44,12 +42,13 @@ router.post("/addProduct", async (req, res) => {
       gst: parseFloat(gst),
       discount: parseFloat(discount),
       categories: typeof categories === "string" ? categories.split(",").map((cat) => cat.trim()) : categories,
-      imageUrls: imageUrls,
+      cardImages: cardImages, // Array of two card image URLs
       rating: 0, // Default rating
     };
 
-    // Add height-based classification if present
+    // Process color options and images
     if (height) {
+      // Height-based classification
       productData.height = height;
       productData.aboveHeight = {
         ...aboveHeight,
@@ -59,9 +58,16 @@ router.post("/addProduct", async (req, res) => {
         ...belowHeight,
         quantities: belowHeight.quantities,
       };
+
+      // Create unified colorOptions array
+      const allColors = new Set([
+        ...aboveHeight.colorOptions.map((c) => JSON.stringify(c)),
+        ...belowHeight.colorOptions.map((c) => JSON.stringify(c)),
+      ]);
+      productData.colorOptions = Array.from(allColors).map((c) => JSON.parse(c));
     } else {
+      // Non-height-based classification
       productData.colorOptions = colorOptions;
-      productData.sizeOptions = sizeOptions;
       productData.quantities = quantities;
     }
 
@@ -180,11 +186,10 @@ router.delete("/delete/:id", async (req, res) => {
     // Delete the product document
     batch.delete(productRef);
 
-    // Delete images from Firebase Storage
-    if (productData.imageUrls && Array.isArray(productData.imageUrls)) {
-      const deletePromises = productData.imageUrls.map(async (imageUrl) => {
+    // Helper function to delete an image from Firebase Storage
+    const deleteImage = async (imageUrl) => {
+      if (imageUrl) {
         try {
-          // Extract the path from the full URL
           const path = imageUrl.split("/o/")[1].split("?")[0];
           const decodedPath = decodeURIComponent(path);
           const fileRef = storage.bucket().file(decodedPath);
@@ -192,21 +197,43 @@ router.delete("/delete/:id", async (req, res) => {
         } catch (error) {
           console.error(`Failed to delete image: ${imageUrl}`, error);
         }
-      });
+      }
+    };
 
+    // Delete card images
+    if (productData.cardImages && Array.isArray(productData.cardImages)) {
+      await Promise.all(productData.cardImages.map(deleteImage));
+    }
+
+    // Delete color-specific images
+    if (productData.colorImages) {
+      const deletePromises = [];
+
+      for (const colorName in productData.colorImages) {
+        if (Object.prototype.hasOwnProperty.call(productData.colorImages, colorName)) {
+          const colorImages = productData.colorImages[colorName];
+          if (productData.height) {
+            // Height-based classification
+            deletePromises.push(...(colorImages.aboveImages || []).map(deleteImage));
+            deletePromises.push(...(colorImages.belowImages || []).map(deleteImage));
+          } else {
+            // Non-height-based classification
+            deletePromises.push(...(colorImages || []).map(deleteImage));
+          }
+        }
+      }
       await Promise.all(deletePromises);
     }
 
     // Commit the batch
     await batch.commit();
 
-    return res.status(200).json({message: "Product, associated reviews, and images successfully deleted"});
+    return res.status(200).json({message: "Product, associated reviews, and all images successfully deleted"});
   } catch (error) {
     console.error("Error deleting product:", error);
     return res.status(500).json({error: "Failed to delete product"});
   }
 });
-
 
 // Update a product by ID
 router.put("/update/:id", async (req, res) => {
@@ -222,10 +249,67 @@ router.put("/update/:id", async (req, res) => {
       return res.status(404).json({error: "Product not found"});
     }
 
-    // Update the product
-    await productRef.update(updatedData);
+    const currentProductData = doc.data();
 
-    return res.status(200).json({message: "Product updated successfully"});
+    // Prepare the updated product data
+    const updatedProductData = {
+      ...updatedData,
+      updatedAt: new Date(),
+    };
+
+    // Validate required fields
+    const requiredFields = ["name", "displayName", "description", "price", "gst", "discount", "categories", "cardImages"];
+    for (const field of requiredFields) {
+      if (updatedProductData[field] === undefined) {
+        updatedProductData[field] = currentProductData[field];
+      }
+    }
+
+    if (!updatedProductData.cardImages || updatedProductData.cardImages.length !== 2) {
+      return res.status(400).json({error: "Two card images are required"});
+    }
+
+    // Process color options and images
+    if (updatedProductData.height !== undefined) {
+      // Height-based classification
+      if (!updatedProductData.aboveHeight || !updatedProductData.belowHeight) {
+        return res.status(400).json({error: "Both aboveHeight and belowHeight data are required for height-based products"});
+      }
+
+      // Create unified colorOptions array
+      const allColors = new Set([
+        ...updatedProductData.aboveHeight.colorOptions.map((c) => JSON.stringify(c)),
+        ...updatedProductData.belowHeight.colorOptions.map((c) => JSON.stringify(c)),
+      ]);
+      updatedProductData.colorOptions = Array.from(allColors).map((c) => JSON.parse(c));
+
+      // Process images for each color
+      updatedProductData.colorImages = {};
+      for (const color of updatedProductData.colorOptions) {
+        const colorName = color.name;
+        updatedProductData.colorImages[colorName] = {
+          aboveImages: updatedProductData.aboveHeight.colorImages?.[colorName] || [],
+          belowImages: updatedProductData.belowHeight.colorImages?.[colorName] || [],
+        };
+      }
+    } else {
+      // Non-height-based classification
+      if (!updatedProductData.colorOptions || !updatedProductData.sizeOptions || !updatedProductData.quantities) {
+        return res.status(400).json({error: "colorOptions, sizeOptions, and quantities are required for non-height-based products"});
+      }
+
+      // Process images for each color
+      updatedProductData.colorImages = {};
+      for (const color of updatedProductData.colorOptions) {
+        const colorName = color.name;
+        updatedProductData.colorImages[colorName] = color.images || [];
+      }
+    }
+
+    // Update the product
+    await productRef.update(updatedProductData);
+
+    return res.status(200).json({message: "Product updated successfully", updatedProductData});
   } catch (error) {
     console.error("Error updating product:", error);
     return res.status(500).json({error: "Failed to update product"});
