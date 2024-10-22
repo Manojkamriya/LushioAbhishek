@@ -104,7 +104,7 @@ const EditProduct = () => {
                  }} 
                  onClick={() => handleProductClick(product.id)}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <img src={product.imageUrls[0]} alt={product.name} style={{ width: '4rem', height: '4rem', objectFit: 'cover', marginRight: '1rem' }} />
+                <img src={product.cardImages[0]} alt={product.name} style={{ width: '4rem', height: '4rem', objectFit: 'cover', marginRight: '1rem' }} />
                 <span>{product.name}</span>
               </div>
               <button 

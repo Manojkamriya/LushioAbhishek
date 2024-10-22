@@ -60,11 +60,12 @@ router.post("/addProduct", async (req, res) => {
       };
 
       // Create unified colorOptions array
-      const allColors = new Set([
-        ...aboveHeight.colorOptions.map((c) => JSON.stringify(c)),
-        ...belowHeight.colorOptions.map((c) => JSON.stringify(c)),
-      ]);
-      productData.colorOptions = Array.from(allColors).map((c) => JSON.parse(c));
+      productData.colorOptions = Array.from(
+          new Set([
+            ...aboveHeight.colorOptions.map((c) => JSON.stringify({name: c.name, code: c.code})),
+            ...belowHeight.colorOptions.map((c) => JSON.stringify({name: c.name, code: c.code})),
+          ]),
+      ).map((str) => JSON.parse(str));
     } else {
       // Non-height-based classification
       productData.colorOptions = colorOptions;

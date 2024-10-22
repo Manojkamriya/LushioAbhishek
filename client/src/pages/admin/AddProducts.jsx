@@ -37,12 +37,13 @@ const AddProducts = () => {
 
   const handleColorAdd = (type = 'normal') => {
     if (newColor.name && newColor.code) {
+      const newColorWithImages = { ...newColor, images: [] };
       if (type === 'above') {
         setProduct({
           ...product,
           aboveHeight: {
             ...product.aboveHeight,
-            colorOptions: [...product.aboveHeight.colorOptions, newColor]
+            colorOptions: [...product.aboveHeight.colorOptions, newColorWithImages]
           }
         });
       } else if (type === 'below') {
@@ -50,16 +51,16 @@ const AddProducts = () => {
           ...product,
           belowHeight: {
             ...product.belowHeight,
-            colorOptions: [...product.belowHeight.colorOptions, newColor]
+            colorOptions: [...product.belowHeight.colorOptions, newColorWithImages]
           }
         });
       } else {
         setProduct({
           ...product,
-          colorOptions: [...product.colorOptions, newColor]
+          colorOptions: [...product.colorOptions, newColorWithImages]
         });
       }
-      setNewColor({ name: '', code: '#000000' });
+      setNewColor({ name: '', code: '#000000', images: [] });
     }
   };
 
@@ -102,6 +103,8 @@ const AddProducts = () => {
 
   const handleImageUpload = async (e, colorName = null, heightType = null) => {
     const files = Array.from(e.target.files);
+    console.log(`Starting upload for ${heightType || 'regular'} height, color: ${colorName || 'none'}`);
+    
     const uploadPromises = files.map(async (file) => {
       const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
   
@@ -118,61 +121,120 @@ const AddProducts = () => {
     try {
       const imageUrls = await Promise.all(uploadPromises);
       const validUrls = imageUrls.filter(url => url !== null);
+      console.log('New valid URLs:', validUrls);
   
-      if (colorName) {
-        if (heightType) {
-          // Height-based images
-          setColorImages(prevImages => ({
-            ...prevImages,
-            [heightType]: {
-              ...prevImages[heightType],
-              [colorName]: validUrls
-            }
-          }));
+      setProduct(prevProduct => {
+        let updatedProduct = { ...prevProduct };
+  
+        if (colorName && heightType) {
+          // Handle height-specific color images
+          const heightSection = `${heightType}Height`;
+          console.log(`Updating ${heightSection} section`);
+          
+          // Initialize colorOptions if it doesn't exist
+          if (!updatedProduct[heightSection]) {
+            updatedProduct[heightSection] = { colorOptions: [] };
+          }
+          if (!updatedProduct[heightSection].colorOptions) {
+            updatedProduct[heightSection].colorOptions = [];
+          }
+  
+          const colorIndex = updatedProduct[heightSection].colorOptions.findIndex(
+            color => color.name === colorName
+          );
+  
+          if (colorIndex === -1) {
+            // If color doesn't exist, add it
+            console.log(`Adding new color ${colorName} to ${heightSection}`);
+            updatedProduct[heightSection].colorOptions.push({
+              name: colorName,
+              images: [...validUrls] // Create new array
+            });
+          } else {
+            // Update existing color images
+            console.log(`Updating existing color ${colorName} in ${heightSection}`);
+            console.log('Existing images:', updatedProduct[heightSection].colorOptions[colorIndex].images);
+            
+            const existingImages = updatedProduct[heightSection].colorOptions[colorIndex].images || [];
+            // Use Set to ensure uniqueness
+            const uniqueImages = Array.from(new Set([...existingImages, ...validUrls]));
+            
+            updatedProduct[heightSection].colorOptions[colorIndex] = {
+              ...updatedProduct[heightSection].colorOptions[colorIndex],
+              images: uniqueImages
+            };
+            
+            console.log('Updated images:', uniqueImages);
+          }
+        } else if (colorName) {
+          // Handle regular color images
+          if (!updatedProduct.colorOptions) {
+            updatedProduct.colorOptions = [];
+          }
+  
+          const colorIndex = updatedProduct.colorOptions.findIndex(
+            color => color.name === colorName
+          );
+  
+          if (colorIndex !== -1) {
+            const existingImages = updatedProduct.colorOptions[colorIndex].images || [];
+            const uniqueImages = Array.from(new Set([...existingImages, ...validUrls]));
+            
+            updatedProduct.colorOptions[colorIndex] = {
+              ...updatedProduct.colorOptions[colorIndex],
+              images: uniqueImages
+            };
+          }
         } else {
-          // Regular color images
-          setColorImages(prevImages => ({
-            ...prevImages,
-            [colorName]: validUrls
-          }));
+          // Handle card images
+          const existingCardImages = updatedProduct.cardImages || [];
+          const uniqueCardImages = Array.from(new Set([...existingCardImages, ...validUrls]));
+          updatedProduct.cardImages = uniqueCardImages;
         }
-      } else {
-        setProduct(prevProduct => ({
-          ...prevProduct,
-          cardImages: validUrls
-        }));
-      }
   
-      console.log('Uploaded images:', validUrls);
+        console.log('Updated product state:', updatedProduct);
+        return updatedProduct;
+      });
+  
     } catch (error) {
       console.error('Error handling image uploads:', error);
     }
   };
   
-
+  // Helper function to ensure proper initialization of product structure
+  const initializeProduct = (product) => {
+    return {
+      ...product,
+      cardImages: product.cardImages || [],
+      colorOptions: product.colorOptions || [],
+      aboveHeight: {
+        ...product.aboveHeight,
+        colorOptions: product?.aboveHeight?.colorOptions || []
+      },
+      belowHeight: {
+        ...product.belowHeight,
+        colorOptions: product?.belowHeight?.colorOptions || []
+      }
+    };
+  };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      let productData = { ...product };
-
-      if (isHeightBased) {
-        productData.aboveHeight.colorImages = colorImages.above;
-        productData.belowHeight.colorImages = colorImages.below;
-      } else {
-        productData.colorOptions = productData.colorOptions.map(color => ({
-          ...color,
-          images: colorImages[color.name] || []
-        }));
-      }
-
-      const response = await axios.post('http://127.0.0.1:5001/lushio-fitness/us-central1/api/products/addProduct', productData);
+      // Ensure proper structure before submitting
+      let productData = initializeProduct(product);
+      
+      console.log('Submitting product data:', productData);
+  
+      const response = await axios.post(
+        'http://127.0.0.1:5001/lushio-fitness/us-central1/api/products/addProduct',
+        productData
+      );
+      
       console.log('Product added:', response.data);
-      // Reset form or show success message
       alert("Added");
-      window.location.reload();
     } catch (error) {
       console.error('Error adding product:', error);
-      // Show error message
       alert("Failed");
     }
   };
