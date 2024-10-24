@@ -44,6 +44,7 @@ router.post("/addProduct", async (req, res) => {
       categories: typeof categories === "string" ? categories.split(",").map((cat) => cat.trim()) : categories,
       cardImages: cardImages, // Array of two card image URLs
       rating: 0, // Default rating
+      allImages: [...cardImages],
     };
 
     // Process color options and images
@@ -66,10 +67,29 @@ router.post("/addProduct", async (req, res) => {
             ...belowHeight.colorOptions.map((c) => JSON.stringify({name: c.name, code: c.code})),
           ]),
       ).map((str) => JSON.parse(str));
+
+      // Append images from aboveHeight and belowHeight colorOptions to allImages
+      aboveHeight.colorOptions.forEach((option) => {
+        if (option.images && Array.isArray(option.images)) {
+          productData.allImages = productData.allImages.concat(option.images);
+        }
+      });
+      belowHeight.colorOptions.forEach((option) => {
+        if (option.images && Array.isArray(option.images)) {
+          productData.allImages = productData.allImages.concat(option.images);
+        }
+      });
     } else {
       // Non-height-based classification
       productData.colorOptions = colorOptions;
       productData.quantities = quantities;
+
+      // Append images from non-height-based colorOptions to allImages
+      colorOptions.forEach((option) => {
+        if (option.images && Array.isArray(option.images)) {
+          productData.allImages = productData.allImages.concat(option.images);
+        }
+      });
     }
 
     // Add the product to the "products" collection in Firestore
@@ -184,9 +204,6 @@ router.delete("/delete/:id", async (req, res) => {
       batch.delete(doc.ref);
     });
 
-    // Delete the product document
-    batch.delete(productRef);
-
     // Helper function to delete an image from Firebase Storage
     const deleteImage = async (imageUrl) => {
       if (imageUrl) {
@@ -201,30 +218,13 @@ router.delete("/delete/:id", async (req, res) => {
       }
     };
 
-    // Delete card images
-    if (productData.cardImages && Array.isArray(productData.cardImages)) {
-      await Promise.all(productData.cardImages.map(deleteImage));
+    // Delete all images listed in the allImages array
+    if (productData.allImages && Array.isArray(productData.allImages)) {
+      await Promise.all(productData.allImages.map(deleteImage));
     }
 
-    // Delete color-specific images
-    if (productData.colorImages) {
-      const deletePromises = [];
-
-      for (const colorName in productData.colorImages) {
-        if (Object.prototype.hasOwnProperty.call(productData.colorImages, colorName)) {
-          const colorImages = productData.colorImages[colorName];
-          if (productData.height) {
-            // Height-based classification
-            deletePromises.push(...(colorImages.aboveImages || []).map(deleteImage));
-            deletePromises.push(...(colorImages.belowImages || []).map(deleteImage));
-          } else {
-            // Non-height-based classification
-            deletePromises.push(...(colorImages || []).map(deleteImage));
-          }
-        }
-      }
-      await Promise.all(deletePromises);
-    }
+    // Delete the product document
+    batch.delete(productRef);
 
     // Commit the batch
     await batch.commit();
@@ -235,6 +235,7 @@ router.delete("/delete/:id", async (req, res) => {
     return res.status(500).json({error: "Failed to delete product"});
   }
 });
+
 
 // Update a product by ID
 router.put("/update/:id", async (req, res) => {

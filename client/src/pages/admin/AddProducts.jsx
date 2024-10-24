@@ -21,7 +21,6 @@ const AddProducts = () => {
   });
 
   const [isHeightBased, setIsHeightBased] = useState(false);
-  const [colorImages, setColorImages] = useState({});
   const [newColor, setNewColor] = useState({ name: '', code: '#000000' });
 
   const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
@@ -233,6 +232,7 @@ const AddProducts = () => {
       
       console.log('Product added:', response.data);
       alert("Added");
+      window.location.reload();
     } catch (error) {
       console.error('Error adding product:', error);
       alert("Failed");
@@ -473,7 +473,6 @@ const AddProducts = () => {
             </div>
           </div>
         )}
-
         <button type="submit" className="px-4 py-2 bg-green-500 text-white rounded">Add Product</button>
       </form>
     </div>
