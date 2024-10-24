@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Editor from './Editor';
+import './EditProduct.css';
 
 const EditProduct = () => {
   const [products, setProducts] = useState([]);
@@ -19,7 +20,7 @@ const EditProduct = () => {
       setError(null);
     } catch (error) {
       console.error('Error fetching products:', error);
-      setError('Failed to fetch products. Please try again.');
+      setError('Failed to fetch products. Please try again or add products first.');
     }
   };
 
@@ -37,7 +38,7 @@ const EditProduct = () => {
     }
   };
 
-  const handleProductClick = async (id) => {
+  const handleEdit = async (id) => {
     try {
       const response = await axios.get(`http://127.0.0.1:5001/lushio-fitness/us-central1/api/products/${id}`);
       setSelectedProduct(response.data);
@@ -62,81 +63,46 @@ const EditProduct = () => {
   );
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      height: 'calc(100vh - 60px)',
-      padding: '1rem',
-      width: "70vw",
-      backgroundColor: 'white',
-      overflow: 'hidden'
-    }}>
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>Edit Product</h1>
+    <div className="EditProduct-container">
+      <h1 className="EditProduct-title">Edit Product</h1>
       <input
         type="text"
         placeholder="Search bar"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        style={{ width: '100%', padding: '0.5rem', marginBottom: '1rem' }}
+        className="EditProduct-searchBar"
       />
-      {error && <div style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
-      <div style={{
-        display: 'flex',
-        height: '100%',
-        overflow: 'hidden'
-      }}>
-        <div style={{
-          flex: '1',
-          overflowY: 'auto',
-          marginRight: '1rem',
-          paddingRight: '1rem'
-        }}>
+      {error && <div className="EditProduct-error">{error}</div>}
+      <div className="EditProduct-content">
+        <div className="EditProduct-productsList">
           {filteredProducts.map(product => (
-            <div key={product.id} 
-                 style={{ 
-                   border: '1px solid #ccc', 
-                   borderRadius: '4px', 
-                   padding: '1rem', 
-                   marginBottom: '0.5rem', 
-                   display: 'flex', 
-                   justifyContent: 'space-between', 
-                   alignItems: 'center', 
-                   cursor: 'pointer' 
-                 }} 
-                 onClick={() => handleProductClick(product.id)}>
-              {/* <div style={{ display: 'flex', alignItems: 'center' }}>
-                <img src={product?.imageUrls[0]} alt={product.name} style={{ width: '4rem', height: '4rem', objectFit: 'cover', marginRight: '1rem' }} />
+            <div key={product.id} className="EditProduct-productCard">
+              <div className="EditProduct-productInfo">
+                <img src={product.cardImages[0]} alt={product.name} className="EditProduct-productImage" />
                 <span>{product.name}</span>
-              </div> */}
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-  {product?.imageUrls && product.imageUrls.length > 0 ? (
-    <img 
-      src={product.imageUrls[0]} 
-      alt={product.name} 
-      style={{ width: '4rem', height: '4rem', objectFit: 'cover', marginRight: '1rem' }} 
-    />
-  ) : (
-    <span>No Image Available</span> // Fallback when there is no image
-  )}
-  <span>{product?.name || 'No Product Name'}</span> {/* Handle missing product name */}
-</div>
-              <button 
-                onClick={(e) => { e.stopPropagation(); handleDelete(product.id); }} 
-                style={{ 
-                  backgroundColor: 'red', 
-                  color: 'white', 
-                  border: 'none', 
-                  padding: '0.5rem', 
-                  borderRadius: '4px', 
-                  cursor: 'pointer' 
-                }}>
-                Delete
-              </button>
+              </div>
+              <div className="EditProduct-buttonsContainer">
+                <button
+                  onClick={() => handleEdit(product.id)}
+                  className="EditProduct-editButton"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(product.id);
+                  }}
+                  className="EditProduct-deleteButton"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           ))}
         </div>
         {selectedProduct && (
-          <div style={{ flex: '1', overflowY: 'auto' }}>
+          <div className="EditProduct-editor">
             <Editor
               product={selectedProduct}
               onClose={handleEditorClose}

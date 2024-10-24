@@ -1,0 +1,89 @@
+.EditProduct-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 60px);
+    padding: 1rem;
+    background-color: white;
+    overflow: hidden;
+}
+
+.EditProduct-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.EditProduct-searchBar {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.EditProduct-error {
+    color: red;
+    margin-bottom: 1rem;
+}
+
+.EditProduct-content {
+    display: flex;
+    height: 100%;
+    overflow: hidden;
+}
+
+.EditProduct-productsList {
+    flex: 1;
+    overflow-y: auto;
+    margin-right: 1rem;
+    padding-right: 1rem;
+}
+
+.EditProduct-productCard {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.EditProduct-productInfo {
+    display: flex;
+    align-items: center;
+}
+
+.EditProduct-productImage {
+    width: 4rem;
+    height: 4rem;
+    object-fit: cover;
+    margin-right: 1rem;
+}
+
+.EditProduct-buttonsContainer {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.EditProduct-editButton {
+    background-color: blue;
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.EditProduct-deleteButton {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.EditProduct-editor {
+    flex: 1;
+    overflow-y: auto;
+}

@@ -25,12 +25,20 @@ const productsRoute = require("./routes/products.js");
 const reviewRoute = require("./routes/reviews.js");
 const walletRoute = require("./routes/wallet.js");
 const cartRoute = require("./routes/cart.js");
+const productFilterRoute = require("./routes/productFilters.js");
+const getQtyRoute = require("./routes/getQty.js");
 
 // User routes
 app.use("/user", userRoutes);
 
 // Products routes
 app.use("/products", productsRoute);
+
+// Products Filter routes
+app.use("/filters", productFilterRoute);
+
+// getQty routes
+app.use("/getQty", getQtyRoute);
 
 // Review routes
 app.use("/reviews", reviewRoute);
