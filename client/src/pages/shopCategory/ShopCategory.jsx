@@ -1,20 +1,40 @@
-import React, { useContext, useEffect, useState, useCallback } from "react";
+import React, { useContext, useEffect, useState, useCallback, useRef } from "react";
 import "./ShopCategory.css";
 import { ShopContext } from "../../components/context/ShopContext";
 import ProductCard from "../home/ProductCard";
-
 function ShopCategory(props) {
-  const { all_product } = useContext(ShopContext);
+  const { all_product, clearAllData } = useContext(ShopContext);
   const [filterProducts, setFilterProducts] = useState([]);
   const [sortType, setSortType] = useState("rating");
   const [subCategory, setSubCategory] = useState([]);
   const [priceRange, setPriceRange] = useState("");
   const [color, setColor] = useState([]);
+  const [isFilterApplied, setIsFilterApplied]  = useState(false);
+const filterRef  = useRef();
+  const openFilter = () => {
+    if (filterRef.current) {
+      filterRef.current.style.left = "0";
+      document.body.classList.add('no-scroll');
+    
+    }
+  };
 
-  
+  const closeFilter = () => {
+    if (filterRef.current) {
+      filterRef.current.style.left = "-550px";
+      document.body.classList.remove('no-scroll');
+    }
+  };
+  const availableColors = [
+    { name: 'Red', hex: '#FF0000' },
+    { name: 'Black', hex: '#000000' },
+    { name: 'Blue', hex: '#0000FF' },
+    { name: 'Green', hex: '#008000' },
+    { name: 'Yellow', hex: '#FFFF00' }
+  ];
   const subCategoryOptions = {
     men: ["Shirts", "Joggers", "Outerwear", "Pants", "Hats/Caps"],
-    women: ["Panty", "Tops", "Leggings", "Outerwear", "Matching Sets"],
+    women: ["Upperwear", "Tops", "Leggings", "Outerwear", "Matching Sets"],
     accessories:["Gloves", "Shakers", "Wrist Band", "Deadlift Band"],
   };
 
@@ -31,10 +51,12 @@ function ShopCategory(props) {
       productsCopy = productsCopy.filter((item) =>
         subCategory.includes(item.subCategory)
       );
+      setIsFilterApplied(true);
     }
 
     if (color.length > 0) {
       productsCopy = productsCopy.filter((item) => color.includes(item.color));
+      setIsFilterApplied(true);
     }
 
     if (priceRange) {
@@ -56,6 +78,7 @@ function ShopCategory(props) {
         default:
           break;
       }
+      setIsFilterApplied(true);
     }
 
     setFilterProducts(productsCopy);
@@ -74,9 +97,13 @@ function ShopCategory(props) {
       case "rating":
         setFilterProducts([...fpCopy].sort((a, b) => b.rating - a.rating));
         break;
+        case "discount":
+          setFilterProducts([...fpCopy].sort((a, b) => b.discount - a.discount));
+          break;
       default:
         break;
     }
+   
   }, [filterProducts, sortType]);
 
   useEffect(() => {
@@ -93,8 +120,9 @@ function ShopCategory(props) {
     setSubCategory([]);
     setPriceRange("");
     setColor([]);
+    setIsFilterApplied(false);
   }, [props.category, all_product]);
-
+  
   // Clear all filters
   const clearFilter = () => {
     let categoryProducts = all_product.filter(
@@ -105,6 +133,7 @@ function ShopCategory(props) {
     setSubCategory([]);
     setPriceRange("");
     setColor([]);
+    setIsFilterApplied(false);
   };
 
   // Toggle subcategory filter
@@ -132,7 +161,14 @@ function ShopCategory(props) {
       <img className="shopcategory-banner" src={props.banner} alt="" />
       <div className="shopcategory-indexSort">
         <p>
-          <span>Showing 1-6</span> out of {filterProducts.length} products
+    {  isFilterApplied &&   <button onClick={clearFilter} className="clear-filter-button">Clear All Filters</button>}
+        
+          <img
+            className="filter-open"
+            src="./LushioFitness/Images/icons/filter.png"
+            alt=""
+            onClick={()=>openFilter()}
+          />
         </p>
         <div className="shopcategory-sort">
           <select
@@ -144,12 +180,19 @@ function ShopCategory(props) {
             <option value="rating">Sort by: Rating</option>
             <option value="low-high">Sort by: Low to High</option>
             <option value="high-low">Sort by: High to Low</option>
+            <option value="discount">Sort by: Discount</option>
           </select>
         </div>
       </div>
 
       <div className="shopcategory-container">
-        <div className="filter-container">
+        <div className="filter-container" ref={filterRef}>
+        <img
+              className="filter-cross-icon"
+              src="./LushioFitness/Images/icons/cross.png"
+              alt=""
+              onClick={closeFilter}
+            />
           {/* Dynamic Subcategory Filter */}
           <div className="subCategory">
             <h4>Subcategory</h4>
@@ -166,8 +209,8 @@ function ShopCategory(props) {
             ))}
           </div>
 
-          {/* Color Filter */}
-          <div className="colorFilter">
+          {/* Color Filter  */}
+           <div className="colorFilter">
             <h4>Color Filter</h4>
             <label>
               <input
@@ -188,6 +231,34 @@ function ShopCategory(props) {
               Black
             </label>
           </div>
+           {/* <div className="colorFilter">
+      <h4>Color Filter</h4>
+      {availableColors.map((color) => (
+        <label key={color.name} className="color-checkbox">
+          <input
+            type="checkbox"
+            value={color.name}
+            onChange={toggleColor}
+            // checked={color.includes(color.name)}
+          />
+          <span
+            className="color-swatch"
+            style={{ backgroundColor: color.hex }}
+          ></span>
+          {color.name}
+        </label>
+          <label className="custom-checkbox">
+          <input
+            type="checkbox"
+            value={color.name}
+            onChange={toggleColor}
+           
+          />
+          <span className="checkmark"></span>
+          {color.name}
+        </label>
+      ))}
+    </div> */}
 
           {/* Price Filter */}
           <div className="priceFilter">
@@ -233,8 +304,13 @@ function ShopCategory(props) {
               Over ₹900
             </label>
           </div>
+          {
+            isFilterApplied &&           <button onClick={closeFilter} className="apply-filter-button">Apply Filters</button>
+          }
 
-          <button onClick={clearFilter}>Clear Filters</button>
+
+          <button onClick={clearFilter}>Clear All Filters</button>
+       
         </div>
 
         {/* Product Display */}
@@ -248,17 +324,22 @@ function ShopCategory(props) {
               image2={item.image}
               newPrice={item.new_price}
               oldPrice={item.old_price}
-              discount={Math.round(
-                ((item.old_price - item.new_price) / item.old_price) * 100
-              )}
+              // discount={Math.round(
+              //   ((item.old_price - item.new_price) / item.old_price) * 100
+              // )}
+              discount = {item.discount}
               rating={item.rating}
               liked={false}
+              productOptions={item.productOptions}
+              data={item.data || {}}
             />
           ))}
+          
         </div>
       </div>
 
-      <div className="shopcategory-loadmore">Explore More</div>
+      <div className="shopcategory-loadmore" onClick={()=>clearAllData()}>Explore More</div>
+   
     </div>
   );
 }

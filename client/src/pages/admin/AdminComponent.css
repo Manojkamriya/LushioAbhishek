@@ -5,7 +5,13 @@
     background-color: white;
     color: black;
   }
-  
+  .admin-form{
+    margin-block: 60px;
+
+  }
+  .admin-radio label{
+margin-left: 10px;
+  }
   .admin-sidebar {
     width: 20%;
     background-color: black;
@@ -38,10 +44,11 @@
   }
   
   .admin-main-content {
-    flex: 1;
+    /* flex: 1; */
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 100%;
     background-color: white;
     color: black;
     padding: 20px;

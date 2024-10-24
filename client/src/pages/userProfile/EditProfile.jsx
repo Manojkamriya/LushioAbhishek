@@ -1,17 +1,33 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { getUser } from "../../firebaseUtils.js";
+import moment from "moment";
 
+// import Checker from "./Checker.jsx"
+// import Test from "./Test.jsx";
 function EditProfile() {
+ 
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState({
     displayName: "",
     email: "",
     phoneNumber: "",
-   
+    dob:"",
+    doa: "",
     gender: "",
   });
 
+  const convertToISODate = (dateString) => {
+    if (!dateString) return '';
+    const parsedDate = moment(dateString, "DD-MM-YYYY", true);
+    return parsedDate.isValid() ? parsedDate.format("YYYY-MM-DD") : '';
+  };
+  
+  const convertToDisplayDate = (dateString) => {
+    if (!dateString) return '';
+    const parsedDate = moment(dateString, "YYYY-MM-DD", true);
+    return parsedDate.isValid() ? parsedDate.format("DD-MM-YYYY") : '';
+  };
   
   useEffect(() => {
     const fetchUser = async () => {
@@ -31,10 +47,15 @@ function EditProfile() {
     if (user) {
       const fetchUserData = async () => {
         try {
-         const response = await axios.get(`https://us-central1-lushio-fitness.cloudfunctions.net/api/user/details/${user.uid}`);
-       
-        setUserData(response.data);
-        
+        // const response = await axios.get(`http://127.0.0.1:5001/lushio-fitness/us-central1/api/user/details/${user.uid}`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/details/${user.uid}`);
+
+      const data = response.data;
+      setUserData({
+        ...data,
+        dob: convertToDisplayDate(data.dob),
+        doa: convertToDisplayDate(data.doa)
+      });
           console.log("Fetched user data:", response.data);
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -48,7 +69,16 @@ function EditProfile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`https://us-central1-lushio-fitness.cloudfunctions.net/api/user/details/${user.uid}`, userData);
+      const updatedData = {
+        ...userData,
+        // dob: convertToISODate(userData.dob),
+        // doa: convertToISODate(userData.doa),
+        dob: (userData.dob),
+        doa: (userData.doa)
+      };
+      console.log(updatedData);
+      await axios.post(`${process.env.REACT_APP_API_URL}/user/details/${user.uid}`, updatedData);
+      
       alert("Profile updated successfully!");
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -58,6 +88,7 @@ function EditProfile() {
   // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log(`Updating ${name} to ${value}`);
     setUserData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -97,7 +128,23 @@ function EditProfile() {
           onChange={handleChange}
           required
         />
+ <label>BirthDay Date</label>
+    <input
+      type="date"
+      name="dob"
+      value={userData.dob}
+      onChange={handleChange}
+      
+    />
 
+    <label>Anniversary Date </label>
+    <input
+      type="date"
+      name="doa"
+      value={userData.doa}
+      onChange={handleChange}
+      
+    />
     
 
         <div className="radio-input">
@@ -138,6 +185,7 @@ function EditProfile() {
 
         <button type="submit">Save</button>
       </form>
+     
     </div>
   );
 }

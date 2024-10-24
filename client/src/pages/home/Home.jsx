@@ -1,7 +1,7 @@
 import React from "react";
 import Media from "./data";
 import Carousel from "./Carousel";
-import Card from "./Card";
+import CollectionCard from "./CollectionCard";
 import ProductCards from "./ProductCards";
 
 export default function Home() {
@@ -9,17 +9,17 @@ export default function Home() {
     <>
       <Carousel images={Media} />
       <ProductCards />
-      <div className="mycard-container">
-        <Card
-          image="./LushioFitness/Images/assets/card-image-7.webp"
+      <div className="collection-card-container">
+        <CollectionCard
+          image="/LushioFitness/Images/assets/card-image-7.webp"
           name="SHIRTS"
         />
-        <Card
-          image="./LushioFitness/Images/assets/card-image-5.webp"
+        <CollectionCard
+          image="/LushioFitness/Images/assets/card-image-5.webp"
           name="BEST SELLERS"
         />
-        <Card
-          image="./LushioFitness/Images/assets/card-image-6.webp"
+        <CollectionCard
+          image="/LushioFitness/Images/assets/card-image-6.webp"
           name="SALE"
         />
       </div>

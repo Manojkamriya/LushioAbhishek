@@ -9,7 +9,7 @@
     overflow-y: auto;
   }
   
-  h2 {
+  .admin-controls h2 {
     text-align: center;
     margin-bottom: 20px;
   }
@@ -51,13 +51,6 @@
   }
   
   /* Ensuring the page layout respects the footer */
-  body {
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
   
   main {
     flex-grow: 1;

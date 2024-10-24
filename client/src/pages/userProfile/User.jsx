@@ -1,30 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState , useContext} from "react";
 import { Link} from "react-router-dom";
 import { auth } from "../../firebaseConfig.js";
 import { signOut } from "firebase/auth";
 import { getUser } from "../../firebaseUtils.js";
 import { useNavigate } from "react-router-dom";
-// import Review from "./Review.jsx"
-// import MyReview from "./MyReview.jsx"
+import { UserContext } from "../../components/context/UserContext";
 import "./user.css";
 
 function User() {
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
+  const {user} = useContext(UserContext);
   const navigate = useNavigate();
 
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     try {
        
-        setUser(await getUser());
+  //       setUser(await getUser());
        
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      }
-    };
-    fetchUser();
-  }, []);
+  //     } catch (error) {
+  //       console.error("Error fetching user:", error);
+  //     }
+  //   };
+  //   fetchUser();
+  // }, []);
  
   const handleLogout = () => {
     signOut(auth)
@@ -69,7 +69,7 @@ function User() {
             <p>Go to Home page</p>
           </div>
         </div>
-        <div className="user-action" onClick={()=>{navigate("/user-orders")}}>
+        <div className="user-action" onClick={()=>{navigate("/user/orders")}}>
           <Link to="/user-orders">
             <img src="./LushioFitness/Images/icons/orders.png" alt="logo" />
           </Link>
@@ -108,8 +108,8 @@ function User() {
         </div>
       </div>
  
-   {/* <Review/>
-   <MyReview/> */}
+ {/* <div className="test" >Inline query tester</div> */}
+ 
     </>
   );
 }

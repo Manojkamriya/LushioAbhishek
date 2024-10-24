@@ -1,0 +1,28 @@
+.products-grid{
+    display: grid;
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(clamp(140px, 40vw, 250px), 1fr)
+    );
+    justify-items: center;
+    padding-inline: clamp(0px, 2vw, 40px);
+    row-gap: clamp(0px, 2vw, 20px);
+}
+@media (min-width: 1151px) {
+    .products-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .category-page-heading {
+    font-size: 32px;                    /* Large font size for prominence */
+    font-weight: 700;                   /* Bold text for emphasis */
+    color: #333;                        /* Dark gray text for readability */
+    text-transform: capitalize;         /* Capitalize each word */
+    margin-bottom: 20px;                /* Space below the heading */
+             font-family: "Montserrat";  
+    letter-spacing: 1px;                /* Slight letter spacing for readability */
+    position: relative;                 /* For decorative underline */
+  }
+  
+  /* Add a decorative underline using a pseudo-element */
+ 

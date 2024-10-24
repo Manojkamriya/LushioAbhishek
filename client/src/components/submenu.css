@@ -22,7 +22,7 @@ cursor: pointer;
 }
 .res-navbar-headings ul:first-child{
   
-border-bottom: 4px solid #c1c1c1;
+border-bottom: 4px solid #565656;
 }
 .res-navbar-headings-list li{
   
@@ -32,7 +32,15 @@ border-bottom: 4px solid #c1c1c1;
     padding: 10px 10px;
     font-weight: 300;
     color: #fff;
-    margin-bottom: 5px;
+    margin-bottom: -4px;
+    /* transition: all 0.1s ease-in-out; */
+    }
+    .res-navbar-headings-list li{
+       
+    }
+    .submenu-category-selected{
+       
+        border-bottom: 4px solid #d1d0d0;
     }
 .res-navbar-headings-list li a{
     font-size: 14px;
@@ -87,6 +95,7 @@ cursor: pointer;
 @media(max-width: 500px){
 .res-navbar-headings-list li a{
     font-size: 12px;
+    
 }
 .res-navbar-links ul li a{
     font-size: 12px;

@@ -1,31 +1,16 @@
 import React, { useState } from "react";
 import { Modal, Box, Fade, Backdrop } from "@mui/material";
-import StarRating from "./StarRating";
+
 import "./button.css"; 
 // import "../userProfile/user.css";
+import MultiStepForm from "../shopCategory/MultiStepForm";
 import "./modal.css";
 const AnimatedModal = () => {
   const [open, setOpen] = useState(false);
-
-  const [buttonState, setButtonState] = useState(""); // For managing button state
-
-
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+ 
 
-  const handleClickAndClose = () => {
-    setButtonState("onclic");
-  
-    setTimeout(() => {
-      setButtonState("validate");
-  
-      setTimeout(() => {
-        setButtonState(""); // Reset to default after validate state
-        handleClose(); // Close the modal after reset
-      }, 700);
-    }, 1250);
-  };
-  
  
   
   return (
@@ -58,30 +43,8 @@ const AnimatedModal = () => {
               p: 4,
             }}
           >
-            <div className="feedback-container">
-            <h2>Rate Us</h2>
-            <p>
-              Rate us to improve user experience and give your suggestion also
-            </p>
-
-<div className="star-rating">
-              <StarRating />
-            </div>
-         
-          <label for="review">Write your Review</label>
-
-<textarea id="review" name="review" rows="4" cols="50"/>
-
-</div>
-<div className="container">
-      <button 
-        className={buttonState} 
-        onClick={handleClickAndClose}>
-      </button>
-    </div> 
-
-
-         
+          
+<MultiStepForm/>
           </Box>
         </Fade>
       </Modal>

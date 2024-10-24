@@ -6,7 +6,7 @@
     align-items: center;
 }
 
-h2 {
+.send-tokens-container h2 {
     margin-bottom: 20px;
 }
 
@@ -14,7 +14,7 @@ h2 {
     margin-bottom: 10px;
 }
 
-input {
+.input-container input {
     padding: 10px;
     width: 300px;
     border: 1px solid #000;
@@ -23,7 +23,7 @@ input {
     margin-bottom: 10px;
 }
 
-button {
+.input-container button {
     padding: 10px 20px;
     background-color: #000;
     color: #fff;
@@ -31,7 +31,7 @@ button {
     cursor: pointer;
 }
 
-button:hover {
+.input-container button:hover {
     background-color: #ccc;
 }
 

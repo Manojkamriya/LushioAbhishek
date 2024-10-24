@@ -1,9 +1,39 @@
-import React from "react";
+import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../components/context/UserContext";
 import "./wallet.css";
 
-function wallet() {
+export default function Wallet() {
+  const navigate = useNavigate();
+  const {user} = useContext(UserContext);
+
+ const [userCoins, setUserCoins]= useState(null);
+
+
+ 
+  useEffect(() => {
+    if (user) {
+      const fetchUserData = async () => {
+        try {
+       //  const response = await axios.get("http://127.0.0.1:5001/lushio-fitness/us-central1/api/wallet/3wPzJd8BNYY5jjgihXLH1nLpJsE3");
+         const response = await axios.get(`https://us-central1-lushio-fitness.cloudfunctions.net/api/wallet/${user.uid}`);
+      const data = response.data;
+      setUserCoins(
+        data
+      );
+          console.log("Fetched user data:", response.data);
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      };
+      fetchUserData();
+    }
+  }, [user]);
   return (
 <>
+   {
+    userCoins?.totalCredits===0 ? 
     <div className="empty-wallet">
         <p>Oh no! Looks like your wallet is empty :(</p>
         <h5>Start earning credits now!</h5>
@@ -11,16 +41,15 @@ function wallet() {
       <p>Invite your friends to shop on Lushio and
       </p>
       <h4>win credits worth Rs. 100 on every referral</h4>
-      <button>Send Invite</button>
-    </div>
-    <div className="wallet-container">
+      <button onClick={()=>navigate("/user-referAndEarn")}>Send Invite</button>
+    </div>: <div className="wallet-container">
     <div className="wallet-title">
       <h2>My Wallet</h2> 
       <hr/>
       </div>
       <div className="my-wallet">
         <div className="totalblock">
-          <p>₹0</p>
+          <p>{userCoins?.totalCredits}</p>
           <p>Total wallet points</p>
         </div>
         <div className="credit-block">
@@ -34,7 +63,7 @@ function wallet() {
           <div className="heading-text">Lushio Credit</div>
         </div>
         <div className="balance-block">
-          <div className="balance-text">Balance : ₹0.0</div>
+          <div className="balance-text">Balance : {userCoins?.lushioCoins}</div>
           <i className="balance-icon icon-next-arrow"></i>
         </div>
       </div>
@@ -53,7 +82,7 @@ function wallet() {
           <div className="heading-text">Lushio Cash</div>
         </div>
         <div className="balance-block">
-          <div className="balance-text">Balance : ₹0.0</div>
+      <div className="balance-text">Balance : {userCoins?.lushioCash}</div>
           <i className="balance-icon icon-next-arrow"></i>
         </div>
       </div>
@@ -64,8 +93,10 @@ function wallet() {
       </div>
 
     </div>
+   }
+   
     </>
     )
 }
 
-export default wallet;
+

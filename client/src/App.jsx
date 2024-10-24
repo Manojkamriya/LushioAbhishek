@@ -23,7 +23,7 @@ import Address from "./pages/userProfile/Address";
 import PlaceOrder from "./pages/orders/PlaceOrder";
 import AdminPanel from "./pages/admin/AdminPanel";
 import BackendAnalytics from "./pages/bakendAnalytics/BackendAnalytics";
-
+import CategoryPage from "./components/CategoryPage";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "./firebaseConfig";
 
@@ -67,20 +67,22 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/LushioFitness" element={<Home />} />
+            <Route path="/:category/:subCategory" element={<CategoryPage />} /> 
             <Route path="/men" element={<ShopCategory banner={men_banner} category="men" />} />
             <Route path="/women" element={<ShopCategory banner={women_banner} category="women" />} />
             <Route path="/accessories" element={<ShopCategory banner={accessories_banner} category="accessories" />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/finishSignIn" element={<FinishEmailSignUp />} />
-            <Route path="/product" element={<ProductDisplay />} />
+            <Route path="/:productID" element={<ProductDisplay />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/wishlist" element={<WishList />} />
+            <Route exact path="/user/orders" element={<Orders />} />
             <Route path="/user" element={<User />} />
             <Route path="/user-editProfile" element={<EditProfile />} />
             <Route path="/wallet" element={<Wallet />} />
             <Route path="/place-order" element={<PlaceOrder/>} />
-            <Route path="/user-orders" element={<Orders />} />
+          
             <Route path="/user-address" element={<Address />} />
             <Route path="/user-referAndEarn" element={<ReferAndEarn />} />
             <Route path="/lushioGods" element={<AdminPanel />} />

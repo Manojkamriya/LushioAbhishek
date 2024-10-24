@@ -8,12 +8,6 @@
   --background-dark: #e0e0e0;
 }
 
-body {
-  font-family: 'Montserrat', sans-serif;
-  line-height: 1.6;
-  color: var(--text-dark);
-  background-color: var(--background-light);
-}
 
 .refer-and-earn-container {
   display: flex;
@@ -65,7 +59,8 @@ body {
 
 .referralBlock {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-evenly;
   align-items: center;
   margin-top: 40px;
 }
@@ -155,5 +150,9 @@ body {
 
   .instruction {
     width: 100%;
+  }
+  .referralBlock {
+    flex-direction: column;
+    gap: 20px;
   }
 }

@@ -10,6 +10,7 @@
   display: flex;
   justify-content: space-between;
   z-index: 999;
+  position: relative;
   background-color: white;
 }
 
@@ -100,10 +101,6 @@
 .lushio-text {
   display: none;
 }
-/* .icons img , .icons a{
-    height: 50%;
-
-  } */
 .icons img {
   height: 60%;
   cursor: pointer;
@@ -119,15 +116,24 @@
 }
 .icons a span {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  height: 20px;
-  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 6%;
+  right: 6%;
+  height: 17px;
+  width: 17px;
+  font-size: 11px;
   border-radius: 50%;
   text-decoration: none;
   color: white;
   text-align: center;
   background-color: rgb(249, 4, 4);
+  background-image: linear-gradient(
+    to right,
+    rgb(226 52 43) 0%,
+    rgb(255 106 28) 100%
+  );
 }
 .menu-open {
   display: none;
@@ -218,7 +224,7 @@
 }
 @media (max-width: 1148px) {
 
-  .logo img {
+  .logo {
     display: none;
   }
   .lushio-text {
@@ -238,9 +244,9 @@
     /* position: fixed; */
     margin-block: 8px;
     left: 30px;
-    width: 50px;
+    width: 42px;
   }
-  .list ul,
+  .list ,
   .search-box, .new-search {
     display: none;
   }
@@ -264,7 +270,7 @@
     background-color: #1c1b1b;
     align-items: start;
     width: 350px;
-    height: 100vh;
+    min-height: 100vh;
     z-index: 998;
     transition: left 0.5s;
     left: -550px;
@@ -282,8 +288,8 @@
   display: flex;
 
 align-items: center;
-margin-left: -17%;
-gap: 10px !important;
+margin-left: 4%;
+gap: 10px ;
   /* justify-content: center;
   align-items: center; */
 }
@@ -312,11 +318,12 @@ gap: 10px !important;
     height: 40%;
     margin: 15px 11px;
   }
+ 
 }
 @media(max-width: 850px){
 .left-icons {
-  margin-left: -13%;
-  gap: 6px !important;
+  margin-left: 4%;
+  gap: 6px;
 }
 }
 @media (max-width: 700px) {
@@ -351,6 +358,12 @@ gap: 10px !important;
   .header-search-form-control {
  height: 45px;
   }
+  .icons a span{
+    top: 20%;
+    right: 7%;
+    height: 14px;
+    width: 14px;
+  }
 }
 @media (max-width: 500px) {
 
@@ -367,7 +380,7 @@ gap: 10px !important;
   }
   .left-icons {
     gap: 2px;
-    margin-left: -7%;
+    margin-left: 4%;
   }
  
   .icons img{
@@ -376,5 +389,20 @@ gap: 10px !important;
   }
   .search-icon{
     margin-bottom: 0px;
+  }
+  .icons a span{
+   font-size: 10px;
+  }
+}
+@media (max-width: 380px){
+  .left-icons {
+    gap: 3px;
+    margin-left: 2%;
+  }
+  .icons{
+    margin-right: 2%;
+  }
+  .navbar {
+    height: 50px;
   }
 }

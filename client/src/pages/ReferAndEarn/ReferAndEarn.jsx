@@ -1,6 +1,6 @@
 import React, {useRef} from "react";
 import "./refer-earn.css";
-
+import ShareComponent from "./ShareComponent";
 function ReferAndEarn() {
   const textRef = useRef(null);
 
@@ -28,6 +28,7 @@ function ReferAndEarn() {
       <div className="referralBlock">
         <p>Tap To Copy Code</p>
         <div ref={textRef} onClick={copyText}>LUSH2013</div>
+        <ShareComponent/>
       </div>
       <p className="refer-question">How Does Referrel Work?</p>
       <div className="instruction-container">

@@ -1,0 +1,120 @@
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .review-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    width: 300px;
+    background-color: #f9f9f9;
+    /* margin-inline: auto; */
+  }
+  
+  .review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .review-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #333;
+  }
+  
+  .rating {
+    display: flex;
+    gap: 0.2rem;
+  }
+  
+  .star {
+    font-size: 1.5rem;
+    color: #ccc;
+  }
+  
+  .star.filled {
+    color: #f5a623;
+  }
+  
+  .review-text {
+    margin: 0.5rem 0;
+    color: #555;
+  }
+  
+  .review-footer {
+    font-size: 0.8rem;
+    color: #888;
+  }
+  
+  .review-date {
+    font-style: italic;
+  }
+  
+
+
+  /* Wrapper for the entire review section */
+.rew-wrpr {
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    background-color: #f9f9f9;
+    width: 300px;
+    margin-inline: auto;
+  }
+  
+  /* User rating stars wrapper */
+  .usr-rating {
+    display: flex;
+    gap: 0.2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Rating star image */
+  .rating-star {
+    width: 20px;
+    height: 20px;
+  }
+  
+  /* Review text */
+  .review {
+    margin: 0.5rem 0;
+    color: #555;
+  }
+  
+  /* Flex container for user name and thumbs up icon */
+  .d-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  /* Margin for user info */
+  .mt-2 {
+    margin-top: 0.5rem;
+  }
+  
+  /* User name styling */
+  .usr-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+  }
+  
+  /* Thumbs up icon */
+  .thumbsIcon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  /* Review time */
+  .review-time {
+    font-size: 0.9rem;
+    color: #888;
+    font-style: italic;
+  }
+  

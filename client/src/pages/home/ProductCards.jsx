@@ -1,63 +1,55 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "./productCard.css";
 import ProductCard from "./ProductCard";
-
-const products = [
-  { id: 1,
-    image1: "./LushioFitness/Images/card-image.webp",
-    image2: "./LushioFitness/Images/card-image-2.webp",
-    description: "Women Black Friends Typography Boyfriend T-shirt",
-    newPrice: "1199",
-    oldPrice: "1599",
-    discount: "53",
-    rating:"4.5",
-  },
-  { id: 2,
-    image1: "./LushioFitness/Images/card-image.webp",
-    image2: "./LushioFitness/Images/card-image-2.webp",
-    description: "Women Black Friends Typography Boyfriend T-shirt",
-    newPrice: "1199",
-    oldPrice: "1599",
-    discount: "53",
-    rating:"4.5",
-  },
-  { id: 3,
-    image1: "./LushioFitness/Images/card-image.webp",
-    image2: "./LushioFitness/Images/card-image-2.webp",
-    description: "Women Black Friends Typography Boyfriend T-shirt",
-    newPrice: "1199",
-    oldPrice: "1599",
-    discount: "53",
-    rating:"4.5",
-  },
-  { id: 4,
-    image1: "./LushioFitness/Images/card-image.webp",
-    image2: "./LushioFitness/Images/card-image-2.webp",
-    description: "Women Black Friends Typography Boyfriend T-shirt",
-    newPrice: "1199",
-    oldPrice: "1599",
-    discount: "53",
-    rating:"4.5",
-  },
-];
+import all_product from "../../components/context/assets/all_product";
 
 function ProductCards() {
-  return (
-    <div className="card-container">
-      {products.map((product, index) => (
+  const navigate = useNavigate();
+
+  // Helper function to filter and display products based on category
+  const renderProductsByCategory = (category) => {
+    return all_product
+      .filter((item) => item.category === category && item.id % 6 <= 3) // Combined filter logic
+      .map((item) => (
         <ProductCard
-          key={index}
-          image1={product.image1}
-          image2={product.image2}
-          description={product.description}
-          newPrice={product.newPrice}
-          oldPrice={product.oldPrice}
-          discount={product.discount}
-          rating={product.rating}
+          key={item.id}
+          id={item.id}
+          description={item.name}
+          image1={item.image}
+          image2={item.image}
+          newPrice={item.new_price}
+          oldPrice={item.old_price}
+          discount={item.discount}
+          rating={item.rating}
           liked={false}
+          data={item.data || {}}
         />
-      ))}
-    </div>
+      ));
+  };
+
+  return (
+    <>
+      {/* Men's Product Section */}
+      <div className="card-container">{renderProductsByCategory("men")}</div>
+      <button className="fluid-button" onClick={() => navigate("/men")}>
+        Show More
+      </button>
+
+      {/* Women's Product Section */}
+      <div className="card-container">{renderProductsByCategory("women")}</div>
+      <button className="fluid-button" onClick={() => navigate("/women")}>
+      Show More
+      </button>
+
+      {/* Accessories Section */}
+      <div className="card-container">
+        {renderProductsByCategory("accessories")}
+      </div>
+      <button className="fluid-button" onClick={() => navigate("/accessories")}>
+      Show More
+      </button>
+    </>
   );
 }
 

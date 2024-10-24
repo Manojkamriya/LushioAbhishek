@@ -139,7 +139,7 @@ const AdminPanel = () => {
     };
 
     return (
-        <div className="auth-container admin-auth">
+        <div className="admin-auth">
             {isLoggedIn ? (
                 userType === "admin" ? (
                     <AdminComponent />
@@ -147,14 +147,14 @@ const AdminPanel = () => {
                     <SubAdminComponent />
                 )
             ) : (
-                <div className="auth-form">
+                <div className="auth-form admin-form">
                     <PhoneInput
                         country={"in"}
                         value={phoneNumber}
                         onChange={setPhoneNumber}
                         placeholder="Enter phone number"
                     />
-                    <div>
+                    <div className="admin-radio">
                         <label>
                             <input
                                 type="radio"

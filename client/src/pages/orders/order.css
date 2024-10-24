@@ -19,8 +19,11 @@
     max-width: 100px;
     background: #fdd835;
 }
+.order{
+    margin-bottom: 40px;
+}
 .orderID{
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 .order-details {
     width: 100%;
@@ -33,11 +36,12 @@
     height: 100%;
 }
 .order-details-right{
-    padding: 20px 20px 20px 50px;
+    padding: 20px 20px 20px 30px;
+   
 }
 .order-details-right p{
-  
-   font-size: 17px;
+    font-family: "montserrat", sans-serif;
+   font-size: 15px;
    padding-bottom: 10px;
 }
 .order-details-right span{
@@ -47,11 +51,23 @@
     height: 14px;
 }
 .order-details-right div+span{
+    display: inline-block;
    padding: 10px;
 background-color: #e7ffeb;
     color: #128a27;
     border-radius: 5px;
-    margin-top: 30px;
+   
+}
+.order-color{
+    display: flex;
+    align-items: center;
+}
+.order-color span{
+    display: inline-block;
+height: 20px;
+margin-inline: 10px;
+width: 20px;
+border-radius: 50%;
 }
 .order-delivery{
     font-family: "montserrat", sans-serif;
@@ -60,7 +76,10 @@ background-color: #e7ffeb;
     display: flex;
     gap: 10px;
     color: #000;
-    margin-block: 22px;
+    margin-block: 5px;
+}
+.order-delivery-address{
+    font-family: "montserrat", sans-serif;
 }
 .order-delivery img{
     height: 40px;
@@ -74,13 +93,17 @@ background-color: #e7ffeb;
     border: 3px solid #42a2a2;
     background: transparent;
     color: #42a2a2;
- width: 150px;
-    letter-spacing: .67px;
-    padding: 17px;
-margin-top: 120px;
+ /* width: 100px; */
+ height: 40;
+   padding: 10px;
+  
     text-transform: uppercase;
 }
-
+.order-button-container{
+display: flex;
+justify-content: space-between;
+margin-top: 20px;
+}
 
 .place-order{
     display: flex;
