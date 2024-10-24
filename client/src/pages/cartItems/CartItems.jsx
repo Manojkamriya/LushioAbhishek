@@ -2,10 +2,16 @@ import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./cartitems.css";
 import { ShopContext } from "../../components/context/ShopContext";
+import { UserContext } from "../../components/context/UserContext";
 import EmptyCart from "./EmptyCart";
+import axios from "axios";
 import { Modal, Box, Fade, Backdrop } from "@mui/material";
+
 const CartItems = () => {
   const navigate = useNavigate();
+  const [promoCode, setPromoCode] = useState("");
+  const [useWalletPoints, setUseWalletPoints] = useState(false);
+  const [walletPoints, setWalletPoints] = useState(null);
   const {
     all_product,
     cartItems,
@@ -13,96 +19,99 @@ const CartItems = () => {
     updateCartItemQuantity,
     addToWishlist,
   } = useContext(ShopContext);
-  const [isAllSelected, setIsAllSelected] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const cartHasItems = Object.values(cartItems).some(quantity => quantity > 0);
+
+  
+  const [selectedItems, setSelectedItems] = useState({});
+  const [isAllSelected, setIsAllSelected] = useState(true); // default all selected
   const [open, setOpen] = useState(false);
-  // Retrieve checkbox states from localStorage or initialize based on cart items
-  const [checkedItems, setCheckedItems] = useState(() => {
-    const savedCheckedItems = localStorage.getItem("checkedItems");
-    if (savedCheckedItems) {
-      return JSON.parse(savedCheckedItems);
-    } else {
-      return Object.keys(cartItems).reduce((acc, id) => {
-        const product = all_product.find((p) => p.id === Number(id));
-        acc[id] = product && product.inStock;
-        return acc;
-      }, {});
-    }
-  });
-  const handleAddToWishlist = (id) => {
-    setTimeout(() => {
-      addToWishlist(id);
-      removeFromCart(id);
-      handleClose();
-    }, 1000);
-  };
-  const handleRemoveFromCart = (id) => {
-    setTimeout(() => {
-      removeFromCart(id);
-      handleClose();
-    }, 1000);
-  };
-  // Save checkbox states to localStorage whenever `checkedItems` is updated
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
   useEffect(() => {
-    localStorage.setItem("checkedItems", JSON.stringify(checkedItems));
-  }, [checkedItems]);
+    // Initially, all items are selected when the cart loads
+    const initialSelectedItems = {};
+    all_product.forEach((e) => {
+      if (cartItems[e.id] > 0) {
+        initialSelectedItems[e.id] = true;
+      }
+    });
+    setSelectedItems(initialSelectedItems);
+  }, [cartItems, all_product]);
 
-  // Check if the cart has any items
-  const cartHasItems = Object.values(cartItems).some(
-    (quantity) => quantity > 0
-  );
-  if (!cartHasItems) {
-    return <EmptyCart />;
+
+
+  const {user} = useContext(UserContext);
+   useEffect(() => {
+      if (user) {
+        const fetchUserData = async () => {
+          try {
+      
+           const response = await axios.get(`https://127.0.0.1:5001/lushio-fitness/us-central1/api/api/wallet/${user.uid}`);
+        const data = response.data;
+      
+        setWalletPoints(data.totalCredits);
+            console.log("Fetched user data:", response.data);
+          } catch (error) {
+            console.error("Error fetching user data:", error);
+          }
+        };
+        fetchUserData();
+      }
+    }, [user]);
+  const handleOpen = (product) => {
+    setSelectedProduct(product);
+    setOpen(true);
+  };
+// Calculate total after applying wallet points
+const getTotalWithWallet = () => {
+  let total = getSelectedTotalAmount();
+  if (useWalletPoints && walletPoints > 0) {
+    total = Math.max(0, total - walletPoints); // Ensure total doesn't go below zero
   }
+  return total;
+};
 
-  // Function to calculate total for selected items only
-  const getTotalCartAmount = () => {
-    return all_product.reduce((total, e) => {
-      if (cartItems[e.id] > 0 && checkedItems[e.id]) {
-        return total + e.new_price * cartItems[e.id];
-      }
-      return total;
-    }, 0);
-  };
+const handleWalletCheckboxChange = () => {
+  setUseWalletPoints(!useWalletPoints);
+};
+  const handleClose = () => setOpen(false);
 
-  // Handle checkbox change for individual items
   const handleCheckboxChange = (id) => {
-    const updatedCheckedItems = {
-      ...checkedItems,
-      [id]: !checkedItems[id],
-    };
-    setCheckedItems(updatedCheckedItems);
-
-    // Check if all in-stock items are selected
-    const allInStockSelected = Object.keys(cartItems).every((id) => {
-      const product = all_product.find((p) => p.id === Number(id));
-      return product && (!product.inStock || updatedCheckedItems[id]);
-    });
-    setIsAllSelected(allInStockSelected);
+    const updatedSelected = { ...selectedItems, [id]: !selectedItems[id] };
+    setSelectedItems(updatedSelected);
+    setIsAllSelected(Object.values(updatedSelected).every(Boolean)); // check if all are selected
   };
 
-  // Function to select all in-stock items
   const handleSelectAll = () => {
-    const newCheckedItems = {};
-    Object.keys(cartItems).forEach((id) => {
-      const product = all_product.find((p) => p.id === Number(id));
-      if (product && product.inStock) {
-        newCheckedItems[id] = true; // Select only in-stock items
+    const updatedSelections = {};
+    all_product.forEach((e) => {
+      if (cartItems[e.id] > 0) {
+        updatedSelections[e.id] = true;
       }
     });
-    setCheckedItems(newCheckedItems);
+    setSelectedItems(updatedSelections);
     setIsAllSelected(true);
   };
 
-  // Function to deselect all items
   const handleDeselectAll = () => {
-    const newCheckedItems = {};
-    Object.keys(cartItems).forEach((id) => {
-      newCheckedItems[id] = false; // Deselect all items
+    const updatedSelections = {};
+    all_product.forEach((e) => {
+      if (cartItems[e.id] > 0) {
+        updatedSelections[e.id] = false;
+      }
     });
-    setCheckedItems(newCheckedItems);
+    setSelectedItems(updatedSelections);
     setIsAllSelected(false);
+  };
+
+  const getSelectedTotalAmount = () => {
+    let total = 0;
+    all_product.forEach((e) => {
+      if (cartItems[e.id] > 0 && selectedItems[e.id]) {
+        total += e.new_price * cartItems[e.id];
+      }
+    });
+    return total;
   };
 
   const handleIncrement = (id) => {
@@ -115,8 +124,26 @@ const CartItems = () => {
     }
   };
 
+  const handleAddToWishlist = (id) => {
+    addToWishlist(id);
+    removeFromCart(id);
+    handleClose();
+  };
+
+  const handleRemoveFromCart = (id) => {
+    removeFromCart(id);
+    handleClose();
+  };
+
+  const handleSubmitPromoCode = () => {
+    // Submit the promo code using axios or any logic
+    console.log("Promo Code Submitted: ", promoCode);
+  };
+  if (!cartHasItems) {
+    return <EmptyCart/> // Render empty cart message
+  }
   const renderCartMessages = () => {
-    const totalAmount = getTotalCartAmount();
+    const totalAmount = getSelectedTotalAmount();
     if (totalAmount === 0) {
       return (
         <p style={{ color: "gray" }}>
@@ -135,9 +162,7 @@ const CartItems = () => {
       );
     }
     if (totalAmount >= 1000) {
-      return (
-        <p style={{ color: "red" }}>You are eligible for a 5% discount!</p>
-      );
+      return <p style={{ color: "red" }}>You are eligible for a 5% discount!</p>;
     }
     if (totalAmount >= 500) {
       return (
@@ -196,7 +221,7 @@ const CartItems = () => {
                 ) : (
                   <input
                     type="checkbox"
-                    checked={checkedItems[e.id]}
+                    checked={selectedItems[e.id] || false}
                     onChange={() => handleCheckboxChange(e.id)}
                   />
                 )}
@@ -224,10 +249,9 @@ const CartItems = () => {
                 </div>
                 <p>{e.new_price * cartItems[e.id]}</p>
                 <img
-                  src="./LushioFitness/Images/icons/delete.png"
-                  // onClick={() => removeFromCart(e.id)}
-                  onClick={handleOpen}
-                  alt=""
+                  src="/LushioFitness/Images/icons/delete.png"
+                  onClick={() => handleOpen(e)}
+                  alt="Remove"
                   className="cartitems-remove-icon"
                 />
               </div>
@@ -250,17 +274,19 @@ const CartItems = () => {
                       transform: "translate(-50%, -50%)",
                       width: 300,
                       bgcolor: "background.paper",
-                      border: ".5px solid #000",
                       borderRadius: "9px",
                       boxShadow: 24,
                       p: 4,
                     }}
                   >
                     <div className="remove-cart-buttons">
-                      <button onClick={() => handleAddToWishlist(e.id)}>
+                      <img src={selectedProduct?.image} alt="" />
+                      <p>{selectedProduct?.name}</p>
+                      <p>{selectedProduct?.new_price}</p>
+                      <button onClick={() => handleAddToWishlist(selectedProduct?.id)}>
                         Move to Wishlist
                       </button>
-                      <button onClick={() => handleRemoveFromCart(e.id)}>
+                      <button onClick={() => handleRemoveFromCart(selectedProduct?.id)}>
                         Remove from cart
                       </button>
                     </div>
@@ -272,40 +298,58 @@ const CartItems = () => {
         }
         return null;
       })}
-
-      <div className="cartitems-down">
-        <div className="cartitems-total">
-          <h1>Cart Totals</h1>
-          <div>
-            <div className="cartitems-total-item">
-              <p>Subtotal</p>
-              <p>{getTotalCartAmount()}</p>
-            </div>
-            <hr />
-            <div className="cartitems-total-item">
-              <p>Shipping Fee</p>
-              <p>Free</p>
-            </div>
-            <hr />
-            <div className="cartitems-total-item">
-              <h3>Total</h3>
-              <h3>{getTotalCartAmount()}</h3>
-            </div>
-          </div>
-          {renderCartMessages()}
-          <button onClick={() => navigate("/place-order")}>
-            PROCEED TO PAYMENT
-          </button>
+       <div className="cartitems-down">
+      <div className="cartitems-total">
+        <h1>Cart Totals</h1>
+        <div className="cartitems-total-item">
+          <p>Subtotal</p>
+          <p>{getSelectedTotalAmount()}</p>
         </div>
+        <hr />
+        <div className="cartitems-total-item">
+          <p>Shipping Fee</p>
+          <p>Free</p>
+        </div>
+        <hr />
+        <div className="cartitems-total-item">
+          <p>Use Wallet Points ({walletPoints} points)</p>
+          <input
+            type="checkbox"
+            checked={useWalletPoints}
+            onChange={handleWalletCheckboxChange}
+          />
+        </div>
+        {useWalletPoints && (
+          <>
+            <p className="cartitems-total-item">
+              Wallet Discount: -Rs {walletPoints}
+            </p>
+            <hr />
+          </>
+        )}
+        <div className="cartitems-total-item">
+          <h3>Total</h3>
+          <h3>{getTotalWithWallet()}</h3>
+        </div>
+        <div className="cart-messages">{renderCartMessages()}</div>
+        <button onClick={() => navigate("/place-order")}>
+          PROCEED TO PAY Rs . {getTotalWithWallet()}
+        </button>
+      </div>
 
-        <div className="cartitems-promocode">
-          <p>If you have a promocode, Enter it here</p>
-          <div className="cartitems-promobox">
-            <input type="text" placeholder="promo code" />
-            <button>Submit</button>
-          </div>
+      <div className="cartitems-promocode">
+        <p>If you have a promocode, enter it here</p>
+        <div className="cartitems-promobox">
+          <input
+            type="text"
+            placeholder="Promo code"
+            value={promoCode}
+            onChange={(e) => setPromoCode(e.target.value)}
+          />
+          <button onClick={()=>handleSubmitPromoCode}>Submit</button>
         </div>
       </div>
+    </div>
     </div>
   );
 };

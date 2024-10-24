@@ -25,10 +25,16 @@ const filterRef  = useRef();
       document.body.classList.remove('no-scroll');
     }
   };
-
+  const availableColors = [
+    { name: 'Red', hex: '#FF0000' },
+    { name: 'Black', hex: '#000000' },
+    { name: 'Blue', hex: '#0000FF' },
+    { name: 'Green', hex: '#008000' },
+    { name: 'Yellow', hex: '#FFFF00' }
+  ];
   const subCategoryOptions = {
     men: ["Shirts", "Joggers", "Outerwear", "Pants", "Hats/Caps"],
-    women: ["Panty", "Tops", "Leggings", "Outerwear", "Matching Sets"],
+    women: ["Upperwear", "Tops", "Leggings", "Outerwear", "Matching Sets"],
     accessories:["Gloves", "Shakers", "Wrist Band", "Deadlift Band"],
   };
 
@@ -155,10 +161,10 @@ const filterRef  = useRef();
       <img className="shopcategory-banner" src={props.banner} alt="" />
       <div className="shopcategory-indexSort">
         <p>
-    {  isFilterApplied &&   <button onClick={clearFilter}>Clear Filters</button>}
+    {  isFilterApplied &&   <button onClick={clearFilter} className="clear-filter-button">Clear All Filters</button>}
         
           <img
-            className="menu-open"
+            className="filter-open"
             src="./LushioFitness/Images/icons/filter.png"
             alt=""
             onClick={()=>openFilter()}
@@ -203,8 +209,8 @@ const filterRef  = useRef();
             ))}
           </div>
 
-          {/* Color Filter */}
-          <div className="colorFilter">
+          {/* Color Filter  */}
+           <div className="colorFilter">
             <h4>Color Filter</h4>
             <label>
               <input
@@ -225,6 +231,34 @@ const filterRef  = useRef();
               Black
             </label>
           </div>
+           {/* <div className="colorFilter">
+      <h4>Color Filter</h4>
+      {availableColors.map((color) => (
+        <label key={color.name} className="color-checkbox">
+          <input
+            type="checkbox"
+            value={color.name}
+            onChange={toggleColor}
+            // checked={color.includes(color.name)}
+          />
+          <span
+            className="color-swatch"
+            style={{ backgroundColor: color.hex }}
+          ></span>
+          {color.name}
+        </label>
+          <label className="custom-checkbox">
+          <input
+            type="checkbox"
+            value={color.name}
+            onChange={toggleColor}
+           
+          />
+          <span className="checkmark"></span>
+          {color.name}
+        </label>
+      ))}
+    </div> */}
 
           {/* Price Filter */}
           <div className="priceFilter">
@@ -270,8 +304,12 @@ const filterRef  = useRef();
               Over ₹900
             </label>
           </div>
-          <button onClick={closeFilter} className="apply-filter-button">Apply Filters</button>
-          <button onClick={clearFilter}>Clear Filters</button>
+          {
+            isFilterApplied &&           <button onClick={closeFilter} className="apply-filter-button">Apply Filters</button>
+          }
+
+
+          <button onClick={clearFilter}>Clear All Filters</button>
        
         </div>
 
@@ -301,8 +339,7 @@ const filterRef  = useRef();
       </div>
 
       <div className="shopcategory-loadmore" onClick={()=>clearAllData()}>Explore More</div>
-      {/* <MultiStepForm/> */}
-      {/* <StarRating/> */}
+   
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import PhoneInput from "react-phone-input-2";
 import './address.css';
 import { getUser } from "../../firebaseUtils.js";
 
@@ -66,7 +67,13 @@ export default function Address() {
     setIsAddingNew(false);
     setNewAddress(addressData[index]);
   };
-
+  const handlePhoneInputChange = (name, value) => {
+    setNewAddress((prevState) => ({
+      ...prevState,
+      [name]: value,  // Update the contactNo field
+    }));
+  };
+  
   const handleSave = async () => {
     if (!newAddress.name ||  !newAddress.pinCode || !newAddress.contactNo) {
       alert("Please fill in all fields!");
@@ -122,6 +129,14 @@ export default function Address() {
     setIsAddingNew(true);
     setNewAddress({ name: '', address: '', pinCode: '', contactNo: '', isDefault: false });
   };
+  useEffect(() => {
+    // Disable scrolling when loader is active
+    if (isLoading) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [isLoading]);
   if(isLoading){
     return <div className="loader-container"> <span className="loader"></span></div>;
    }
@@ -218,25 +233,21 @@ export default function Address() {
   />
 
   <label htmlFor="contactNo">Contact Number</label>
-  <input
-    type="tel"
-    name="contactNo"
-    placeholder="Contact Number"
-    id="contactNo"
-    value={newAddress.contactNo}
-    onChange={handleInputChange}
-  />
-
-  <label htmlFor="pinCode">Pin Code</label>
-  <input
-    type="number"
-    name="pinCode"
-    placeholder="Pin Code"
-    id="pinCode"
-    value={newAddress.pinCode}
-    onChange={handleInputChange}
-  />
-
+  
+ <PhoneInput
+  country={"in"}
+  value={newAddress.contactNo}
+ 
+  onChange={(value) => handlePhoneInputChange("contactNo", value)}  
+  countryCodeEditable={false} // This will lock the country to India
+  disableDropdown={true}      // Disables changing the country
+  inputProps={{
+    name: "contactNo",
+    required: true,           // Mark this field as required
+    autoFocus: true,          // Auto-focus on this input
+  }}
+/>
+ 
   {/* New Fields */}
   <label htmlFor="flatDetails">Flat, House no., Building, Company, Apartment</label>
   <input
@@ -265,6 +276,15 @@ export default function Address() {
     placeholder="Landmark"
     id="landmark"
     value={newAddress.landmark}
+    onChange={handleInputChange}
+  />
+ <label htmlFor="pinCode">Pin Code</label>
+  <input
+    type="number"
+    name="pinCode"
+    placeholder="Pin Code"
+    id="pinCode"
+    value={newAddress.pinCode}
     onChange={handleInputChange}
   />
 

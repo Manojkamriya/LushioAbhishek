@@ -1,22 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext } from "react";
 import "./footer.css";
 import { HashLink as Link } from "react-router-hash-link";
-import { getUser } from "../firebaseUtils";
-
+import { UserContext } from "./context/UserContext";
 export default function Footer() {
- const [user, setUser] = useState(null);
- useEffect(() => {
-    const fetchUser = async () => {
-      try {
 
-        setUser(await getUser());
+const { user } = useContext(UserContext);
 
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      }
-    };
-    fetchUser();
-  }, [user]);
   
   return (
     <footer>
@@ -83,7 +72,7 @@ export default function Footer() {
           <button>SUBSCRIBE</button>
         </div>
         <div className="quick-links">
-          <img src="./LushioFitness/Images/lushio-text-3.png" alt="" />
+          <img src="/LushioFitness/Images/lushio-text-3.png" alt="" />
           <h4>
             Lushio Fitenss is a Activewear clothing brand headquartered in
             Indore. Our goal is not to make products in large quantities, but
@@ -91,10 +80,31 @@ export default function Footer() {
             with pride
           </h4>
           <div className="footer-icon-container">
-       
-<img src="/LushioFitness/Images/icons/facebook.svg" alt=""/>
-<img src="/LushioFitness/Images/icons/instagram.svg" alt=""/>
+          <a 
+        href="https://www.instagram.com/lushio.fitness/?igsh=MWlhdXRoOWlocXZ3YQ%3D%3D" 
+        target="_blank" 
+        rel="noopener noreferrer"
+      >
+        <img src="/LushioFitness/Images/icons/instagram.svg" alt=""/>
+      </a>
+      <a 
+        href="https://in.linkedin.com/company/lushio-fitness" 
+        target="_blank" 
+        rel="noopener noreferrer"
+      >
+       <img src="/LushioFitness/Images/icons/facebook.svg" alt=""/>
+      </a>
+      <a 
+        href="https://in.linkedin.com/company/lushio-fitness" 
+        target="_blank" 
+        rel="noopener noreferrer"
+      >
 <img src="/LushioFitness/Images/icons/linkedIn.svg" alt=""/>
+      </a>
+
+
+
+
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "./dropdown.css";
 
-function Dropdown({ category, topProducts, featured, imageSrc, launchTitle }) {
+function Dropdown({ category, topProducts, featured, imageSrc, launchTitle,setActiveDropdown }) {
   return (
     <div className="dropdowm-container">
       <div className="dropdown">
@@ -10,8 +10,8 @@ function Dropdown({ category, topProducts, featured, imageSrc, launchTitle }) {
           <h5>TOP PRODUCTS</h5>
           <ul>
             {topProducts.map((product, index) => (
-              <li key={index}>
-                <Link to={`/${category}`}>{product}</Link>
+              <li key={index} onClick={()=>setActiveDropdown(null)}>
+                <Link to={`/${category}/${product.toLowerCase()}`}>{product}</Link>
               </li>
             ))}
           </ul>
@@ -20,7 +20,7 @@ function Dropdown({ category, topProducts, featured, imageSrc, launchTitle }) {
           <h5>FEATURED</h5>
           <ul>
             {featured.map((item, index) => (
-              <li key={index}>
+              <li key={index} onClick={()=>setActiveDropdown(null)}>
                 <Link to={`/${category}`}>{item}</Link>
               </li>
             ))}

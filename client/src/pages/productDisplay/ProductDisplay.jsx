@@ -3,13 +3,15 @@ import "./product.css";
 import { useNavigate } from "react-router-dom";
 import Modal1 from "./Modal"
 import './ReviewCard.css';
+import axios from "axios";
 import Rating from '@mui/material/Rating';
 import { useParams } from "react-router-dom";
 import all_product from "../../components/context/assets/all_product";
-import HeightBasedOptions from "../home/HeightBasedOptions";
-import SimpleColorOptions from "../home/SimpleColorOptions";
+import HeightBasedOptions from "./HeightBasedOptions";
+import SimpleColorOptions from "./SimpleColorOptions";
 import { ShopContext } from "../../components/context/ShopContext";
 import { Modal, Box, Fade, Backdrop } from "@mui/material";
+import MediaRenderer from "../../components/MediaRenderer";
 const ReviewCard = ({ username, rating, review, dateTime }) => (
   <div className="review-card">
     <div className="review-header">
@@ -32,6 +34,8 @@ function ProductDisplay() {
   const [quantity, setQuantity] = useState(0);
   const [heightCategory, setHeightCategory] = useState('aboveHeight');
   const [isLoading, setIsLoading] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [reviews, setReviews]=  useState(null);
   const { addToCart, addToWishlist} = useContext(ShopContext);
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -44,15 +48,39 @@ function ProductDisplay() {
   const handleColorSelect = (color) => {
     setSelectedColor(color);
     setSelectedSize('');
+    setShowError(false);
     setQuantity(0); // Reset when color changes
   };
+ 
+  useEffect(() => {
+  
+      const fetchReviews = async () => {
+      
+        try {
+          const response = await axios.get("http://127.0.0.1:5001/lushio-fitness/us-central1/api/reviews/azkEOgiSVkvByK93XYr6");
+
+          setReviews(response.data);
+          console.log(response.data);
+        } catch (error) {
+          console.error('Error fetching reviews:', error);
+        } finally {
+         console.log("fucntion run success");
+        }
+      };
+
+     fetchReviews();
+    
+  }, []);
   const handleAddToCart = (id) => {
-    setIsLoading(true);
-    setTimeout(() => {
-      addToCart(id);
-      setIsLoading(false);
-     
-    }, 2000);
+    if (selectedSize === '') {
+      setShowError(true); // Show error if size is not selected
+    } else {
+      setIsLoading(true);
+      setTimeout(() => {
+        addToCart(id);
+        setIsLoading(false);
+      }, 2000);
+    }
   };
   const handleSizeSelect = (size) => {
     setSelectedSize(size);
@@ -62,44 +90,41 @@ function ProductDisplay() {
   };
  
 
-  const [image, setImage] = useState("./LushioFitness/Images/p1_product.png");
-  // const [size, setSize] = useState("S");
-  // const [height, setHeight] = useState("");
-  // const [color, setColor] = useState("");
+  
+ 
   const navigate = useNavigate();
 
-  // const sizes = ["XS", "S", "M", "L", "XL"];
-  // const heights = ["5.4 feet or more", "below 5.4 feet"];
-  // const colors = ["#00FFFF","#0091FF","#5424A0","#C44E0E","#C40E97"];
-  const reviews = [
-    { username: "Manoj Kamriya", rating: 4.5, review: "Great product!", dateTime: "2024-09-15T10:30:00" },
-    { username: "Pranit Mandoi", rating: 4.7, review: "Excellent quality!", dateTime: "2024-09-14T12:15:00" },
+ 
+  const reviewTest = [
+    { username: "Manoj Kamriya", rating: 4.5, review: "Great product!", dateTime: "2024-09-15" },
+    { username: "Pranit Mandloi", rating: 4.7, review: "Excellent quality!", dateTime: "2024-09-14" },
   ];
 
   const images = [
     "./LushioFitness/Images/p1_product.png",
+    "./LushioFitness/Images/carousel/vedio4.mp4",
     "./LushioFitness/Images/p1_product_i2.png",
     "./LushioFitness/Images/p1_product_i3.png",
-    "./LushioFitness/Images/p1_product_i4.png",
+    // "./LushioFitness/Images/p1_product_i4.png",
     "./LushioFitness/Images/p1_product_i4.png"
   ];
-
+  const [image, setImage] = useState(images[0]);
   return (
     <div className="productDisplay">
       <div className="productDisplay-left">
         <div className="productDisplay-img-list">
           {images.map((img, index) => (
-            <img 
-              key={index}
-              onClick={() => setImage(img)}
+           
+            <MediaRenderer
+               onClick={() => setImage(img)}
               className={img === image ? "size-selected" : "size-not-selected"}
               src={img}
-              alt=""
             />
           ))}
         </div>
-        <div className="productDispaly-img">
-          <img className="productDisplay-main-img" src={image} alt="" />
+        <div className="productDisplay-img">
+         
+          <MediaRenderer src={image} className="productDisplay-main-img"/>
         </div>
       </div>
       <div className="productDisplay-right">
@@ -131,6 +156,7 @@ function ProductDisplay() {
           selectedSize={selectedSize}
           setSelectedSize={setSelectedSize}
           quantity={quantity}
+          handleColorSelect={handleColorSelect}
           setQuantity={setQuantity}
         />:product.data?<SimpleColorOptions
               data={product.data}
@@ -144,6 +170,8 @@ function ProductDisplay() {
         
          
         </div>
+         {/* Display error message if no size is selected */}
+      {showError && !selectedSize && <p className="product-display-error-message">Please select a size before adding to cart!</p>}
       <p className="size-chart" onClick={handleOpen}>Size Chart</p>
       <Modal
         open={open}
@@ -180,20 +208,12 @@ function ProductDisplay() {
       </Modal>
         <div className="button-container">
 
-          {
-          selectedSize ?  <button 
-          onClick={() => handleAddToCart(product.id)} 
-          disabled={!selectedSize}
-          // className="add-to-cart-button"
-        >
-          {isLoading ? <span className="spinner"></span> : <span>Add to Cart</span>}
-        </button>:<button   >Select size to add to cart</button>
-         }
-          <button onClick={()=>addToWishlist(product.id)}>WISHLIST</button>
+        
+          <button onClick={()=>addToWishlist(product.id)}>WISHLIST</button> 
+          <button onClick={()=>handleAddToCart(product.id)}>ADD TO CART</button> 
         </div>
-{
-  selectedSize ?  <button className="buy-button" onClick={() => navigate("/place-order")}>BUY NOW</button>:<button className="buy-button">Select size to continue</button>
-}
+
+  <button className="buy-button" onClick={() => navigate("/place-order")}>BUY NOW</button>
 
        
         <p className="productDisplay-right-category">
@@ -211,7 +231,7 @@ function ProductDisplay() {
             <Modal1/>
           </div>
           <div className="reviews-list">
-            {reviews.map((review, index) => (
+            {reviewTest.map((review, index) => (
               <ReviewCard key={index} {...review} />
             ))}
           </div>

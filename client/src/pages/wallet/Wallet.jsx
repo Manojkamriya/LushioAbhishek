@@ -1,25 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
-import { getUser } from '../../firebaseUtils';
+import { UserContext } from "../../components/context/UserContext";
 import "./wallet.css";
 
 export default function Wallet() {
   const navigate = useNavigate();
-const [user,setUser] =useState(null);
-const [userCoins, setUserCoins]= useState(null);
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const currentUser = await getUser(); 
-        setUser(currentUser);
-        console.log(currentUser);
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      }
-    };
-    fetchUser();
-  }, []);
+  const {user} = useContext(UserContext);
+
+ const [userCoins, setUserCoins]= useState(null);
+
 
  
   useEffect(() => {

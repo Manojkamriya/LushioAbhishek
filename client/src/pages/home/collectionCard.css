@@ -1,0 +1,116 @@
+.collection-card-container {
+  display: grid;
+  gap: 30px;
+  grid-template-columns: repeat(3,1fr);
+  margin-top: 30px;
+  margin-inline: 2%;
+}
+.collection-card-wrapper {
+ width: 100%;
+} 
+.collection-card {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.collection-card img{
+ 
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+
+  transition: transform 5s ease;
+}
+
+.collection-card h1,
+.collection-card button {
+  position: absolute;
+  
+}
+.collection-card h1 {
+  margin-block: 5%;
+  color: white;
+  bottom: 14%;
+  left: 5%;
+  font-size: 2.3cqi;
+  font-family: "Montserrat";
+  font-weight: 400;
+}
+.collection-card button {
+  background-color: transparent;
+margin-bottom: 4%;
+  color: #363636;
+  width: 35%;
+  padding: 3% 4%;
+  border: none;
+  font-size: 1.1cqi;
+  font-family: "Montserrat";
+  font-weight: 400;
+  outline: none;
+  /* transition: left 0.3s; */
+  z-index: 1;
+  overflow: hidden;
+  transition: color 0.2s ease;
+  cursor: pointer;
+  bottom: 5%;
+  left: 5%;
+}
+.collection-card button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color:rgb(255, 253, 253);
+  transition: left 0.3s ease;
+  z-index: -1; /* Make sure the pseudo-element stays behind the text */
+}
+
+.collection-card button:hover::before {
+  left: -100%;
+}
+
+.collection-card button:hover {
+  color: white;
+  border: 1px solid #d2d0d0;
+  /* background-color: transparent; */
+}
+
+.collection-card img:hover {
+  transform: scale(1.1);
+}
+@media(max-width: 1285px){
+  .collection-card-container{
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 1.8%;
+  }
+}
+@media(max-width: 1100px){
+  .collection-card-container {
+gap: 2%;
+  }
+  .collection-card button {
+    font-size: 1.3cqi;
+  }
+  
+}
+@media(max-width: 680px){
+  .collection-card-container {
+   grid-template-columns: repeat(2,1fr);
+      }
+}
+@media(max-width: 520px){
+  .collection-card-container {
+   grid-template-columns: repeat(1,1fr);
+      }
+      .collection-card button {
+        font-size: 2.6cqi;
+      }
+      .collection-card h1{
+        font-size: 6cqi;
+      }
+}
+

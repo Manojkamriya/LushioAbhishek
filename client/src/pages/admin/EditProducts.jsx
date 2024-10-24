@@ -67,6 +67,7 @@ const EditProduct = () => {
       flexDirection: 'column',
       height: 'calc(100vh - 60px)',
       padding: '1rem',
+      width: "70vw",
       backgroundColor: 'white',
       overflow: 'hidden'
     }}>
@@ -103,10 +104,22 @@ const EditProduct = () => {
                    cursor: 'pointer' 
                  }} 
                  onClick={() => handleProductClick(product.id)}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <img src={product.imageUrls[0]} alt={product.name} style={{ width: '4rem', height: '4rem', objectFit: 'cover', marginRight: '1rem' }} />
+              {/* <div style={{ display: 'flex', alignItems: 'center' }}>
+                <img src={product?.imageUrls[0]} alt={product.name} style={{ width: '4rem', height: '4rem', objectFit: 'cover', marginRight: '1rem' }} />
                 <span>{product.name}</span>
-              </div>
+              </div> */}
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+  {product?.imageUrls && product.imageUrls.length > 0 ? (
+    <img 
+      src={product.imageUrls[0]} 
+      alt={product.name} 
+      style={{ width: '4rem', height: '4rem', objectFit: 'cover', marginRight: '1rem' }} 
+    />
+  ) : (
+    <span>No Image Available</span> // Fallback when there is no image
+  )}
+  <span>{product?.name || 'No Product Name'}</span> {/* Handle missing product name */}
+</div>
               <button 
                 onClick={(e) => { e.stopPropagation(); handleDelete(product.id); }} 
                 style={{ 

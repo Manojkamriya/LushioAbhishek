@@ -172,6 +172,8 @@ margin-block: 10px;
 @media(max-width: 550px){
     .primary{
         grid-template-columns: repeat(1, 1fr);
+        /* padding-top: 10px; */
+        margin-top: 20px;
     }
     .business-section ul, .quick-links ul{
       

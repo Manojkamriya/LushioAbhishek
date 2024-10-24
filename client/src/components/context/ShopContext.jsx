@@ -1,5 +1,6 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
 import all_product from "./assets/all_product";
+import { UserContext } from "./UserContext"; // Adjust the import path accordingly
 
 const getDefaultCart = () => {
   let cart = {};
@@ -26,21 +27,29 @@ const loadFromLocalStorage = (key, defaultValue) => {
 export const ShopContext = createContext(null);
 
 const ShopContextProvider = (props) => {
-  const [cartItems, setCartItems] = useState(() =>
-    loadFromLocalStorage("cartItems", getDefaultCart())
-  );
-  const [wishlistItems, setWishlistItems] = useState(() =>
-    loadFromLocalStorage("wishlistItems", getDefaultWishlist())
-  );
+  const { user } = useContext(UserContext); // Get user context
+  const userId = user ? user.uid : "guest"; // Use user ID or "guest" for unauthenticated users
+console.log(userId);
+  const [cartItems, setCartItems] = useState(getDefaultCart());
+  const [wishlistItems, setWishlistItems] = useState(getDefaultWishlist());
+
+  // Load data from local storage when userId changes
+  useEffect(() => {
+    const storedCartItems = loadFromLocalStorage(`cartItems_${userId}`, getDefaultCart());
+    const storedWishlistItems = loadFromLocalStorage(`wishlistItems_${userId}`, getDefaultWishlist());
+    
+    setCartItems(storedCartItems);
+    setWishlistItems(storedWishlistItems);
+  }, [userId]); // Run this effect when userId changes
 
   // Save to localStorage whenever cartItems or wishlistItems change
   useEffect(() => {
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
-  }, [cartItems]);
+    localStorage.setItem(`cartItems_${userId}`, JSON.stringify(cartItems));
+  }, [cartItems, userId]);
 
   useEffect(() => {
-    localStorage.setItem("wishlistItems", JSON.stringify(wishlistItems));
-  }, [wishlistItems]);
+    localStorage.setItem(`wishlistItems_${userId}`, JSON.stringify(wishlistItems));
+  }, [wishlistItems, userId]);
 
   const addToCart = (itemId) => {
     setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }));
@@ -61,7 +70,7 @@ const ShopContextProvider = (props) => {
       [itemId]: quantity > 0 ? quantity : 0,
     }));
   };
-  // Function to return the total number of items in the cart
+
   const getCartItemCount = () => {
     let totalCartItemCount = 0;
     for (const item in cartItems) {
@@ -72,7 +81,6 @@ const ShopContextProvider = (props) => {
     return totalCartItemCount;
   };
 
-  // Function to return the total number of items in the wishlist
   const getWishlistItemCount = () => {
     let totalWishlistCount = 0;
     for (const item in wishlistItems) {
@@ -105,15 +113,17 @@ const ShopContextProvider = (props) => {
     }
     return totalItem;
   };
+
   const clearAllData = () => {
     // Clear state
     setCartItems(getDefaultCart());
     setWishlistItems(getDefaultWishlist());
 
     // Clear localStorage
-    localStorage.removeItem("cartItems");
-    localStorage.removeItem("wishlistItems");
+    localStorage.removeItem(`cartItems_${userId}`);
+    localStorage.removeItem(`wishlistItems_${userId}`);
   };
+
   const addToWishlist = (itemId) => {
     setWishlistItems((prev) => ({ ...prev, [itemId]: true }));
   };

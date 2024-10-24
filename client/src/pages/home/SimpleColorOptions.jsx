@@ -49,13 +49,7 @@ const SimpleColorOptions = ({ data, selectedColor, selectedSize, quantity, onCol
         </div>
       )}
 
-      {selectedSize && (
-        <>
-          {quantity === 0 && (
-            <p style={{ color: 'red', fontWeight: 'bold' }}>Out of Stock!</p>
-          )}
-        </>
-      )}
+   
     </>
   );
 };

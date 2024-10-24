@@ -47,8 +47,9 @@ function EditProfile() {
     if (user) {
       const fetchUserData = async () => {
         try {
-         const response = await axios.get(`https://us-central1-lushio-fitness.cloudfunctions.net/api/user/details/${user.uid}`);
-    
+        // const response = await axios.get(`http://127.0.0.1:5001/lushio-fitness/us-central1/api/user/details/${user.uid}`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/details/${user.uid}`);
+
       const data = response.data;
       setUserData({
         ...data,
@@ -70,11 +71,14 @@ function EditProfile() {
     try {
       const updatedData = {
         ...userData,
-        dob: convertToISODate(userData.dob),
-        doa: convertToISODate(userData.doa)
+        // dob: convertToISODate(userData.dob),
+        // doa: convertToISODate(userData.doa),
+        dob: (userData.dob),
+        doa: (userData.doa)
       };
       console.log(updatedData);
-      await axios.post(`https://us-central1-lushio-fitness.cloudfunctions.net/api/user/details/${user.uid}`, updatedData);
+      await axios.post(`${process.env.REACT_APP_API_URL}/user/details/${user.uid}`, updatedData);
+      
       alert("Profile updated successfully!");
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -181,11 +185,7 @@ function EditProfile() {
 
         <button type="submit">Save</button>
       </form>
-      {/* <ColorSelector/> */}
-      {/* <ColorSelector data={data} />
-      <ColorSelector2/>
-      <Checker data={data1}/> */}
-      {/* <Test/> */}
+     
     </div>
   );
 }

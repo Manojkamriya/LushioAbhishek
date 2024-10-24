@@ -270,7 +270,7 @@
     background-color: #1c1b1b;
     align-items: start;
     width: 350px;
-    height: 100vh;
+    min-height: 100vh;
     z-index: 998;
     transition: left 0.5s;
     left: -550px;
@@ -389,6 +389,9 @@ gap: 10px ;
   }
   .search-icon{
     margin-bottom: 0px;
+  }
+  .icons a span{
+   font-size: 10px;
   }
 }
 @media (max-width: 380px){

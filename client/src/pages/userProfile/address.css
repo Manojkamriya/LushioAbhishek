@@ -204,7 +204,15 @@ height: 40px;
    
     padding: 8% 4%;
     height: 100%;
+    position: relative;
   }  
+  .size-selector-my img{
+  width: 7%;
+    position: absolute;
+    cursor: pointer;
+    left: 85%;
+    margin-left: auto;
+  }
   .size-selector-my p {
     margin-bottom: 4%;
     color: #1c1b1b;
@@ -246,6 +254,7 @@ margin-left: 2px;
     .add-to-cart-button {
       width: 60%;
       height: 10%;
+      font-size: 10px;
     }
   }
   @media(max-width: 500px){

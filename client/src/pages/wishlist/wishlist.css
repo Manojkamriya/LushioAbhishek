@@ -1,49 +1,62 @@
+.wishlist-container {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(clamp(140px, 40vw, 250px), 1fr)
+  );
+  justify-items: center;
+  padding-inline: clamp(0px, 2vw, 40px);
+  row-gap: clamp(0px, 2vw, 20px);
+  /* margin-top: clamp(0px, 4vw, 20px); */
+}
+/* Styling the Wishlist h3 */
+
+.wishlist-title{
+  font-weight: 600;
+  font-size: 52px;
+  margin-bottom: 5px;
+  color: #333; /* Base color */
+  font-weight: bold; /* Make it bold */
+  margin-left: 3%;
+}
 
 
-          .wishlist-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(clamp(140px, 40vw, 250px), 1fr));
-            justify-items: center;
-            padding: clamp(0px, 2vw, 40px);
-            row-gap: clamp(0px, 2vw, 20px);
-            margin-top: clamp(0px, 4vw, 20px);
-        }
-        
-        @media (min-width: 1151px) {
-            .wishlist-container {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }      
+
+@media (min-width: 1151px) {
+  .wishlist-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
 .empty-wishlist {
-    height: clamp(240px, 30vw, 350px);
-    width: clamp(240px, 30vw, 350px);
-    margin: clamp(20px, 15vw, 60px) auto;
-    text-align: center;
-    margin-bottom: clamp(70px, 10vw, 100px);
+  height: clamp(240px, 30vw, 350px);
+  width: clamp(240px, 30vw, 350px);
+  margin: clamp(20px, 15vw, 60px) auto;
+  text-align: center;
+  margin-bottom: clamp(70px, 10vw, 100px);
 }
 
 .empty-wishlist img {
-    width: clamp(80%, 85%, 85%);
-    height: clamp(70%, 75%, 75%);
+  width: clamp(80%, 85%, 85%);
+  height: clamp(70%, 75%, 75%);
 }
 
 .empty-wishlist h3 {
-    font-size: clamp(12px, 2.5vw, 16px);
+  font-size: clamp(12px, 2.5vw, 16px);
 }
 
 .empty-wishlist p {
-    font-size: clamp(11px, 2vw, 14px);
+  font-size: clamp(11px, 2vw, 14px);
 }
 
 .empty-wishlist button {
-    width: clamp(150px, 60%, 320px);
-    height: clamp(35px, 4vw, 40px);
-    border-radius: 5px;
-    background-color: #42a2a2;
-    color: #fff;
-    text-align: center;
-    font-size: clamp(12px, 2vw, 16px);
-    margin-top: clamp(10px, 2vw, 19px);
-    padding: 10px 0;
-    border: 1px solid #42a2a2;
+  width: clamp(150px, 60%, 320px);
+  height: clamp(35px, 4vw, 40px);
+  border-radius: 5px;
+  background-color: #42a2a2;
+  color: #fff;
+  text-align: center;
+  font-size: clamp(12px, 2vw, 16px);
+  margin-top: clamp(10px, 2vw, 19px);
+  padding: 10px 0;
+  border: 1px solid #42a2a2;
 }

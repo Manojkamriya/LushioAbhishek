@@ -23,7 +23,7 @@ import Address from "./pages/userProfile/Address";
 import PlaceOrder from "./pages/orders/PlaceOrder";
 import AdminPanel from "./pages/admin/AdminPanel";
 import BackendAnalytics from "./pages/bakendAnalytics/BackendAnalytics";
-
+import CategoryPage from "./components/CategoryPage";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "./firebaseConfig";
 
@@ -67,6 +67,7 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/LushioFitness" element={<Home />} />
+            <Route path="/:category/:subCategory" element={<CategoryPage />} /> 
             <Route path="/men" element={<ShopCategory banner={men_banner} category="men" />} />
             <Route path="/women" element={<ShopCategory banner={women_banner} category="women" />} />
             <Route path="/accessories" element={<ShopCategory banner={accessories_banner} category="accessories" />} />

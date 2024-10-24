@@ -216,7 +216,6 @@ const AddProducts = () => {
       });
     }
   };
-
   // Image Upload Logic to Firebase
   const uploadImagesToFirebase = async () => {
     return Promise.all(

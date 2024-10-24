@@ -95,6 +95,7 @@ cursor: pointer;
 @media(max-width: 500px){
 .res-navbar-headings-list li a{
     font-size: 12px;
+    
 }
 .res-navbar-links ul li a{
     font-size: 12px;

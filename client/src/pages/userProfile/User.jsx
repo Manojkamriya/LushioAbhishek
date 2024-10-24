@@ -1,28 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState , useContext} from "react";
 import { Link} from "react-router-dom";
 import { auth } from "../../firebaseConfig.js";
 import { signOut } from "firebase/auth";
 import { getUser } from "../../firebaseUtils.js";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../components/context/UserContext";
 import "./user.css";
 
 function User() {
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
+  const {user} = useContext(UserContext);
   const navigate = useNavigate();
 
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     try {
        
-        setUser(await getUser());
+  //       setUser(await getUser());
        
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      }
-    };
-    fetchUser();
-  }, []);
+  //     } catch (error) {
+  //       console.error("Error fetching user:", error);
+  //     }
+  //   };
+  //   fetchUser();
+  // }, []);
  
   const handleLogout = () => {
     signOut(auth)
@@ -106,6 +108,7 @@ function User() {
         </div>
       </div>
  
+ {/* <div className="test" >Inline query tester</div> */}
  
     </>
   );

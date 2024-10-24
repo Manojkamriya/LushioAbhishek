@@ -68,14 +68,15 @@ gap: 75px; */
 
 .cartitems-down {
   display: flex;
+  flex-direction: row-reverse;
   margin: 100px 0px;
 }
 .cartitems-total {
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin-right: 200px;
-  gap: 40px;
+  margin-left: 200px;
+  gap: 5px;
 }
 
 .cartitems-total-item {
@@ -83,7 +84,12 @@ gap: 75px; */
   justify-content: space-between;
   padding: 15px 0px;
 }
+.cartitems-total-item input{
+  cursor: pointer;
+width: 20px;
+  height: 20px;
 
+}
 .cartitems-total button {
   width: 262px;
   height: 58px;
@@ -219,8 +225,13 @@ gap: 75px; */
 }
 .remove-cart-buttons{
 display: flex;
+flex-direction: column;
 gap: 20px;
 
+}
+.remove-cart-buttons img{
+height: 300px;
+width: 200px;
 }
 .remove-cart-buttons button{
   background-color: #1c1c1c;

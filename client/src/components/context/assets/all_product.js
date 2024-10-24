@@ -893,7 +893,7 @@ let all_product = [
           'Midnight Plum': ['S', 'M', 'L']
         },
         quantities: {
-          'Crimson Blush': { S: 5, M: 8, L: 12, XL: 6 },
+          'Crimson Blush': { S: 0, M: 0, L: 0, XL: 6 },
           'Emerald Dream': { M: 10, L: 15, XL: 7 },
           'Sapphire Mist': { S: 4, M: 9, L: 11 },
           'Sunset Orange': { XS: 3, S: 6, M: 8, L: 5 },
