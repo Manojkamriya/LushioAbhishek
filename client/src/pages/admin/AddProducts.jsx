@@ -402,7 +402,7 @@ const AddProducts = () => {
                     <input
                       type="file"
                       multiple
-                      accept="image/*"
+                      accept="image/*,video/*"
                       onChange={(e) => handleImageUpload(e, color.name, heightType)}
                       className="mt-1 w-full p-2 border rounded"
                     />
@@ -454,7 +454,7 @@ const AddProducts = () => {
                   <input
                     type="file"
                     multiple
-                    accept="image/*"
+                    accept="image/*,video/*"
                     onChange={(e) => handleImageUpload(e, color.name)}
                     className="mt-1 w-full p-2 border rounded"
                   />
