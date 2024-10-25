@@ -1,5 +1,5 @@
-import React, { useEffect, useState , useContext} from "react";
-import { Link} from "react-router-dom";
+import React, { useEffect, useState, useContext } from "react";
+import { Link } from "react-router-dom";
 import { auth } from "../../firebaseConfig.js";
 import { signOut } from "firebase/auth";
 import { getUser } from "../../firebaseUtils.js";
@@ -8,43 +8,32 @@ import { UserContext } from "../../components/context/UserContext";
 import "./user.css";
 
 function User() {
-  // const [user, setUser] = useState(null);
-  const {user} = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
-
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     try {
-       
-  //       setUser(await getUser());
-       
-  //     } catch (error) {
-  //       console.error("Error fetching user:", error);
-  //     }
-  //   };
-  //   fetchUser();
-  // }, []);
- 
   const handleLogout = () => {
-    signOut(auth)
-      .then(() => {
-        // Redirect to the login page after successful sign out
-        alert("Logged out Successfully!");
-        window.location.href = "/LushioFitness"; // Ensure this route is defined in your router
-      })
-      .catch((error) => {
-        console.error("Error signing out:", error);
-        alert("Couldn't Log out, please try again.");
-      });
+    // Add confirmation dialog
+    const confirmLogout = window.confirm("Are you sure you want to sign out?");
+    
+    if (confirmLogout) {
+      signOut(auth)
+        .then(() => {
+          alert("Logged out Successfully!");
+          window.location.href = "/LushioFitness";
+        })
+        .catch((error) => {
+          console.error("Error signing out:", error);
+          alert("Couldn't Log out, please try again.");
+        });
+    }
   };
 
   return (
     <>
-    {user &&  <h1 className="user-greet">Welcome {user.displayName}</h1>
-          }      <p className="user-question">What would you like to do?</p>
-      <div className="user-action-container" >
-        <div className="user-action" onClick={()=>{navigate("/user-editProfile")}}>
+      {user && <h1 className="user-greet">Welcome {user.displayName}</h1>}
+      <p className="user-question">What would you like to do?</p>
+      <div className="user-action-container">
+        <div className="user-action" onClick={() => { navigate("/user-editProfile") }}>
           <Link to="/user-editProfile">
             <img
               src="./LushioFitness/Images/icons/editProfile.png"
@@ -57,7 +46,7 @@ function User() {
           </div>
         </div>
 
-        <div className="user-action" onClick={()=>{navigate("/LushioFitness")}}>
+        <div className="user-action" onClick={() => { navigate("/LushioFitness") }}>
           <Link to="/LushioFitness">
             <img
               src="./LushioFitness/Images/icons/continueShopping.png"
@@ -69,7 +58,7 @@ function User() {
             <p>Go to Home page</p>
           </div>
         </div>
-        <div className="user-action" onClick={()=>{navigate("/user/orders")}}>
+        <div className="user-action" onClick={() => { navigate("/user/orders") }}>
           <Link to="/user-orders">
             <img src="./LushioFitness/Images/icons/orders.png" alt="logo" />
           </Link>
@@ -78,22 +67,22 @@ function User() {
             <p>Track, return, or buy things again</p>
           </div>
         </div>
-        
-        <div className="user-action" onClick={()=>{navigate("/user-address")}}>
-        <Link to="/user-address">
+
+        <div className="user-action" onClick={() => { navigate("/user-address") }}>
+          <Link to="/user-address">
             <img src="./LushioFitness/Images/icons/address.png" alt="logo" />{" "}
           </Link>
-         
+
           <div className="action-details">
             <h3>My Addresses</h3>
             <p>Add, Remove or change your default address</p>
           </div>
         </div>
-        <div className="user-action" onClick={()=>{navigate("/user-referAndEarn")}}>
-        <Link to="/user-referAndEarn">
+        <div className="user-action" onClick={() => { navigate("/user-referAndEarn") }}>
+          <Link to="/user-referAndEarn">
             <img src="./LushioFitness/Images/icons/referEarn.png" alt="logo" />{" "}
           </Link>
-         
+
           <div className="action-details">
             <h3>Refer and Earn</h3>
             <p>Refer to your friends, family members</p>
@@ -107,9 +96,6 @@ function User() {
           </div>
         </div>
       </div>
- 
- {/* <div className="test" >Inline query tester</div> */}
- 
     </>
   );
 }

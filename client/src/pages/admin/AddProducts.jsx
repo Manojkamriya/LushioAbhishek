@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { storage } from "../../firebaseConfig"; // Import storage from Firebase config
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import "./AddProducts.css";
 
 const AddProducts = () => {
   const [product, setProduct] = useState({
