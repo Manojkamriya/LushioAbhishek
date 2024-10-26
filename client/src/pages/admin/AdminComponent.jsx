@@ -1,27 +1,33 @@
 import React, { useState } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
-import "./AdminComponent.css"; // Import the CSS file
+import "./AdminComponent.css";
 import AddProducts from "./AddProducts";
 import EditProducts from "./EditProducts.jsx";
 import ChangeBanners from "./ChangeBanners";
 import SendTokens from "./SendTokens";
 import ViewComplaints from "./ViewComplaints";
 import AdminControls from "./AdminControls";
+import ReviewReviews from "./ReviewReviews";
 
 const AdminComponent = () => {
   const [selectedComponent, setSelectedComponent] = useState(null);
 
   const handleLogout = () => {
-    signOut(auth)
-      .then(() => {
-        alert("Logged out Successfully!");
-        window.location.href = "/LushioFitness";
-      })
-      .catch((error) => {
-        console.error("Error signing out:", error);
-        alert("Couldn't Log out, please try again.");
-      });
+    // Add confirmation dialog
+    const confirmLogout = window.confirm("Are you sure you want to logout?");
+    
+    if (confirmLogout) {
+      signOut(auth)
+        .then(() => {
+          alert("Logged out Successfully!");
+          window.location.href = "/LushioFitness";
+        })
+        .catch((error) => {
+          console.error("Error signing out:", error);
+          alert("Couldn't Log out, please try again.");
+        });
+    }
   };
 
   const renderComponent = () => {
@@ -38,6 +44,8 @@ const AdminComponent = () => {
         return <ViewComplaints />;
       case "AdminControls":
         return <AdminControls />;
+      case "ReviewReviews":
+        return <ReviewReviews />;
       default:
         return <h1>Welcome Admin</h1>;
     }
@@ -51,6 +59,9 @@ const AdminComponent = () => {
         </button>
         <button onClick={() => setSelectedComponent("EditProducts")} className="admin-button">
           Edit Products
+        </button>
+        <button onClick={() => setSelectedComponent("ReviewReviews")} className="admin-button">
+          Review Reviews
         </button>
         <button onClick={() => setSelectedComponent("ChangeBanners")} className="admin-button">
           Change Banners

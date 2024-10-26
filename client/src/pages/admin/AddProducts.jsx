@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { storage } from "../../firebaseConfig"; // Import storage from Firebase config
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import "./AddProducts.css"
+import "./AddProducts.css";
+
 const AddProducts = () => {
   const [product, setProduct] = useState({
     name: '',
@@ -402,7 +403,7 @@ const AddProducts = () => {
                     <input
                       type="file"
                       multiple
-                      accept="image/*"
+                      accept="image/*,video/*"
                       onChange={(e) => handleImageUpload(e, color.name, heightType)}
                       className="mt-1 w-full p-2 border rounded"
                     />
@@ -457,7 +458,7 @@ const AddProducts = () => {
                   <input
                     type="file"
                     multiple
-                    accept="image/*"
+                    accept="image/*,video/*"
                     onChange={(e) => handleImageUpload(e, color.name)}
                     className="mt-1 w-full p-2 border rounded"
                   />
