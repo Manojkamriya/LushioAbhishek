@@ -137,9 +137,12 @@ const MultiStepForm = () => {
       };
   
       console.log('Payload being sent:', payload); // Log the payload
-  
-      const endpoint = `http://127.0.0.1:5001/lushio-fitness/us-central1/api/reviews/${user.uid}`; 
-      const response = await axios.post(endpoint, payload, {
+
+      //
+      // in the below request replace the hardcoded dummy product id 
+      //
+
+      const response = await axios.post(`http://127.0.0.1:5001/lushio-fitness/us-central1/api/reviews/3bdLgiX03RoYo56IvlKG`, payload, {
         headers: {
           'Content-Type': 'application/json',
         },
