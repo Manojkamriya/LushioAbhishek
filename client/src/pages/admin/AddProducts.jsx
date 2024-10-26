@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { storage } from "../../firebaseConfig"; // Import storage from Firebase config
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-
+import "./AddProducts.css"
 const AddProducts = () => {
   const [product, setProduct] = useState({
     name: '',
@@ -406,8 +406,9 @@ const AddProducts = () => {
                       onChange={(e) => handleImageUpload(e, color.name, heightType)}
                       className="mt-1 w-full p-2 border rounded"
                     />
+                    <div className="size-quantity">
                     {sizeOptions.map((size) => (
-                      <div key={size} className="flex items-center mt-1">
+                      <div key={size}>
                         <label className="w-10">{size}</label>
                         <input
                           type="number"
@@ -417,6 +418,8 @@ const AddProducts = () => {
                         />
                       </div>
                     ))}
+                    </div>
+                  
                   </div>
                 ))}
               </div>
@@ -458,8 +461,10 @@ const AddProducts = () => {
                     onChange={(e) => handleImageUpload(e, color.name)}
                     className="mt-1 w-full p-2 border rounded"
                   />
+                  <div className="size-quantity">
                   {sizeOptions.map(size => (
-                    <div key={size}>
+                    
+                    <div key={size}> 
                       <label>{size}</label>
                       <input
                         type="number"
@@ -468,6 +473,8 @@ const AddProducts = () => {
                       />
                     </div>
                   ))}
+                  </div>
+                
                 </div>
               ))}
             </div>

@@ -46,7 +46,8 @@ const CartItems = () => {
         const fetchUserData = async () => {
           try {
       
-           const response = await axios.get(`https://127.0.0.1:5001/lushio-fitness/us-central1/api/api/wallet/${user.uid}`);
+         //  const response = await axios.get(`https://127.0.0.1:5001/lushio-fitness/us-central1/api/wallet/${user.uid}`);
+           const response = await axios.get(`https://us-central1-lushio-fitness.cloudfunctions.net/api/wallet/${user.uid}`);
         const data = response.data;
       
         setWalletPoints(data.totalCredits);

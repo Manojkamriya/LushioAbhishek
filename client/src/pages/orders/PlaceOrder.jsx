@@ -1,10 +1,12 @@
 import React, { useContext } from "react";
 import { ShopContext } from "../../components/context/ShopContext";
+import AddressSelection from "./AddressSelection"
+import PaymentMethod from "./PaymentMethod";
 function PlaceOrder() {
   const { getTotalCartAmount } = useContext(ShopContext);
   return (
-    <form action="" className="place-order">
-      <div className="place-order-left">
+    <form  className="place-order">
+      {/* <div className="place-order-left">
         <p className="title"> Delivery Information</p>
         <div className="multi-fields">
           <input type="text" placeholder="First Name" />
@@ -21,7 +23,8 @@ function PlaceOrder() {
           <input type="text" placeholder="Country" />
         </div>
         <input type="text" placeholder="Phone Number" />
-      </div>
+      </div> */}
+      <AddressSelection/>
       <div className="place-order-right">
         <div className="cartitems-total">
           <h1>Cart Totals</h1>
@@ -42,6 +45,7 @@ function PlaceOrder() {
             </div>
           </div>
           <button>PROCEED TO PAYMENT</button>
+          {/* <PaymentMethod/> */}
         </div>
       </div>
     </form>

@@ -1,19 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState,useContext } from 'react';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import MediaRenderer from "../../components/MediaRenderer";
 import { storage } from "../../firebaseConfig"; // Import storage from Firebase config
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import './MultiStepForm.css';
 import axios from "axios";
+import { UserContext } from '../../components/context/UserContext';
 
 const MultiStepForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const {user} = useContext(UserContext);
   const [formData, setFormData] = useState({
     starRating: 0, // Star rating
     qualityRating: '', // Quality rating
     fitRating: '', // Fit rating
     mediaFiles: [], // Media files
     reviewText: '', // Review text
+   
   });
   const [images, setImages] = useState([]);
   const totalSteps = 5; // Updated to 5 steps (star rating, quality, fit, media, review)
@@ -62,7 +65,7 @@ const MultiStepForm = () => {
   const uploadImagesToFirebase = async () => {
     return Promise.all(
       images.map((image) => {
-        const storageRef = ref(storage, `products/${Date.now()}_${image.name}`);
+        const storageRef = ref(storage, `reviews/${Date.now()}_${image.name}`);
         const uploadTask = uploadBytesResumable(storageRef, image);
 
         return new Promise((resolve, reject) => {
@@ -131,11 +134,12 @@ const MultiStepForm = () => {
         fit: formData.fitRating,
         media: urls,
         review: formData.reviewText,
+        userId: user.uid,
       };
   
       console.log('Payload being sent:', payload); // Log the payload
   
-      const endpoint = 'http://127.0.0.1:5001/lushio-fitness/us-central1/api/reviews/azkEOgiSVkvByK93XYr6'; 
+      const endpoint = `http://127.0.0.1:5001/lushio-fitness/us-central1/api/reviews/${user.uid}`; 
       const response = await axios.post(endpoint, payload, {
         headers: {
           'Content-Type': 'application/json',

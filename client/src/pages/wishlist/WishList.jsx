@@ -8,7 +8,7 @@ function WishList() {
   const { all_product, wishlistItems } = useContext(ShopContext);
 
   const [page, setPage] = useState(1); // For keeping track of the current page
-  const itemsPerPage = 4; // Control the number of items per page
+  const itemsPerPage = 8; // Control the number of items per page
 
   const handleChange = (event, value) => {
     setPage(value);

@@ -20,7 +20,8 @@ const ReviewCard = ({ username, rating, review, dateTime }) => (
     </div>
     <p className="review-text">{review}</p>
     <div className="review-footer">
-      <span className="review-date">{new Date(dateTime).toLocaleString()}</span>
+      {/* <span className="review-date">{new Date(dateTime).toLocaleString()}</span> */}
+      <span className="review-date">{dateTime}</span>
     </div>
   </div>
 );
@@ -96,8 +97,8 @@ function ProductDisplay() {
 
  
   const reviewTest = [
-    { username: "Manoj Kamriya", rating: 4.5, review: "Great product!", dateTime: "2024-09-15" },
-    { username: "Pranit Mandloi", rating: 4.7, review: "Excellent quality!", dateTime: "2024-09-14" },
+    { username: "Manoj Kamriya", rating: 4.5, review: "Great product!", dateTime: "15-09-2024" },
+    { username: "Pranit Mandloi", rating: 4.7, review: "Excellent quality!", dateTime: "14-09-2024" },
   ];
 
   const images = [
@@ -109,6 +110,9 @@ function ProductDisplay() {
     "./LushioFitness/Images/p1_product_i4.png"
   ];
   const [image, setImage] = useState(images[0]);
+  if(isLoading && reviews){
+    return <></>
+  }
   return (
     <div className="productDisplay">
       <div className="productDisplay-left">
