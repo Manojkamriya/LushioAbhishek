@@ -20,7 +20,8 @@ const ReviewCard = ({ username, rating, review, dateTime }) => (
     </div>
     <p className="review-text">{review}</p>
     <div className="review-footer">
-      <span className="review-date">{new Date(dateTime).toLocaleString()}</span>
+      {/* <span className="review-date">{new Date(dateTime).toLocaleString()}</span> */}
+      <span className="review-date">{dateTime}</span>
     </div>
   </div>
 );
@@ -96,19 +97,22 @@ function ProductDisplay() {
 
  
   const reviewTest = [
-    { username: "Manoj Kamriya", rating: 4.5, review: "Great product!", dateTime: "2024-09-15" },
-    { username: "Pranit Mandloi", rating: 4.7, review: "Excellent quality!", dateTime: "2024-09-14" },
+    { username: "Manoj Kamriya", rating: 4.5, review: "Great product!", dateTime: "15-09-2024" },
+    { username: "Pranit Mandloi", rating: 4.7, review: "Excellent quality!", dateTime: "14-09-2024" },
   ];
 
   const images = [
-    "./LushioFitness/Images/p1_product.png",
-    "./LushioFitness/Images/carousel/vedio4.mp4",
-    "./LushioFitness/Images/p1_product_i2.png",
-    "./LushioFitness/Images/p1_product_i3.png",
-    // "./LushioFitness/Images/p1_product_i4.png",
-    "./LushioFitness/Images/p1_product_i4.png"
+    "/Images/p1_product.png",
+    "/Images/carousel/vedio4.mp4",
+    "/Images/p1_product_i2.png",
+    "/Images/p1_product_i3.png",
+    // "/Images/p1_product_i4.png",
+    "/Images/p1_product_i4.png"
   ];
   const [image, setImage] = useState(images[0]);
+  if(isLoading && reviews){
+    return <></>
+  }
   return (
     <div className="productDisplay">
       <div className="productDisplay-left">
@@ -132,7 +136,7 @@ function ProductDisplay() {
         <div className="productDisplay-right-stars">
           <span>
             <p>{product.rating}</p>
-            <img src="./LushioFitness/Images/icons/star.png" alt="icon" />
+            <img src="/Images/icons/star.png" alt="icon" />
           </span>
           <p>(122 reviews)</p>
         </div>
@@ -199,9 +203,9 @@ function ProductDisplay() {
           >
        <div className="chart-header">
         <p>Generalized Size chart</p>
-        <img src="./LushioFitness/Images/icons/cross.png" alt="" onClick={handleClose}/>
+        <img src="/Images/icons/cross.png" alt="" onClick={handleClose}/>
        </div>
-<img src="./LushioFitness/Images/size-chart.webp" alt=""/>
+<img src="/Images/size-chart.webp" alt=""/>
         <p>Disclaimer: These charts are for reference ONLY. This is intended to be a general guide, and while we do our best to ensure all our sizing is consistent, you may find that some styles vary in size. Fit may vary depending on the construction and material.</p> 
           </Box>
         </Fade>
@@ -224,7 +228,7 @@ function ProductDisplay() {
           <span>Description : </span>
           A lightweight, Usually knitted, pullover shirt, close-fitting and with a round neckline and short sleeves, worn as an undershirt or outer garment. Striped Flutter Sleeve Overlap Collar Peplum Hem Blouse.
         </p>
-        <img className="trust-image" src="./LushioFitness/Images/trust.png" alt=""/>
+        <img className="trust-image" src="/Images/trust.png" alt=""/>
         <div className="review-container">
           <div className="review-headings">
             <h5>Product Review</h5>

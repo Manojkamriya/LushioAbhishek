@@ -109,20 +109,20 @@ function ProductCard(props) {
             <span onClick={openMenu}>
               <img
                 className="cart-image"
-                src="/LushioFitness/Images/icons/cart_bag.png"
+                src="/Images/icons/cart_bag.png"
                 alt=""
               />
             </span>
             <span>
               <p>{props.rating}</p>
-              <img src="/LushioFitness/Images/icons/star.png" alt="icon" />
+              <img src="/Images/icons/star.png" alt="icon" />
             </span>
           </div>
         </div>
         <div className="size-selector-outer" ref={menuRef}>
           <div className="size-selector-my">
             <img
-              src="/LushioFitness/Images/icons/cross.png"
+              src="/Images/icons/cross.png"
               alt=""
               onClick={closeMenu}
             />

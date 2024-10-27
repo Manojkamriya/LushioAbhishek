@@ -46,7 +46,8 @@ const CartItems = () => {
         const fetchUserData = async () => {
           try {
       
-           const response = await axios.get(`https://127.0.0.1:5001/lushio-fitness/us-central1/api/api/wallet/${user.uid}`);
+         //  const response = await axios.get(`https://127.0.0.1:5001/lushio-fitness/us-central1/api/wallet/${user.uid}`);
+           const response = await axios.get(`https://us-central1-lushio-fitness.cloudfunctions.net/api/wallet/${user.uid}`);
         const data = response.data;
       
         setWalletPoints(data.totalCredits);
@@ -249,7 +250,7 @@ const handleWalletCheckboxChange = () => {
                 </div>
                 <p>{e.new_price * cartItems[e.id]}</p>
                 <img
-                  src="/LushioFitness/Images/icons/delete.png"
+                  src="/Images/icons/delete.png"
                   onClick={() => handleOpen(e)}
                   alt="Remove"
                   className="cartitems-remove-icon"

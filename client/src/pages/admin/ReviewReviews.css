@@ -33,7 +33,7 @@
     margin-top: 5px;
   }
   
-  button {
+  .review-details button {
     margin-top: 10px;
     background-color: #007bff;
     color: white;
@@ -42,7 +42,7 @@
     cursor: pointer;
   }
   
-  button:hover {
+  .review-details button:hover {
     background-color: #0056b3;
   }
   

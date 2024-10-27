@@ -133,19 +133,19 @@
    .pagination_dot-active {
      background-color: rgb(249, 249, 249);
    }
-   .fluid-button {
-    padding: 14px 40px;
+  
+  .fluid-button {
+    padding: 14px 40px; /* Base padding */
     border: 1px solid transparent;
     background-color: black;
     margin-top: 20px;
-    /* margin-left: 45%; */
     display: block;
-    margin-inline: auto;
+    margin-inline: auto; /* Center button horizontally */
     color: #fffefd;
-    font-size: 16px;
-    font-weight: bold;
+    font-weight: 500;
+    font-size: 16px; /* Base font size */
+   
     font-family: "Montserrat";
-    font-weight: 400;
     text-transform: uppercase;
     cursor: pointer;
     position: relative;
@@ -166,13 +166,18 @@
     z-index: -1; /* Make sure the pseudo-element stays behind the text */
   }
   
-  .fluid-button:hover::before, .fluid-button:active::before {
+  .fluid-button:hover::before,
+  .fluid-button:active::before {
     left: 0;
   }
   
-  .fluid-button:hover,.fluid-button:active {
+  .fluid-button:hover,
+  .fluid-button:active {
     color: #1c1c1c;
   }
+  
+  /* Responsive styles */
+  
   @media(hover:none){
     .fluid-button:active::before {
       left: 0;
@@ -244,3 +249,19 @@
     }
   }
  
+  @media (max-width: 768px) {
+    .fluid-button {
+      padding: 12px 30px; /* Smaller padding for mobile */
+      font-size: 14px; /* Smaller font size for mobile */
+      margin-top: 15px; /* Adjust margin */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .fluid-button {
+      padding: 10px 20px; /* Further reduce padding for small screens */
+      font-size: 12px; /* Even smaller font size for very small screens */
+      margin-top: 10px; /* Adjust margin */
+    }
+  }
+  

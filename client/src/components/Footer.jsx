@@ -72,7 +72,7 @@ const { user } = useContext(UserContext);
           <button>SUBSCRIBE</button>
         </div>
         <div className="quick-links">
-          <img src="/LushioFitness/Images/lushio-text-3.png" alt="" />
+          <img src="/Images/lushio-text-3.png" alt="" />
           <h4>
             Lushio Fitenss is a Activewear clothing brand headquartered in
             Indore. Our goal is not to make products in large quantities, but
@@ -85,21 +85,21 @@ const { user } = useContext(UserContext);
         target="_blank" 
         rel="noopener noreferrer"
       >
-        <img src="/LushioFitness/Images/icons/instagram.svg" alt=""/>
+        <img src="/Images/icons/instagram.svg" alt=""/>
       </a>
       <a 
         href="https://in.linkedin.com/company/lushio-fitness" 
         target="_blank" 
         rel="noopener noreferrer"
       >
-       <img src="/LushioFitness/Images/icons/facebook.svg" alt=""/>
+       <img src="/Images/icons/facebook.svg" alt=""/>
       </a>
       <a 
         href="https://in.linkedin.com/company/lushio-fitness" 
         target="_blank" 
         rel="noopener noreferrer"
       >
-<img src="/LushioFitness/Images/icons/linkedIn.svg" alt=""/>
+<img src="/Images/icons/linkedIn.svg" alt=""/>
       </a>
 
 

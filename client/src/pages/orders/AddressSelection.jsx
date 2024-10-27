@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import PhoneInput from "react-phone-input-2";
-import './address.css';
-import { useAddress } from '../../components/context/AddressContext';
 
-export default function Address() {
+import React, { useState,useEffect} from 'react';
+import PhoneInput from "react-phone-input-2";
+import { useAddress } from '../../components/context/AddressContext';
+import "./order.css"
+export default function AddressSelection() {
   const {
     addressData,
     isChangingDefault,
@@ -15,6 +15,7 @@ export default function Address() {
   } = useAddress();
 
   const [editingIndex, setEditingIndex] = useState(null);
+  const [selectedAddress, setSelectedAddress] = useState(null); // New state
   const [newAddress, setNewAddress] = useState({
     name: '',
     flatDetails: '',
@@ -41,7 +42,12 @@ export default function Address() {
       contactNo: value,
     }));
   };
-
+ useEffect(() => {
+  const defaultAddress = addressData.find((addr) => addr.isDefault);
+  if (defaultAddress) {
+    setSelectedAddress(defaultAddress.id);
+  }
+}, [addressData]);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewAddress((prevAddress) => ({ ...prevAddress, [name]: value }));
@@ -139,7 +145,7 @@ export default function Address() {
   }
 
   return (
-    <div className="address-wrapper">
+    <div className="address-selection-wrapper">
       {isChangingDefault && <div className="spinner-overlay"><div></div></div>}
       <div className="address-title">
         <h2>My Addresses</h2>
@@ -257,34 +263,66 @@ export default function Address() {
         </div>
       )}
 
-      <div className="address-container">
-        {!(isAddingNew || editingIndex !== null) && (
-          <>
-            {addressData.map((info, i) => (
-              <div className="myaddress" key={info.id}>
-                <h4>{info.name}</h4>
-                <span>{info.flatDetails}, {info.areaDetails}, {info.landmark}, {info.townCity}, {info.state}</span>
-                <p>Pin Code: {info.pinCode}</p>
-                <p>Contact Number: {info.contactNo}</p>
-
-                {info.isDefault && <h3 className="default-address">Default Address</h3>}
-                <div className="address-action">
-                  <button onClick={() => handleEdit(i)}>Edit</button>
-                  <button onClick={() => handleRemoveAddress(info.id)}>Remove</button>
-                  {!info.isDefault && <button onClick={() => handleSetDefault(info.id)}>Set as Default</button>}
-                </div>
-              </div>
-            ))}
-            {/* <button onClick={handleAddNewAddress}>Add New Address</button> */}
-            {!(isAddingNew || editingIndex !== null) && (
+        <div className="address-selection-container">
+      
+              {addressData.length === 0 ? (
+                <p>No addresses found. Please add a new address.</p>
+              ) : (
+                !(isAddingNew || editingIndex !== null) && (
+                  <>
+                    {addressData.map((info, i) => (
+                      <label key={info.id} 
+                      // className="address-option" 
+                      htmlFor={`address-${info.id}`}
+                      className={`address-option ${selectedAddress === info.id ? 'selected' : ''}`}
+                      >
+                        <input
+                          type="radio"
+                          id={`address-${info.id}`}
+                          name="selectedAddress"
+                          value={info.id}
+                          checked={selectedAddress === info.id}
+                          onChange={() => setSelectedAddress(info.id)}
+                        />
+                        <div className="address">
+                          <h4>{info.name}</h4>
+                          <span>{info.flatDetails}{", "}{info.areaDetails}{", "}{info.landmark}{", "}{info.townCity}{", "}{info.state}{", "}</span>
+                          <span>Pin Code: {info.pinCode}  </span>
+                          <span>Contact Number: {info.contactNo} </span>
+                          {info.isDefault && <h3 className="default-address">Default Address</h3>}
+                          <div className="address-action">
+                            <button onClick={() => handleEdit(i)}>Edit</button>
+                            <button onClick={() => handleRemoveAddress(info.id)}>Remove</button>
+                            {!info.isDefault && <button onClick={() => handleSetDefault(info.id)}>Set as Default</button>}
+                          </div>
+                        </div>
+                      </label>
+                    ))}
+                  </>
+                )
+              )}
+      
+      
+             
+              {!(isAddingNew || editingIndex !== null) && (
                 <div className="Add-new-address" onClick={handleAddNewAddress}>
                   <span>+</span>
                   <p>Add new addresses</p>
                 </div>
              )}
-          </>
-        )}
-      </div>
+              {selectedAddress && (
+        <div className="selected-address">
+          <h3>Selected Address:</h3>
+          <h4>{addressData.find((address) => address.id === selectedAddress)?.name}</h4>
+          <p>{addressData.find((address) => address.id === selectedAddress)?.flatDetails}</p>
+          <p>{addressData.find((address) => address.id === selectedAddress)?.areaDetails}</p>
+          <p>{addressData.find((address) => address.id === selectedAddress)?.landmark}</p>
+          <p>{addressData.find((address) => address.id === selectedAddress)?.townCity}, {addressData.find((address) => address.id === selectedAddress)?.state}</p>
+          <p>Pin Code: {addressData.find((address) => address.id === selectedAddress)?.pinCode}</p>
+        </div>
+      )}
+           </div> 
     </div>
   );
 }
+

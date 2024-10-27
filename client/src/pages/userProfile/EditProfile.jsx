@@ -17,11 +17,11 @@ function EditProfile() {
     gender: "",
   });
 
-  const convertToISODate = (dateString) => {
-    if (!dateString) return '';
-    const parsedDate = moment(dateString, "DD-MM-YYYY", true);
-    return parsedDate.isValid() ? parsedDate.format("YYYY-MM-DD") : '';
-  };
+  // const convertToISODate = (dateString) => {
+  //   if (!dateString) return '';
+  //   const parsedDate = moment(dateString, "DD-MM-YYYY", true);
+  //   return parsedDate.isValid() ? parsedDate.format("YYYY-MM-DD") : '';
+  // };
   
   const convertToDisplayDate = (dateString) => {
     if (!dateString) return '';

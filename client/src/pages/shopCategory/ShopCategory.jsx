@@ -25,13 +25,13 @@ const filterRef  = useRef();
       document.body.classList.remove('no-scroll');
     }
   };
-  const availableColors = [
-    { name: 'Red', hex: '#FF0000' },
-    { name: 'Black', hex: '#000000' },
-    { name: 'Blue', hex: '#0000FF' },
-    { name: 'Green', hex: '#008000' },
-    { name: 'Yellow', hex: '#FFFF00' }
-  ];
+  // const availableColors = [
+  //   { name: 'Red', hex: '#FF0000' },
+  //   { name: 'Black', hex: '#000000' },
+  //   { name: 'Blue', hex: '#0000FF' },
+  //   { name: 'Green', hex: '#008000' },
+  //   { name: 'Yellow', hex: '#FFFF00' }
+  // ];
   const subCategoryOptions = {
     men: ["Shirts", "Joggers", "Outerwear", "Pants", "Hats/Caps"],
     women: ["Upperwear", "Tops", "Leggings", "Outerwear", "Matching Sets"],
@@ -165,7 +165,7 @@ const filterRef  = useRef();
         
           <img
             className="filter-open"
-            src="./LushioFitness/Images/icons/filter.png"
+            src="/Images/icons/filter.png"
             alt=""
             onClick={()=>openFilter()}
           />
@@ -189,7 +189,7 @@ const filterRef  = useRef();
         <div className="filter-container" ref={filterRef}>
         <img
               className="filter-cross-icon"
-              src="./LushioFitness/Images/icons/cross.png"
+              src="/Images/icons/cross.png"
               alt=""
               onClick={closeFilter}
             />

@@ -3,6 +3,8 @@ import axios from 'axios';
 import { storage } from "../../firebaseConfig"; // Import storage from Firebase config
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import "./AddProducts.css";
+import MediaRenderer from '../../components/MediaRenderer';
+import URLMedia from '../../components/URLMediaRenderer';
 
 const AddProducts = () => {
   const [product, setProduct] = useState({
@@ -22,7 +24,7 @@ const AddProducts = () => {
   });
 
   const [isHeightBased, setIsHeightBased] = useState(false);
-  const [newColor, setNewColor] = useState({ name: '', code: '#000000' });
+  const [newColor, setNewColor] = useState({ name: '', code: '#43da86' });
 
   const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 
@@ -60,7 +62,7 @@ const AddProducts = () => {
           colorOptions: [...product.colorOptions, newColorWithImages]
         });
       }
-      setNewColor({ name: '', code: '#000000', images: [] });
+      setNewColor({ name: '', code: '#43da86', images: [] });
     }
   };
 
@@ -200,7 +202,55 @@ const AddProducts = () => {
       console.error('Error handling image uploads:', error);
     }
   };
-  
+  const handleRemoveImage = (imageUrl, colorName = null, heightType = null) => {
+    setProduct(prev => {
+      if (colorName && heightType) {
+        const heightSection = `${heightType}Height`;
+        const colorIndex = prev[heightSection].colorOptions.findIndex(
+          color => color.name === colorName
+        );
+
+        if (colorIndex !== -1) {
+          const updatedColorOptions = [...prev[heightSection].colorOptions];
+          updatedColorOptions[colorIndex] = {
+            ...updatedColorOptions[colorIndex],
+            images: updatedColorOptions[colorIndex].images.filter(url => url !== imageUrl)
+          };
+
+          return {
+            ...prev,
+            [heightSection]: {
+              ...prev[heightSection],
+              colorOptions: updatedColorOptions
+            }
+          };
+        }
+      } else if (colorName) {
+        const colorIndex = prev.colorOptions.findIndex(
+          color => color.name === colorName
+        );
+
+        if (colorIndex !== -1) {
+          const updatedColorOptions = [...prev.colorOptions];
+          updatedColorOptions[colorIndex] = {
+            ...updatedColorOptions[colorIndex],
+            images: updatedColorOptions[colorIndex].images.filter(url => url !== imageUrl)
+          };
+
+          return {
+            ...prev,
+            colorOptions: updatedColorOptions
+          };
+        }
+      } else {
+        return {
+          ...prev,
+          cardImages: prev.cardImages.filter(url => url !== imageUrl)
+        };
+      }
+      return prev;
+    });
+  };
   // Helper function to ensure proper initialization of product structure
   const initializeProduct = (product) => {
     return {
@@ -243,8 +293,8 @@ const AddProducts = () => {
   return (
     <div className="max-w-4xl mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4">Add New Product</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit} className="add-product-form" >
+        <div className="name-inputs">
           <div>
             <label htmlFor="name" className="block mb-1">Name</label>
             <input
@@ -269,7 +319,7 @@ const AddProducts = () => {
           </div>
         </div>
 
-        <div>
+        <div className="description-container">
           <label htmlFor="description" className="block mb-1">Description</label>
           <textarea
             id="description"
@@ -281,7 +331,7 @@ const AddProducts = () => {
           />
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="price-inputs">
           <div>
             <label htmlFor="price" className="block mb-1">Price</label>
             <input
@@ -290,6 +340,7 @@ const AddProducts = () => {
               type="number"
               value={product.price}
               onChange={handleInputChange}
+              min="0"
               required
               className="w-full p-2 border rounded"
             />
@@ -302,6 +353,7 @@ const AddProducts = () => {
               type="number"
               value={product.gst}
               onChange={handleInputChange}
+                 min="0"
               required
               className="w-full p-2 border rounded"
             />
@@ -312,6 +364,7 @@ const AddProducts = () => {
               id="discount"
               name="discount"
               type="number"
+                 min="0"
               value={product.discount}
               onChange={handleInputChange}
               required
@@ -320,7 +373,7 @@ const AddProducts = () => {
           </div>
         </div>
 
-        <div>
+        <div className="category-inputs">
           <label htmlFor="categories" className="block mb-1">Categories (comma-separated)</label>
           <input
             id="categories"
@@ -328,11 +381,11 @@ const AddProducts = () => {
             value={product.categories}
             onChange={handleCategoryChange}
             required
-            className="w-full p-2 border rounded"
+           
           />
         </div>
 
-        <div>
+        <div className="file-upload-container">
           <label htmlFor="cardImages" className="block mb-1">Card Images (2 required)</label>
           <input
             id="cardImages"
@@ -343,9 +396,19 @@ const AddProducts = () => {
             required
             className="w-full p-2 border rounded"
           />
+               <div className="product-upload-image-preview">
+        {product.cardImages?.map((url, index) => (
+          <div key={index} className="product-upload-image-item">
+          <URLMedia src={url} />
+            <button className="image-remove-button" onClick={() => handleRemoveImage(url)}>
+              Remove
+            </button>
+          </div>
+        ))}
+      </div> 
         </div>
-
-        <div className="flex items-center space-x-2">
+    
+        <div className="height-checkmark-container">
           <input
             id="isHeightBased"
             type="checkbox"
@@ -358,7 +421,7 @@ const AddProducts = () => {
 
         {isHeightBased ? (
           <div className="space-y-4">
-            <div>
+            <div className="height-input">
               <label htmlFor="height" className="block mb-1">Height (cm)</label>
               <input
                 id="height"
@@ -370,10 +433,12 @@ const AddProducts = () => {
                 className="w-full p-2 border rounded"
               />
             </div>
+           
+
             {['above', 'below'].map((heightType) => (
               <div key={heightType}>
                 <h3 className="font-semibold">{heightType === 'above' ? 'Above' : 'Below'} Height</h3>
-                <div className="flex space-x-2 mb-2">
+                <div className="height-based-color-input">
                   <input
                     type="text"
                     placeholder="Color name"
@@ -385,7 +450,7 @@ const AddProducts = () => {
                     type="color"
                     value={newColor.code}
                     onChange={(e) => setNewColor({ ...newColor, code: e.target.value })}
-                    className="p-1 border rounded"
+                    className="color-input"
                   />
                   <button
                     type="button"
@@ -397,18 +462,35 @@ const AddProducts = () => {
                 </div>
                 {product[`${heightType}Height`].colorOptions.map((color) => (
                   <div key={color.name} className="mt-2">
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2 ">
                       <span style={{ color: color.code }} className="w-6 h-6 rounded-full">{color.name}</span>
                     </div>
+                    <div className="file-upload-container">
+                      <label htmlFor='height-above'>Choose images for color</label>
                     <input
                       type="file"
                       multiple
+                      id='height-above'
                       accept="image/*,video/*"
                       onChange={(e) => handleImageUpload(e, color.name, heightType)}
                       className="mt-1 w-full p-2 border rounded"
                     />
+     <div className="product-upload-image-preview">
+        {color.images?.map((url, index) => (
+          <div key={index} className="product-upload-image-item">
+          <URLMedia src={url} />
+            <button className="image-remove-button" onClick={() => handleRemoveImage(url, color.name, heightType)}>
+              Remove
+            </button>
+          </div>
+        ))}
+      </div>
+                    </div>
+                    
+                  
+                    <div className="size-quantity">
                     {sizeOptions.map((size) => (
-                      <div key={size} className="flex items-center mt-1">
+                      <div key={size}>
                         <label className="w-10">{size}</label>
                         <input
                           type="number"
@@ -418,6 +500,8 @@ const AddProducts = () => {
                         />
                       </div>
                     ))}
+                    </div>
+                  
                   </div>
                 ))}
               </div>
@@ -425,9 +509,9 @@ const AddProducts = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            <div>
+            <div className="">
               <h3 className="font-semibold">Colors</h3>
-              <div className="flex space-x-2 mb-2">
+              <div className="normal-color-input">
                 <input
                   type="text"
                   placeholder="Color name"
@@ -439,7 +523,7 @@ const AddProducts = () => {
                   type="color"
                   value={newColor.code}
                   onChange={(e) => setNewColor({ ...newColor, code: e.target.value })}
-                  className="p-1 border rounded"
+                  className="color-input"
                 />
                 <button
                   type="button"
@@ -459,8 +543,20 @@ const AddProducts = () => {
                     onChange={(e) => handleImageUpload(e, color.name)}
                     className="mt-1 w-full p-2 border rounded"
                   />
+                       <div className="product-upload-image-preview">
+        {color.images?.map((url, index) => (
+          <div key={index} className="product-upload-image-item">
+          <URLMedia src={url} />
+            <button className="image-remove-button" onClick={() => handleRemoveImage(url, color.name)}>
+              Remove
+            </button>
+          </div>
+        ))}
+      </div>
+                  <div className="size-quantity">
                   {sizeOptions.map(size => (
-                    <div key={size}>
+                    
+                    <div key={size}> 
                       <label>{size}</label>
                       <input
                         type="number"
@@ -469,12 +565,14 @@ const AddProducts = () => {
                       />
                     </div>
                   ))}
+                  </div>
+                
                 </div>
               ))}
             </div>
           </div>
         )}
-        <button type="submit" className="px-4 py-2 bg-green-500 text-white rounded">Add Product</button>
+        <button type="submit" className="product-submit-button">Add Product</button>
       </form>
     </div>
   );

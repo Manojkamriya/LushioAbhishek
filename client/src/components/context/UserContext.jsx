@@ -56,7 +56,7 @@ const UserProvider = ({ children }) => {
 
   const contextValue = {
     user,
-    // ...other user-related functions
+
   };
 
   return (

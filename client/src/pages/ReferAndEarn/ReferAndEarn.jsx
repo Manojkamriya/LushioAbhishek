@@ -23,7 +23,7 @@ function ReferAndEarn() {
           <h4>they get credits worth ₹100</h4>
           <h6>1 Lushio® Credit = 1 Rupee</h6>
         </div>
-        <img src="./LushioFitness/Images/referEarn.jpg" alt="img" />
+        <img src="/Images/referEarn.jpg" alt="img" />
       </div>
       <div className="referralBlock">
         <p>Tap To Copy Code</p>

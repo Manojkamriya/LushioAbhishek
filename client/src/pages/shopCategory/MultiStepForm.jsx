@@ -16,6 +16,7 @@ const MultiStepForm = () => {
     fitRating: '', // Fit rating
     mediaFiles: [], // Media files
     reviewText: '', // Review text
+   
   });
   const [images, setImages] = useState([]);
   const totalSteps = 5; // Updated to 5 steps (star rating, quality, fit, media, review)
