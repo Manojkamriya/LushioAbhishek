@@ -71,10 +71,8 @@ function EditProfile() {
     try {
       const updatedData = {
         ...userData,
-        // dob: convertToISODate(userData.dob),
-        // doa: convertToISODate(userData.doa),
-        dob: (userData.dob),
-        doa: (userData.doa)
+        dob: (convertToDisplayDate(userData.dob)),
+        doa: (convertToDisplayDate(userData.doa))
       };
       console.log(updatedData);
       await axios.post(`${process.env.REACT_APP_API_URL}/user/details/${user.uid}`, updatedData);

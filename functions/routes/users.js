@@ -87,7 +87,7 @@ router.post("/details/:uid", async (req, res) => {
     if (req.body.doa && doaUpdateCount >= 2) {
       return res.status(400).send("DOA can only be updated twice.");
     }
-
+    console.log(req.body.dob);
     // Prepare updated user data
     const updatedUserData = {
       displayName: req.body.displayName || userData.displayName || null,
