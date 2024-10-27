@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { getUser } from "../../firebaseUtils.js";
 import moment from "moment";
-
+import { UserContext } from "../../components/context/UserContext.jsx";
 // import Checker from "./Checker.jsx"
 // import Test from "./Test.jsx";
 function EditProfile() {
  
-  const [user, setUser] = useState(null);
+// const [user, setUser] = useState(null);
+  const {user} = useContext(UserContext);
   const [userData, setUserData] = useState({
     displayName: "",
     email: "",
@@ -29,18 +29,18 @@ const [isLoading, setIsLoading] = useState(false);
     return parsedDate.isValid() ? parsedDate.format("DD-MM-YYYY") : '';
   };
   
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const currentUser = await getUser(); 
-        setUser(currentUser);
-        console.log(currentUser);
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      }
-    };
-    fetchUser();
-  }, []);
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     try {
+  //       const currentUser = await getUser(); 
+  //       setUser(currentUser);
+  //       console.log(currentUser);
+  //     } catch (error) {
+  //       console.error("Error fetching user:", error);
+  //     }
+  //   };
+  //   fetchUser();
+  // }, []);
 
  
   useEffect(() => {
@@ -82,6 +82,7 @@ const [isLoading, setIsLoading] = useState(false);
       
       alert("Profile updated successfully!");
     } catch (error) {
+      alert("error");
       console.error("Error updating profile:", error);
     }
     finally{
@@ -98,11 +99,9 @@ const [isLoading, setIsLoading] = useState(false);
       [name]: value,
     }));
   };
-  if (isLoading) {
-    return <div className="spinner-overlay"><div></div></div>;
-  }
   return (
     <div className="edit-profile-container">
+         {isLoading && <div className="spinner-overlay"><div></div></div>}
       <p className="user-question">Edit Your Profile</p>
       <form onSubmit={handleSubmit} className="edit-profile">
         <label>Name</label>
