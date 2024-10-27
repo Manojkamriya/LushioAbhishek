@@ -35,7 +35,7 @@ function User() {
         <div className="user-action" onClick={() => { navigate("/user-editProfile") }}>
           <Link to="/user-editProfile">
             <img
-              src="./LushioFitness/Images/icons/editProfile.png"
+              src="/Images/icons/editProfile.png"
               alt="logo"
             />
           </Link>
@@ -48,7 +48,7 @@ function User() {
         <div className="user-action" onClick={() => { navigate("/LushioFitness") }}>
           <Link to="/LushioFitness">
             <img
-              src="./LushioFitness/Images/icons/continueShopping.png"
+              src="/Images/icons/continueShopping.png"
               alt="logo"
             />
           </Link>
@@ -59,7 +59,7 @@ function User() {
         </div>
         <div className="user-action" onClick={() => { navigate("/user/orders") }}>
           <Link to="/user-orders">
-            <img src="./LushioFitness/Images/icons/orders.png" alt="logo" />
+            <img src="/Images/icons/orders.png" alt="logo" />
           </Link>
           <div className="action-details">
             <h3>Your Orders</h3>
@@ -69,7 +69,7 @@ function User() {
 
         <div className="user-action" onClick={() => { navigate("/user-address") }}>
           <Link to="/user-address">
-            <img src="./LushioFitness/Images/icons/address.png" alt="logo" />{" "}
+            <img src="/Images/icons/address.png" alt="logo" />{" "}
           </Link>
 
           <div className="action-details">
@@ -79,7 +79,7 @@ function User() {
         </div>
         <div className="user-action" onClick={() => { navigate("/user-referAndEarn") }}>
           <Link to="/user-referAndEarn">
-            <img src="./LushioFitness/Images/icons/referEarn.png" alt="logo" />{" "}
+            <img src="/Images/icons/referEarn.png" alt="logo" />{" "}
           </Link>
 
           <div className="action-details">
@@ -88,7 +88,7 @@ function User() {
           </div>
         </div>
         <div className="user-action" onClick={handleLogout}>
-          <img src="./LushioFitness/Images/icons/logout.png" alt="Sign Out" />
+          <img src="/Images/icons/logout.png" alt="Sign Out" />
           <div className="action-details">
             <h3>Sign Out</h3>
             <p>Sign out from your account</p>

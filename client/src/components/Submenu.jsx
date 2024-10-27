@@ -41,7 +41,7 @@ function Submenu({ menuRef, closeMenu }) {
         { label: "Best Seller", link: "/men" },
         { label: "Sale", link: "/men" },
       ],
-      imageSrc: "./LushioFitness/Images/card-image-6.webp",
+      imageSrc: "/Images/card-image-6.webp",
       description: "New Launch for him",
     },
     Women: {
@@ -57,7 +57,7 @@ function Submenu({ menuRef, closeMenu }) {
         { label: "Best Seller", link: "/women" },
         { label: "Sale", link: "/women" },
       ],
-      imageSrc: "./LushioFitness/Images/card-image-2.webp",
+      imageSrc: "/Images/card-image-2.webp",
       description: "New Launch for her",
     },
     Accessories: {
@@ -72,7 +72,7 @@ function Submenu({ menuRef, closeMenu }) {
         { label: "Best Seller", link: "/accessories" },
         { label: "Sale", link: "/accessories" },
       ],
-      imageSrc: "./LushioFitness/Images/assets/product_303.webp",
+      imageSrc: "/Images/assets/product_303.webp",
       description: "New Launch",
     },
   };
@@ -82,7 +82,7 @@ function Submenu({ menuRef, closeMenu }) {
       <div className="responsive-navbar">
         <img
           className="cross-icon"
-          src="./LushioFitness/Images/icons/cross_icon.svg"
+          src="/Images/icons/cross_icon.svg"
           alt=""
           onClick={closeMenu}
         />

@@ -250,7 +250,7 @@ const handleWalletCheckboxChange = () => {
                 </div>
                 <p>{e.new_price * cartItems[e.id]}</p>
                 <img
-                  src="/LushioFitness/Images/icons/delete.png"
+                  src="/Images/icons/delete.png"
                   onClick={() => handleOpen(e)}
                   alt="Remove"
                   className="cartitems-remove-icon"

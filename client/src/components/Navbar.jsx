@@ -56,23 +56,23 @@ function Navbar() {
     <nav id="navbar">
       <div className="navbar">
         <div className="logo">
-          <Link to="/LushioFitness">
-            <img src="/LushioFitness/Images/logo.png" alt="" />
+          <Link to="/">
+            <img src="/Images/logo.png" alt="" />
           </Link>
         </div>
         <div className="left-icons">
           <img
             className="menu-open"
-            src="/LushioFitness/Images/icons/menu_open_2.png"
+            src="/Images/icons/menu_open_2.png"
             alt=""
             onClick={openMenu}
           />
           <Link to={user ? "/wallet" : "/login"}>
-            <img src="/LushioFitness/Images/icons/wallet.png" alt="" />
+            <img src="/Images/icons/wallet.png" alt="" />
           </Link>
           <img
             className="search-icon"
-            src="/LushioFitness/Images/icons/search-icon-2.png"
+            src="/Images/icons/search-icon-2.png"
             alt=""
             onClick={openSearch}
           />
@@ -85,14 +85,14 @@ function Navbar() {
           onMouseLeave={handleMouseLeave}
         >
           <Link to="/men">Men</Link>{" "}
-          <img src="/LushioFitness/Images/icons/dropdown2.png" alt="" />
+          <img src="/Images/icons/dropdown2.png" alt="" />
           {activeDropdown === "men" && (
             <Dropdown
             setActiveDropdown={setActiveDropdown}
               category="men"
               topProducts={["Upperwear", "Joggers", "Outerwear", "Pants", "Hats/Caps"]}
               featured={["New Drop", "Coming Soon", "Restock", "Best Seller", "Sale"]}
-              imageSrc="/LushioFitness/Images/card-image-6.webp"
+              imageSrc="/Images/card-image-6.webp"
               launchTitle="NEW LAUNCH FOR MEN"
             />
           )}
@@ -102,14 +102,14 @@ function Navbar() {
           onMouseLeave={handleMouseLeave}
         >
           <Link to="/women">Women</Link>{" "}
-          <img src="/LushioFitness/Images/icons/dropdown2.png" alt="" />
+          <img src="/Images/icons/dropdown2.png" alt="" />
           {activeDropdown === "women" && (
             <Dropdown
             setActiveDropdown={setActiveDropdown}
               category="women"
               topProducts={["Upperwear", "Tops", "Leggings", "Outerwear", "Matching Sets"]}
               featured={["New Drop", "Coming Soon", "Restock", "Best Seller", "Sale"]}
-              imageSrc="/LushioFitness/Images/card-image-2.webp"
+              imageSrc="./Images/card-image-2.webp"
               launchTitle="NEW LAUNCH FOR WOMEN"
             />
           )}
@@ -119,14 +119,14 @@ function Navbar() {
           onMouseLeave={handleMouseLeave}
         >
           <Link to="/accessories">Accessories</Link>{" "}
-          <img src="/LushioFitness/Images/icons/dropdown2.png" alt="" />
+          <img src="/Images/icons/dropdown2.png" alt="" />
           {activeDropdown === "accessories" && (
             <Dropdown
             setActiveDropdown={setActiveDropdown}
               category="accessories"
               topProducts={["Gloves", "Shakers", "Wrist Band", "Deadlift Band"]}
               featured={["New Drop", "Coming Soon", "Restock", "Best Seller", "Sale"]}
-              imageSrc="/LushioFitness/Images/shopping.webp"
+              imageSrc="/Images/shopping.webp"
               launchTitle="NEW LAUNCH"
             />
           )}
@@ -137,27 +137,27 @@ function Navbar() {
 <input  type="text"
     name="productName"
     placeholder="search by product category or collection" />
-      <img src="/LushioFitness/Images/icons/search-icon.png" alt="" />
+      <img src="/Images/icons/search-icon.png" alt="" />
     </div>
         <Link to="/LushioFitness" className="lushio-text">
-          <img src="/LushioFitness/Images/lushio-text-3.png" alt="" />
+          <img src="/Images/lushio-text-3.png" alt="" />
         </Link>
         <div className="icons">
           
           <Link  to={user ? "/wishlist" : "/login"}>
-            <img src="/LushioFitness/Images/icons/wishlist.png" alt="" />
+            <img src="/Images/icons/wishlist.png" alt="" />
             { user && getWishlistItemCount() > 0 &&  <span>{getWishlistItemCount()}</span>}
           </Link>
           <Link  to={user ? "/cart" : "/login"}>
-            <img src="/LushioFitness/Images/icons/cart.png" alt="" />
+            <img src="/Images/icons/cart.png" alt="" />
           { user && getCartItemCount() > 0 &&  <span>{getCartItemCount()}</span>}
           </Link>
           <Link className="wallet-icon" to={user ? "/wallet" : "/login"}>
-            <img src="/LushioFitness/Images/icons/wallet.png" alt="" />
+            <img src="/Images/icons/wallet.png" alt="" />
           </Link>
 
           <Link to={user ? "/user" : "/login"}>
-  <img src="/LushioFitness/Images/icons/profile.png" alt="Profile" />
+  <img src="/Images/icons/profile.png" alt="Profile" />
 </Link>
         </div>
        

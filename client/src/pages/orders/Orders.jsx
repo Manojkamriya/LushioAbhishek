@@ -14,7 +14,7 @@ export default function Orders() {
       shippingAddress: "73, PNT Colony, Indore, Madhya Pradesh, 452003",
       deliveryDate: "14 Jul, 2024",
       status: "Delivered", // Possible values: "Delivered", "Shipped", "On the Way"
-      imgUrl: "/LushioFitness/Images/assets/product_102.webp",
+      imgUrl: "/Images/assets/product_102.webp",
     },
     {
       id: "#87834234",
@@ -26,7 +26,7 @@ export default function Orders() {
       shippingAddress: "22, MG Road, Mumbai, Maharashtra, 400001",
       deliveryDate: "20 Jul, 2024",
       status: "Shipped",
-      imgUrl: "/LushioFitness/Images/assets/product_103.webp",
+      imgUrl: "/Images/assets/product_103.webp",
     },
     {
       id: "#34211212",
@@ -38,7 +38,7 @@ export default function Orders() {
       shippingAddress: "19, JP Nagar, Bengaluru, Karnataka, 560078",
       deliveryDate: "26 Jul, 2024",
       status: "On the Way",
-      imgUrl: "/LushioFitness/Images/assets/product_104.webp",
+      imgUrl: "/Images/assets/product_104.webp",
     },
   ];
 
@@ -67,7 +67,7 @@ export default function Orders() {
                   Shipping Address: {order.shippingAddress}
                 </div>
                 <div className="order-delivery">
-                  <img src="/LushioFitness/Images/delivery.png" alt="Delivery icon" />{" "}
+                  <img src="/Images/delivery.png" alt="Delivery icon" />{" "}
                   <span>{order.deliveryDate}</span>
                 </div>
                 <span>{order.status.toUpperCase()}</span>

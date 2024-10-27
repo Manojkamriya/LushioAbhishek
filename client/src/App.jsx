@@ -66,7 +66,7 @@ function App() {
         <BrowserRouter>
           <Navbar />
           <Routes>
-            <Route path="/LushioFitness" element={<Home />} />
+            <Route path="/" element={<Home />} />
             <Route path="/:category/:subCategory" element={<CategoryPage />} /> 
             <Route path="/men" element={<ShopCategory banner={men_banner} category="men" />} />
             <Route path="/women" element={<ShopCategory banner={women_banner} category="women" />} />

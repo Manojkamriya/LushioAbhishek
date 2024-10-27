@@ -165,7 +165,7 @@ const filterRef  = useRef();
         
           <img
             className="filter-open"
-            src="./LushioFitness/Images/icons/filter.png"
+            src="/Images/icons/filter.png"
             alt=""
             onClick={()=>openFilter()}
           />
@@ -189,7 +189,7 @@ const filterRef  = useRef();
         <div className="filter-container" ref={filterRef}>
         <img
               className="filter-cross-icon"
-              src="./LushioFitness/Images/icons/cross.png"
+              src="/Images/icons/cross.png"
               alt=""
               onClick={closeFilter}
             />
