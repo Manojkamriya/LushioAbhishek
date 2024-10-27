@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, {useContext } from "react";
 import { Link } from "react-router-dom";
 import { auth } from "../../firebaseConfig.js";
 import { signOut } from "firebase/auth";
@@ -46,7 +46,7 @@ function User() {
         </div>
 
         <div className="user-action" onClick={() => { navigate("/LushioFitness") }}>
-          <Link to="/LushioFitness">
+          <Link to="/">
             <img
               src="/Images/icons/continueShopping.png"
               alt="logo"

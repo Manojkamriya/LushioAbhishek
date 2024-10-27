@@ -70,6 +70,9 @@
     }
 }
 @media(max-width: 500px){
+    .user-greet{
+        margin-top: 40px;
+    }
     .user-action-container{
        margin-inline: 4%;
       grid-gap: 10px;
@@ -82,10 +85,10 @@
 
     }
 }
+
 .edit-profile-container {
     background-color: #f5f5f5;
     width: 100%;
-    /* min-height: 100vh; */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -96,15 +99,18 @@
 .edit-profile {
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: 90%; /* Make width responsive */
     max-width: 400px;
     background-color: white;
     border: 1px solid #e0e0e0;
     border-radius: 12px;
-    padding: 25px;
+    padding: 20px; /* Reduce padding on smaller screens */
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.3s ease;
 }
+
+/* Adjust padding and shadow for smaller screens */
+
 
 .edit-profile:hover {
     box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.15);
@@ -139,7 +145,20 @@
     border-color: #333;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
-
+@media (max-width: 600px) {
+    .edit-profile {
+        padding: 15px;
+        box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .edit-profile input[type="text"],
+.edit-profile input[type="email"],
+.edit-profile input[type="tel"], 
+.edit-profile input[type="date"] {
+   padding: 8px;
+   font-size: 12px;
+   border-radius: 4px;
+}
+}
 .radio-input {
     display: flex;
     flex-direction: column;
@@ -187,9 +206,4 @@
     }
 }
 
-.test{
-    height: 300px;
-    font-size: 10cqi;
-background-color: #f0c900;
-container-type: inline;
-}
+

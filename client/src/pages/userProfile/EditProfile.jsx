@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { getUser } from "../../firebaseUtils.js";
 import moment from "moment";
-
+import { UserContext } from "../../components/context/UserContext.jsx";
 // import Checker from "./Checker.jsx"
 // import Test from "./Test.jsx";
 function EditProfile() {
  
-  const [user, setUser] = useState(null);
+// const [user, setUser] = useState(null);
+  const {user} = useContext(UserContext);
   const [userData, setUserData] = useState({
     displayName: "",
     email: "",
@@ -16,7 +16,7 @@ function EditProfile() {
     doa: "",
     gender: "",
   });
-
+const [isLoading, setIsLoading] = useState(false);
   // const convertToISODate = (dateString) => {
   //   if (!dateString) return '';
   //   const parsedDate = moment(dateString, "DD-MM-YYYY", true);
@@ -29,22 +29,23 @@ function EditProfile() {
     return parsedDate.isValid() ? parsedDate.format("DD-MM-YYYY") : '';
   };
   
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const currentUser = await getUser(); 
-        setUser(currentUser);
-        console.log(currentUser);
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      }
-    };
-    fetchUser();
-  }, []);
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     try {
+  //       const currentUser = await getUser(); 
+  //       setUser(currentUser);
+  //       console.log(currentUser);
+  //     } catch (error) {
+  //       console.error("Error fetching user:", error);
+  //     }
+  //   };
+  //   fetchUser();
+  // }, []);
 
  
   useEffect(() => {
     if (user) {
+      setIsLoading(true);
       const fetchUserData = async () => {
         try {
         // const response = await axios.get(`http://127.0.0.1:5001/lushio-fitness/us-central1/api/user/details/${user.uid}`);
@@ -62,12 +63,14 @@ function EditProfile() {
         }
       };
       fetchUserData();
+      setIsLoading(false);
     }
   }, [user]);
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const updatedData = {
         ...userData,
@@ -79,7 +82,11 @@ function EditProfile() {
       
       alert("Profile updated successfully!");
     } catch (error) {
+      alert("error");
       console.error("Error updating profile:", error);
+    }
+    finally{
+      setIsLoading(false);
     }
   };
 
@@ -92,9 +99,9 @@ function EditProfile() {
       [name]: value,
     }));
   };
-
   return (
     <div className="edit-profile-container">
+         {isLoading && <div className="spinner-overlay"><div></div></div>}
       <p className="user-question">Edit Your Profile</p>
       <form onSubmit={handleSubmit} className="edit-profile">
         <label>Name</label>

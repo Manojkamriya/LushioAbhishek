@@ -130,7 +130,7 @@ const AdminPanel = () => {
                 setIsLoggedIn(true);
             } else {
                 alert("You are not authorized to access the admin panel.");
-                navigate("/LushioFitness"); // Redirect to home page if not authorized
+                navigate("/"); // Redirect to home page if not authorized
             }
         } catch (error) {
             console.error("Error verifying OTP:", error);

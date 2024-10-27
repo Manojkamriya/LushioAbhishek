@@ -13,7 +13,7 @@ function EmptyWishList() {
     <h3>Hey! your wishlist is empty.
     </h3>
     <p>Save your favourites here and make them yours soon!</p>
-    <button onClick={()=>navigate("/LushioFitness")}>Shop Now</button>
+    <button onClick={()=>navigate("/")}>Shop Now</button>
    
   </div>
     

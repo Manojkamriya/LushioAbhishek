@@ -20,7 +20,7 @@ const PaymentMethod = () => {
             checked={selectedPaymentMethod === 'phonepe'}
             onChange={handlePaymentMethodChange}
           />
-          <span className="icon"><img src="/Images/icons/cod.png"/></span>
+          <span className="icon"><img src="/Images/icons/cod.png" alt=''/></span>
           <span>PhonePe</span>
         </label>
         <label className={`payment-option ${selectedPaymentMethod === 'razorpay' ? 'selected' : ''}`}>

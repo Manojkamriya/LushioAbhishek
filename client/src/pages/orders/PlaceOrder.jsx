@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { ShopContext } from "../../components/context/ShopContext";
 import AddressSelection from "./AddressSelection"
-import PaymentMethod from "./PaymentMethod";
+// import PaymentMethod from "./PaymentMethod";
 function PlaceOrder() {
   const { getTotalCartAmount } = useContext(ShopContext);
   return (
