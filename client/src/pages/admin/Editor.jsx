@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { storage } from "../../firebaseConfig";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-
+import MediaRenderer from '../../components/MediaRenderer';
+import URLMedia from "../../components/URLMediaRenderer";
 const Editor = ({ product: initialProduct }) => {
   const [product, setProduct] = useState(null);
   const [isHeightBased, setIsHeightBased] = useState(false);
@@ -116,6 +117,7 @@ const Editor = ({ product: initialProduct }) => {
         const snapshot = await uploadBytesResumable(storageRef, file);
         const downloadURL = await getDownloadURL(snapshot.ref);
         return downloadURL;
+        
       } catch (error) {
         console.error('Error uploading image:', error);
         return null;
@@ -231,9 +233,9 @@ const Editor = ({ product: initialProduct }) => {
   const MediaPreview = ({ url, onRemove }) => {
     const isVideo = url.toLowerCase().match(/\.(mp4|webm|ogg)$/);
     return (
-      <div className="relative inline-block m-2">
+      <div className="relative inline-block m-2 image-item">
         {isVideo ? (
-          <video width="200" height="200" controls className="rounded">
+          <video width="200" height="200" className="rounded" autoPlay muted>
             <source src={url} type={`video/${url.split('.').pop()}`} />
             Your browser does not support the video tag.
           </video>
@@ -250,7 +252,8 @@ const Editor = ({ product: initialProduct }) => {
       </div>
     );
   };
-
+ 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -365,19 +368,31 @@ const Editor = ({ product: initialProduct }) => {
             id="cardImages"
             type="file"
             multiple
-            accept="image/*"
+           
+             accept="image/*, video/*"
             onChange={(e) => handleImageUpload(e)}
             className="w-full p-2 border rounded"
           />
-          <div className="flex flex-wrap mt-2">
+          {/* <div className="flex flex-wrap mt-2 image-item" >
             {product.cardImages?.map((url, index) => (
-              <MediaPreview
-                key={index}
-                url={url}
-                onRemove={() => handleRemoveImage(url)}
-              />
+              // <MediaPreview
+              //   key={index}
+              //   url={url}
+              //   onRemove={() => handleRemoveImage(url)}
+             // />
+             <URLMedia src={url}/>
             ))}
+          </div> */}
+          <div className="product-upload-image-preview">
+        {product.cardImages?.map((url, index) => (
+          <div key={index} className="product-upload-image-item">
+          <URLMedia src={url} />
+            <button className="image-remove-button" onClick={() => handleRemoveImage(url)}>
+              Remove
+            </button>
           </div>
+        ))}
+      </div>
         </div>
 
         <div className="flex items-center space-x-2">
@@ -446,15 +461,17 @@ const Editor = ({ product: initialProduct }) => {
                       onChange={(e) => handleImageUpload(e, color.name, heightType)}
                       className="mt-2 w-full p-2 border rounded"
                     />
-                    <div className="flex flex-wrap mt-2">
-                      {color.images?.map((url, index) => (
-                        <MediaPreview
-                          key={index}
-                          url={url}
-                          onRemove={() => handleRemoveImage(url, color.name, heightType)}
-                        />
-                      ))}
-                    </div>
+                 
+                    <div className="product-upload-image-preview">
+        {color.images?.map((url, index) => (
+          <div key={index} className="product-upload-image-item">
+          <URLMedia src={url} />
+            <button className="image-remove-button" onClick={() => handleRemoveImage(url, color.name, heightType)}>
+              Remove
+            </button>
+          </div>
+        ))}
+      </div>
                     <div className="grid grid-cols-4 gap-2 mt-4">
                       {sizeOptions.map((size) => (
                         <div key={size} className="space-y-1">
@@ -514,7 +531,7 @@ const Editor = ({ product: initialProduct }) => {
                   onChange={(e) => handleImageUpload(e, color.name)}
                   className="mt-2 w-full p-2 border rounded"
                 />
-                <div className="flex flex-wrap mt-2">
+                {/* <div className="flex flex-wrap mt-2">
                   {color.images?.map((url, index) => (
                     <MediaPreview
                       key={index}
@@ -522,7 +539,17 @@ const Editor = ({ product: initialProduct }) => {
                       onRemove={() => handleRemoveImage(url, color.name)}
                     />
                   ))}
-                </div>
+                </div> */}
+                <div className="product-upload-image-preview">
+        {color.images?.map((url, index) => (
+          <div key={index} className="product-upload-image-item">
+          <URLMedia src={url} />
+            <button className="image-remove-button" onClick={() => handleRemoveImage(url, color.name)}>
+              Remove
+            </button>
+          </div>
+        ))}
+      </div>
                 <div className="grid grid-cols-4 gap-2 mt-4">
                   {sizeOptions.map((size) => (
                     <div key={size} className="space-y-1">
