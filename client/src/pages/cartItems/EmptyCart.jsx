@@ -8,7 +8,7 @@ function EmptyCart() {
     <div className="empty-cart">
       <img src="/Images/emptyCart.png" alt="" />
       <p>Nothing in the bag</p>
-      <button onClick={() => navigate("/LushioFitness")}>Shop Now</button>
+      <button onClick={() => navigate("/")}>Shop Now</button>
     </div>
   );
 }

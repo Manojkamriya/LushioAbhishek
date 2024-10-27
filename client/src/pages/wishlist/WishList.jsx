@@ -31,7 +31,8 @@ function WishList() {
   return (
     <>
     
-    <h3 className="wishlist-title">Wishlist</h3>
+   
+    <h3 className="wishlist-title">Your Wishlist</h3>
 
     <div className="wishlist-container">
       {paginatedProducts.map((e, id) => (

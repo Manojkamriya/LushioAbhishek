@@ -16,7 +16,7 @@ function EditProfile() {
     doa: "",
     gender: "",
   });
-
+const [isLoading, setIsLoading] = useState(false);
   // const convertToISODate = (dateString) => {
   //   if (!dateString) return '';
   //   const parsedDate = moment(dateString, "DD-MM-YYYY", true);
@@ -45,6 +45,7 @@ function EditProfile() {
  
   useEffect(() => {
     if (user) {
+      setIsLoading(true);
       const fetchUserData = async () => {
         try {
         // const response = await axios.get(`http://127.0.0.1:5001/lushio-fitness/us-central1/api/user/details/${user.uid}`);
@@ -62,12 +63,14 @@ function EditProfile() {
         }
       };
       fetchUserData();
+      setIsLoading(false);
     }
   }, [user]);
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const updatedData = {
         ...userData,
@@ -83,6 +86,9 @@ function EditProfile() {
     } catch (error) {
       console.error("Error updating profile:", error);
     }
+    finally{
+      setIsLoading(false);
+    }
   };
 
   // Handle form input changes
@@ -94,7 +100,9 @@ function EditProfile() {
       [name]: value,
     }));
   };
-
+  if (isLoading) {
+    return <div className="spinner-overlay"><div></div></div>;
+  }
   return (
     <div className="edit-profile-container">
       <p className="user-question">Edit Your Profile</p>

@@ -139,7 +139,7 @@ function Navbar() {
     placeholder="search by product category or collection" />
       <img src="/Images/icons/search-icon.png" alt="" />
     </div>
-        <Link to="/LushioFitness" className="lushio-text">
+        <Link to="/" className="lushio-text">
           <img src="/Images/lushio-text-3.png" alt="" />
         </Link>
         <div className="icons">

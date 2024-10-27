@@ -11,13 +11,13 @@
 }
 /* Styling the Wishlist h3 */
 
-.wishlist-title{
-  font-weight: 600;
-  font-size: 52px;
-  margin-bottom: 5px;
-  color: #333; /* Base color */
-  font-weight: bold; /* Make it bold */
-  margin-left: 3%;
+.wishlist-title {
+  font-weight: bold;
+  font-size: clamp(28px, 5vw, 52px);
+  margin-bottom: clamp(5px, 1vw, 15px);
+  color: #333;
+  margin-left: clamp(2%, 4vw, 3%);
+ 
 }
 
 
