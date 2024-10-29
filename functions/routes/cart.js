@@ -52,7 +52,7 @@ router.delete("/delete/:cartItemId", async (req, res) => {
   }
 });
 
-// Get cart items
+// Get cart items with product details
 router.get("/:uid", async (req, res) => {
   try {
     const {uid} = req.params;
@@ -64,14 +64,26 @@ router.get("/:uid", async (req, res) => {
     const cartRef = admin.firestore().collection("users").doc(uid).collection("cart");
     const snapshot = await cartRef.get();
 
-    const cartItems = [];
-    snapshot.forEach((doc) => {
-      cartItems.push({id: doc.id, ...doc.data()});
-    });
+    const cartItems = await Promise.all(snapshot.docs.map(async (doc) => {
+      const cartItem = {id: doc.id, ...doc.data()};
+
+      // Fetch product details using the productId from the cart item
+      const productRef = admin.firestore().collection("products").doc(cartItem.productId);
+      const productSnapshot = await productRef.get();
+
+      // Attach product data if it exists
+      if (productSnapshot.exists) {
+        cartItem.product = {id: productSnapshot.id, ...productSnapshot.data()};
+      } else {
+        cartItem.product = null; // handle case where product does not exist
+      }
+
+      return cartItem;
+    }));
 
     res.status(200).json(cartItems);
   } catch (error) {
-    console.error("Error fetching cart items:", error);
+    console.error("Error fetching cart items with product details:", error);
     res.status(500).json({error: "Failed to fetch cart items"});
   }
 });

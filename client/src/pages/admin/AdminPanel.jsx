@@ -105,7 +105,6 @@ const AdminPanel = () => {
             
             // Log user details
             console.log("User authenticated:", user);
-    
             const q = query(
                 collection(db, "employees"),
                 where("phone", "==", `+${phoneNumber}`),

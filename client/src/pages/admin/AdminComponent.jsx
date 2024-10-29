@@ -20,8 +20,7 @@ const AdminComponent = () => {
     if (confirmLogout) {
       signOut(auth)
         .then(() => {
-          alert("Logged out Successfully!");
-          window.location.href = "/LushioFitness";
+          window.location.href = "/";
         })
         .catch((error) => {
           console.error("Error signing out:", error);
