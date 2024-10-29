@@ -14,7 +14,6 @@ function EmptyWishList() {
     </h3>
     <p>Save your favourites here and make them yours soon!</p>
     <button onClick={()=>navigate("/")}>Shop Now</button>
-   
   </div>
     
   )

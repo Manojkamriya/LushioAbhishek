@@ -25,7 +25,7 @@ const AddProducts = () => {
 
   const [isHeightBased, setIsHeightBased] = useState(false);
   const [newColor, setNewColor] = useState({ name: '', code: '#43da86' });
-
+const [isUploading, setIsUploading] = useState(false);
   const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 
   const handleInputChange = (e) => {
@@ -104,6 +104,7 @@ const AddProducts = () => {
   };
 
   const handleImageUpload = async (e, colorName = null, heightType = null) => {
+    setIsUploading(true); // Set isUploading to true at the start of the upload process
     const files = Array.from(e.target.files);
     console.log(`Starting upload for ${heightType || 'regular'} height, color: ${colorName || 'none'}`);
     
@@ -201,8 +202,12 @@ const AddProducts = () => {
     } catch (error) {
       console.error('Error handling image uploads:', error);
     }
+    finally {
+      setIsUploading(false); // Set isUploading to false after the upload process is complete
+    }
   };
   const handleRemoveImage = (imageUrl, colorName = null, heightType = null) => {
+    setIsUploading(true);
     setProduct(prev => {
       if (colorName && heightType) {
         const heightSection = `${heightType}Height`;
@@ -248,8 +253,10 @@ const AddProducts = () => {
           cardImages: prev.cardImages.filter(url => url !== imageUrl)
         };
       }
+
       return prev;
     });
+    setIsUploading(false);
   };
   // Helper function to ensure proper initialization of product structure
   const initializeProduct = (product) => {
@@ -277,7 +284,7 @@ const AddProducts = () => {
       console.log('Submitting product data:', productData);
   
       const response = await axios.post(
-        'http://127.0.0.1:5001/lushio-fitness/us-central1/api/products/addProduct',
+        `${process.env.REACT_APP_API_URL}/products/addProduct`,
         productData
       );
       
@@ -300,6 +307,7 @@ const AddProducts = () => {
             <input
               id="name"
               name="name"
+             
               value={product.name}
               onChange={handleInputChange}
               required
@@ -463,14 +471,15 @@ const AddProducts = () => {
                 {product[`${heightType}Height`].colorOptions.map((color) => (
                   <div key={color.name} className="mt-2">
                     <div className="flex items-center space-x-2 ">
-                      <span style={{ color: color.code }} className="w-6 h-6 rounded-full">{color.name}</span>
+                      <span style={{ color: color.code }} className="w-6 h-6 rounded-full">{color.name}{", "}{color.code}</span>
                     </div>
                     <div className="file-upload-container">
-                      <label htmlFor='height-above'>Choose images for color</label>
+                      <label  htmlFor={`height-${heightType}-${color.name}`}>Choose images for color</label>
                     <input
                       type="file"
                       multiple
-                      id='height-above'
+                      // id='height-above'
+                      id={`height-${heightType}-${color.name}`}
                       accept="image/*,video/*"
                       onChange={(e) => handleImageUpload(e, color.name, heightType)}
                       className="mt-1 w-full p-2 border rounded"
@@ -503,7 +512,7 @@ const AddProducts = () => {
                     </div>
                   
                   </div>
-                ))}
+                )).reverse()}
               </div>
             ))}
           </div>
@@ -536,7 +545,10 @@ const AddProducts = () => {
               {product.colorOptions.map(color => (
                 <div key={color.name}>
                   <h4 className="flex items-center space-x-2"><span style={{ color: color.code }} className="w-6 h-6 rounded-full">{color.name}</span></h4>
+                  <div className="file-upload-container">
+                    <label  htmlFor={`file-upload-${color.name}`}>Choose Media</label>
                   <input
+                  id={`file-upload-${color.name}`}
                     type="file"
                     multiple
                     accept="image/*,video/*"
@@ -553,6 +565,8 @@ const AddProducts = () => {
           </div>
         ))}
       </div>
+                  </div>
+              
                   <div className="size-quantity">
                   {sizeOptions.map(size => (
                     
@@ -568,11 +582,11 @@ const AddProducts = () => {
                   </div>
                 
                 </div>
-              ))}
+              )).reverse()}
             </div>
           </div>
         )}
-        <button type="submit" className="product-submit-button">Add Product</button>
+        <button type="submit" className="product-submit-button" disabled={isUploading}>Add Product</button>
       </form>
     </div>
   );

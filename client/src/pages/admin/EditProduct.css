@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     height: calc(100vh - 60px);
-    width: 90%;
+    width: 86%;
     padding: 1rem;
     background-color: white;
     overflow: hidden;
@@ -27,6 +27,7 @@
 
 .EditProduct-content {
     display: flex;
+    flex-direction: column;
     height: 100%;
     overflow: hidden;
 }
@@ -63,12 +64,15 @@
 
 .EditProduct-buttonsContainer {
     display: flex;
+    justify-content: flex-start;
+    width: 200px;
     gap: 0.5rem;
 }
 
 .EditProduct-editButton {
     background-color: blue;
     color: white;
+    width: 90px;
     border: none;
     padding: 0.5rem;
     border-radius: 4px;
@@ -88,3 +92,49 @@
     flex: 1;
     overflow-y: auto;
 }
+.editor-btn-container{
+    display: flex;
+    justify-content: flex-start;
+    gap: 40px;
+margin-top: 20px;
+}
+ .editor-btn-container button, .save-update-change{
+    width: 200px;
+    height: 50px;
+    background-color: #1c1c1c;
+    color: white;
+}
+/* EditProduct.css */
+
+.editor-close-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+   
+    background-image: linear-gradient(
+    to right,
+    rgb(226 52 43) 0%,
+    rgb(255 106 28) 100%
+  );
+    color: #fff;
+    border: none;
+    margin-bottom: 25px;
+    margin-left: 25px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 10px; /* Rounded corners */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  }
+  
+  .editor-close-btn:hover {
+   
+    transform: scale(1.05); /* Slight zoom effect */
+  }
+  
+  .editor-close-icon {
+    font-size: 1.2rem; /* Size of the icon */
+  }
+  

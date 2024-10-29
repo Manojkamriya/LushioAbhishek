@@ -30,7 +30,7 @@ let all_product = [
     image: p1_img,
     subCategory: "upperwear",
     color:"black",
-    new_price: 500,
+    new_price: 5,
     old_price: 800,
    
     get discount() {

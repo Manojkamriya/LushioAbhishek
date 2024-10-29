@@ -16,8 +16,8 @@ export default function Wallet() {
     if (user) {
       const fetchUserData = async () => {
         try {
-       //  const response = await axios.get("http://127.0.0.1:5001/lushio-fitness/us-central1/api/wallet/3wPzJd8BNYY5jjgihXLH1nLpJsE3");
-         const response = await axios.get(`https://us-central1-lushio-fitness.cloudfunctions.net/api/wallet/${user.uid}`);
+     
+         const response = await axios.get(`${process.env.REACT_APP_API_URL}/wallet/${user.uid}`);
       const data = response.data;
       setUserCoins(
         data
@@ -49,8 +49,9 @@ export default function Wallet() {
       </div>
       <div className="my-wallet">
         <div className="totalblock">
-          <p>{userCoins?.totalCredits}</p>
+        
           <p>Total wallet points</p>
+          <p>{userCoins?.totalCredits}</p>
         </div>
         <div className="credit-block">
       <div className="heading-row">
