@@ -1,15 +1,54 @@
-import React, {useContext } from "react";
+import React, {useContext,useState, useEffect } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
 import { auth } from "../../firebaseConfig.js";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../components/context/UserContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./user.css";
 
 function User() {
   const { user } = useContext(UserContext);
+  
+  const [userName, setUserName] = useState("");
+  useEffect(() => {
+    
+    const fetchUserData = async () => {
+      try {
+     
+       const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/name/${user.uid}`);
+     
+  setUserName(response.data.name);
+      
+        console.log("Fetched user data:", response.data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+    fetchUserData();
+  
+}, []);
   const navigate = useNavigate();
 
+  // const handleLogout = () => {
+  //   // Add confirmation dialog
+  //   const confirmLogout = window.confirm("Are you sure you want to sign out?");
+    
+  //   if (confirmLogout) {
+  //     signOut(auth)
+  //       .then(() => {
+  //         alert("Logged out Successfully!");
+       
+  //         window.location.href = "/";
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error signing out:", error);
+  //         alert("Couldn't Log out, please try again.");
+  //       });
+  //   }
+  // };
   const handleLogout = () => {
     // Add confirmation dialog
     const confirmLogout = window.confirm("Are you sure you want to sign out?");
@@ -17,19 +56,40 @@ function User() {
     if (confirmLogout) {
       signOut(auth)
         .then(() => {
-          alert("Logged out Successfully!");
-          window.location.href = "/LushioFitness";
+          toast.success("Logged out Successfully!", {
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+            style: {
+              backgroundColor: "#4caf50", // Green background
+              color: "#fff",
+              fontSize: "1rem",
+              padding: "10px 20px",
+            },
+          });
+          setTimeout(() => (window.location.href = "/"), 2000);
         })
         .catch((error) => {
           console.error("Error signing out:", error);
-          alert("Couldn't Log out, please try again.");
+          toast.error("Couldn't Log out, please try again.", {
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+            style: { backgroundColor: "#ff3e3e", color: "#fff" },
+          });
         });
     }
   };
-
   return (
     <>
-      {user && <h1 className="user-greet">Welcome {user.displayName}</h1>}
+   <ToastContainer />
+      {user && <h1 className="user-greet">Welcome {userName}</h1>}
       <p className="user-question">What would you like to do?</p>
       <div className="user-action-container">
         <div className="user-action" onClick={() => { navigate("/user-editProfile") }}>
@@ -45,7 +105,7 @@ function User() {
           </div>
         </div>
 
-        <div className="user-action" onClick={() => { navigate("/LushioFitness") }}>
+        <div className="user-action" onClick={() => { navigate("/") }}>
           <Link to="/">
             <img
               src="/Images/icons/continueShopping.png"

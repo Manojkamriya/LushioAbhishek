@@ -48,7 +48,7 @@ const [isLoading, setIsLoading] = useState(false);
       setIsLoading(true);
       const fetchUserData = async () => {
         try {
-        // const response = await axios.get(`http://127.0.0.1:5001/lushio-fitness/us-central1/api/user/details/${user.uid}`);
+       
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/details/${user.uid}`);
 
       const data = response.data;

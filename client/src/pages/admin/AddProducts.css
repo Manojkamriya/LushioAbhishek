@@ -73,10 +73,7 @@
 box-sizing: border-box;
  user-select: none;
  }
- .add-product-form input:focus {
-  border-color: #333;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-}
+ 
 .add-product-form textarea{
   width: 800px;
   height: 70px;
@@ -168,7 +165,7 @@ align-items: flex-start;
   border: none;
   width: 280px;
   height: 60px;
-  background-color: #333333; /* Dark gray for black theme */
+  background-color: #161616; /* Dark gray for black theme */
   color: #ffffff; /* White text for contrast */
   margin-inline: auto;
   margin-block: 30px;
@@ -179,11 +176,14 @@ align-items: flex-start;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.product-submit-button:hover {
+.product-submit-button:disabled{
   background-color: #444444; /* Slightly lighter shade on hover */
-  transform: translateY(-2px); /* Subtle lift effect on hover */
+  cursor: not-allowed;
 }
-
+.add-product-form input:focus {
+  border-color: #333;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
 .product-submit-button:active {
   background-color: #222222; /* Darker shade on click */
   transform: translateY(1px); /* Slight press-down effect on click */
@@ -201,6 +201,7 @@ align-items: flex-start;
 .color-input {
   -webkit-appearance: none;
   border: none;
+  position: relative;
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 0.25rem;
@@ -212,7 +213,6 @@ align-items: flex-start;
   box-shadow: 0 0 0 2px #e2e8f0; /* Light gray border */
   transition: box-shadow 0.3s ease;
 }
-
 .color-input:focus {
   outline: none;
   box-shadow: 0 0 0 2px #4299E1; /* Blue border on focus */
@@ -229,8 +229,9 @@ align-items: flex-start;
 .file-upload-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
+  width: fit-content;
   margin: 20px 0;
   padding: 20px;
   border: 2px dashed #aaa;

@@ -4,11 +4,11 @@ import { storage } from "../../firebaseConfig";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 // import MediaRenderer from '../../components/MediaRenderer';
 import URLMedia from "../../components/URLMediaRenderer";
-const Editor = ({ product: initialProduct }) => {
+const Editor = ({ product: initialProduct,onClose}) => {
   const [product, setProduct] = useState(null);
   const [isHeightBased, setIsHeightBased] = useState(false);
-  const [newColor, setNewColor] = useState({ name: '', code: '#000000' });
-
+  const [newColor, setNewColor] = useState({ name: '', code: '#43da86' });
+  const [isUploading, setIsUploading] = useState(false);
   const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 
   useEffect(() => {
@@ -69,8 +69,7 @@ const Editor = ({ product: initialProduct }) => {
           };
         }
       });
-
-      setNewColor({ name: '', code: '#000000' });
+      setNewColor({ name: '', code: '#43da86' });
     }
   };
 
@@ -109,6 +108,7 @@ const Editor = ({ product: initialProduct }) => {
   };
 
   const handleImageUpload = async (e, colorName = null, heightType = null) => {
+    setIsUploading(true);
     const files = Array.from(e.target.files);
 
     const uploadPromises = files.map(async (file) => {
@@ -178,9 +178,13 @@ const Editor = ({ product: initialProduct }) => {
     } catch (error) {
       console.error('Error handling image uploads:', error);
     }
+    finally{
+      setIsUploading(false);
+    }
   };
 
   const handleRemoveImage = (imageUrl, colorName = null, heightType = null) => {
+    setIsUploading(true);
     setProduct(prev => {
       if (colorName && heightType) {
         const heightSection = `${heightType}Height`;
@@ -228,6 +232,7 @@ const Editor = ({ product: initialProduct }) => {
       }
       return prev;
     });
+    setIsUploading(false);
   };
 
   // const MediaPreview = ({ url, onRemove }) => {
@@ -252,29 +257,56 @@ const Editor = ({ product: initialProduct }) => {
   //     </div>
   //   );
   // };
-
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ 
+  // const handleSubmit = async () => {
+  //   //e.preventDefault();
+  //   try {
+  //     console.log(product);
+  //     const response = await axios.put(
+  //       `${process.env.REACT_APP_API_URL}/products/update/${product.id}`,
+  //       product
+  //     );
+  //     console.log('Product updated:', response.data);
+  //     alert("Updated successfully");
+  //   } catch (error) {
+  //     console.error('Error updating product:', error);
+  //     alert("Update failed");
+  //   }
+  // };
+  const handleSubmit = async () => {
     try {
-      console.log(product);
+      // Ensure required fields are set for non-height-based products
+      const updatedProduct = { ...product };
+  
+      if (!isHeightBased) {
+        updatedProduct.colorOptions = updatedProduct.colorOptions || [];
+        updatedProduct.quantities = updatedProduct.quantities || {};
+        updatedProduct.sizeOptions = sizeOptions;  // Add sizeOptions if it's required in the backend
+      }
+  
       const response = await axios.put(
-        `http://127.0.0.1:5001/lushio-fitness/us-central1/api/products/update/${product.id}`,
-        product
+        `${process.env.REACT_APP_API_URL}/products/update/${product.id}`,
+        updatedProduct
       );
+      
       console.log('Product updated:', response.data);
       alert("Updated successfully");
+     // window.location.reload();
+     onClose();
     } catch (error) {
       console.error('Error updating product:', error);
       alert("Update failed");
     }
   };
-
+  
   return (
     <div className="max-w-4xl mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Edit Product</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+      {/* <h2 className="text-2xl font-bold mb-4">Edit Product</h2> */}
+      <button className="save-update-change" //    type="submit"
+          onClick={()=>handleSubmit()}
+            disabled={isUploading}>Save changes</button>
+      <div  className="add-product-form">
+        <div className="name-inputs">
           <div>
             <label htmlFor="name" className="block mb-1">Name</label>
             <input
@@ -299,8 +331,8 @@ const Editor = ({ product: initialProduct }) => {
           </div>
         </div>
 
-        <div>
-          <label htmlFor="description" className="block mb-1">Description</label>
+        <div className="description-container">
+          <label htmlFor="description" >Description</label>
           <textarea
             id="description"
             name="description"
@@ -311,7 +343,7 @@ const Editor = ({ product: initialProduct }) => {
           />
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="price-inputs">
           <div>
             <label htmlFor="price" className="block mb-1">Price</label>
             <input
@@ -350,7 +382,7 @@ const Editor = ({ product: initialProduct }) => {
           </div>
         </div>
 
-        <div>
+        <div className="category-inputs">
           <label htmlFor="categories" className="block mb-1">Categories (comma-separated)</label>
           <input
             id="categories"
@@ -362,13 +394,12 @@ const Editor = ({ product: initialProduct }) => {
           />
         </div>
 
-        <div>
+        <div className="file-upload-container">
           <label htmlFor="cardImages" className="block mb-1">Card Images</label>
           <input
             id="cardImages"
             type="file"
             multiple
-
             accept="image/*, video/*"
             onChange={(e) => handleImageUpload(e)}
             className="w-full p-2 border rounded"
@@ -385,7 +416,7 @@ const Editor = ({ product: initialProduct }) => {
           </div>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="height-checkmark-container">
           <input
             id="isHeightBased"
             type="checkbox"
@@ -398,7 +429,7 @@ const Editor = ({ product: initialProduct }) => {
 
         {isHeightBased ? (
           <div className="space-y-4">
-            <div>
+            <div className="height-input">
               <label htmlFor="height" className="block mb-1">Height (cm)</label>
               <input
                 id="height"
@@ -413,7 +444,7 @@ const Editor = ({ product: initialProduct }) => {
             {['above', 'below'].map((heightType) => (
               <div key={heightType} className="border p-4 rounded">
                 <h3 className="font-semibold mb-2">{heightType === 'above' ? 'Above' : 'Below'} Height</h3>
-                <div className="flex space-x-2 mb-2">
+                <div className="height-based-color-input">
                   <input
                     type="text"
                     placeholder="Color name"
@@ -425,7 +456,7 @@ const Editor = ({ product: initialProduct }) => {
                     type="color"
                     value={newColor.code}
                     onChange={(e) => setNewColor({ ...newColor, code: e.target.value })}
-                    className="p-1 border rounded"
+                    className="color-input"
                   />
                   <button
                     type="button"
@@ -444,8 +475,11 @@ const Editor = ({ product: initialProduct }) => {
                         style={{ backgroundColor: color.code }}
                       ></div>
                     </div>
+                    <div className="file-upload-container">
+                    <label  htmlFor={`height-${heightType}-${color.name}`}>Choose images for color</label>
                     <input
                       type="file"
+                      id={`height-${heightType}-${color.name}`}
                       multiple
                       accept="image/*,video/*"
                       onChange={(e) => handleImageUpload(e, color.name, heightType)}
@@ -453,16 +487,17 @@ const Editor = ({ product: initialProduct }) => {
                     />
 
                     <div className="product-upload-image-preview">
-                      {color.images?.map((url, index) => (
-                        <div key={index} className="product-upload-image-item">
-                          <URLMedia src={url} />
-                          <button className="image-remove-button" onClick={() => handleRemoveImage(url, color.name, heightType)}>
-                            Remove
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="grid grid-cols-4 gap-2 mt-4">
+        {color.images?.map((url, index) => (
+          <div key={index} className="product-upload-image-item">
+          <URLMedia src={url} />
+            <button className="image-remove-button" onClick={() => handleRemoveImage(url, color.name, heightType)}>
+              Remove
+            </button>
+          </div>
+        ))}
+      </div>
+      </div>
+                    <div className="size-quantity">
                       {sizeOptions.map((size) => (
                         <div key={size} className="space-y-1">
                           <label className="text-sm font-medium">{size}</label>
@@ -479,11 +514,11 @@ const Editor = ({ product: initialProduct }) => {
                   </div>
                 ))}
               </div>
-            ))}
+            )).reverse()}
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="flex space-x-2 mb-2">
+            <div className="normal-color-input">
               <input
                 type="text"
                 placeholder="Color name"
@@ -495,7 +530,7 @@ const Editor = ({ product: initialProduct }) => {
                 type="color"
                 value={newColor.code}
                 onChange={(e) => setNewColor({ ...newColor, code: e.target.value })}
-                className="p-1 border rounded"
+                className="color-input"
               />
               <button
                 type="button"
@@ -514,24 +549,29 @@ const Editor = ({ product: initialProduct }) => {
                     style={{ backgroundColor: color.code }}
                   ></div>
                 </div>
+                <div className="file-upload-container">
+                <label  htmlFor={`file-upload-${color.name}`}>Choose Media</label>
                 <input
                   type="file"
+                  id={`file-upload-${color.name}`}
                   multiple
                   accept="image/*,video/*"
                   onChange={(e) => handleImageUpload(e, color.name)}
                   className="mt-2 w-full p-2 border rounded"
                 />
+             
                 <div className="product-upload-image-preview">
-                  {color.images?.map((url, index) => (
-                    <div key={index} className="product-upload-image-item">
-                      <URLMedia src={url} />
-                      <button className="image-remove-button" onClick={() => handleRemoveImage(url, color.name)}>
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <div className="grid grid-cols-4 gap-2 mt-4">
+        {color.images?.map((url, index) => (
+          <div key={index} className="product-upload-image-item">
+          <URLMedia src={url} />
+            <button className="image-remove-button" onClick={() => handleRemoveImage(url, color.name)}>
+              Remove
+            </button>
+          </div>
+        ))}
+      </div>
+      </div>
+                <div className="size-quantity">
                   {sizeOptions.map((size) => (
                     <div key={size} className="space-y-1">
                       <label className="text-sm font-medium">{size}</label>
@@ -546,26 +586,27 @@ const Editor = ({ product: initialProduct }) => {
                   ))}
                 </div>
               </div>
-            ))}
+            )).reverse()}
           </div>
         )}
 
-        <div className="flex justify-end space-x-2">
+        <div className="editor-btn-container">
           <button
             type="button"
-            onClick={() => window.history.back()}
-            className="px-6 py-2 border rounded hover:bg-gray-100"
+            onClick={()=>onClose()}
+          
           >
             Cancel
           </button>
           <button
-            type="submit"
-            className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        //    type="submit"
+          onClick={()=>handleSubmit()}
+            disabled={isUploading}
           >
             Save Changes
           </button>
         </div>
-      </form>
+      </div>
     </div>
   );
 };

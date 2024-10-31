@@ -286,4 +286,134 @@ margin-top: 20px;
         color: #555;
         margin: 0;
       }
+      .order-wrapper {
+        width: 90%;
+        margin: 0 auto;
+      }
+      
+      .order-title h2 {
+        font-size: 2rem;
+        color: #333;
+      }
+      
+      .orders-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+      
+      .order {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 1.5rem;
+        background-color: #fafafa;
+      }
+      
+      .orderID {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+      }
+      
+      .order-products {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      
+      .product-details {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 1rem;
+      }
+      
+      .product-image {
+        width: 100px;
+        height: auto;
+        border-radius: 8px;
+      }
+      
+      .product-info h3 {
+        margin: 0;
+        color: #555;
+      }
+      
+      .product-color {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      
+      .color-box {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 1px solid #ccc;
+      }
+      
+      .order-delivery-address, .order-delivery {
+        margin-top: 1rem;
+      }
+      
+      .delivery-icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 0.5rem;
+      }
+      
+      .order-status {
+        display: inline-block;
+        padding: 0.3rem 0.6rem;
+        border-radius: 12px;
+        margin-top: 1rem;
+        color: #fff;
+        font-weight: bold;
+      }
+      
+      .order-status.delivered {
+        background-color: #4CAF50;
+      }
+      
+      .order-status.shipped {
+        background-color: #FF9800;
+      }
+      
+      .order-status.on-the-way {
+        background-color: #2196F3;
+      }
+      
+      .order-button-container {
+        margin-top: 1rem;
+        display: flex;
+        gap: 0.5rem;
+      }
+      
+      .info-button, .rate-button, .cancel-button {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      
+      .info-button {
+        background-color: #2196F3;
+        color: #fff;
+      }
+      
+      .rate-button {
+        background-color: #4CAF50;
+        color: #fff;
+      }
+      
+      .cancel-button {
+        background-color: #F44336;
+        color: #fff;
+      }
+      
+      .info-button:hover, .rate-button:hover, .cancel-button:hover {
+        opacity: 0.9;
+      }
       
