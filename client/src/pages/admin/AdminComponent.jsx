@@ -20,7 +20,6 @@ const AdminComponent = () => {
     if (confirmLogout) {
       signOut(auth)
         .then(() => {
-          alert("Logged out Successfully!");
           window.location.href = "/";
         })
         .catch((error) => {

@@ -44,7 +44,7 @@ const Editor = ({ product: initialProduct,onClose}) => {
   const handleColorAdd = (type = 'normal') => {
     if (newColor.name && newColor.code) {
       const newColorWithImages = { ...newColor, images: [] };
-      
+
       setProduct(prev => {
         if (type === 'above') {
           return {
@@ -69,14 +69,13 @@ const Editor = ({ product: initialProduct,onClose}) => {
           };
         }
       });
-      
       setNewColor({ name: '', code: '#43da86' });
     }
   };
 
   const handleQuantityChange = (color, size, value, type = 'normal') => {
     const parsedValue = value === '' ? '' : parseInt(value);
-    
+
     setProduct(prev => {
       if (type === 'above' || type === 'below') {
         const heightSection = `${type}Height`;
@@ -111,14 +110,14 @@ const Editor = ({ product: initialProduct,onClose}) => {
   const handleImageUpload = async (e, colorName = null, heightType = null) => {
     setIsUploading(true);
     const files = Array.from(e.target.files);
-    
+
     const uploadPromises = files.map(async (file) => {
       const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
       try {
         const snapshot = await uploadBytesResumable(storageRef, file);
         const downloadURL = await getDownloadURL(snapshot.ref);
         return downloadURL;
-        
+
       } catch (error) {
         console.error('Error uploading image:', error);
         return null;
@@ -259,7 +258,6 @@ const Editor = ({ product: initialProduct,onClose}) => {
   //   );
   // };
  
-  
   // const handleSubmit = async () => {
   //   //e.preventDefault();
   //   try {
@@ -402,31 +400,20 @@ const Editor = ({ product: initialProduct,onClose}) => {
             id="cardImages"
             type="file"
             multiple
-           
-             accept="image/*"
+            accept="image/*, video/*"
             onChange={(e) => handleImageUpload(e)}
             className="w-full p-2 border rounded"
           />
-          {/* <div className="flex flex-wrap mt-2 image-item" >
-            {product.cardImages?.map((url, index) => (
-              // <MediaPreview
-              //   key={index}
-              //   url={url}
-              //   onRemove={() => handleRemoveImage(url)}
-             // />
-             <URLMedia src={url}/>
-            ))}
-          </div> */}
           <div className="product-upload-image-preview">
-        {product.cardImages?.map((url, index) => (
-          <div key={index} className="product-upload-image-item">
-          <URLMedia src={url} />
-            <button className="image-remove-button" onClick={() => handleRemoveImage(url)}>
-              Remove
-            </button>
+            {product.cardImages?.map((url, index) => (
+              <div key={index} className="product-upload-image-item">
+                <URLMedia src={url} />
+                <button className="image-remove-button" onClick={() => handleRemoveImage(url)}>
+                  Remove
+                </button>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
         </div>
 
         <div className="height-checkmark-container">
@@ -483,8 +470,8 @@ const Editor = ({ product: initialProduct,onClose}) => {
                   <div key={color.name} className="mt-4 border-t pt-4">
                     <div className="flex items-center space-x-2">
                       <span className="font-medium">{color.name}</span>
-                      <div 
-                        className="w-6 h-6 rounded-full" 
+                      <div
+                        className="w-6 h-6 rounded-full"
                         style={{ backgroundColor: color.code }}
                       ></div>
                     </div>
@@ -498,7 +485,7 @@ const Editor = ({ product: initialProduct,onClose}) => {
                       onChange={(e) => handleImageUpload(e, color.name, heightType)}
                       className="mt-2 w-full p-2 border rounded"
                     />
-                 
+
                     <div className="product-upload-image-preview">
         {color.images?.map((url, index) => (
           <div key={index} className="product-upload-image-item">
@@ -557,8 +544,8 @@ const Editor = ({ product: initialProduct,onClose}) => {
               <div key={color.name} className="border p-4 rounded">
                 <div className="flex items-center space-x-2">
                   <span className="font-medium">{color.name}</span>
-                  <div 
-                    className="w-6 h-6 rounded-full" 
+                  <div
+                    className="w-6 h-6 rounded-full"
                     style={{ backgroundColor: color.code }}
                   ></div>
                 </div>
