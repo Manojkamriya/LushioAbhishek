@@ -327,7 +327,7 @@ router.put("/update/:id", async (req, res) => {
       });
     } else {
       // Non-height-based classification
-      if (!updatedProductData.colorOptions || !updatedProductData.sizeOptions || !updatedProductData.quantities) {
+      if (!updatedProductData.colorOptions || !updatedProductData.quantities) {
         return res.status(400).json({
           error: "colorOptions, sizeOptions, and quantities are required for non-height-based products",
         });
