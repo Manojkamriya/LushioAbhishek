@@ -28,6 +28,7 @@ const cartRoute = require("./routes/cart.js");
 const wishlistRoute = require("./routes/wishlist.js");
 const productFilterRoute = require("./routes/productFilters.js");
 const getQtyRoute = require("./routes/getQty.js");
+const couponRoute = require("./routes/coupons.js");
 
 // User routes
 app.use("/user", userRoutes);
@@ -52,6 +53,9 @@ app.use("/cart", cartRoute);
 
 // Whishlist routes
 app.use("/wishlist", wishlistRoute);
+
+// Coupon routes
+app.use("/coupon", couponRoute);
 
 // Export the API
 exports.api = functions.https.onRequest(app);
