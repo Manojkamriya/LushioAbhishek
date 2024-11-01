@@ -10,7 +10,7 @@ const ReviewReviews = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await axios.get("/api/reviews"); // Update with your actual API endpoint
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/reviews`);
         setReviews(response.data);
       } catch (error) {
         console.error("Error fetching reviews:", error);
