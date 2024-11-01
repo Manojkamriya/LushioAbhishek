@@ -13,13 +13,13 @@ function ProductCard(props) {
   const [isRemoving, setIsRemoving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
-  // const isHeightBased = "height" in props.data;
+ 
   const isHeightBased = props.data && "height" in props.data;
-
+  const [heightCategory, setHeightCategory] = useState("aboveHeight");
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(0);
-  const [heightCategory, setHeightCategory] = useState("aboveHeight");
+ 
   useEffect(() => {
     if (
       props.data &&

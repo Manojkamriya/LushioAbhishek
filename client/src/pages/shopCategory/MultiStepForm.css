@@ -63,10 +63,8 @@ height: 500px;
     height: 20px;
     width: 20px;
   }
- /* Show tick mark when selected */
 .option.selected::before {
-  /* border-color: #007bff; 
-  background-color: #007bff; */
+ 
   position: absolute;
   left: 20px;
   display: flex;
