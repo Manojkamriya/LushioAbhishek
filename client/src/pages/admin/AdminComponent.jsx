@@ -9,6 +9,7 @@ import SendTokens from "./SendTokens";
 import ViewComplaints from "./ViewComplaints";
 import AdminControls from "./AdminControls";
 import ReviewReviews from "./ReviewReviews";
+import Coupons from "./Coupons";
 
 const AdminComponent = () => {
   const [selectedComponent, setSelectedComponent] = useState(null);
@@ -20,7 +21,6 @@ const AdminComponent = () => {
     if (confirmLogout) {
       signOut(auth)
         .then(() => {
-          alert("Logged out Successfully!");
           window.location.href = "/";
         })
         .catch((error) => {
@@ -46,6 +46,8 @@ const AdminComponent = () => {
         return <AdminControls />;
       case "ReviewReviews":
         return <ReviewReviews />;
+      case "Coupons":
+        return <Coupons />;
       default:
         return <h1>Welcome Admin</h1>;
     }
@@ -62,6 +64,9 @@ const AdminComponent = () => {
         </button>
         <button onClick={() => setSelectedComponent("ReviewReviews")} className="admin-button">
           Review Reviews
+        </button>
+        <button onClick={() => setSelectedComponent("Coupons")} className="admin-button">
+          Coupons
         </button>
         <button onClick={() => setSelectedComponent("ChangeBanners")} className="admin-button">
           Change Banners
