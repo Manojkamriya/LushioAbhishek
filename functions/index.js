@@ -30,6 +30,12 @@ const productFilterRoute = require("./routes/productFilters.js");
 const getQtyRoute = require("./routes/getQty.js");
 const couponRoute = require("./routes/coupons.js");
 
+// Import cloud functions
+const generateReferralCode = require("./cloudFunctions/generateReferralCode.js");
+
+// Export cloud functions
+exports.generateReferralCode = generateReferralCode;
+
 // User routes
 app.use("/user", userRoutes);
 

@@ -122,4 +122,23 @@ router.put("/update/:cartItemId", async (req, res) => {
   }
 });
 
+// Cart count
+router.get("/count/:uid", async (req, res) => {
+  try {
+    const {uid} = req.params;
+
+    if (!uid) {
+      return res.status(400).json({error: "Missing user ID"});
+    }
+
+    const cartRef = admin.firestore().collection("users").doc(uid).collection("cart");
+    const snapshot = await cartRef.count().get();
+
+    res.status(200).json({count: snapshot.data().count});
+  } catch (error) {
+    console.error("Error fetching cart count:", error);
+    res.status(500).json({error: "Failed to fetch cart count"});
+  }
+});
+
 module.exports = router;

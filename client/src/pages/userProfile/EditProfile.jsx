@@ -2,95 +2,94 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import moment from "moment";
 import { UserContext } from "../../components/context/UserContext.jsx";
-// import Checker from "./Checker.jsx"
-// import Test from "./Test.jsx";
+
 function EditProfile() {
- 
-// const [user, setUser] = useState(null);
-  const {user} = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const [userData, setUserData] = useState({
     displayName: "",
     email: "",
     phoneNumber: "",
-    dob:"",
+    dob: "",
     doa: "",
     gender: "",
   });
-const [isLoading, setIsLoading] = useState(false);
-  // const convertToISODate = (dateString) => {
-  //   if (!dateString) return '';
-  //   const parsedDate = moment(dateString, "DD-MM-YYYY", true);
-  //   return parsedDate.isValid() ? parsedDate.format("YYYY-MM-DD") : '';
-  // };
+  const [initialData, setInitialData] = useState({}); // Store initial data for comparison
+  const [isLoading, setIsLoading] = useState(false);
   
-  const convertToDisplayDate = (dateString) => {
+  // Format date to YYYY-MM-DD for HTML date input
+  const formatDateForInput = (dateString) => {
     if (!dateString) return '';
-    const parsedDate = moment(dateString, "YYYY-MM-DD", true);
-    return parsedDate.isValid() ? parsedDate.format("DD-MM-YYYY") : '';
+    const parsedDate = moment(dateString, ["YYYY-MM-DD", "DD-MM-YYYY"], true);
+    return parsedDate.isValid() ? parsedDate.format("YYYY-MM-DD") : '';
   };
-  
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     try {
-  //       const currentUser = await getUser(); 
-  //       setUser(currentUser);
-  //       console.log(currentUser);
-  //     } catch (error) {
-  //       console.error("Error fetching user:", error);
-  //     }
-  //   };
-  //   fetchUser();
-  // }, []);
 
- 
   useEffect(() => {
     if (user) {
       setIsLoading(true);
       const fetchUserData = async () => {
         try {
-       
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/details/${user.uid}`);
-
-      const data = response.data;
-      setUserData({
-        ...data,
-        dob: convertToDisplayDate(data.dob),
-        doa: convertToDisplayDate(data.doa)
-      });
+          const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/details/${user.uid}`);
+          const data = response.data;
+          
+          // Format dates for input fields
+          const formattedData = {
+            ...data,
+            dob: formatDateForInput(data.dob),
+            doa: formatDateForInput(data.doa)
+          };
+          
+          setUserData(formattedData);
+          setInitialData(formattedData); // Store initial data
           console.log("Fetched user data:", response.data);
         } catch (error) {
           console.error("Error fetching user data:", error);
+        } finally {
+          setIsLoading(false);
         }
       };
       fetchUserData();
-      setIsLoading(false);
     }
   }, [user]);
 
-  // Handle form submission
+  const getChangedFields = () => {
+    const changedFields = {};
+    Object.keys(userData).forEach(key => {
+      // Compare with initial data and only include if changed
+      if (userData[key] !== initialData[key]) {
+        changedFields[key] = userData[key];
+      }
+    });
+    return changedFields;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const changedFields = getChangedFields();
+    
+    // Only proceed if there are actually changes
+    if (Object.keys(changedFields).length === 0) {
+      alert("No changes detected!");
+      return;
+    }
+
     setIsLoading(true);
     try {
-      const updatedData = {
-        ...userData,
-        dob: (convertToDisplayDate(userData.dob)),
-        doa: (convertToDisplayDate(userData.doa))
-      };
-      console.log(updatedData);
-      await axios.post(`${process.env.REACT_APP_API_URL}/user/details/${user.uid}`, updatedData);
+      await axios.patch(
+        `${process.env.REACT_APP_API_URL}/user/details/${user.uid}`,
+        changedFields
+      );
       
+      // Update initialData to reflect the new state
+      setInitialData(userData);
       alert("Profile updated successfully!");
     } catch (error) {
-      alert("error");
+      alert(`Error updating profile\n${error.response?.data?.message || error.response?.data || error.message}`);
       console.error("Error updating profile:", error);
-    }
-    finally{
+    } finally {
       setIsLoading(false);
     }
   };
 
-  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     console.log(`Updating ${name} to ${value}`);
@@ -99,9 +98,10 @@ const [isLoading, setIsLoading] = useState(false);
       [name]: value,
     }));
   };
+
   return (
     <div className="edit-profile-container">
-         {isLoading && <div className="spinner-overlay"><div></div></div>}
+      {isLoading && <div className="spinner-overlay"><div></div></div>}
       <p className="user-question">Edit Your Profile</p>
       <form onSubmit={handleSubmit} className="edit-profile">
         <label>Name</label>
@@ -133,24 +133,22 @@ const [isLoading, setIsLoading] = useState(false);
           onChange={handleChange}
           required
         />
- <label>BirthDay Date</label>
-    <input
-      type="date"
-      name="dob"
-      value={userData.dob}
-      onChange={handleChange}
-      
-    />
 
-    <label>Anniversary Date </label>
-    <input
-      type="date"
-      name="doa"
-      value={userData.doa}
-      onChange={handleChange}
-      
-    />
-    
+        <label>Birthday Date</label>
+        <input
+          type="date"
+          name="dob"
+          value={userData.dob || ''}
+          onChange={handleChange}
+        />
+
+        <label>Anniversary Date</label>
+        <input
+          type="date"
+          name="doa"
+          value={userData.doa || ''}
+          onChange={handleChange}
+        />
 
         <div className="radio-input">
           <label>Gender</label>
@@ -190,7 +188,6 @@ const [isLoading, setIsLoading] = useState(false);
 
         <button type="submit">Save</button>
       </form>
-     
     </div>
   );
 }
