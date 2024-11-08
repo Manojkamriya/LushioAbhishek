@@ -1,79 +1,128 @@
-import React, { useContext, useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import "./ShopCategory.css";
-import { ShopContext } from "../../components/context/ShopContext";
 import ProductCard from "../home/ProductCard";
+import axios from "axios";
+
 function ShopCategory(props) {
-  const { all_product, clearAllData } = useContext(ShopContext);
   const [filterProducts, setFilterProducts] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [sortType, setSortType] = useState("rating");
   const [subCategory, setSubCategory] = useState([]);
   const [priceRange, setPriceRange] = useState("");
   const [color, setColor] = useState([]);
-  const [isFilterApplied, setIsFilterApplied]  = useState(false);
-const filterRef  = useRef();
+  const [isFilterApplied, setIsFilterApplied] = useState(false);
+  const filterRef = useRef();
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/products/allProducts`
+        );
+        const data = response.data;
+
+        if (Array.isArray(data.products)) {
+       const categoryProducts  =  data.products.filter((product) =>
+        product.categories.includes(props.category)
+      );
+          setProducts(categoryProducts);
+        } else {
+          throw new Error("Unexpected response format");
+        }
+      } catch (err) {
+        setError("Failed to fetch products. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [props.category]);
+
   const openFilter = () => {
     if (filterRef.current) {
       filterRef.current.style.left = "0";
-      document.body.classList.add('no-scroll');
-    
+      document.body.classList.add("no-scroll");
     }
   };
 
   const closeFilter = () => {
     if (filterRef.current) {
       filterRef.current.style.left = "-550px";
-      document.body.classList.remove('no-scroll');
+      document.body.classList.remove("no-scroll");
     }
   };
-  // const availableColors = [
-  //   { name: 'Red', hex: '#FF0000' },
-  //   { name: 'Black', hex: '#000000' },
-  //   { name: 'Blue', hex: '#0000FF' },
-  //   { name: 'Green', hex: '#008000' },
-  //   { name: 'Yellow', hex: '#FFFF00' }
-  // ];
-  const subCategoryOptions = {
-    men: ["Shirts", "Joggers", "Outerwear", "Pants", "Hats/Caps"],
-    women: ["Upperwear", "Tops", "Leggings", "Outerwear", "Matching Sets"],
-    accessories:["Gloves", "Shakers", "Wrist Band", "Deadlift Band"],
+
+  // Extract unique categories dynamically from products
+  const getUniqueCategories = (products) => {
+    const categorySet = new Set();
+
+    products.forEach((product) => {
+      product.categories.forEach((category) => {
+        categorySet.add(category);
+      });
+    });
+
+    return Array.from(categorySet);
   };
 
-  // Dynamically get subcategories based on props.category
-  const currentSubCategories = subCategoryOptions[props.category.toLowerCase()] || [];
+  const uniqueCategories = getUniqueCategories(products);
+
+  const getUniqueColors = (products) => {
+    const categorySet = new Set();
+
+    products.forEach((product) => {
+      product.colorOptions.forEach((color) => {
+        categorySet.add(color.name);
+      });
+    });
+
+    return Array.from(categorySet);
+  };
+
+  const uniqueColors = getUniqueColors(products);
 
   // Filtering products based on selected filters
   useEffect(() => {
-    let productsCopy = all_product.filter(
-      (product) => product.category === props.category
+    let productsCopy = products.filter((product) =>
+      product.categories.includes(props.category)
     );
 
-    if (subCategory.length > 0) {
-      productsCopy = productsCopy.filter((item) =>
-        subCategory.includes(item.subCategory)
-      );
-      setIsFilterApplied(true);
-    }
+if (subCategory && subCategory.length > 0) {
+  productsCopy = productsCopy.filter((item) =>
+    item.categories.some((category) => subCategory.includes(category))
+  );
+  setIsFilterApplied(true);
+}
 
-    if (color.length > 0) {
-      productsCopy = productsCopy.filter((item) => color.includes(item.color));
-      setIsFilterApplied(true);
-    }
+if (color.length > 0) {
+  productsCopy = productsCopy.filter((item) =>
+    item.colorOptions.some((option) => color.includes(option.name))
+  );
+  setIsFilterApplied(true);
+}
+
 
     if (priceRange) {
       switch (priceRange) {
         case "all":
-          productsCopy = productsCopy.filter((item) => item.new_price > 0);
+          productsCopy = productsCopy.filter((item) => item.price > 0);
           break;
         case "under-600":
-          productsCopy = productsCopy.filter((item) => item.new_price < 600);
+          productsCopy = productsCopy.filter((item) => item.price < 600);
           break;
         case "600-900":
           productsCopy = productsCopy.filter(
-            (item) => item.new_price >= 600 && item.new_price <= 900
+            (item) => item.price >= 600 && item.price <= 900
           );
           break;
         case "above-900":
-          productsCopy = productsCopy.filter((item) => item.new_price > 900);
+          productsCopy = productsCopy.filter((item) => item.price > 900);
           break;
         default:
           break;
@@ -82,29 +131,28 @@ const filterRef  = useRef();
     }
 
     setFilterProducts(productsCopy);
-  }, [subCategory, priceRange, color, props.category, all_product]);
+  }, [subCategory, priceRange, color, props.category, products]);
 
   // Sorting products based on selected sortType
   const sortProduct = useCallback(() => {
     let fpCopy = filterProducts.slice();
     switch (sortType) {
       case "low-high":
-        setFilterProducts([...fpCopy].sort((a, b) => a.new_price - b.new_price));
+        setFilterProducts([...fpCopy].sort((a, b) => a.price - b.price));
         break;
       case "high-low":
-        setFilterProducts([...fpCopy].sort((a, b) => b.new_price - a.new_price));
+        setFilterProducts([...fpCopy].sort((a, b) => b.price - a.price));
         break;
       case "rating":
         setFilterProducts([...fpCopy].sort((a, b) => b.rating - a.rating));
         break;
-        case "discount":
-          setFilterProducts([...fpCopy].sort((a, b) => b.discount - a.discount));
-          break;
+      case "discount":
+        setFilterProducts([...fpCopy].sort((a, b) => b.discount - a.discount));
+        break;
       default:
         break;
     }
-   
-  }, [filterProducts, sortType]);
+  }, [sortType]);
 
   useEffect(() => {
     sortProduct();
@@ -112,7 +160,7 @@ const filterRef  = useRef();
 
   // Reset filters when category changes
   useEffect(() => {
-    let categoryProducts = all_product.filter(
+    let categoryProducts = products.filter(
       (product) => product.category === props.category
     );
     setFilterProducts(categoryProducts.sort((a, b) => b.rating - a.rating));
@@ -121,22 +169,15 @@ const filterRef  = useRef();
     setPriceRange("");
     setColor([]);
     setIsFilterApplied(false);
-  }, [props.category, all_product]);
-  
-  // Clear all filters
+  }, [props.category, products]);
+
   const clearFilter = () => {
-    let categoryProducts = all_product.filter(
-      (product) => product.category === props.category
-    );
-    setFilterProducts(categoryProducts);
-    setSortType("rating");
     setSubCategory([]);
     setPriceRange("");
     setColor([]);
     setIsFilterApplied(false);
   };
 
-  // Toggle subcategory filter
   const toggleSubCategory = (e) => {
     const value = e.target.value;
     setSubCategory((prev) =>
@@ -146,7 +187,6 @@ const filterRef  = useRef();
     );
   };
 
-  // Toggle color filter
   const toggleColor = (e) => {
     const value = e.target.value;
     setColor((prev) =>
@@ -161,13 +201,16 @@ const filterRef  = useRef();
       <img className="shopcategory-banner" src={props.banner} alt="" />
       <div className="shopcategory-indexSort">
         <p>
-    {  isFilterApplied &&   <button onClick={clearFilter} className="clear-filter-button">Clear All Filters</button>}
-        
+          {isFilterApplied && (
+            <button onClick={clearFilter} className="clear-filter-button">
+              Clear All Filters
+            </button>
+          )}
           <img
             className="filter-open"
             src="/Images/icons/filter.png"
             alt=""
-            onClick={()=>openFilter()}
+            onClick={openFilter}
           />
         </p>
         <div className="shopcategory-sort">
@@ -187,84 +230,31 @@ const filterRef  = useRef();
 
       <div className="shopcategory-container">
         <div className="filter-container" ref={filterRef}>
-        <img
-              className="filter-cross-icon"
-              src="/Images/icons/cross.png"
-              alt=""
-              onClick={closeFilter}
-            />
-          {/* Dynamic Subcategory Filter */}
+          <img
+            className="filter-cross-icon"
+            src="/Images/icons/cross.png"
+            alt=""
+            onClick={closeFilter}
+          />
+
           <div className="subCategory">
             <h4>Subcategory</h4>
-            {currentSubCategories.map((sub) => (
+            {uniqueCategories.map((sub) => (
               <label key={sub}>
                 <input
                   type="checkbox"
-                  value={sub.toLowerCase()}
+                  value={sub}
                   onChange={toggleSubCategory}
-                  checked={subCategory.includes(sub.toLowerCase())}
+                  checked={subCategory.includes(sub)}
                 />
                 {sub}
               </label>
             ))}
           </div>
-
-          {/* Color Filter  */}
-           <div className="colorFilter">
-            <h4>Color Filter</h4>
+                     <div className="priceFilter">
+             <h4>Price Filter</h4>
             <label>
-              <input
-                type="checkbox"
-                value={"red"}
-                onChange={toggleColor}
-                checked={color.includes("red")}
-              />
-              Red
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                value={"black"}
-                onChange={toggleColor}
-                checked={color.includes("black")}
-              />
-              Black
-            </label>
-          </div>
-           {/* <div className="colorFilter">
-      <h4>Color Filter</h4>
-      {availableColors.map((color) => (
-        <label key={color.name} className="color-checkbox">
-          <input
-            type="checkbox"
-            value={color.name}
-            onChange={toggleColor}
-            // checked={color.includes(color.name)}
-          />
-          <span
-            className="color-swatch"
-            style={{ backgroundColor: color.hex }}
-          ></span>
-          {color.name}
-        </label>
-          <label className="custom-checkbox">
-          <input
-            type="checkbox"
-            value={color.name}
-            onChange={toggleColor}
-           
-          />
-          <span className="checkmark"></span>
-          {color.name}
-        </label>
-      ))}
-    </div> */}
-
-          {/* Price Filter */}
-          <div className="priceFilter">
-            <h4>Price Filter</h4>
-            <label>
-              <input
+             <input
                 type="radio"
                 name="price"
                 value="all"
@@ -304,42 +294,50 @@ const filterRef  = useRef();
               Over ₹900
             </label>
           </div>
+          {/* Color Filter */} 
           {
-            isFilterApplied &&           <button onClick={closeFilter} className="apply-filter-button">Apply Filters</button>
+            uniqueColors.length > 0 &&     <div className="colorFilter">
+            <h4>Color Filter</h4>
+            {uniqueColors.map((col) => (
+              <label key={col}>
+                <input
+                  type="checkbox"
+                  value={col}
+                  onChange={toggleColor}
+                  checked={color.includes(col)}
+                />
+                {col}
+              </label>
+            ))}
+          </div>
+      
           }
-
+      
 
           <button onClick={clearFilter}>Clear All Filters</button>
-       
         </div>
 
-        {/* Product Display */}
         <div className="shopcategory-products">
           {filterProducts.map((item, i) => (
             <ProductCard
               key={i}
               id={item.id}
-              description={item.name}
-              image1={item.image}
-              image2={item.image}
-              newPrice={item.new_price}
-              oldPrice={item.old_price}
-              // discount={Math.round(
-              //   ((item.old_price - item.new_price) / item.old_price) * 100
-              // )}
-              discount = {item.discount}
-              rating={item.rating}
-              liked={false}
-              productOptions={item.productOptions}
-              data={item.data || {}}
+              displayName={item.displayName}
+              image1={item.cardImages?.[0] || ""}
+              image2={item.cardImages?.[1] || ""}
+              rating={item.rating || 0}
+              price={item.price || 0}
+              description={item.description}
+              discount={item.discount || 0}
+              aboveHeight={item.aboveHeight || {}}
+              belowHeight={item.belowHeight || {}}
+              colorOptions={item.colorOptions || []}
+              quantities={item.quantities || {}}
+              height={item.height || ""}
             />
           ))}
-          
         </div>
       </div>
-
-      <div className="shopcategory-loadmore" onClick={()=>clearAllData()}>Explore More</div>
-   
     </div>
   );
 }

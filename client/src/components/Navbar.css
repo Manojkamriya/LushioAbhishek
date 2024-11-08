@@ -2,6 +2,7 @@
   position: sticky;
   top: 0%;
   z-index: 999;
+  width: 100%;
   background-color: white;
   box-shadow: rgba(0, 0, 0, 0.14) 0px 3px 8px;
 }
@@ -10,6 +11,7 @@
   display: flex;
   justify-content: space-between;
   z-index: 999;
+  width: 100%;
   position: relative;
   background-color: white;
 }

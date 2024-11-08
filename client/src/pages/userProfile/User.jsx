@@ -22,7 +22,7 @@ function User() {
      
   setUserName(response.data.name);
       
-        console.log("Fetched user data:", response.data);
+        
       } catch (error) {
         console.error("Error fetching user data:", error);
       }

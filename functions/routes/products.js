@@ -41,7 +41,7 @@ router.post("/addProduct", async (req, res) => {
       price: parseFloat(price),
       gst: parseFloat(gst),
       discount: parseFloat(discount),
-      categories: typeof categories === "string" ? categories.split(",").map((cat) => cat.trim()) : categories,
+      categories: typeof categories === "string" ? categories.split(",").map((cat) => cat.trim().toLowerCase()) : categories,
       cardImages: cardImages, // Array of two card image URLs
       rating: 0, // Default rating
       allImages: [...cardImages],

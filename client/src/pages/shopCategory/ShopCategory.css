@@ -35,7 +35,7 @@
   justify-content: space-around;
 }
 .filter-open{
- 
+ cursor: pointer;
   display: none;
 }
 .filter-container {
@@ -222,11 +222,13 @@ margin-inline: 6px;
   .filter-container {
     display: block;
     position: fixed;
-    top: 50px;
+    top: 0px;
     background-color: white;
     width: 300px;
     height: 100vh;
-    z-index: 998;
+    height: -webkit-fill-available;
+    overflow-y: scroll;
+    z-index: 1000;
     padding: 15px 7%;
     transition: left 0.5s;
     left: -550px;
@@ -267,8 +269,9 @@ margin-inline: 6px;
 @media (max-width: 600px) {
   .shopcategory-products {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    padding: 0px;
-    grid-gap: 0px;
+    padding: 3%;
+    row-gap: clamp(0px, 2vw, 20px);
+    /* grid-gap: 0px; */
   }
   .shopcategory-banner {
     margin: 0;

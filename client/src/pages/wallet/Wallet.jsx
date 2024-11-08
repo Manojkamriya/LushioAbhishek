@@ -22,7 +22,7 @@ export default function Wallet() {
       setUserCoins(
         data
       );
-          console.log("Fetched user data:", response.data);
+         
         } catch (error) {
           console.error("Error fetching user data:", error);
         }

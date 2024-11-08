@@ -1,5 +1,5 @@
 .cartitems {
-  margin: 100px 170px;
+  margin: 6% 10%;
 }
 .cartitems hr {
   height: 3px;
@@ -69,13 +69,13 @@ gap: 75px; */
 .cartitems-down {
   display: flex;
   flex-direction: row-reverse;
-  margin: 100px 0px;
+  margin: 50px 0px;
 }
 .cartitems-total {
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin-left: 200px;
+  margin-left: 20%;
   gap: 5px;
 }
 
@@ -91,7 +91,7 @@ width: 20px;
 
 }
 .cartitems-total button {
-  width: 262px;
+  width: 76%;
   height: 58px;
   outline: none;
   border: none;
@@ -110,7 +110,7 @@ width: 20px;
   color: #555;
 }
 .cartitems-promobox {
-  width: 524px;
+  width: 100%;
   margin-top: 15px;
   padding-left: 0px;
   height: 58px;
@@ -121,7 +121,7 @@ width: 20px;
   outline: none;
   background-color: transparent;
   font-size: 16px;
-  width: 330px;
+  width: 60%;
   padding-inline: 10px;
   height: 50px;
 }

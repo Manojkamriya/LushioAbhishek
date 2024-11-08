@@ -1,0 +1,67 @@
+.admin-coupon-container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.admin-coupon-container h2 {
+    text-align: center;
+    color: #333;
+}
+
+.admin-coupon-container label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #555;
+}
+
+.admin-coupon-container input[type="text"],
+.admin-coupon-container input[type="date"],
+.admin-coupon-container input[type="number"],
+.admin-coupon-container select {
+    width: 80%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.admin-coupon-container input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.admin-coupon-container input[type="number"]::-webkit-outer-spin-button,
+.admin-coupon-container input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.admin-coupon-container button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.admin-coupon-container button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+.error-message {
+    color: red;
+}
+
+.success-message {
+    color: green;
+}

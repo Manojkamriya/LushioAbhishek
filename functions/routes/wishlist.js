@@ -83,7 +83,7 @@ router.get("/:uid", async (req, res) => {
       if (productSnapshot.exists) {
         wishlistItem.product = {id: productSnapshot.id, ...productSnapshot.data()};
       } else {
-        wishlistItem.product = null; // handle case where product does not exist
+        wishlistItem.product = null; 
       }
 
       return wishlistItem;
@@ -96,7 +96,7 @@ router.get("/:uid", async (req, res) => {
   }
 });
 
-// Get an array of all productIds in the user's wishlist
+// Get an Object of all productIds in the user's wishlist
 router.get("/array/:uid", async (req, res) => {
   try {
     const {uid} = req.params;
@@ -104,18 +104,22 @@ router.get("/array/:uid", async (req, res) => {
     if (!uid) {
       return res.status(400).json({error: "Missing user ID"});
     }
-
+console.log("hi")
     const wishlistRef = admin.firestore().collection("users").doc(uid).collection("wishlist");
     const snapshot = await wishlistRef.get();
+ // Debug: log each document's data
+ snapshot.docs.forEach((doc) => {
+  console.log("Document ID:", doc.id, "Data:", doc.data());
+});
+    // Extract both document ID and productId for each wishlist item
+    const wishlistItems = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      productId: doc.data().productId,
+    }));
 
-    // Extract productIds from each wishlist item
-    const productIds = snapshot.docs.map((doc) => doc.data().productId);
-
-    res.status(200).json(productIds);
+    res.status(200).json(wishlistItems);
   } catch (error) {
     console.error("Error fetching product IDs from wishlist:", error);
     res.status(500).json({error: "Failed to fetch product IDs"});
   }
 });
-
-module.exports = router;

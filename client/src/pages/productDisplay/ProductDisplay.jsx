@@ -58,14 +58,12 @@ function ProductDisplay() {
       const fetchReviews = async () => {
       
         try {
-          const response = await axios.get("http://127.0.0.1:5001/lushio-fitness/us-central1/api/reviews/azkEOgiSVkvByK93XYr6");
+          const response = await axios.get(`${process.env.REACT_APP_API_URL}/reviews/azkEOgiSVkvByK93XYr6`);
 
           setReviews(response.data);
-          console.log(response.data);
+        
         } catch (error) {
           console.error('Error fetching reviews:', error);
-        } finally {
-         console.log("fucntion run success");
         }
       };
 

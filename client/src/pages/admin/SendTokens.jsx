@@ -26,7 +26,7 @@ const SendTokensForm = () => {
         e.preventDefault();
         try {
             const response = await axios.post(
-                'http://127.0.0.1:5001/lushio-fitness/us-central1/api/wallet/send',
+                `${process.env.REACT_APP_API_URL}/wallet/send`,
                 formData
             );
             console.log('Response:', response.data);
