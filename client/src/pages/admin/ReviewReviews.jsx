@@ -10,7 +10,7 @@ const ReviewReviews = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await axios.get("/api/reviews"); // Update with your actual API endpoint
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/reviews`);
         setReviews(response.data);
       } catch (error) {
         console.error("Error fetching reviews:", error);
@@ -25,7 +25,7 @@ const ReviewReviews = () => {
     const confirmed = window.confirm("Are you sure you want to delete this review?");
     if (confirmed) {
       try {
-        await axios.delete(`/api/reviews/${id}`); // Update with your actual delete endpoint
+        await axios.delete(`${process.env.REACT_APP_API_URL}/reviews/delete/${id}`); // Update with your actual delete endpoint
         setReviews((prev) => prev.filter((review) => review.id !== id));
       } catch (error) {
         console.error("Error deleting review:", error);
@@ -42,9 +42,9 @@ const ReviewReviews = () => {
   const handleApprove = async () => {
     if (selectedReview) {
       try {
-        await axios.patch(`/api/reviews/${selectedReview.id}`, {
+        await axios.post(`${process.env.REACT_APP_API_URL}/reviews/approve/${selectedReview.id}`, {
           approved: true,
-        }); // Update with your actual approve endpoint
+        });
         setReviews((prev) =>
           prev.map((review) =>
             review.id === selectedReview.id ? { ...review, approved: true } : review
@@ -66,9 +66,9 @@ const ReviewReviews = () => {
             className={`review-card ${review.approved ? "review-approved" : ""}`}
           >
             <p>Review ID: {review.id}</p>
-            <p>Rating: {review.starRating}</p>
+            <p>Rating: {review.rating}</p>
             <button onClick={() => handleReview(review)}>Review</button>
-            <button onClick={() => handleDelete(review.id)}>Delete</button>
+            
           </div>
         ))}
       </div>
@@ -79,7 +79,7 @@ const ReviewReviews = () => {
             <p><strong>Quality:</strong> {selectedReview.quality}</p>
             <p><strong>Fit:</strong> {selectedReview.fit}</p>
             <p><strong>Review:</strong> {selectedReview.review}</p>
-            <p><strong>Rating:</strong> {selectedReview.starRating}</p>
+            <p><strong>Rating:</strong> {selectedReview.rating}</p>
             <p><strong>Media:</strong></p>
             <div className="review-media">
               {selectedReview.media.map((url, index) => (
@@ -93,6 +93,7 @@ const ReviewReviews = () => {
               ))}
             </div>
             <button onClick={handleApprove}>Approve</button>
+            <button onClick={() => handleDelete(selectedReview.id)}>Delete</button>
           </div>
         )}
       </div>

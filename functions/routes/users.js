@@ -9,14 +9,16 @@ const db = admin.firestore();
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
+// NOT NEEDED NOW
 // Helper function to convert date from DD-MM-YYYY to YYYY-MM-DD
-function convertToISODate(dateString) {
-  if (!dateString) return null;
-  const parsedDate = moment(dateString, "DD-MM-YYYY", true);
-  return parsedDate.isValid() ? parsedDate.format("YYYY-MM-DD") : null;
-}
+// function convertToISODate(dateString) {
+//   if (!dateString) return null;
+//   const parsedDate = moment(dateString, "DD-MM-YYYY", true);
+//   return parsedDate.isValid() ? parsedDate.format("YYYY-MM-DD") : null;
+// }
 
 // Helper function to convert date from YYYY-MM-DD to DD-MM-YYYY
+
 function convertToDisplayDate(dateString) {
   if (!dateString) return null;
   const parsedDate = moment(dateString, "YYYY-MM-DD", true);
@@ -69,54 +71,93 @@ router.get("/details/:uid", async (req, res) => {
 });
 
 // Update user details by UID (limited DOB and DOA to 2 updates)
-router.post("/details/:uid", async (req, res) => {
+router.patch("/details/:uid", async (req, res) => {
   try {
     const uid = req.params.uid;
-    const userDoc = db.collection("users").doc(uid);
-    const userData = (await userDoc.get()).data() || {};
+    const updates = req.body; // Only contains changed fields from frontend
 
-    // Initialize update counts if they don't exist
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).send("No updates provided");
+    }
+
+    // Get the user's current data
+    const userDoc = db.collection("users").doc(uid);
+    const userSnapshot = await userDoc.get();
+
+    if (!userSnapshot.exists) {
+      return res.status(404).send("User not found");
+    }
+
+    const userData = userSnapshot.data();
+
+    // Initialize update counts
     const dobUpdateCount = userData.dobUpdateCount || 0;
     const doaUpdateCount = userData.doaUpdateCount || 0;
 
-    // Check if the user has exceeded the allowed updates for dob and doa
-    if (req.body.dob && dobUpdateCount >= 2) {
-      return res.status(400).send("DOB can only be updated twice.");
+    // Check DOB and DOA update limits
+    if (updates.dob && dobUpdateCount >= 2) {
+      return res.status(400).send("Date of Birth can only be updated twice.");
+    }
+    if (updates.doa && doaUpdateCount >= 2) {
+      return res.status(400).send("Date of Anniversary can only be updated twice.");
     }
 
-    if (req.body.doa && doaUpdateCount >= 2) {
-      return res.status(400).send("DOA can only be updated twice.");
-    }
-    console.log(req.body.dob);
-    // Prepare updated user data
-    const updatedUserData = {
-      displayName: req.body.displayName || userData.displayName || null,
-      email: req.body.email || userData.email || null,
-      phoneNumber: req.body.phoneNumber || userData.phoneNumber || null,
-      gender: req.body.gender || userData.gender || null,
-      dob: req.body.dob ? convertToISODate(req.body.dob) : userData.dob || null,
-      doa: req.body.doa ? convertToISODate(req.body.doa) : userData.doa || null,
-    };
+    // Check for email and phone number conflicts only if they're being updated
+    const usersRef = db.collection("users");
 
-    // Increment the update counters if dob or doa is updated
-    if (req.body.dob && dobUpdateCount < 2) {
-      updatedUserData.dobUpdateCount = dobUpdateCount + 1;
+    if (updates.email) {
+      const emailSnapshot = await usersRef
+          .where("email", "==", updates.email)
+          .get();
+      const conflictingEmail = emailSnapshot.docs.find((doc) => doc.id !== uid);
+      if (conflictingEmail) {
+        return res.status(400).send("Email is already in use by another account.");
+      }
     }
 
-    if (req.body.doa && doaUpdateCount < 2) {
-      updatedUserData.doaUpdateCount = doaUpdateCount + 1;
+    if (updates.phoneNumber) {
+      const phoneSnapshot = await usersRef
+          .where("phoneNumber", "==", updates.phoneNumber)
+          .get();
+      const conflictingPhone = phoneSnapshot.docs.find((doc) => doc.id !== uid);
+      if (conflictingPhone) {
+        return res.status(400).send("Phone number is already in use by another account.");
+      }
     }
 
-    // Save the updated user data
-    await userDoc.set(updatedUserData, {merge: true});
+    // Prepare the update object
+    const updateData = {...updates};
 
-    // Prepare the response data with display dates
-    const responseData = {
-      ...updatedUserData,
-    };
+    // Only increment update counters if those fields are being updated
+    if (updates.dob) {
+      updateData.dobUpdateCount = dobUpdateCount + 1;
+    }
+    if (updates.doa) {
+      updateData.doaUpdateCount = doaUpdateCount + 1;
+    }
+
+    // Remove any undefined or null values to prevent overwriting with nulls
+    Object.keys(updateData).forEach((key) => {
+      if (updateData[key] === undefined || updateData[key] === null) {
+        delete updateData[key];
+      }
+    });
+
+    // Update only the changed fields
+    await userDoc.update(updateData);
+
+    // Fetch and return the updated user data
+    const updatedSnapshot = await userDoc.get();
+    const updatedData = updatedSnapshot.data();
+
+    // Remove internal fields from response
+    const responseData = {...updatedData};
+    delete responseData.dobUpdateCount;
+    delete responseData.doaUpdateCount;
 
     return res.status(200).json(responseData);
   } catch (error) {
+    console.error("Error updating user profile:", error);
     return res.status(500).send(error.message);
   }
 });
@@ -142,7 +183,6 @@ router.get("/addresses/:uid", async (req, res) => {
     return res.status(500).send(error.message);
   }
 });
-
 
 // Update, add new address, or set address as default
 router.post("/addresses/:uid", async (req, res) => {
@@ -236,6 +276,5 @@ router.delete("/addresses/delete/:uid/:id", async (req, res) => {
     return res.status(500).send(error.message);
   }
 });
-
 
 module.exports = router;

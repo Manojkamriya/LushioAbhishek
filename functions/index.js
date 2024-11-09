@@ -29,6 +29,13 @@ const wishlistRoute = require("./routes/wishlist.js");
 const productFilterRoute = require("./routes/productFilters.js");
 const getQtyRoute = require("./routes/getQty.js");
 const couponRoute = require("./routes/coupons.js");
+const subscribeRoute = require("./routes/subscribe.js");
+
+// Import cloud functions
+const generateReferralCode = require("./cloudFunctions/generateReferralCode.js");
+
+// Export cloud functions
+exports.generateReferralCode = generateReferralCode;
 
 // User routes
 app.use("/user", userRoutes);
@@ -56,6 +63,9 @@ app.use("/wishlist", wishlistRoute);
 
 // Coupon routes
 app.use("/coupon", couponRoute);
+
+// Subscribe routes
+app.use("/subscribe", subscribeRoute);
 
 // Export the API
 exports.api = functions.https.onRequest(app);

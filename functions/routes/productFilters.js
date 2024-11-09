@@ -15,6 +15,13 @@ function combineUniqueProducts(products1, products2) {
   return Array.from(map.values());
 }
 
+// Helper function to find intersection of products by ID
+function intersectProducts(products1, products2) {
+  const map = new Map();
+  products1.forEach((product) => map.set(product.id, product));
+  return products2.filter((product) => map.has(product.id));
+}
+
 // GET /getByCategory
 router.post("/getByCategory", async (req, res) => {
   try {
@@ -55,20 +62,20 @@ router.get("/featuredMen", async (req, res) => {
     const productsRef = db.collection("products");
 
     // First query for 'featured'
-    const featuredSnapshot = await productsRef.where("categories", "array-contains", "featured").limit(4).get();
+    const featuredSnapshot = await productsRef.where("categories", "array-contains", "featured").get();
     const featuredProducts = [];
     featuredSnapshot.forEach((doc) => {
       featuredProducts.push({id: doc.id, ...doc.data()});
     });
 
     // Second query for 'men'
-    const menSnapshot = await productsRef.where("categories", "array-contains", "men").limit(4).get();
+    const menSnapshot = await productsRef.where("categories", "array-contains", "men").get();
     const menProducts = [];
     menSnapshot.forEach((doc) => {
       menProducts.push({id: doc.id, ...doc.data()});
     });
     // Combine and remove duplicates
-    const combinedProducts = combineUniqueProducts(featuredProducts, menProducts);
+    const combinedProducts = intersectProducts(featuredProducts, menProducts);
 
     if (combinedProducts.length === 0) {
       return res.status(404).json({message: "No featured men's products found."});
@@ -88,21 +95,21 @@ router.get("/featuredWomen", async (req, res) => {
     const productsRef = db.collection("products");
 
     // First query for 'featured'
-    const featuredSnapshot = await productsRef.where("categories", "array-contains", "featured").limit(4).get();
+    const featuredSnapshot = await productsRef.where("categories", "array-contains", "featured").get();
     const featuredProducts = [];
     featuredSnapshot.forEach((doc) => {
       featuredProducts.push({id: doc.id, ...doc.data()});
     });
 
     // Second query for 'women'
-    const womenSnapshot = await productsRef.where("categories", "array-contains", "women").limit(4).get();
+    const womenSnapshot = await productsRef.where("categories", "array-contains", "women").get();
     const womenProducts = [];
     womenSnapshot.forEach((doc) => {
       womenProducts.push({id: doc.id, ...doc.data()});
     });
 
     // Combine and remove duplicates
-    const combinedProducts = combineUniqueProducts(featuredProducts, womenProducts);
+    const combinedProducts = intersectProducts(featuredProducts, womenProducts);
 
     if (combinedProducts.length === 0) {
       return res.status(404).json({message: "No featured women's products found."});
@@ -122,21 +129,21 @@ router.get("/featuredAccessories", async (req, res) => {
     const productsRef = db.collection("products");
 
     // First query for 'featured'
-    const featuredSnapshot = await productsRef.where("categories", "array-contains", "featured").limit(4).get();
+    const featuredSnapshot = await productsRef.where("categories", "array-contains", "featured").get();
     const featuredProducts = [];
     featuredSnapshot.forEach((doc) => {
       featuredProducts.push({id: doc.id, ...doc.data()});
     });
 
     // Second query for 'accessories'
-    const accessoriesSnapshot = await productsRef.where("categories", "array-contains", "accessories").limit(4).get();
+    const accessoriesSnapshot = await productsRef.where("categories", "array-contains", "accessories").get();
     const accessoriesProducts = [];
     accessoriesSnapshot.forEach((doc) => {
       accessoriesProducts.push({id: doc.id, ...doc.data()});
     });
 
     // Combine and remove duplicates
-    const combinedProducts = combineUniqueProducts(featuredProducts, accessoriesProducts);
+    const combinedProducts = intersectProducts(featuredProducts, accessoriesProducts);
 
     if (combinedProducts.length === 0) {
       return res.status(404).json({message: "No featured accessories found."});

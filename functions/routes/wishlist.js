@@ -104,22 +104,46 @@ router.get("/array/:uid", async (req, res) => {
     if (!uid) {
       return res.status(400).json({error: "Missing user ID"});
     }
-console.log("hi")
+    
     const wishlistRef = admin.firestore().collection("users").doc(uid).collection("wishlist");
     const snapshot = await wishlistRef.get();
- // Debug: log each document's data
- snapshot.docs.forEach((doc) => {
-  console.log("Document ID:", doc.id, "Data:", doc.data());
-});
+    
     // Extract both document ID and productId for each wishlist item
     const wishlistItems = snapshot.docs.map((doc) => ({
       id: doc.id,
       productId: doc.data().productId,
     }));
-
+    
+    // Extract both document ID and productId for each wishlist item
+    const wishlistItems = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      productId: doc.data().productId,
+    }));
+    
     res.status(200).json(wishlistItems);
   } catch (error) {
     console.error("Error fetching product IDs from wishlist:", error);
     res.status(500).json({error: "Failed to fetch product IDs"});
   }
 });
+
+// Get wishlist item count
+router.get("/count/:uid", async (req, res) => {
+  try {
+    const {uid} = req.params;
+
+    if (!uid) {
+      return res.status(400).json({error: "Missing user ID"});
+    }
+
+    const wishlistRef = admin.firestore().collection("users").doc(uid).collection("wishlist");
+    const snapshot = await wishlistRef.count().get();
+
+    res.status(200).json({count: snapshot.data().count});
+  } catch (error) {
+    console.error("Error fetching wishlist count:", error);
+    res.status(500).json({error: "Failed to fetch wishlist count"});
+  }
+});
+
+module.exports = router;
