@@ -5,13 +5,16 @@ import reportWebVitals from "./reportWebVitals";
 import ShopContextProvider from "./components/context/ShopContext";
 import UserProvider from "./components/context/UserContext";
 import { AddressProvider } from "./components/context/AddressContext";
+import { WishlistProvider } from "./components/context/WishlistContext";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <UserProvider>
       <AddressProvider>
         <ShopContextProvider>
-          <App />
+          <WishlistProvider>
+            <App />
+          </WishlistProvider>
         </ShopContextProvider>
       </AddressProvider>
     </UserProvider>

@@ -1,23 +1,49 @@
-import React, { useState, useContext } from "react";
-import { ShopContext } from "../../components/context/ShopContext";
+import React, { useState, useContext,useEffect } from "react";
+import axios from "axios";
+//import { ShopContext } from "../../components/context/ShopContext";
+import { UserContext } from "../../components/context/UserContext";
 import EmptyWishList from "./EmptyWishList";
 import ProductCard from "../home/ProductCard";
-import { Pagination } from "@mui/material"; // Import Pagination
+import { Pagination } from "@mui/material"; 
 
 function WishList() {
-  const { all_product, wishlistItems } = useContext(ShopContext);
-
+ 
+  const {user} = useContext(UserContext);
   const [page, setPage] = useState(1); // For keeping track of the current page
   const itemsPerPage = 8; // Control the number of items per page
-
+const [wishlist, setWishlist] = useState([]);
   const handleChange = (event, value) => {
     setPage(value);
   };
 
-  // Filter wishlist items
-  const wishlistProducts = all_product.filter((e) => wishlistItems[e.id]);
+useEffect(() => {
+  const fetchWishlist = async () => {
+    // Ensure the user is defined before proceeding
+    if (!user?.uid) return;
 
-  const wishlistHasItems = wishlistProducts.length > 0;
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/wishlist/${user.uid}`
+      );
+      console.log(response.data);
+      // Validate response format
+      if (Array.isArray(response.data)) {
+        setWishlist(response.data);
+      
+      } else {
+        throw new Error("Unexpected data format: Expected an array of IDs.");
+      }
+    } catch (error) {
+      console.error("Error fetching wishlist IDs:", error);
+      // setError("Failed to load wishlist items."); // Uncomment if you want to handle errors in state
+    }
+  };
+
+  fetchWishlist();
+}, [user]);
+
+  
+  const wishlistHasItems = wishlist.length > 0;
 
   if (!wishlistHasItems) {
     return <EmptyWishList />;
@@ -26,7 +52,7 @@ function WishList() {
   // Calculate the items to display based on pagination
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const paginatedProducts = wishlistProducts.slice(startIndex, endIndex);
+  const paginatedProducts = wishlist.slice(startIndex, endIndex);
 
   return (
     <>
@@ -34,27 +60,33 @@ function WishList() {
    
     <h3 className="wishlist-title">Your Wishlist</h3>
 
+ 
     <div className="wishlist-container">
-      {paginatedProducts.map((e, id) => (
-        <ProductCard
-          key={e.id}
-          id={e.id}
-          description={e.name}
-          image1={e.image}
-          image2={e.image}
-          newPrice={e.new_price}
-          oldPrice={e.old_price}
-          rating={e.rating}
-          liked={true}
-          data={e.data || {}}
-        />
-      ))}
+  {paginatedProducts.map((items, id) => (
+    items.product ? ( // Check if items.product exists
+      <ProductCard
+        key={items.id}
+        id={items.productId}
+        displayName={items.product.displayName}
+        image1={items.product.cardImages?.[0] || ""}
+        image2={items.product.cardImages?.[1] || ""}
+        rating={items.product.rating || 0}
+        price={items.product.price || 0}
+        description={items.product.description}
+        discount={items.product.discount || 0}
+        aboveHeight={items.product.aboveHeight || {}}
+        belowHeight={items.product.belowHeight || {}}
+        colorOptions={items.product.colorOptions || []}
+        quantities={items.product.quantities || {}}
+        height={items.product.height || ""}
+      />
+    ) : null // Render nothing if items.product is null or undefined
+  ))}
+</div>
 
-    
-    </div>
       {/* Pagination Component */}
       <Pagination
-        count={Math.ceil(wishlistProducts.length / itemsPerPage)} // Total pages
+        count={Math.ceil(wishlist.length / itemsPerPage)} // Total pages
         page={page}
         onChange={handleChange}
         style={{ marginBlock: '20px', display: 'flex', justifyContent: 'center' }}

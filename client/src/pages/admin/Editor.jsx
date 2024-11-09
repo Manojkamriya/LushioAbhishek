@@ -281,7 +281,7 @@ const Editor = ({ product: initialProduct,onClose}) => {
       if (!isHeightBased) {
         updatedProduct.colorOptions = updatedProduct.colorOptions || [];
         updatedProduct.quantities = updatedProduct.quantities || {};
-        updatedProduct.sizeOptions = sizeOptions;  // Add sizeOptions if it's required in the backend
+     //   updatedProduct.sizeOptions = sizeOptions;  // Add sizeOptions if it's required in the backend
       }
   
       const response = await axios.put(

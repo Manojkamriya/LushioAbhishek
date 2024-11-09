@@ -7,11 +7,13 @@ import axios from "axios";
 import Rating from '@mui/material/Rating';
 import { useParams } from "react-router-dom";
 import all_product from "../../components/context/assets/all_product";
-import HeightBasedOptions from "./HeightBasedOptions";
-import SimpleColorOptions from "./SimpleColorOptions";
+import ColorOptions from "./ColorOptions";
+import HeightBasedSelection from "./HeightBasedSelection"
 import { ShopContext } from "../../components/context/ShopContext";
+import { UserContext } from "../../components/context/UserContext";
 import { Modal, Box, Fade, Backdrop } from "@mui/material";
 import MediaRenderer from "../../components/MediaRenderer";
+import SizeChart from "./SizeChart";
 const ReviewCard = ({ username, rating, review, dateTime }) => (
   <div className="review-card">
     <div className="review-header">
@@ -27,70 +29,118 @@ const ReviewCard = ({ username, rating, review, dateTime }) => (
 );
 
 function ProductDisplay() {
-  const { productID } = useParams(); // Get the product ID from the URL
-  const product = all_product.find((e) => e.id === Number(productID)); // Find the product by ID
-  const isHeightBased = product.data && "height" in product.data;
-  const [selectedColor, setSelectedColor] = useState(null);
-  const [selectedSize, setSelectedSize] = useState('');
+ // const { productID } = useParams(); // Get the product ID from the URL
+ // const product = all_product.find((e) => e.id === Number(productID)); // Find the product by ID
+ const { productID } = useParams(); // Assumes `id` comes from the route param
+ const [product, setProduct] = useState(null);
+ const [loading, setLoading] = useState(true);
+ const [error, setError] = useState(null);
+ const [heightCategory, setHeightCategory] = useState(null);
+ const [selectedColor, setSelectedColor] = useState(null);
+ const [selectedSize, setSelectedSize] = useState(null);
+ const { user } = useContext(UserContext);
+const id = productID;
+ useEffect(() => {
+   // Fetch product when `id` changes
+   const fetchProduct = async () => {
+     setLoading(true);
+     setError(null);
+
+     try {
+       const response = await fetch(`${process.env.REACT_APP_API_URL}/products/${id}`);
+       if (!response.ok) throw new Error('Failed to fetch product');
+       
+       const data = await response.json();
+       setProduct(data);
+       console.log(data);
+     } catch (err) {
+       setError(err.message);
+     } finally {
+       setLoading(false);
+     }
+   };
+
+   if (id) fetchProduct();
+ }, [id]); // Runs the effect when `id` changes
+
+ const isHeightBased = product?.height;
+// const [isLoading, setIsLoading] = useState(false);
+ 
+useEffect(() => {
+  if (product) {
+    setHeightCategory(product.height ? "aboveHeight" : null);
+  //  setSelectedColor(null); // Initialize with a default color if needed
+    setSelectedSize(null); // Initialize with a default size if needed
+  }
+}, [product]);
   const [quantity, setQuantity] = useState(0);
-  const [heightCategory, setHeightCategory] = useState('aboveHeight');
+ 
   const [isLoading, setIsLoading] = useState(false);
   const [showError, setShowError] = useState(false);
   const [reviews, setReviews]=  useState(null);
-  const { addToCart, addToWishlist} = useContext(ShopContext);
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  useEffect(() => {
-    if ( product.data && product.data.aboveHeight && product.data.aboveHeight.colorOptions.length > 0) {
-      setSelectedColor(product.data.aboveHeight.colorOptions[0]);
-    }
-  }, [product.data]);
-  const handleColorSelect = (color) => {
-    setSelectedColor(color);
-    setSelectedSize('');
-    setShowError(false);
-    setQuantity(0); // Reset when color changes
-  };
+//  const { addToCart, addToWishlist} = useContext(ShopContext);
  
-  useEffect(() => {
+  // useEffect(() => {
+  //   if ( product.data && product.data.aboveHeight && product.data.aboveHeight.colorOptions.length > 0) {
+  //     setSelectedColor(product.data.aboveHeight.colorOptions[0]);
+  //   }
+  // }, [product.data]);
+  // const handleColorSelect = (color) => {
+  //   setSelectedColor(color);
+  //   setSelectedSize('');
+  //   setShowError(false);
+  //   setQuantity(0); // Reset when color changes
+  // };
+ 
+  // useEffect(() => {
   
-      const fetchReviews = async () => {
+  //     const fetchReviews = async () => {
       
-        try {
-          const response = await axios.get("http://127.0.0.1:5001/lushio-fitness/us-central1/api/reviews/azkEOgiSVkvByK93XYr6");
+  //       try {
+  //         const response = await axios.get(`${process.env.REACT_APP_API_URL}/reviews/azkEOgiSVkvByK93XYr6`);
 
-          setReviews(response.data);
-          console.log(response.data);
-        } catch (error) {
-          console.error('Error fetching reviews:', error);
-        } finally {
-         console.log("fucntion run success");
-        }
-      };
+  //         setReviews(response.data);
+        
+  //       } catch (error) {
+  //         console.error('Error fetching reviews:', error);
+  //       }
+  //     };
 
-     fetchReviews();
+  //    fetchReviews();
     
-  }, []);
-  const handleAddToCart = (id) => {
-    if (selectedSize === '') {
+  // }, []);
+  const addToCart = async (id) => {
+
+    if (selectedSize==null) {
       setShowError(true); // Show error if size is not selected
-    } else {
-      setIsLoading(true);
-      setTimeout(() => {
-        addToCart(id);
-        setIsLoading(false);
-      }, 2000);
-    }
-  };
-  const handleSizeSelect = (size) => {
-    setSelectedSize(size);
-    if (product.data && product.data.quantities) {
-      setQuantity(product.data.quantities[selectedColor.name][size]);
-    }
+      return;
+    } 
+    const cartItem = {
+      uid: user.uid,
+      productId: id,
+      quantity: 1,
+      color: selectedColor,
+      size: selectedSize,
+      height: heightCategory,
+    };
+
+    try {
+      // Start both the API call and a 2-second timer
+      const apiCall = axios.post(
+        `${process.env.REACT_APP_API_URL}/cart/add`,
+        cartItem
+      );
+      const minimumDelay = new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Wait for both to complete
+      const [response] = await Promise.all([apiCall, minimumDelay]);
+
+     
+    } catch (error) {
+      console.error("Error adding item to cart:", error);
+    } 
   };
  
-
   
  
   const navigate = useNavigate();
@@ -113,6 +163,9 @@ function ProductDisplay() {
   if(isLoading && reviews){
     return <></>
   }
+  if (loading) return <div className="loader-container"> <span className="loader"></span></div>;
+ if (error) return <div>Error: {error}</div>;
+ if (!product) return <div>No product found</div>;
   return (
     <div className="productDisplay">
       <div className="productDisplay-left">
@@ -132,89 +185,54 @@ function ProductDisplay() {
         </div>
       </div>
       <div className="productDisplay-right">
-        <h1>{product.name}</h1>
+        <h1>{product.displayName}</h1>
         <div className="productDisplay-right-stars">
           <span>
-            <p>{product.rating}</p>
+           {/* // <p>{product.rating}</p> */}
+            {product.rating > 0 ? <p>{product.rating}</p> : <p>4.5</p>}
             <img src="/Images/icons/star.png" alt="icon" />
           </span>
           <p>(122 reviews)</p>
         </div>
         <div className="productDisplay-right-prices">
-          <div className="productDisplay-right-price-new">{product.new_price}</div>
-          <div className="productDisplay-right-price-old">{product.old_price}</div>
+          <div className="productDisplay-right-price-new">₹ {product.price}</div>
+          <div className="productDisplay-right-price-old">₹ {product.price}</div>
           <div className="productDisplay-right-price-discount">20% OFF</div>
         </div>
         <p className="tax-statement">Inclusive of all taxes</p>
         <div className="productDisplay-right-discription">
-          A lightweight, Usually knitted, pullover shirt, close-fitting and with a round neckline and short sleeves, worn as an undershirt or outer garment
+        {product.description}
         </div>
         <div className="productDisplay-right-size">
-        {
-              isHeightBased?    <HeightBasedOptions
-          data={product.data}
-          heightCategory={heightCategory}
-          setHeightCategory={setHeightCategory}
-          selectedColor={selectedColor}
-          setSelectedColor={setSelectedColor}
-          selectedSize={selectedSize}
-          setSelectedSize={setSelectedSize}
-          quantity={quantity}
-          handleColorSelect={handleColorSelect}
-          setQuantity={setQuantity}
-        />:product.data?<SimpleColorOptions
-              data={product.data}
-              selectedColor={selectedColor}
-              selectedSize={selectedSize}
-              quantity={quantity}
-              onColorSelect={handleColorSelect}
-              onSizeSelect={handleSizeSelect}
-            />
-                :<p>No products available</p>}
-        
+        {isHeightBased ? (
+              <HeightBasedSelection
+                data={product}
+                selectedHeight={heightCategory}
+                setSelectedHeight={setHeightCategory}
+                selectedColor={selectedColor}
+                setSelectedColor={setSelectedColor}
+                selectedSize={selectedSize}
+                setSelectedSize={setSelectedSize}
+              />
+            ) : (
+              <ColorOptions
+                data={product}
+                selectedColor={selectedColor}
+                setSelectedColor={setSelectedColor}
+                selectedSize={selectedSize}
+                setSelectedSize={setSelectedSize}
+              />
+            )}
          
         </div>
          {/* Display error message if no size is selected */}
       {showError && !selectedSize && <p className="product-display-error-message">Please select a size before adding to cart!</p>}
-      <p className="size-chart" onClick={handleOpen}>Size Chart</p>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
-      >
-        <Fade in={open}>
-          <Box
-            sx={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              width: "490px",
-              bgcolor: "background.paper",
-              border: ".5px solid #000",
-              borderRadius: "9px",
-              boxShadow: 24,
-              p: 4,
-            }}
-          >
-       <div className="chart-header">
-        <p>Generalized Size chart</p>
-        <img src="/Images/icons/cross.png" alt="" onClick={handleClose}/>
-       </div>
-<img src="/Images/size-chart.webp" alt=""/>
-        <p>Disclaimer: These charts are for reference ONLY. This is intended to be a general guide, and while we do our best to ensure all our sizing is consistent, you may find that some styles vary in size. Fit may vary depending on the construction and material.</p> 
-          </Box>
-        </Fade>
-      </Modal>
+    <SizeChart/>
         <div className="button-container">
 
         
-          <button onClick={()=>addToWishlist(product.id)}>WISHLIST</button> 
-          <button onClick={()=>handleAddToCart(product.id)}>ADD TO CART</button> 
+          <button >WISHLIST</button> 
+          <button onClick={()=>addToCart(product.id)}>ADD TO CART</button> 
         </div>
 
   <button className="buy-button" onClick={() => navigate("/place-order")}>BUY NOW</button>
@@ -222,11 +240,15 @@ function ProductDisplay() {
        
         <p className="productDisplay-right-category">
           <span>Category :</span>
-          Women, T-Shirt, Crop Top
+          <>
+          {product.categories?.map((category, index) => (
+            <span key={index}>{category}{", "}</span>
+          ))}
+        </>
         </p>
         <p className="productDisplay-right-category">
           <span>Description : </span>
-          A lightweight, Usually knitted, pullover shirt, close-fitting and with a round neckline and short sleeves, worn as an undershirt or outer garment. Striped Flutter Sleeve Overlap Collar Peplum Hem Blouse.
+       {product.description}
         </p>
         <img className="trust-image" src="/Images/trust.png" alt=""/>
         <div className="review-container">

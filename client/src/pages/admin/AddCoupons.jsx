@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-
+import "./addcoupon.css"
 function AddCoupons() {
   const [formData, setFormData] = useState({
     code: "",
@@ -49,7 +49,7 @@ function AddCoupons() {
   };
 
   return (
-    <div>
+    <div className="admin-coupon-container">
       <h2>Add Coupon</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {success && <p style={{ color: "green" }}>{success}</p>}

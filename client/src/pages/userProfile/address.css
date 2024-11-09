@@ -219,7 +219,7 @@ height: 40px;
       margin-left: 3%;
     }
   }
-  .size-selector-outer{
+  /* .size-selector-outer{
     height: 90%;
     width: 100%;
    
@@ -280,7 +280,7 @@ margin-left: 2px;
   }
   @media(max-width: 765px){
     .size-selector-my .height-selector button{
-      /* height: clamp(10px, 7vw, 25px); */
+      
       font-size:  clamp(10px, 1vw, 16px);
     }
     .size-selector-my p{
@@ -315,4 +315,4 @@ padding: 4%;
     .add-to-cart-button{
       font-size: 8px;
     }
-  }
+  } */

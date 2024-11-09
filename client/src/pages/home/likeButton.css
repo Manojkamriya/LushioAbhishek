@@ -1,4 +1,4 @@
-
+/* 
   .heart-button-container {
     display: inline-block;
     cursor: pointer;
@@ -9,13 +9,12 @@
   .heart-icon {
     font-size: 2rem;
     color: #ccc;
-    /* border: 1px solid black; */
+   
     transition: all 0.3s ease;
   }
   
   .heart-icon.liked {
     color: red;
-    /* transform: scale(1.2); */
     animation: heartbeat 0.6s ease-in-out;
     border: none;
   }
@@ -93,4 +92,4 @@
     border: 1px solid  #1c1c1c;
     border-left-color: #c8c7c7;
   }
-}
+} */
