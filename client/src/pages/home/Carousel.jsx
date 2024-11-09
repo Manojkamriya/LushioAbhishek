@@ -66,8 +66,8 @@ function Carousel({ images }) {
         {images.length > 1 && (
           <>
            
-            <div class="carousel_arrow carousel_arrow_left" onClick={slideLeft}></div>
-            <div class="carousel_arrow carousel_arrow_right" onClick={slideRight}></div>
+            <div className="carousel_arrow carousel_arrow_left" onClick={slideLeft}></div>
+            <div className="carousel_arrow carousel_arrow_right" onClick={slideRight}></div>
             <div className="carousel_pagination">
               {images.map((_, index) => (
                 <div

@@ -25,23 +25,9 @@ function ProductCard(props) {
 
   const { wishlist, wishlistIds, toggleWishlist } = useWishlist();
   const productId = props?.id;
-//console.log(wishlistIds);
   const wishlistItem = wishlist.find((item) => item.productId === productId);
-  const isLiked = wishlistIds.has(productId);
   const [liked, setLiked] = useState(wishlistIds.has(productId));
-  // const handleToggleWishlist = async (id, productId)=> {
-  // if(liked){
-  //   setIsRemoving(true);
-  //  toggleWishlist(id, productId) ? setLiked(false):setLiked(true);
-  // }
-  // else{
-  //   setLiked(true);
-  //   if(!toggleWishlist){
-  //     setLiked(false);
-  //   }
-  // }
-  // setIsRemoving(false);
-  // }
+ 
   const handleToggleWishlist = async (id, productId) => {
    
   
