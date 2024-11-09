@@ -48,7 +48,7 @@ router.post("/:productId", async (req, res) => {
 
     // Add a reference to the review in the product's reviews subcollection
     const productRef = db.collection("products").doc(productId);
-    console.log(productRef);
+    // console.log(productRef);
     await productRef.collection("reviews").doc(reviewRef.id).set({});
 
     // Check if the product document exists
@@ -202,8 +202,13 @@ router.delete("/delete/:reviewId", async (req, res) => {
           const fileRef = storage.bucket().file(decodedPath);
           await fileRef.delete();
         } catch (error) {
-          console.error(`Failed to delete image: ${imageUrl}`, error);
-          throw error; // Re-throw the error to be caught by the Promise.all error handling
+          if (error.code === 404 || error.message.includes("404")) {
+            console.warn(`Image not found (404), skipping deletion: ${imageUrl}`);
+            // Do not re-throw; continue with review deletion
+          } else {
+            console.error(`Failed to delete image: ${imageUrl}`, error);
+            throw error; // Re-throw if it’s any other error
+          }
         }
       }
     };
@@ -213,7 +218,6 @@ router.delete("/delete/:reviewId", async (req, res) => {
       const deletePromises = media.map((mediaUrl) =>
         deleteImage(mediaUrl).catch((error) => {
           console.warn(`Failed to delete media file: ${mediaUrl}`, error);
-          // Continue with review deletion even if file deletion fails
         }),
       );
 
@@ -226,22 +230,26 @@ router.delete("/delete/:reviewId", async (req, res) => {
 
     // Remove the reference from the product's reviews subcollection
     const productRef = db.collection("products").doc(productId);
-    await productRef.collection("reviews").doc(reviewId).delete();
-
-    // Update the product's rating
     const productDoc = await productRef.get();
-    const productData = productDoc.data();
-    const oldRating = productData.rating || 0;
-    const oldReviewCount = productData.reviewCount || 0;
-    const newReviewCount = oldReviewCount - 1;
-    const newRating = newReviewCount > 0 ?
-      ((oldRating * oldReviewCount) - rating) / newReviewCount :
-      0;
+    if (productDoc.exists) {
+      await productRef.collection("reviews").doc(reviewId).delete();
 
-    await productRef.update({
-      rating: newRating,
-      reviewCount: newReviewCount,
-    });
+      // Update the product's rating and review count
+      const productData = productDoc.data();
+      const oldRating = productData.rating || 0;
+      const oldReviewCount = productData.reviewCount || 0;
+      const newReviewCount = oldReviewCount - 1;
+      const newRating = newReviewCount > 0 ?
+        ((oldRating * oldReviewCount) - rating) / newReviewCount :
+        0;
+
+      await productRef.update({
+        rating: newRating,
+        reviewCount: newReviewCount,
+      });
+    } else {
+      console.warn(`Product with ID ${productId} does not exist; skipping subcollection and rating update.`);
+    }
 
     return res.status(200).json({message: "Review and associated media successfully deleted"});
   } catch (error) {
@@ -250,5 +258,63 @@ router.delete("/delete/:reviewId", async (req, res) => {
   }
 });
 
+// Review approve route
+router.post("/approve/:reviewId", async (req, res) => {
+  const {reviewId} = req.params;
+  const {approved} = req.body;
+
+  try {
+    // Fetch the review document to get userId
+    const reviewRef = db.collection("reviews").doc(reviewId);
+    const reviewSnap = await reviewRef.get();
+
+    if (!reviewSnap.exists) {
+      return res.status(404).send("Review not found.");
+    }
+
+    const reviewData = reviewSnap.data();
+    const userId = reviewData.userId;
+
+    // Check if the review is already approved
+    if (!reviewData.approved && approved) {
+      // Fetch admin controls data
+      const controlsRef = db.collection("controls").doc("admin");
+      const controlsSnap = await controlsRef.get();
+
+      if (!controlsSnap.exists) {
+        return res.status(404).send("Admin controls not found.");
+      }
+
+      const controlsData = controlsSnap.data();
+      const reviewApprovedCoins = controlsData.reviewApprovedCoins;
+      const reviewApprovedMessage = controlsData.reviewApprovedMessage;
+      const reviewApprovedExpiry = controlsData.reviewApprovedExpiry;
+
+      // Calculate expiry date
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + reviewApprovedExpiry);
+
+      // Add a new document to the user's coins subcollection
+      const coinsCollectionRef = db.collection(`users/${userId}/coins`);
+      await coinsCollectionRef.add({
+        amount: reviewApprovedCoins,
+        expiry: expiryDate,
+        message: reviewApprovedMessage,
+      });
+
+      // Update the review document with the approved value from the frontend
+      await reviewRef.update({
+        approved: approved,
+      });
+
+      res.status(200).send("Review approved and coins awarded successfully.");
+    } else {
+      return res.status(400).send("This review is already approved");
+    }
+  } catch (error) {
+    console.error("Error approving review:", error);
+    res.status(500).send("Failed to approve review.");
+  }
+});
 
 module.exports = router;

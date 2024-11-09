@@ -11,6 +11,9 @@ const AdminControls = () => {
   const [doaCoins, setDoaCoins] = useState(0);
   const [doaMessage, setDoaMessage] = useState('');
   const [doaExpiry, setDoaExpiry] = useState(30);
+  const [reviewApprovedCoins, setReviewApprovedCoins] = useState(0);
+  const [reviewApprovedMessage, setReviewApprovedMessage] = useState('');
+  const [reviewApprovedExpiry, setreviewApprovedExpiry] = useState(30);
   const [ageCoins, setAgeCoins] = useState({
     oneMonth: { coins: 0, message: '', expiry: 30 },
     oneYear: { coins: 0, message: '', expiry: 30 },
@@ -35,6 +38,9 @@ const AdminControls = () => {
           setDoaMessage(data.doaMessage);
           setDoaExpiry(data.doaExpiry);
           setAgeCoins(data.coinSettings || ageCoins);
+          setReviewApprovedCoins(data.reviewApprovedCoins);
+          setReviewApprovedMessage(data.reviewApprovedMessage);
+          setreviewApprovedExpiry(data.reviewApprovedExpiry || reviewApprovedExpiry)
         } else {
           console.log("No such document!");
         }
@@ -43,6 +49,7 @@ const AdminControls = () => {
       }
     };
     fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCoinSettingChange = (milestone, field, value) => {
@@ -66,6 +73,9 @@ const AdminControls = () => {
         doaMessage,
         doaExpiry: Number(doaExpiry), // Ensure number type
         coinSettings: ageCoins,
+        reviewApprovedCoins: Number(reviewApprovedCoins), // Ensure number type
+        reviewApprovedMessage,
+        reviewApprovedExpiry
       });
       alert("Data successfully updated!");
     } catch (error) {
@@ -138,6 +148,33 @@ const AdminControls = () => {
           type="number"
           value={doaExpiry}
           onChange={(e) => setDoaExpiry(e.target.value)} // Correctly updating doaExpiry
+        />
+      </div>
+
+      <div className="control-item">
+        <label>Coins for Review Approval:</label>
+        <input
+          type="number"
+          value={reviewApprovedCoins}
+          onChange={(e) => setReviewApprovedCoins(e.target.value)}
+        />
+      </div>
+
+      <div className="control-item">
+        <label>Message for Review Approval:</label>
+        <input
+          type="text"
+          value={reviewApprovedMessage}
+          onChange={(e) => setReviewApprovedMessage(e.target.value)}
+        />
+      </div>
+
+      <div className="control-item">
+        <label>Expiry for Review Coins:</label>
+        <input
+          type="number"
+          value={reviewApprovedExpiry}
+          onChange={(e) => setreviewApprovedExpiry(e.target.value)} // Correctly updating reviewApprovedExpiry
         />
       </div>
 

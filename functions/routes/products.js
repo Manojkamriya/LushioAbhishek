@@ -41,7 +41,7 @@ router.post("/addProduct", async (req, res) => {
       price: parseFloat(price),
       gst: parseFloat(gst),
       discount: parseFloat(discount),
-      categories: typeof categories === "string" ? categories.split(",").map((cat) => cat.trim().toLowerCase()) : categories,
+      categories: typeof categories === "string" ? categories.split(",").map((cat) => cat.trim().toLowerCase()) : categories.map((cat) => cat.toLowerCase()), // Convert to lowercase
       cardImages: cardImages, // Array of two card image URLs
       rating: 0, // Default rating
       allImages: [...cardImages],
@@ -236,7 +236,6 @@ router.delete("/delete/:id", async (req, res) => {
   }
 });
 
-
 // Update a product by ID
 router.put("/update/:id", async (req, res) => {
   try {
@@ -277,6 +276,11 @@ router.put("/update/:id", async (req, res) => {
       if (updatedProductData[field] === undefined) {
         updatedProductData[field] = currentProductData[field];
       }
+    }
+
+    // Convert categories to lowercase
+    if (updatedProductData.categories) {
+      updatedProductData.categories = Array.isArray(updatedProductData.categories) ? updatedProductData.categories.map((cat) => cat.toLowerCase()) : updatedProductData.categories.split(",").map((cat) => cat.trim().toLowerCase());
     }
 
     if (!updatedProductData.cardImages || updatedProductData.cardImages.length !== 2) {

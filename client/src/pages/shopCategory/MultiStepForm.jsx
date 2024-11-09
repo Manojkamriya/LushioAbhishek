@@ -142,8 +142,7 @@ const MultiStepForm = () => {
       //
       // in the below request replace the hardcoded dummy product id 
       //
-
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/reviews/3bdLgiX03RoYo56IvlKG`, payload, {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/reviews/5MVkrXF0y1QYrf9Gxy2W`, payload, {
         headers: {
           'Content-Type': 'application/json',
         },
