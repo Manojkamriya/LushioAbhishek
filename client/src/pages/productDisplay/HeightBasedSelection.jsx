@@ -87,11 +87,11 @@ const ProductDetails = ({ data, selectedHeight, setSelectedHeight, selectedColor
                                  //   className={size === selectedSize ? "selected" : ""}
                                  disabled={ data[selectedHeight]?.quantities?.[selectedColor]?.[
                                     size
-                                  ] ===0}
+                                  ] === 0}
                                  className={`${size === selectedSize ? "selected" : ""} ${
                                     data[selectedHeight]?.quantities?.[selectedColor]?.[
                                       size
-                                    ] ===0
+                                    ] === 0
                                       ? "sold-out"
                                       : ""
                                   }`}

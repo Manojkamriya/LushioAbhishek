@@ -63,7 +63,7 @@ function Navbar() {
         <div className="left-icons">
           <img
             className="menu-open"
-            src="/Images/icons/menu_open_2.png"
+            src="/Images/icons/menu_open_2-bg.png"
             alt=""
             onClick={openMenu}
           />
@@ -140,7 +140,7 @@ function Navbar() {
       <img src="/Images/icons/search-icon.png" alt="" />
     </div>
         <Link to="/" className="lushio-text">
-          <img src="/Images/lushio-text-3.png" alt="" />
+          <img src="/Images/icons/lushio-text-3-bg.png" alt="" />
         </Link>
         <div className="icons">
           

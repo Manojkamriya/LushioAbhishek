@@ -1,4 +1,4 @@
-.review-container {
+.admin-review-container {
     display: flex;
     justify-content: space-between;
     padding: 20px;
@@ -16,7 +16,7 @@
   }
   
   .review-card {
-    border: 1px solid #007bff;
+    /* border: 1px solid #007bff; */
     padding: 10px;
     margin-bottom: 10px;
     transition: opacity 0.3s;

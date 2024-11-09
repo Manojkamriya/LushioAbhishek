@@ -27,10 +27,7 @@ const CartRow = ({
         {!inStock ? (
           <button
             className="cart-add-to-wishlist"
-            onClick={() => {
-              addToWishlist(item.id);
-              removeFromCart(item.id);
-            }}
+          
           >
             Move to wishlist
           </button>

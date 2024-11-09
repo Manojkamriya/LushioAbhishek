@@ -312,9 +312,16 @@ if (color.length > 0) {
           </div>
       
           }
-      
+          <div className="filter-button-container">
+          {isFilterApplied && (
+            <button onClick={closeFilter} className="clear-filter-button">
+              Apply Filter
+            </button>
+          )}
 
           <button onClick={clearFilter}>Clear All Filters</button>
+          </div>
+       
         </div>
 
         <div className="shopcategory-products">

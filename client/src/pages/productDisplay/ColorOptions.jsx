@@ -51,7 +51,6 @@ const ColorOptions = ({ data, selectedColor,
   return (
     <>
       <p>Select Color:</p>
-     
       {colorOptions.length > 0 ? (
         <div className="color-selector">
           {colorOptions.map((color) => (

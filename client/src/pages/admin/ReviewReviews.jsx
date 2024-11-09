@@ -58,7 +58,7 @@ const ReviewReviews = () => {
   };
 
   return (
-    <div className="review-container">
+    <div className="admin-review-container">
       <div className="review-list">
         {reviews.map((review) => (
           <div

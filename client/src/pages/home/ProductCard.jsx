@@ -1,6 +1,7 @@
 import React, { useRef, useState, useContext } from "react";
 import HeightBasedSelection from "./HeightBasedSelection";
 import ColorOptions from "./ColorOptions";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { FaHeart, FaHeartBroken } from "react-icons/fa";
 import { UserContext } from "../../components/context/UserContext";
@@ -126,8 +127,11 @@ function ProductCard(props) {
       )}
       <div className="item-image-container">
         <div className="item-image">
-          <img src={props.image1} alt="" />
-          <img src={props.image2} alt="" />
+        <Link to={`/${props.id}`}>
+        <img src={props.image1} alt="" />
+        <img src={props.image2} alt="" />
+        </Link>
+      
 
           <div className="productcard-top-icon-container">
             <span onClick={openMenu}>
