@@ -19,17 +19,21 @@ const CartItems = () => {
   const [isAllSelected, setIsAllSelected] = useState(true); // default all selected
   const [open, setOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-
+const[loading,setLoading] = useState(false);
   const { user } = useContext(UserContext);
 
   useEffect(() => {
     const fetchCartItems = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/cart/${user.uid}`);
-        setCartProducts(response.data);
+        setCartProducts(response.data.cartItems);
         console.log(response.data);
       } catch (err) {
         console.error(err);
+      }
+      finally{
+        setLoading(false);
       }
     };
 
@@ -107,15 +111,6 @@ const CartItems = () => {
     setIsAllSelected(false);
   };
 
-  // const getSelectedTotalAmount = () => {
-  //   let total = 0;
-  //   cartProducts.forEach((item) => {
-  //     if (selectedItems[item.id]) {
-  //       total += item.product.price * item.quantity; // Assuming quantity is stored in the item object
-  //     }
-  //   });
-  //   return total;
-  // };
   const getSelectedTotalAmount = () => {
     let total = 0;
     cartProducts.forEach((item) => {
@@ -160,7 +155,7 @@ const CartItems = () => {
       alert("Invalid promo code.");
     }
   };
-
+  if (loading) return <div className="loader-container"> <span className="loader"></span></div>;
   if (cartProducts.length === 0) {
     return <EmptyCart />; // Render empty cart message
   }

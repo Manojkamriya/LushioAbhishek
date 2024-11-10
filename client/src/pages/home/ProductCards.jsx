@@ -67,10 +67,7 @@ function ProductCards() {
 
     fetchWishlistIds();
   }, []);
-  useEffect(() => {
-
-  }, [wishlistIds]);
-
+  
   const handleWishlistToggle = (productId) => {
     if (wishlistIds.includes(productId)) {
       setWishlistIds((prevIds) => prevIds.filter(id => id !== productId));
