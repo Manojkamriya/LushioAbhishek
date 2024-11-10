@@ -107,11 +107,25 @@ const CartItems = () => {
     setIsAllSelected(false);
   };
 
+  // const getSelectedTotalAmount = () => {
+  //   let total = 0;
+  //   cartProducts.forEach((item) => {
+  //     if (selectedItems[item.id]) {
+  //       total += item.product.price * item.quantity; // Assuming quantity is stored in the item object
+  //     }
+  //   });
+  //   return total;
+  // };
   const getSelectedTotalAmount = () => {
     let total = 0;
     cartProducts.forEach((item) => {
-      if (selectedItems[item.id]) {
-        total += item.product.price * item.quantity; // Assuming quantity is stored in the item object
+      const isHeightBased = item.height;
+      const inStock = isHeightBased
+        ? item.product[item.height]?.quantities?.[item.color]?.[item.size] > 0
+        : item.product.quantities[item.color]?.[item.size] > 0;
+  
+      if (selectedItems[item.id] && inStock) {
+        total += item.product.price * item.quantity; // Only add price for items in stock and selected
       }
     });
     return total;
@@ -238,6 +252,7 @@ const CartItems = () => {
             <p>Free</p>
           </div>
           <hr />
+          
           <div className="cartitems-total-item">
             <p>Use Wallet Points ({walletPoints} points)</p>
             <input
@@ -276,16 +291,10 @@ const CartItems = () => {
         </div>
 
         <div className="cartitems-promocode">
-          <p>If you have a promocode, enter it here</p>
+          <p>If you have a promocode,Use it here</p>
           <div className="cartitems-promobox">
-            <input
-              type="text"
-              placeholder="Promo code"
-              value={promoCode}
-              onChange={(e) => setPromoCode(e.target.value)}
-            />
-            <button onClick={handleSubmitPromoCode}>Submit</button>
-            <Coupon/>
+           
+            <Coupon discount={discountPercentage} setDiscount={setDiscountPercentage} cartAmount={getSelectedTotalAmount()}/>
           </div>
         </div>
       </div>

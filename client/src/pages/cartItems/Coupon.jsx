@@ -1,95 +1,78 @@
-import React, { useState, useEffect,useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { Modal, Backdrop, Fade, Box, Radio, FormControl, FormControlLabel, RadioGroup,Typography, } from '@mui/material';
-import "./Coupon.css";
-import { UserContext } from "../../components/context/UserContext";
-function Coupon() {
+import { Modal, Backdrop, Fade, Box, Typography } from '@mui/material';
+import './Coupon.css';
+import { UserContext } from '../../components/context/UserContext';
+
+function Coupon({ setDiscount, cartAmount }) {
   const [open, setOpen] = useState(false);
-  const {user} = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const [coupons, setCoupons] = useState([]);
-  const [selectedCoupon, setSelectedCoupon] = useState(null); // Set initially to null
- // State variables for individual messages
- const [purchaseOf, setPurchaseOf] = useState('6000');
- const [discountedAmount, setDiscountedAmount] = useState(parseFloat(purchaseOf)); // Store the discounted amount
-
- const [successMessage, setSuccessMessage] = useState('');
- const [errorMessage, setErrorMessage] = useState('');
- const [validationMessage, setValidationMessage] = useState('');
-
- //const handleOpen = () => setOpen(true);
- const handleClose = () => {
-   setOpen(false);
-   // Reset fields and messages
-  // setUid('');
-  // setCode('');
-  setPurchaseOf('1000');
-  setDiscountedAmount(parseFloat(purchaseOf)); // Reset discounted amount
-
-   setSuccessMessage('');
-   setErrorMessage('');
-   setValidationMessage('');
- };
-
- const handleSubmit = async (uid, code,purchaseOf) => {
-  
-   setSuccessMessage(''); // Clear previous success messages
-   setErrorMessage('');   // Clear previous error messages
-   setValidationMessage(''); // Clear previous validation messages
-
-   // Validate inputs
-   if (!uid || !code || !purchaseOf) {
-     setValidationMessage('All fields are required.');
-     return;
-   }
-
-   try {
-     const response = await axios.post(`${process.env.REACT_APP_API_URL}/coupon/use`, {
-       uid,
-       code,
-       purchaseOf: parseFloat(purchaseOf),
-     });
-
-     // Set success message with discount if coupon is applied
-  //   setSuccessMessage('Coupon applied successfully! Discount: ₹' + response.data.discount);
-     // Set success message with discount if coupon is applied
-     const discount = response.data.discount;
-     setSuccessMessage('Coupon applied successfully! Discount: ₹' + discount);
-     const newAmount = parseFloat(purchaseOf) - discount; // Calculate the new amount after applying discount
-     setDiscountedAmount(newAmount < 0 ? 0 : newAmount); // Ensure the amount does not go below 0
-   } catch (error) {
-     // Set error message based on the response from the server
-     if (error.response) {
-       setErrorMessage(error.response.data.error);
-     } else {
-       setErrorMessage('Error applying coupon');
-     }
-   }
- };
+  const [selectedCoupon, setSelectedCoupon] = useState(''); // For radio-selected coupon
+  const [inputCoupon, setInputCoupon] = useState(''); // For manually entered coupon
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [validationMessage, setValidationMessage] = useState('');
 
   useEffect(() => {
     const fetchCoupons = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/coupon`);
-        setCoupons(response.data.coupons);
-
-        // Set the first coupon as selected by default if coupons are available
-        if (response.data.coupons.length > 0) {
-          setSelectedCoupon(response.data.coupons[0].code); // Set selected coupon after fetching
+        if (response.data && response.data.coupons) {
+          setCoupons(response.data.coupons);
+          if (response.data.coupons.length > 0) {
+            setSelectedCoupon(response.data.coupons[0].code); // Set the first coupon as selected
+          }
         }
       } catch (error) {
-        console.log("Error fetching coupons.");
+        console.log('Error fetching coupons.');
       }
     };
     fetchCoupons();
   }, []);
 
-  const handleOpen = () => setOpen(true);
- // const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setSuccessMessage('');
+    setErrorMessage('');
+    setValidationMessage('');
+    setInputCoupon(''); // Reset input coupon on close
+  };
+
+  const handleSubmit = async () => {
+    setSuccessMessage('');
+    setErrorMessage('');
+    setValidationMessage('');
+
+    const couponCode = inputCoupon || selectedCoupon; // Prioritize input coupon if available
+
+    // Check if all necessary data is present
+    if (!user?.uid || !couponCode || !cartAmount) {
+      setValidationMessage('All fields are required.');
+      return;
+    }
+
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/coupon/use`, {
+        uid: user.uid,
+        code: couponCode,
+        purchaseOf: parseFloat(cartAmount),
+      });
+
+      const discountValue = response.data.discount;
+      setDiscount(discountValue); // Update discount in parent component
+      setSuccessMessage('Coupon applied successfully! Discount: ₹' + discountValue);
+      handleClose();
+    } catch (error) {
+      setErrorMessage(error.response?.data?.error || 'Error applying coupon');
+    }
+    setInputCoupon(''); 
+  };
 
   return (
     <div>
-      <button onClick={handleOpen}>Apply Coupon</button>
-      
+      <button onClick={() => setOpen(true)}>Apply Coupon</button>
+
       <Modal
         open={open}
         onClose={handleClose}
@@ -111,42 +94,49 @@ function Coupon() {
               p: 4,
             }}
           >
-            <h2>Select a Coupon</h2>
-
-            <FormControl component="fieldset">
-              <RadioGroup
-                value={selectedCoupon}
-                onChange={(e) => setSelectedCoupon(e.target.value)}
-              >
-               <img
+            <img
               src="/Images/icons/cross.png"
-              alt=""
-              className='coupon-close'
+              alt="Close"
+              className="coupon-close"
               onClick={handleClose}
-              style={{ aspectRatio: 1 }}
             />
-                {coupons.map((coupon) => (
-                  <FormControlLabel
-                    key={coupon.id}
+            <div className="coupon-input-container">
+              <input
+                type="text"
+                placeholder="Enter Coupon Code"
+                onChange={(e) => setInputCoupon(e.target.value)}
+                value={inputCoupon}
+                className="coupon-input"
+              />
+              <button onClick={handleSubmit} className="apply-button">Apply</button>
+            </div>
+            <h2>Select a Coupon</h2>
+            <div className="options">
+              {coupons.map((coupon) => (
+                <label key={coupon.code} className={`option ${selectedCoupon === coupon.code ? 'selected' : ''}`}>
+                  <input
+                    type="radio"
+                    name="coupon"
                     value={coupon.code}
-                    control={<Radio />}
-                    label={
-                      <div className="coupon-container">
-                        <p><strong>Coupon Code:</strong> {coupon.code}</p>
-                        <p><strong>Validity:</strong> {coupon.Validity}</p>
-                        <p><strong>Minimum Purchase:</strong> ₹{coupon.onPurchaseOf}</p>
-                        <p><strong>Discount:</strong> {coupon.discount}</p>
-                      </div>
-                    }
+                    checked={selectedCoupon === coupon.code && !inputCoupon} // Prevent radio selection if inputCoupon is used
+                    onChange={() => setSelectedCoupon(coupon.code)}
                   />
-                ))}
-                 {/* Display messages */}
+                  <div>
+                    <p>{coupon.code} - Valid until: {coupon.validity || 'N/A'}</p>
+                    <p>Min Amount: {coupon.onPurchaseOf || 'N/A'}, Discount: {coupon.discount || 'N/A'}</p>
+                  </div>
+                </label>
+              ))}
+            </div>
+
+            <div className="coupon-button-container">
+              <button onClick={handleClose} className="cancel-button">Cancel</button>
+              <button onClick={handleSubmit} className="apply-button">Apply Coupon</button>
+            </div>
+
             {validationMessage && <Typography color="warning">{validationMessage}</Typography>}
             {successMessage && <Typography color="success">{successMessage}</Typography>}
             {errorMessage && <Typography color="error">{errorMessage}</Typography>}
-                <button className='apply-button' onClick={()=>handleSubmit(user.uid, selectedCoupon, purchaseOf)}>Apply Coupon</button>
-              </RadioGroup>
-            </FormControl>
           </Box>
         </Fade>
       </Modal>

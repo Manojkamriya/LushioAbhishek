@@ -125,6 +125,10 @@
   font-weight: 500;
   color: #00b852;
 }
+.productDisplay-right-size{
+  container-type: 
+  inline-size;
+}
 .productDisplay-right-size h1 {
   margin-top: 10px;
   color: #656565;
@@ -400,6 +404,7 @@ margin-bottom: 20px;
   .productDisplay-right{
     gap: 5px;
     height: 350px;
+    overflow-x: hidden;
   }
   .productDisplay-img-list{
     height: 350px;
@@ -468,6 +473,7 @@ margin-bottom: 20px;
    gap: 6px;
    width: 255px;
    height: 65px;
+   overflow-y: hidden;
    overflow-x: auto;
    direction: ltr;
   }
