@@ -72,24 +72,30 @@ router.get("/:uid", async (req, res) => {
     const wishlistRef = admin.firestore().collection("users").doc(uid).collection("wishlist");
     const snapshot = await wishlistRef.get();
 
-    const wishlistItems = await Promise.all(snapshot.docs.map(async (doc) => {
+    let productsRemoved = false;
+
+    // Fetch product details while filtering out missing products
+    const wishlistItems = (await Promise.all(snapshot.docs.map(async (doc) => {
       const wishlistItem = {id: doc.id, ...doc.data()};
 
       // Fetch product details using the productId from the wishlist item
       const productRef = admin.firestore().collection("products").doc(wishlistItem.productId);
       const productSnapshot = await productRef.get();
 
-      // Attach product data if it exists
       if (productSnapshot.exists) {
+        // Attach product data if it exists
         wishlistItem.product = {id: productSnapshot.id, ...productSnapshot.data()};
+        return wishlistItem;
       } else {
-        wishlistItem.product = null;
+        // If the product does not exist, mark productsRemoved as true and delete the wishlist item
+        productsRemoved = true;
+        await doc.ref.delete();
+        return null; // Filter out this item
       }
+    }))).filter((item) => item !== null); // Remove null items (deleted products)
 
-      return wishlistItem;
-    }));
-
-    res.status(200).json(wishlistItems);
+    // Send response with a flag indicating if products were removed
+    res.status(200).json({wishlistItems, productsRemoved});
   } catch (error) {
     console.error("Error fetching wishlist items with product details:", error);
     res.status(500).json({error: "Failed to fetch wishlist items"});

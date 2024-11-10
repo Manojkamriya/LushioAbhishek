@@ -64,24 +64,30 @@ router.get("/:uid", async (req, res) => {
     const cartRef = admin.firestore().collection("users").doc(uid).collection("cart");
     const snapshot = await cartRef.get();
 
-    const cartItems = await Promise.all(snapshot.docs.map(async (doc) => {
+    let productsRemoved = false;
+
+    // Fetch product details while filtering out missing products
+    const cartItems = (await Promise.all(snapshot.docs.map(async (doc) => {
       const cartItem = {id: doc.id, ...doc.data()};
 
       // Fetch product details using the productId from the cart item
       const productRef = admin.firestore().collection("products").doc(cartItem.productId);
       const productSnapshot = await productRef.get();
 
-      // Attach product data if it exists
       if (productSnapshot.exists) {
+        // Attach product data if it exists
         cartItem.product = {id: productSnapshot.id, ...productSnapshot.data()};
+        return cartItem;
       } else {
-        cartItem.product = null; // handle case where product does not exist
+        // If the product does not exist, mark productsRemoved as true and delete the cart item
+        productsRemoved = true;
+        await doc.ref.delete();
+        return null; // Filter out this item
       }
+    }))).filter((item) => item !== null); // Remove null items (deleted products)
 
-      return cartItem;
-    }));
-
-    res.status(200).json(cartItems);
+    // Send response with a flag indicating if products were removed
+    res.status(200).json({cartItems, productsRemoved});
   } catch (error) {
     console.error("Error fetching cart items with product details:", error);
     res.status(500).json({error: "Failed to fetch cart items"});
