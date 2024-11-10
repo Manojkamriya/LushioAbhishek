@@ -231,7 +231,7 @@ const MultiStepForm = () => {
     <div className="form-step">
       <h2>Upload Media (Optional):</h2>
       <p></p>
-      <div class="upload-button-container">
+      <div className="upload-button-container">
         <label htmlFor="file-upload" className="upload-btn">Choose or Drop Media Files (max size: 15MB)</label>
         <input
           id="file-upload"
