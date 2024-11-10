@@ -3,8 +3,9 @@ import { ShopContext } from "./context/ShopContext";
 import "./Navbar.css";
 import { Link } from "react-router-dom";
 import Dropdown from "./Dropdown";
+import axios from "axios";
 import Submenu from "./Submenu";
-
+import { useWishlist } from "./context/WishlistContext";
 import Search from "./Search";
 import { UserContext } from "./context/UserContext";
 
@@ -12,7 +13,9 @@ function Navbar() {
   const { getCartItemCount, getWishlistItemCount} =
   useContext(ShopContext);
   const [activeDropdown, setActiveDropdown] = useState(null);
-
+const [wishlistCount, setWishlistCount] = useState(0);
+const [cartCount, setCartCount] = useState(0);
+const { wishlist} = useWishlist();
   const handleMouseEnter = (dropdownName) => {
     setActiveDropdown(dropdownName);
   };
@@ -37,6 +40,51 @@ function Navbar() {
     }
   };
 
+
+  useEffect(() => {
+    const fetchWishlistCount = async () => {
+      // Ensure the user is defined before proceeding
+      if (!user?.uid) return;
+  
+      try {
+     
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/wishlist/count/${user.uid}`
+        );
+        console.log(response.data.count);
+        // Validate response format
+      setWishlistCount(response.data.count);
+      } catch (error) {
+        console.error("Error fetching wishlist Count", error);
+        // setError("Failed to load wishlist items."); // Uncomment if you want to handle errors in state
+      }
+      
+    };
+  
+    fetchWishlistCount();
+  }, [user,wishlist]);
+  useEffect(() => {
+    const cartCount = async () => {
+      // Ensure the user is defined before proceeding
+      if (!user?.uid) return;
+  
+      try {
+     
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/cart/count/${user.uid}`
+        );
+        console.log(response.data.count);
+        // Validate response format
+      setCartCount(response.data.count);
+      } catch (error) {
+        console.error("Error fetching wishlist Count", error);
+        // setError("Failed to load wishlist items."); // Uncomment if you want to handle errors in state
+      }
+      
+    };
+  
+    cartCount();
+  }, [user]);
   // Cleanup function to ensure scrolling is re-enabled if the component unmounts while the menu is open
   useEffect(() => {
     return () => {
@@ -109,7 +157,7 @@ function Navbar() {
               category="women"
               topProducts={["Upperwear", "Tops", "Leggings", "Outerwear", "Matching Sets"]}
               featured={["New Drop", "Coming Soon", "Restock", "Best Seller", "Sale"]}
-              imageSrc="./Images/card-image-2.webp"
+              imageSrc="/Images/card-image-2.webp"
               launchTitle="NEW LAUNCH FOR WOMEN"
             />
           )}
@@ -146,11 +194,11 @@ function Navbar() {
           
           <Link  to={user ? "/wishlist" : "/login"}>
             <img src="/Images/icons/wishlist.png" alt="" />
-            { user && getWishlistItemCount() > 0 &&  <span>{getWishlistItemCount()}</span>}
+            { user && wishlistCount > 0 &&  <span>{wishlistCount}</span>}
           </Link>
           <Link  to={user ? "/cart" : "/login"}>
             <img src="/Images/icons/cart.png" alt="" />
-          { user && getCartItemCount() > 0 &&  <span>{getCartItemCount()}</span>}
+          { user && cartCount> 0 &&  <span>{cartCount}</span>}
           </Link>
           <Link className="wallet-icon" to={user ? "/wallet" : "/login"}>
             <img src="/Images/icons/wallet.png" alt="" />

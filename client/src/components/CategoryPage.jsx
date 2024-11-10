@@ -1,41 +1,68 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import ProductCard from "../pages/home/ProductCard"; // Assuming you have a ProductCard component
-import products from "../components/context/assets/all_product"; // Assuming you have a products array
-import "./categoryPage.css"
+import "./categoryPage.css";
+import axios from "axios"; // Import axios for making API requests
+
 function CategoryPage() {
-  const { category, subCategory } = useParams(); // Get the category from URL params
-  const filteredProducts = products.filter(product => 
-    product.category === category && product.subCategory === subCategory
-  );
-  
+  const { category, subCategory } = useParams(); // Get category and subCategory from URL params
+  const [products, setProducts] = useState([]); // State to store fetched products
+  const [loading, setLoading] = useState(true); // State to handle loading indicator
+  const [error, setError] = useState(null); // State to handle errors
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true); // Start loading
+        setError(null); // Clear previous errors
+
+        // Make a POST request to fetch products by category
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}/filters/getByCategory`, {
+          categories: [category, subCategory], // Send categories array based on params
+        });
+console.log(response.data);
+        setProducts(response.data); // Update products state with the response data
+      } catch (err) {
+        setError("Failed to load products. Please try again."); // Handle error
+      } finally {
+        setLoading(false); // Stop loading
+      }
+    };
+
+    fetchProducts(); // Call the function to fetch products when component mounts or params change
+  }, [category, subCategory]); // Dependency array to re-run when params change
+  if (loading) return <div className="loader-container"> <span className="loader"></span></div>;
   return (
     <div className="category-page">
-      <h1 className="category-page-heading">Products in {subCategory}</h1>
-      
-      {/* Check if there are any filtered products */}
-      {filteredProducts.length > 0 ? (
+      <h1 className="category-page-heading">Products in {subCategory || category}</h1>
+
+      {loading ? (
+       <div className="loader-container"> <span className="loader"></span></div>
+      ) : error ? (
+        <p className="error-message">{error}</p> // Show error message if there's an error
+      ) : products.length > 0 ? (
         <div className="products-grid">
-          {filteredProducts.map(item => (
-            <ProductCard 
+          {products.map((item) => (
+            <ProductCard
             key={item.id}
             id={item.id}
-            description={item.name}
-            image1={item.image}
-            image2={item.image}
-            newPrice={item.new_price}
-            oldPrice={item.old_price}
-           
-            discount = {item.discount}
-            rating={item.rating}
-            liked={false}
-           
-            data={item.data || {}}
+            displayName={item.displayName}
+            image1={item.cardImages?.[0] || ""}
+            image2={item.cardImages?.[1] || ""}
+            rating={item.rating || 0}
+            price={item.price || 0}
+            description={item.description}
+            discount={item.discount || 0}
+            aboveHeight={item.aboveHeight || {}}
+            belowHeight={item.belowHeight || {}}
+            colorOptions={item.colorOptions || []}
+            quantities={item.quantities || {}}
+            height={item.height || ""}
             />
           ))}
         </div>
       ) : (
-        <p>No products found in this category.</p> 
+        <p>No products found in this category.</p> // Show message if no products found
       )}
     </div>
   );

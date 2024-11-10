@@ -12,6 +12,7 @@ function WishList() {
   const [page, setPage] = useState(1); // For keeping track of the current page
   const itemsPerPage = 8; // Control the number of items per page
 const [wishlist, setWishlist] = useState([]);
+const[loading,setLoading] = useState(false);
   const handleChange = (event, value) => {
     setPage(value);
   };
@@ -22,13 +23,14 @@ useEffect(() => {
     if (!user?.uid) return;
 
     try {
+      setLoading(true);
       const response = await axios.get(
         `${process.env.REACT_APP_API_URL}/wishlist/${user.uid}`
       );
-      console.log(response.data);
+      console.log(response.data.wishlistItems);
       // Validate response format
-      if (Array.isArray(response.data)) {
-        setWishlist(response.data);
+      if (Array.isArray(response.data.wishlistItems)) {
+        setWishlist(response.data.wishlistItems);
       
       } else {
         throw new Error("Unexpected data format: Expected an array of IDs.");
@@ -37,6 +39,9 @@ useEffect(() => {
       console.error("Error fetching wishlist IDs:", error);
       // setError("Failed to load wishlist items."); // Uncomment if you want to handle errors in state
     }
+    finally{
+      setLoading(false);
+    }
   };
 
   fetchWishlist();
@@ -44,7 +49,7 @@ useEffect(() => {
 
   
   const wishlistHasItems = wishlist.length > 0;
-
+  if (loading) return <div className="loader-container"> <span className="loader"></span></div>;
   if (!wishlistHasItems) {
     return <EmptyWishList />;
   }

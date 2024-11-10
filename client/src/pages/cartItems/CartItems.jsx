@@ -19,17 +19,21 @@ const CartItems = () => {
   const [isAllSelected, setIsAllSelected] = useState(true); // default all selected
   const [open, setOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-
+const[loading,setLoading] = useState(false);
   const { user } = useContext(UserContext);
 
   useEffect(() => {
     const fetchCartItems = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/cart/${user.uid}`);
-        setCartProducts(response.data);
+        setCartProducts(response.data.cartItems);
         console.log(response.data);
       } catch (err) {
         console.error(err);
+      }
+      finally{
+        setLoading(false);
       }
     };
 
@@ -110,8 +114,13 @@ const CartItems = () => {
   const getSelectedTotalAmount = () => {
     let total = 0;
     cartProducts.forEach((item) => {
-      if (selectedItems[item.id]) {
-        total += item.product.price * item.quantity; // Assuming quantity is stored in the item object
+      const isHeightBased = item.height;
+      const inStock = isHeightBased
+        ? item.product[item.height]?.quantities?.[item.color]?.[item.size] > 0
+        : item.product.quantities[item.color]?.[item.size] > 0;
+  
+      if (selectedItems[item.id] && inStock) {
+        total += item.product.price * item.quantity; // Only add price for items in stock and selected
       }
     });
     return total;
@@ -146,7 +155,7 @@ const CartItems = () => {
       alert("Invalid promo code.");
     }
   };
-
+  if (loading) return <div className="loader-container"> <span className="loader"></span></div>;
   if (cartProducts.length === 0) {
     return <EmptyCart />; // Render empty cart message
   }
@@ -238,6 +247,7 @@ const CartItems = () => {
             <p>Free</p>
           </div>
           <hr />
+          
           <div className="cartitems-total-item">
             <p>Use Wallet Points ({walletPoints} points)</p>
             <input
@@ -276,16 +286,10 @@ const CartItems = () => {
         </div>
 
         <div className="cartitems-promocode">
-          <p>If you have a promocode, enter it here</p>
+          <p>If you have a promocode,Use it here</p>
           <div className="cartitems-promobox">
-            <input
-              type="text"
-              placeholder="Promo code"
-              value={promoCode}
-              onChange={(e) => setPromoCode(e.target.value)}
-            />
-            <button onClick={handleSubmitPromoCode}>Submit</button>
-            <Coupon/>
+           
+            <Coupon discount={discountPercentage} setDiscount={setDiscountPercentage} cartAmount={getSelectedTotalAmount()}/>
           </div>
         </div>
       </div>
