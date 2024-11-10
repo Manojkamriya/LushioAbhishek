@@ -191,6 +191,79 @@ router.post("/use", async (req, res) => {
   }
 });
 
+router.get("/usableCoupons/:uid", async (req, res) => {
+  const {uid} = req.params;
+
+  try {
+    // Reference to the user document
+    const userRef = db.collection("users").doc(uid);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      return res.status(404).json({error: "User not found"});
+    }
+
+    const userData = userDoc.data();
+    const usedCoupons = userData.usedCoupons || [];
+    const currentDate = new Date();
+
+    // Fetch all coupons
+    const couponsSnapshot = await db.collection("coupons").get();
+    const validCoupons = {};
+
+    // Check each coupon for eligibility
+    for (const doc of couponsSnapshot.docs) {
+      const couponData = doc.data();
+      const isExpired = currentDate > couponData.validity.toDate();
+      const isUsed = usedCoupons.includes(couponData.code);
+
+      // Skip expired or already used coupons
+      if (isExpired || isUsed) continue;
+
+      // Check the `forUsers` condition
+      let isValidForUser = false;
+
+      switch (couponData.forUsers) {
+        case "all":
+          isValidForUser = true;
+          break;
+
+        case "firstPurchase": {
+          // Check if this is the user's first purchase
+          const ordersSnapshot = await userRef.collection("orders").get();
+          if (ordersSnapshot.empty) {
+            isValidForUser = true;
+          }
+          break;
+        }
+
+        case null:
+          isValidForUser = false;
+          break;
+
+        default:
+          return res.status(400).json({error: "Invalid forUsers value in coupon"});
+      }
+
+      if (isValidForUser) {
+        const formattedValidity = couponData.validity.toDate().toISOString().split("T")[0];
+
+        // Add the coupon details directly to the validCoupons JSON object
+        validCoupons[doc.id] = {
+          id: doc.id,
+          ...couponData,
+          validity: formattedValidity,
+        };
+      }
+    }
+
+    return res.status(200).json(validCoupons);
+  } catch (error) {
+    return res.status(500).json({error: "Error fetching user-specific coupons", details: error.message});
+  }
+});
+
+
 // Route to mark a coupon as used
 router.post("/markUsed", async (req, res) => {
   const {uid, code} = req.body;
