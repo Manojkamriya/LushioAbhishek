@@ -32,3 +32,33 @@ margin-bottom: 5px;
     .feedback-container textarea:focus{
         border: 1px solid #434343;
     }
+
+   /* Modal Box Styling for Desktop */
+.modal-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    height: 500px;
+    background-color: #fff;
+    border: 0.5px solid #000;
+    border-radius: 5px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+  }
+  .modal-close{
+    height: 30px;
+    width: 30px;
+    margin-top: 30px;
+    margin-left: 80%;
+  }
+  /* Full-screen Modal Styling for Mobile */
+  @media (max-width: 480px) {
+    .modal-box {
+      width: 100%;
+      height: 100%;
+      border-radius: 0;
+      /* padding: 15px; */
+    }
+  }

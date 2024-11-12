@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect,useContext } from "react";
-import { ShopContext } from "./context/ShopContext";
+//import { ShopContext } from "./context/ShopContext";
 import "./Navbar.css";
 import { Link } from "react-router-dom";
 import Dropdown from "./Dropdown";
@@ -10,8 +10,7 @@ import Search from "./Search";
 import { UserContext } from "./context/UserContext";
 
 function Navbar() {
-  const { getCartItemCount, getWishlistItemCount} =
-  useContext(ShopContext);
+  
   const [activeDropdown, setActiveDropdown] = useState(null);
 const [wishlistCount, setWishlistCount] = useState(0);
 const [cartCount, setCartCount] = useState(0);

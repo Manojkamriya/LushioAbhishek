@@ -31,7 +31,7 @@ const MediaRenderer = (props) => {
         <img src={props.src} alt={props.alt} className={props.className} onClick={props.onClick} />
       )}
       {mediaType === 'video' && (
-        <video autoPlay loop muted src={props.src} className={props.className} onClick={props.onClick}>
+        <video autoPlay loop muted  playsInline src={props.src} className={props.className} onClick={props.onClick}>
           Your browser does not support the video tag.
         </video>
       )}

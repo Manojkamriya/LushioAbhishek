@@ -1,18 +1,12 @@
 import React, { useState } from "react";
 import { Modal, Box, Fade, Backdrop } from "@mui/material";
-
-import "./button.css"; 
-// import "../userProfile/user.css";
+import "./button.css";
 import MultiStepForm from "../shopCategory/MultiStepForm";
 import "./modal.css";
-const AnimatedModal = () => {
+const AnimatedModal = ({ productId }) => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
- 
-
- 
-  
   return (
     <div>
       <button onClick={handleOpen} className="open-rating-button">
@@ -30,6 +24,7 @@ const AnimatedModal = () => {
       >
         <Fade in={open}>
           <Box
+           className="modal-box"
             sx={{
               position: "absolute",
               top: "50%",
@@ -43,8 +38,13 @@ const AnimatedModal = () => {
               p: 4,
             }}
           >
-          
-<MultiStepForm/>
+            <img
+              src="/Images/icons/cross.png"
+              alt=""
+              className="modal-close"
+              onClick={handleClose}
+            />
+            <MultiStepForm productId={productId} handleClose={handleClose} />
           </Box>
         </Fade>
       </Modal>

@@ -9,7 +9,12 @@
 .send-tokens-container h2 {
     margin-bottom: 20px;
 }
-
+.send-tokens-container button{
+    height: 40px;
+    width: 200px;
+    background-color: #1c1b1b;
+    color: white;
+}
 .input-container {
     margin-bottom: 10px;
 }

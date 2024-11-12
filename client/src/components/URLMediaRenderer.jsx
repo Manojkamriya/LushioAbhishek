@@ -18,7 +18,7 @@ const URLMediaRenderer = ({ src, alt }) => {
     <>
       {mediaType === 'image' && <img src={src} alt={alt} className="media-preview" />}
       {mediaType === 'video' && (
-        <video autoPlay muted loop src={src} className="media-preview">
+        <video autoPlay muted  playsInline loop src={src} className="media-preview">
           Your browser does not support the video tag.
         </video>
       )}

@@ -1,12 +1,24 @@
-import React, { useContext } from "react";
+import React, { useContext,useState } from "react";
 import "./footer.css";
 import { HashLink as Link } from "react-router-hash-link";
 import { UserContext } from "./context/UserContext";
+import axios from "axios";
+
 export default function Footer() {
 
 const { user } = useContext(UserContext);
-
-  
+const [email, setEmail] = useState(''); 
+const [message, setMessage] = useState(''); 
+const handleEmailChange = (e) => { 
+  setEmail(e.target.value); };
+   const handleSubscribe = async () => { 
+    try { const response = await axios.post(`${process.env.REACT_APP_API_URL}/subscribe`, { email }); 
+    setMessage('Subscription successful!'); 
+    setEmail('');  }
+     catch (error) {
+       setMessage('Subscription failed. Please try again.'); 
+      }
+    } 
   return (
     <footer>
       <div className="primary">
@@ -68,11 +80,12 @@ const { user } = useContext(UserContext);
             Instantly receive updates, access to exclusive deals, product launch
             details, and more.
           </p>
-          <input type="email" placeholder="Email Address" />
-          <button>SUBSCRIBE</button>
+          {/* <input type="email" placeholder="Email Address" />
+          <button>SUBSCRIBE</button> */}
+          <input type="email" placeholder="Email Address" value={email} onChange={handleEmailChange} /> <button onClick={handleSubscribe}>SUBSCRIBE</button> {message && <p>{message}</p>}
         </div>
         <div className="quick-links">
-          <img src="/Images/lushio-text-3.png" alt="" />
+          <img src="/Images/icons/lushio-text-3-bg.png" alt="" />
           <h4>
             Lushio Fitenss is a Activewear clothing brand headquartered in
             Indore. Our goal is not to make products in large quantities, but

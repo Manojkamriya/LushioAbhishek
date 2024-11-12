@@ -84,10 +84,11 @@ function EditCoupons() {
   };
 
   return (
-    <div>
+    <div className="edit-coupon-container">
       <h2>Edit Coupons</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {success && <p style={{ color: "green" }}>{success}</p>}
+      <div className="edit-coupon-wrapper">
       <div className="coupon-cards">
         {coupons.map((coupon) => (
           <div key={coupon.code} className="coupon-card">
@@ -98,9 +99,8 @@ function EditCoupons() {
           </div>
         ))}
       </div>
-
       {editMode && currentCoupon && (
-        <div className="edit-form">
+        <div className="edit-coupon-form">
           <h3>Edit Coupon - {currentCoupon.code}</h3>
           <form onSubmit={handleUpdate}>
             <label>
@@ -152,6 +152,10 @@ function EditCoupons() {
           </form>
         </div>
       )}
+      </div>
+    
+
+     
     </div>
   );
 }
