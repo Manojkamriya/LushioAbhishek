@@ -288,7 +288,9 @@ export default function AddressSelection() {
                           <h4>{info.name}</h4>
                           <span>{info.flatDetails}{", "}{info.areaDetails}{", "}{info.landmark}{", "}{info.townCity}{", "}{info.state}{", "}</span>
                           <span>Pin Code: {info.pinCode}  </span>
-                          <span>Contact Number: {info.contactNo} </span>
+                         
+                          <p>Contact Number: {info.contactNo.startsWith('91') ? info.contactNo.substring(2) : info.contactNo}</p>
+
                           {info.isDefault && <h3 className="default-address">Default Address</h3>}
                           <div className="address-action">
                             <button onClick={() => handleEdit(i)}>Edit</button>

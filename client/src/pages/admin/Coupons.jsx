@@ -9,7 +9,7 @@ function Coupons() {
     return (
         <div>
             <h1>Add or Edit Coupons</h1>
-            <div>
+            <div className="admin-coupon-buttons">
                 <button onClick={() => setActiveComponent("add")}>Add Coupon</button>
                 <button onClick={() => setActiveComponent("edit")}>Edit Coupon</button>
             </div>

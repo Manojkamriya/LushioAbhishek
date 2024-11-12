@@ -11,17 +11,20 @@ function Coupon({ setDiscount, cartAmount }) {
   const [selectedCoupon, setSelectedCoupon] = useState(''); // For radio-selected coupon
   const [inputCoupon, setInputCoupon] = useState(''); // For manually entered coupon
   const [successMessage, setSuccessMessage] = useState('');
+  const[success,setSuccess]=  useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [validationMessage, setValidationMessage] = useState('');
 
   useEffect(() => {
+
     const fetchCoupons = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/coupon`);
-        if (response.data && response.data.coupons) {
-          setCoupons(response.data.coupons);
-          if (response.data.coupons.length > 0) {
-            setSelectedCoupon(response.data.coupons[0].code); // Set the first coupon as selected
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/coupon/usableCoupons/${user.uid}`);
+        if (response.data) {
+          const couponsData = Object.values(response.data); // Convert object to array
+          setCoupons(couponsData);
+          if (couponsData.length > 0) {
+            setSelectedCoupon(couponsData[0].code); // Set the first coupon as selected
           }
         }
       } catch (error) {
@@ -62,7 +65,8 @@ function Coupon({ setDiscount, cartAmount }) {
       const discountValue = response.data.discount;
       setDiscount(discountValue); // Update discount in parent component
       setSuccessMessage('Coupon applied successfully! Discount: ₹' + discountValue);
-      handleClose();
+      setSuccess(true);
+      setTimeout(() => { setSuccess(false); handleClose(); }, 3000);
     } catch (error) {
       setErrorMessage(error.response?.data?.error || 'Error applying coupon');
     }
@@ -82,6 +86,7 @@ function Coupon({ setDiscount, cartAmount }) {
       >
         <Fade in={open}>
           <Box
+          className="modal-box"
             sx={{
               position: "absolute",
               top: "50%",
@@ -100,7 +105,9 @@ function Coupon({ setDiscount, cartAmount }) {
               className="coupon-close"
               onClick={handleClose}
             />
-            <div className="coupon-input-container">
+
+            {
+              !success ? <>  <div className="coupon-input-container">
               <input
                 type="text"
                 placeholder="Enter Coupon Code"
@@ -127,7 +134,11 @@ function Coupon({ setDiscount, cartAmount }) {
                   </div>
                 </label>
               ))}
-            </div>
+            </div></>: <video autoPlay loop muted  playsInline src="/Images/success.mp4" className='success-message'>
+          Your browser does not support the video tag.
+        </video>
+            }
+          
 
             <div className="coupon-button-container">
               <button onClick={handleClose} className="cancel-button">Cancel</button>

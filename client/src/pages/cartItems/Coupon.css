@@ -47,3 +47,7 @@
   margin-top: 10px;
   transition: background-color 0.3s;
 }
+.success-message{
+  margin-inline: 30%;
+  border-radius: 50%;
+}

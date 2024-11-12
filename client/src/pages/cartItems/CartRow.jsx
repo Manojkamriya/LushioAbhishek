@@ -89,9 +89,10 @@ const CartRow = ({
               top: "50%",
               left: "50%",
               transform: "translate(-50%, -50%)",
-              width: 300,
+              width: 400,
               bgcolor: "background.paper",
-              borderRadius: "9px",
+              border: ".5px solid #000",
+              borderRadius: "5px",
               boxShadow: 24,
               p: 4,
             }}

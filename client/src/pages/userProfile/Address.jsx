@@ -265,7 +265,8 @@ export default function Address() {
                 <h4>{info.name}</h4>
                 <span>{info.flatDetails}, {info.areaDetails}, {info.landmark}, {info.townCity}, {info.state}</span>
                 <p>Pin Code: {info.pinCode}</p>
-                <p>Contact Number: {info.contactNo}</p>
+           
+                <p>Contact Number: {info.contactNo.startsWith('91') ? info.contactNo.substring(2) : info.contactNo}</p>
 
                 {info.isDefault && <h3 className="default-address">Default Address</h3>}
                 <div className="address-action">

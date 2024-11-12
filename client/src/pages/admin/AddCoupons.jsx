@@ -43,6 +43,14 @@ function AddCoupons() {
     try {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/coupon/add`, formData);
       setSuccess(response.data.message);
+      setFormData(
+        {
+          code: "",
+          validity: "",
+          discount: "",
+          onPurchaseOf: "",
+          forUsers: "all",}
+      );
     } catch (error) {
       setError(error.response?.data?.error || "An error occurred while adding the coupon.");
     }

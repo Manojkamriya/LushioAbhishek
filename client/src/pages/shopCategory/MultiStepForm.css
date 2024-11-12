@@ -254,4 +254,20 @@ visibility: hidden;
 
 
 
-  
+  @media (max-width: 480px) {
+    .form-step {
+     
+      width: 90%;
+     
+    }
+    .form-button-container{
+      width: 90%;
+    }
+    button.btn{
+      padding: 7px 15px;
+    }
+    .pagination{
+      margin-top: 4px;
+      margin-inline: 10px;
+    }
+  }

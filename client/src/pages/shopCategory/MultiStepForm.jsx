@@ -7,7 +7,7 @@ import './MultiStepForm.css';
 import axios from "axios";
 import { UserContext } from '../../components/context/UserContext';
 
-const MultiStepForm = () => {
+const MultiStepForm = ({productId, handleClose}) => {
   const [currentStep, setCurrentStep] = useState(1);
   const {user} = useContext(UserContext);
   const [formData, setFormData] = useState({
@@ -142,7 +142,7 @@ const MultiStepForm = () => {
       //
       // in the below request replace the hardcoded dummy product id 
       //
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/reviews/5MVkrXF0y1QYrf9Gxy2W`, payload, {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/reviews/${productId}`, payload, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -150,10 +150,14 @@ const MultiStepForm = () => {
       
       console.log('Review submitted successfully:', response.data);
       alert('Form submitted successfully!');
+     
   
     } catch (error) {
       console.error('Error uploading images or submitting form:', error.response?.data || error.message);
       alert('There was an error submitting your form: ' + (error.response?.data?.message || error.message));
+    }
+    finally{
+      handleClose();
     }
   };
   

@@ -149,6 +149,16 @@ if (color.length > 0) {
       case "discount":
         setFilterProducts([...fpCopy].sort((a, b) => b.discount - a.discount));
         break;
+        case "latest":
+          setFilterProducts([...fpCopy].sort((a, b) => {
+            if (a.createdAt._seconds === b.createdAt._seconds) {
+              // If _seconds are the same, compare _nanoseconds
+              return a.createdAt._nanoseconds - b.createdAt._nanoseconds;
+            }
+            // Otherwise, compare by _seconds
+            return a.createdAt._seconds - b.createdAt._seconds;
+          }));
+          break;
       default:
         break;
     }
@@ -224,6 +234,7 @@ if (color.length > 0) {
             <option value="low-high">Sort by: Low to High</option>
             <option value="high-low">Sort by: High to Low</option>
             <option value="discount">Sort by: Discount</option>
+            <option value="latest">Sort by: Latest</option>
           </select>
         </div>
       </div>

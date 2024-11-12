@@ -1,10 +1,13 @@
-#navbar {
+#navbar,nav {
   position: sticky;
-  top: 0%;
+  display: flex;
+  top: 0;
   z-index: 999;
   width: 100%;
   background-color: white;
   box-shadow: rgba(0, 0, 0, 0.14) 0px 3px 8px;
+  margin: 0;
+  padding: 0;
 }
 .navbar {
   height: 65px;
@@ -14,6 +17,10 @@
   width: 100%;
   position: relative;
   background-color: white;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  margin: 0;
+  padding: 0;
 }
 
 .logo {
