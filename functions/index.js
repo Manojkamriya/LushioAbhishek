@@ -99,4 +99,3 @@ exports.assignAccountAgeCoins = assignAccountAgeCoins;
 
 // expire coins
 exports.removeExpiredCoins = removeExpiredCoins;
-

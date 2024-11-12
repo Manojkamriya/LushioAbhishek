@@ -200,7 +200,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-
 // Delete a review
 router.delete("/delete/:reviewId", async (req, res) => {
   try {
