@@ -13,6 +13,14 @@ router.post("/add", async (req, res) => {
       return res.status(400).json({error: "Missing required fields"});
     }
 
+    const productsRef = admin.firestore().collection("products").doc(productId);
+    const productSnapshot = await productsRef.get();
+
+    // Check if the product exists
+    if (!productSnapshot.exists) {
+      return res.status(400).json({message: "Invalid product ID"});
+    }
+
     const wishlistRef = admin.firestore().collection("users").doc(uid).collection("wishlist");
 
     // Check if the product already exists in the wishlist
