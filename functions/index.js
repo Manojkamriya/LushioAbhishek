@@ -42,6 +42,7 @@ const productFilterRoute = require("./routes/productFilters.js");
 const getQtyRoute = require("./routes/getQty.js");
 const couponRoute = require("./routes/coupons.js");
 const subscribeRoute = require("./routes/subscribe.js");
+const searchRoute = require("./routes/search.js");
 
 // Import cloud functions
 const generateReferralCode = require("./cloudFunctions/generateReferralCode.js");
@@ -78,6 +79,9 @@ app.use("/coupon", couponRoute);
 
 // Subscribe routes
 app.use("/subscribe", subscribeRoute);
+
+// Search routes
+app.use("/search", searchRoute);
 
 // Export the API
 exports.api = functions.https.onRequest(app);

@@ -263,7 +263,6 @@ router.get("/usableCoupons/:uid", async (req, res) => {
   }
 });
 
-
 // Route to mark a coupon as used
 router.post("/markUsed", async (req, res) => {
   const {uid, code} = req.body;

@@ -13,19 +13,50 @@ router.post("/add", async (req, res) => {
       return res.status(400).json({error: "Missing required fields"});
     }
 
-    const cartItem = {
-      productId,
-      quantity,
-      color: color || null,
-      size: size || null,
-      height: height || null,
-      createdAt: new Date(),
-    };
+    const productsRef = admin.firestore().collection("products").doc(productId);
+    const productSnapshot = await productsRef.get();
+
+    // Check if the product exists
+    if (!productSnapshot.exists) {
+      return res.status(400).json({message: "Invalid product ID"});
+    }
 
     const cartRef = admin.firestore().collection("users").doc(uid).collection("cart");
-    const newCartItemRef = await cartRef.add(cartItem);
 
-    res.status(201).json({id: newCartItemRef.id, ...cartItem});
+    // Check for an identical item in the cart
+    const identicalItemSnapshot = await cartRef
+        .where("productId", "==", productId)
+        .where("color", "==", color || null)
+        .where("size", "==", size || null)
+        .where("height", "==", height || null)
+        .limit(1)
+        .get();
+
+    if (!identicalItemSnapshot.empty) {
+      // If an identical item exists, increase the quantity
+      const identicalItemDoc = identicalItemSnapshot.docs[0];
+      const existingQuantity = identicalItemDoc.data().quantity;
+
+      await cartRef.doc(identicalItemDoc.id).update({
+        quantity: Number(existingQuantity) + Number(quantity),
+      });
+
+      return res.status(200).json({message: "Quantity updated for identical item in cart"});
+    } else {
+      // If no identical item exists, add the new item to the cart
+      const cartItem = {
+        productId,
+        quantity,
+        color: color || null,
+        size: size || null,
+        height: height || null,
+        createdAt: new Date(),
+      };
+
+      const newCartItemRef = await cartRef.add(cartItem);
+
+      res.status(201).json({id: newCartItemRef.id, ...cartItem});
+    }
   } catch (error) {
     console.error("Error adding item to cart:", error);
     res.status(500).json({error: "Failed to add item to cart"});

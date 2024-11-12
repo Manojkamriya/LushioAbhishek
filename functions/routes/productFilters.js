@@ -6,14 +6,15 @@ const admin = require("firebase-admin");
 const router = express.Router();
 const db = admin.firestore();
 
+// NOT NEEDED NOW
 // Helper function to combine results and remove duplicates
-function combineUniqueProducts(products1, products2) {
-  const map = new Map();
-  [...products1, ...products2].forEach((product) => {
-    map.set(product.id, product);
-  });
-  return Array.from(map.values());
-}
+// function combineUniqueProducts(products1, products2) {
+//   const map = new Map();
+//   [...products1, ...products2].forEach((product) => {
+//     map.set(product.id, product);
+//   });
+//   return Array.from(map.values());
+// }
 
 // Helper function to find intersection of products by ID
 function intersectProducts(products1, products2) {
@@ -31,30 +32,34 @@ router.post("/getByCategory", async (req, res) => {
     }
 
     const productsRef = db.collection("products");
-    const results = [];
+    let results = [];
 
-    // Perform separate queries for each category
-    for (const category of categories) {
-      const snapshot = await productsRef.where("categories", "array-contains", category).limit(20).get();
-      snapshot.forEach((doc) => {
-        results.push({id: doc.id, ...doc.data()});
+    const snapshot1 = await productsRef.where("categories", "array-contains", categories[0]).limit(20).get();
+    snapshot1.forEach((doc) => {
+      results.push({id: doc.id, ...doc.data()});
+    });
+
+    if (categories.length === 2) {
+      const results2 = [];
+      const snapshot2 = await productsRef.where("categories", "array-contains", categories[1]).limit(20).get();
+      snapshot2.forEach((doc) => {
+        results2.push({id: doc.id, ...doc.data()});
       });
+
+      // Use intersection of both categories
+      results = intersectProducts(results, results2);
     }
 
-    // Remove duplicates and limit to top 20 products
-    const uniqueProducts = combineUniqueProducts(results, []);
-
-    if (uniqueProducts.length === 0) {
+    if (results.length === 0) {
       return res.status(404).json({message: "No products found."});
     }
 
-    res.status(200).json(uniqueProducts.slice(0, 20)); // Return top 20 unique products
+    res.status(200).json(results.slice(0, 20)); // Return top 20 unique products
   } catch (error) {
     console.error("Error fetching products by category:", error);
     res.status(500).json({message: "Error fetching products"});
   }
 });
-
 
 // GET /featuredMen
 router.get("/featuredMen", async (req, res) => {
@@ -87,7 +92,6 @@ router.get("/featuredMen", async (req, res) => {
     res.status(500).json({message: "Error fetching products"});
   }
 });
-
 
 // GET /featuredWomen
 router.get("/featuredWomen", async (req, res) => {
@@ -122,7 +126,6 @@ router.get("/featuredWomen", async (req, res) => {
   }
 });
 
-
 // GET /featuredAccessories
 router.get("/featuredAccessories", async (req, res) => {
   try {
@@ -152,6 +155,63 @@ router.get("/featuredAccessories", async (req, res) => {
     res.status(200).json(combinedProducts.slice(0, 4)); // Return only top 4 products
   } catch (error) {
     console.error("Error fetching featured accessories products:", error);
+    res.status(500).json({message: "Error fetching products"});
+  }
+});
+
+// GET men
+router.get("/men", async (req, res) => {
+  try {
+    const productsRef = db.collection("products");
+    const snapshot = await productsRef.where("categories", "array-contains", "men").limit(20).get();
+
+    const results = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+
+    if (results.length === 0) {
+      return res.status(404).json({message: "No products found for men."});
+    }
+
+    res.status(200).json(results);
+  } catch (error) {
+    console.error("Error fetching men products:", error);
+    res.status(500).json({message: "Error fetching products"});
+  }
+});
+
+// GET women
+router.get("/women", async (req, res) => {
+  try {
+    const productsRef = db.collection("products");
+    const snapshot = await productsRef.where("categories", "array-contains", "women").limit(20).get();
+
+    const results = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+
+    if (results.length === 0) {
+      return res.status(404).json({message: "No products found for women."});
+    }
+
+    res.status(200).json(results);
+  } catch (error) {
+    console.error("Error fetching women products:", error);
+    res.status(500).json({message: "Error fetching products"});
+  }
+});
+
+// GET accessories
+router.get("/accessories", async (req, res) => {
+  try {
+    const productsRef = db.collection("products");
+    const snapshot = await productsRef.where("categories", "array-contains", "accessories").limit(20).get();
+
+    const results = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+
+    if (results.length === 0) {
+      return res.status(404).json({message: "No products found for accessories."});
+    }
+
+    res.status(200).json(results);
+  } catch (error) {
+    console.error("Error fetching accessories products:", error);
     res.status(500).json({message: "Error fetching products"});
   }
 });

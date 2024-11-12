@@ -16,6 +16,14 @@ router.post("/:productId", async (req, res) => {
     const {productId} = req.params;
     const {userId, starRating, review, quality, fit, media} = req.body;
 
+    const productsRef = admin.firestore().collection("users").doc(userId);
+    const productSnapshot = await productsRef.get();
+
+    // Check if the user exists
+    if (!productSnapshot.exists) {
+      return res.status(400).json({message: "Invalid user ID"});
+    }
+
     // Validate input
     if (!userId || !starRating || starRating > 5 || starRating < 0) {
       return res.status(400).json({error: "Missing required fields"});
@@ -93,16 +101,11 @@ router.get("/:id", async (req, res) => {
       return res.status(404).json({message: "No reviews found for this product"});
     }
 
-    const reviewIds = reviewsSnapshot.docs.map((doc) => doc.id);
-
     const reviewsData = await Promise.all(
-        reviewIds.map(async (reviewId) => {
-          const reviewDoc = await db.collection("reviews").doc(reviewId).get();
+        reviewsSnapshot.docs.map(async (reviewDoc) => {
           const reviewData = reviewDoc.data();
 
           let formattedTimestamp = "Timestamp not available";
-
-          // Check if timestamp exists and is valid before formatting
           if (reviewData && reviewData.timestamp && reviewData.timestamp.toDate) {
             const timestamp = reviewData.timestamp.toDate();
             formattedTimestamp = timestamp.toLocaleString("en-US", {
@@ -118,10 +121,20 @@ router.get("/:id", async (req, res) => {
             });
           }
 
+          // Retrieve user's displayName
+          let displayName = "User not found";
+          if (reviewData.userId) {
+            const userDoc = await db.collection("users").doc(reviewData.userId).get();
+            if (userDoc.exists) {
+              displayName = userDoc.data().displayName || null;
+            }
+          }
+
           return {
-            id: reviewId,
+            id: reviewDoc.id,
             ...reviewData,
             timestamp: formattedTimestamp,
+            displayName,
           };
         }),
     );
@@ -146,7 +159,6 @@ router.get("/", async (req, res) => {
         reviewsSnapshot.docs.map(async (reviewDoc) => {
           const reviewData = reviewDoc.data();
 
-          // Format the timestamp if it exists
           let formattedTimestamp = "Timestamp not available";
           if (reviewData && reviewData.timestamp && reviewData.timestamp.toDate) {
             const timestamp = reviewData.timestamp.toDate();
@@ -163,10 +175,20 @@ router.get("/", async (req, res) => {
             });
           }
 
+          // Retrieve user's displayName
+          let displayName = "User not found";
+          if (reviewData.userId) {
+            const userDoc = await db.collection("users").doc(reviewData.userId).get();
+            if (userDoc.exists) {
+              displayName = userDoc.data().displayName || null;
+            }
+          }
+
           return {
             id: reviewDoc.id,
             ...reviewData,
             timestamp: formattedTimestamp,
+            displayName,
           };
         }),
     );
@@ -177,6 +199,7 @@ router.get("/", async (req, res) => {
     return res.status(500).json({error: "Failed to get reviews"});
   }
 });
+
 
 // Delete a review
 router.delete("/delete/:reviewId", async (req, res) => {
