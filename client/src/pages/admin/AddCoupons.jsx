@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "./addcoupon.css"
+import "./AddCoupon.css"
 function AddCoupons() {
   const [formData, setFormData] = useState({
     code: "",
@@ -83,6 +83,7 @@ function AddCoupons() {
           <select name="forUsers" value={formData.forUsers} onChange={handleChange} required>
             <option value="all">All</option>
             <option value="firstPurchase">First Purchase</option>
+            <option value="hidden">Hidden</option>
             <option value="">Not Applicable</option>
           </select>
         </label>

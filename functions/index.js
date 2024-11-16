@@ -43,6 +43,7 @@ const getQtyRoute = require("./routes/getQty.js");
 const couponRoute = require("./routes/coupons.js");
 const subscribeRoute = require("./routes/subscribe.js");
 const searchRoute = require("./routes/search.js");
+const ordersRoute = require("./routes/orders.js");
 
 // Import cloud functions
 const generateReferralCode = require("./cloudFunctions/generateReferralCode.js");
@@ -82,6 +83,9 @@ app.use("/subscribe", subscribeRoute);
 
 // Search routes
 app.use("/search", searchRoute);
+
+// Orders routes
+app.use("/orders", ordersRoute);
 
 // Export the API
 exports.api = functions.https.onRequest(app);

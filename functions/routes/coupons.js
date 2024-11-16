@@ -34,15 +34,21 @@ router.get("/", async (req, res) => {
 
 // Add coupon route
 router.post("/add", async (req, res) => {
-  const {code, validity, discount, onPurchaseOf, forUsers} = req.body;
+  let {code, validity, discount, onPurchaseOf, forUsers} = req.body;
 
   // Check if all fields are present
   if (!code || !validity || discount == null || onPurchaseOf == null || !forUsers) {
     return res.status(400).json({error: "All fields are mandatory"});
   }
 
+  // Trim whitespace from code and check for spaces
+  code = code.trim();
+  if (code.includes(" ")) {
+    return res.status(400).json({error: "Coupon code must not contain spaces"});
+  }
+
   // Check if forUsers value is valid
-  const validForUsers = ["all", "firstPurchase", null];
+  const validForUsers = ["all", "firstPurchase", "hidden", null];
   if (!validForUsers.includes(forUsers)) {
     return res.status(400).json({error: "Invalid forUsers value"});
   }
@@ -75,7 +81,7 @@ router.put("/update/:cid", async (req, res) => {
   const {validity, discount, onPurchaseOf, forUsers} = req.body;
 
   // Validate `forUsers` field
-  const validForUsers = ["all", "firstPurchase", null];
+  const validForUsers = ["all", "firstPurchase", "hidden", null];
   if (forUsers && !validForUsers.includes(forUsers)) {
     return res.status(400).json({error: "Invalid forUsers value"});
   }
@@ -167,6 +173,7 @@ router.post("/use", async (req, res) => {
     // Additional `forUsers` check
     switch (couponData.forUsers) {
       case "all":
+      case "hidden":
         break; // Valid for all users
 
       case "firstPurchase": {
