@@ -31,15 +31,15 @@ function Submenu({ menuRef, closeMenu }) {
     Men: {
       items: [
         { label: "upperwear", link: "/men" },
-        { label: "Joggers", link: "/men" },
+        { label: "Hoodie", link: "/men" },
         { label: "Outerwear", link: "/men" },
-        { label: "Pants", link: "/men" },
-        { label: "Hats/Caps", link: "/men" },
-        { label: "New Drop", link: "/men" },
-        { label: "Coming Soon", link: "/men" },
-        { label: "Restock", link: "/men" },
-        { label: "Best Seller", link: "/men" },
-        { label: "Sale", link: "/men" },
+        { label: "Tanks", link: "/men" },
+        { label: "Jeans", link: "/men" },
+        { label: "Featured", link: "/men" },
+        { label: "Casual", link: "/men" },
+        { label: "shirt", link: "/men" },
+        { label: "trouser", link: "/men" },
+        { label: "T-shirt", link: "/men" },
       ],
       imageSrc: "/Images/card-image-6.webp",
       description: "New Launch for him",
@@ -47,30 +47,28 @@ function Submenu({ menuRef, closeMenu }) {
     Women: {
       items: [
         { label: "upperwear", link: "/women" },
-        { label: "Tops", link: "/women" },
-        { label: "Leggings", link: "/women" },
-        { label: "OuterWear", link: "/women" },
-        { label: "Matching Sets", link: "/women" },
-        { label: "New Drop", link: "/women" },
-        { label: "Coming Soon", link: "/women" },
-        { label: "Restock", link: "/women" },
-        { label: "Best Seller", link: "/women" },
-        { label: "Sale", link: "/women" },
+        { label: "Bottomwear", link: "/women" },
+        { label: "Featured", link: "/women" },
+        { label: "Pants", link: "/women" },
+        { label: "Jeans", link: "/women" },
+        { label: "clothing", link: "/women" },
+        { label: "dresses", link: "/women" },
+        { label: "shirts", link: "/women" },
+       
       ],
       imageSrc: "/Images/card-image-2.webp",
       description: "New Launch for her",
     },
     Accessories: {
       items: [
-        { label: "Gloves", link: "/accessories" },
-        { label: "Shakers", link: "/accessories" },
-        { label: "Wrist Band", link: "/accessories" },
-        { label: "Deadlift Band", link: "/accessories" },
-        { label: "New Drop", link: "/accessories" },
-        { label: "Coming Soon", link: "/accessories" },
-        { label: "Restock", link: "/" },
-        { label: "Best Seller", link: "/accessories" },
-        { label: "Sale", link: "/accessories" },
+        { label: "Wallets", link: "/accessories" },
+        { label: "Featured", link: "/accessories" },
+        { label: "belt", link: "/accessories" },
+        { label: "cap", link: "/accessories" },
+        { label: "bottles", link: "/accessories" },
+        { label: "bag", link: "/accessories" },
+        { label: "Featured", link: "/" },
+      
       ],
       imageSrc: "/Images/assets/product_303.webp",
       description: "New Launch",
@@ -79,6 +77,7 @@ function Submenu({ menuRef, closeMenu }) {
 
   return (
     <div ref={menuRef} className="submenu">
+    
       <div className="responsive-navbar">
         <img
           className="cross-icon"
@@ -109,7 +108,11 @@ function Submenu({ menuRef, closeMenu }) {
           </div>
         </div>
       </div>
+      <div className="overlay"  onClick={closeMenu}></div>
     </div>
+   
+  
+ 
   );
 }
 

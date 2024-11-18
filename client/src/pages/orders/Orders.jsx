@@ -1,5 +1,5 @@
 import React from "react";
-import Modal from "../productDisplay/Modal";
+import RatingModal from "../productDisplay/RatingModal";
 import "./order.css";
 
 export default function Orders() {
@@ -111,27 +111,16 @@ export default function Orders() {
             {order.status.toUpperCase()}
           </span>
           <div className="order-button-container">
-            {/* Conditionally render buttons based on the status */}
-            {/* {order.status === "Delivered" ? (
-              <>
-                <button className="info-button">Order Info</button>
-                <button className="rate-button">Rate Product</button>
-              </>
-            ) : (
-              <>
-                <button className="info-button">Order Info</button>
-                <button className="cancel-button">Cancel Order</button>
-              </>
-            )} */}
+           
               {order.status === "Delivered" ? (
     <>
       <button className="open-rating-button">Order Info</button>
-      <Modal /> {/* Optionally display a rating modal or button */}
+      <RatingModal />  {/* Optionally display a rating modal or button */}
     </>
   ) : (
     <>
       <button className="open-rating-button">Order Info</button> {/* This will always show */}
-      <Modal /> 
+      <RatingModal /> 
       <button className="open-rating-button">Cancel Order</button> {/* Cancel button when not delivered */}
     </>
   )}

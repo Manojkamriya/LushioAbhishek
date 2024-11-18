@@ -3,7 +3,7 @@ import React, { useState,useEffect} from 'react';
 import PhoneInput from "react-phone-input-2";
 import { useAddress } from '../../components/context/AddressContext';
 import "./order.css"
-export default function AddressSelection() {
+const AddressSelection = ({selectedAddres, setSelectedAddres})=> {
   const {
     addressData,
     isChangingDefault,
@@ -12,10 +12,12 @@ export default function AddressSelection() {
     handleEditAddress,
     handleRemoveAddress,
     handleSetDefault,
+    selectedAddress,
+    setSelectedAddress,
   } = useAddress();
 
   const [editingIndex, setEditingIndex] = useState(null);
-  const [selectedAddress, setSelectedAddress] = useState(null); // New state
+  //const [selectedAddress, setSelectedAddress] = useState(null); // New state
   const [newAddress, setNewAddress] = useState({
     name: '',
     flatDetails: '',
@@ -45,9 +47,12 @@ export default function AddressSelection() {
  useEffect(() => {
   const defaultAddress = addressData.find((addr) => addr.isDefault);
   if (defaultAddress) {
-    setSelectedAddress(defaultAddress.id);
+    setSelectedAddress(defaultAddress);
   }
 }, [addressData]);
+const handleAddressSelection = (address) => {
+  setSelectedAddress(address); // Store the selected address object
+};
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewAddress((prevAddress) => ({ ...prevAddress, [name]: value }));
@@ -58,7 +63,14 @@ export default function AddressSelection() {
       alert("Please fill in all required fields!");
       return;
     }
+// Extract numeric part (without country code)
+const numericValue = newAddress.contactNo.replace(/\D/g, "");
 
+// Check if the phone number has exactly 10 digits
+if (numericValue.length !== 12) {
+  alert("Phone number must be exactly 10 digits.");
+  return;
+}
     if (editingIndex !== null) {
       handleEditAddress(newAddress, editingIndex);
       setEditingIndex(null);
@@ -162,6 +174,7 @@ export default function AddressSelection() {
             id="name"
             value={newAddress.name}
             onChange={handleInputChange}
+            autoFocus
           />
 
           <label htmlFor="contactNo">Contact Number</label>
@@ -174,7 +187,7 @@ export default function AddressSelection() {
             inputProps={{
               name: "contactNo",
               required: true,
-              autoFocus: true,
+              autoFocus: false,
             }}
           />
 
@@ -264,7 +277,12 @@ export default function AddressSelection() {
       )}
 
         <div className="address-selection-container">
-      
+        {!(isAddingNew || editingIndex !== null) && (
+                <div className="Add-new-address" onClick={handleAddNewAddress}>
+                  <span>+</span>
+                  <p>Add new addresses</p>
+                </div>
+             )}
               {addressData.length === 0 ? (
                 <p>No addresses found. Please add a new address.</p>
               ) : (
@@ -274,15 +292,16 @@ export default function AddressSelection() {
                       <label key={info.id} 
                       // className="address-option" 
                       htmlFor={`address-${info.id}`}
-                      className={`address-option ${selectedAddress === info.id ? 'selected' : ''}`}
+                      className={`address-option ${selectedAddress?.id === info.id ? 'selected' : ''}`}
                       >
                         <input
                           type="radio"
                           id={`address-${info.id}`}
                           name="selectedAddress"
                           value={info.id}
-                          checked={selectedAddress === info.id}
-                          onChange={() => setSelectedAddress(info.id)}
+                          checked={selectedAddress?.id === info.id}
+                          onChange={() => handleAddressSelection(info)} // Pass the entire address object
+                         // onChange={() => setSelectedAddress(info)}
                         />
                         <div className="address">
                           <h4>{info.name}</h4>
@@ -305,26 +324,11 @@ export default function AddressSelection() {
               )}
       
       
-             
-              {!(isAddingNew || editingIndex !== null) && (
-                <div className="Add-new-address" onClick={handleAddNewAddress}>
-                  <span>+</span>
-                  <p>Add new addresses</p>
-                </div>
-             )}
-              {selectedAddress && (
-        <div className="selected-address">
-          <h3>Selected Address:</h3>
-          <h4>{addressData.find((address) => address.id === selectedAddress)?.name}</h4>
-          <p>{addressData.find((address) => address.id === selectedAddress)?.flatDetails}</p>
-          <p>{addressData.find((address) => address.id === selectedAddress)?.areaDetails}</p>
-          <p>{addressData.find((address) => address.id === selectedAddress)?.landmark}</p>
-          <p>{addressData.find((address) => address.id === selectedAddress)?.townCity}, {addressData.find((address) => address.id === selectedAddress)?.state}</p>
-          <p>Pin Code: {addressData.find((address) => address.id === selectedAddress)?.pinCode}</p>
-        </div>
-      )}
+    
+
            </div> 
     </div>
   );
 }
+export default AddressSelection;
 

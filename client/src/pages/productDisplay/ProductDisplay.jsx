@@ -1,18 +1,27 @@
-import React, { useState,useEffect, useContext } from "react";
-import "./product.css";
-import { useNavigate } from "react-router-dom";
-import Modal1 from "./Modal"
-import './ReviewCard.css';
+// 1. Built-in/Standard Library Imports
+import React, { useState, useEffect, useContext,useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
+// 2. Third-Party Library Imports
 import axios from "axios";
-import Rating from '@mui/material/Rating';
-import { useParams } from "react-router-dom";
-import ColorOptions from "./ColorOptions";
-import HeightBasedSelection from "./HeightBasedSelection"
+import Rating from "@mui/material/Rating";
+import { FaHeart, FaShoppingCart, FaSpinner } from "react-icons/fa";
+
+// 3. Absolute Imports/Global Components
 import { UserContext } from "../../components/context/UserContext";
-import { FaHeart, FaShoppingCart } from 'react-icons/fa';
-import MediaRenderer from "../../components/MediaRenderer";
-import SizeChart from "./SizeChart";
 import { useWishlist } from "../../components/context/WishlistContext";
+import MediaRenderer from "../../components/MediaRenderer";
+
+// 4. Relative Imports
+import "./product.css";
+import RatingModal from "./RatingModal";
+import "./ReviewCard.css";
+import ColorOptions from "./ColorOptions";
+import HeightBasedSelection from "./HeightBasedSelection";
+import SizeChart from "./SizeChart";
+
+// 5. Side Effect Imports (if any additional)
+
 const ReviewCard = ({ username, rating, review, dateTime }) => (
   <div className="review-card">
     <div className="review-header">
@@ -38,9 +47,16 @@ function ProductDisplay() {
  const [selectedSize, setSelectedSize] = useState(null);
  const [reviews, setReviews] = useState([]);
  const [showNotification, setShowNotification] = useState(false);
+ const [isLoadingWishlist, setIsLoadingWishlist] = useState(false);
+ const [isLoadingCart, setIsLoadingCart] = useState(false);
+  const navigate = useNavigate();
+const [showError, setShowError] = useState(false);
  const { user } = useContext(UserContext);
  const { wishlist, toggleWishlist } = useWishlist();
-const id = productID;
+ const isHeightBased = product?.height;
+ const id = productID;
+ const wishlistItem = wishlist.find((item) => item.productId === id); 
+
  useEffect(() => {
    // Fetch product when `id` changes
    const fetchProduct = async () => {
@@ -65,9 +81,16 @@ const id = productID;
    if (id) fetchProduct();
  }, [id]); // Runs the effect when `id` changes
 
- const isHeightBased = product?.height;
-// const [isLoading, setIsLoading] = useState(false);
- 
+ const targetRef = useRef(null); // Create a reference for the target component
+
+ const handleScroll = () => {
+   // Scroll to the referenced component
+   targetRef.current.scrollIntoView({ behavior: "smooth" });
+ };
+const handleAddToCart= (id) => {
+  handleScroll();
+  addToCart(id);
+}
 useEffect(() => {
   if (product) {
     setHeightCategory(product.height ? "aboveHeight" : null);
@@ -75,17 +98,15 @@ useEffect(() => {
     setSelectedSize(null); // Initialize with a default size if needed
   }
 }, [product]);
-  const [quantity, setQuantity] = useState(0);
- 
-  const [isLoading, setIsLoading] = useState(false);
-  const [showError, setShowError] = useState(false);
- // const [reviews, setReviews]=  useState(null);
+
   const addToCart = async (id) => {
-    if (!user) return; 
+  
     if (selectedSize==null) {
+     
       setShowError(true); // Show error if size is not selected
       return;
     } 
+    if (!user) return; 
     const cartItem = {
       uid: user.uid,
       productId: id,
@@ -97,6 +118,7 @@ useEffect(() => {
 
     try {
       // Start both the API call and a 2-second timer
+      setIsLoadingCart(true);
       const apiCall = axios.post(
         `${process.env.REACT_APP_API_URL}/cart/add`,
         cartItem
@@ -105,22 +127,26 @@ useEffect(() => {
 
       // Wait for both to complete
       const [response] = await Promise.all([apiCall, minimumDelay]);
-      if (response.status === 201) {
+    
       
         setShowNotification(true);
         setTimeout(() => setShowNotification(false), 3000); // Show notification for 3 seconds
-      }
+      
      
     } catch (error) {
       console.error("Error adding item to cart:", error);
     } 
+    finally{
+      setIsLoadingCart(false);
+    }
   };
  
   // const productId = id;
-  const wishlistItem = wishlist.find((item) => item.productId === id); 
- 
-  const navigate = useNavigate();
-
+  const handleWishlistClick = async (itemId, id) => {
+    setIsLoadingWishlist(true);
+    await toggleWishlist(itemId, id); 
+    setIsLoadingWishlist(false);
+  };
  
   const reviewTest = [
     { username: "Manoj Kamriya", rating: 4.5, review: "Great product!", dateTime: "15-09-2024" },
@@ -136,15 +162,13 @@ useEffect(() => {
     "/Images/p1_product_i4.png"
   ];
   const [image, setImage] = useState(images[0]);
-  if(isLoading){
-    return <></>
-  }
+  
   if (loading) return <div className="loader-container"> <span className="loader"></span></div>;
  if (error) return <div>Error: {error}</div>;
  if (!product) return <div>No product found</div>;
   return (
     <div className="productDisplay">
-      
+     
       <div className="productDisplay-left">
         <div className="productDisplay-img-list">
           {images.map((img, index) => (
@@ -162,7 +186,9 @@ useEffect(() => {
           <div className="productDisplay-right-stars">
           <span>
          
-            {product.rating > 0 ? <p>{product.rating}</p> : <p>4.5</p>}
+            {/* {product.rating > 0 ? <p>{product.rating}</p> : <p>4.5</p>} */}
+            <p>{product.rating > 0 ? product.rating.toFixed(1) : "4.5"}</p>
+
             <img src="/Images/icons/star.png" alt="icon" />
             <p>(122)</p>
           </span>
@@ -172,7 +198,7 @@ useEffect(() => {
       </div>
       <div className="productDisplay-right">
         <h1>{product.displayName}</h1>
-       
+        <div ref={targetRef}></div>
         <div className="productDisplay-right-prices">
           <div className="productDisplay-right-price-new">₹ {product.price}</div>
           <div className="productDisplay-right-price-old">₹ {product.price}</div>
@@ -214,17 +240,13 @@ useEffect(() => {
             )}
          
         </div>
+      
          {/* Display error message if no size is selected */}
       {showError && !selectedSize && <p className="product-display-error-message">Please select a size before adding to cart!</p>}
     <SizeChart/>
-    {showNotification && (
-        <div className="notification" style={{ aspectRatio: 180 / 25 }}>
-          Product added to cart!
-        </div>
-      )}
+  
         <div className="button-container">
-
-        
+      
           <button onClick={() => toggleWishlist(wishlistItem?.id, id)}>WISHLIST</button> 
           <button onClick={()=>addToCart(product.id)}>ADD TO CART</button> 
         </div>
@@ -237,7 +259,7 @@ useEffect(() => {
         <div className="review-container">
           <div className="review-headings">
             <h5>Product Review</h5>
-            <Modal1/>
+            <RatingModal/>
           </div>
           <div className="reviews-list">
             {reviewTest.map((review, index) => (
@@ -249,11 +271,14 @@ useEffect(() => {
        
       </div>
       <div className="mobile-button-container">
-      <button className="wishlist-button"  onClick={() => toggleWishlist(wishlistItem?.id, id)}>
-        <FaHeart /> WISHLIST
+    
+        
+      <button className="wishlist-button" onClick={() => handleWishlistClick(wishlistItem?.id, id)} disabled={isLoadingWishlist}>
+        {isLoadingWishlist ? <FaSpinner className="spinner-icon" /> : <FaHeart />} WISHLIST
       </button>
-      <button className="cart-button" onClick={() => addToCart(product.id)}>
-        <FaShoppingCart /> ADD TO CART
+
+      <button className="cart-button" onClick={() => handleAddToCart(product.id)} disabled={isLoadingCart}>
+        {isLoadingCart ? <FaSpinner className="spinner-icon" /> : <FaShoppingCart />} ADD TO CART
       </button>
     </div>
     <div className="productDisplay-mobile">
@@ -261,7 +286,7 @@ useEffect(() => {
         <div className="review-container">
           <div className="review-headings">
             <h5>Product Review</h5>
-            <Modal1 productId={product.id}/>
+            <RatingModal productId={product.id}/>
           </div>
           <div className="reviews-list">
             {reviewTest.map((review, index) => (

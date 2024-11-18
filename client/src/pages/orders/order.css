@@ -1,4 +1,4 @@
-.order-wrapper{
+ .order-wrapper{
     width: 100%;
     max-width: 1000px;
     display: flex;
@@ -25,127 +25,6 @@
 .orderID{
     margin-bottom: 10px;
 }
-.order-details {
-    width: 100%;
-    max-width: 800px;
-    height: 400px;
-    display: flex;
-    border: 1px solid #c9c9c9;
-}
-.order-details img{
-    height: 100%;
-}
-.order-details-right{
-    padding: 20px 20px 20px 30px;
-   
-}
-.order-details-right p{
-    font-family: "montserrat", sans-serif;
-   font-size: 15px;
-   padding-bottom: 10px;
-}
-.order-details-right span{
-    color: #181818;
-}
-.order-details-right img{
-    height: 14px;
-}
-.order-details-right div+span{
-    display: inline-block;
-   padding: 10px;
-background-color: #e7ffeb;
-    color: #128a27;
-    border-radius: 5px;
-   
-}
-.order-color{
-    display: flex;
-    align-items: center;
-}
-.order-color span{
-    display: inline-block;
-height: 20px;
-margin-inline: 10px;
-width: 20px;
-border-radius: 50%;
-}
-.order-delivery{
-    font-family: "montserrat", sans-serif;
-    font-size: 15x;
-    
-    display: flex;
-    gap: 10px;
-    color: #000;
-    margin-block: 5px;
-}
-.order-delivery-address{
-    font-family: "montserrat", sans-serif;
-}
-.order-delivery img{
-    height: 40px;
-}
-.order-delivery span{
-    margin-top: 10px;
-}
-.order-details-right button{
-    /* float: right; */
-    display: block;
-    border: 3px solid #42a2a2;
-    background: transparent;
-    color: #42a2a2;
- /* width: 100px; */
- height: 40;
-   padding: 10px;
-  
-    text-transform: uppercase;
-}
-.order-button-container{
-display: flex;
-justify-content: space-between;
-margin-top: 20px;
-}
-
-.place-order{
-    display: flex;
-    align-items: start;
-    justify-content: center;
-    gap: 150px;
-    margin-block: 70px;
-
-}
-.place-order-left{
-    width: 100%;
-    max-width: max(30%, 500px);
-
-}
-
-.place-order-left .title{
-    font-size: 30px;
-    font-weight: 600;
-    margin-bottom: 50px;
-    
-}
-.place-order-left input{
-    margin-bottom: 15px;
-    width: 96%;
-    padding: 10px;
-    border: 1px solid #c5c5c5;
-    border-radius: 4px;
-    /* outline-color: #3e3e3e; */
-    outline: none;
-}
-.place-order-left input:focus{
-    border: 1px solid #434343;
-}
-.place-order-left .multi-fields{
-    display: flex;
-    gap: 10px;
-
-}
-.place-order-right{
-    width: 100%;
-    max-width: max(40%, 500px);
-}
 .place-order .cart-total button{
     margin-top: 10px;
     width: 131px;
@@ -158,6 +37,7 @@ margin-top: 20px;
     font-weight: 600;
     cursor: pointer;
 }
+
 
       .address-selection-container {
         display: flex;
@@ -416,4 +296,100 @@ margin-top: 20px;
       .info-button:hover, .rate-button:hover, .cancel-button:hover {
         opacity: 0.9;
       }
+      @media (max-width: 480px) {
+        .order-title h2{
+margin-top: 20px;
+        }
+        .order-title hr{
+          margin: 15px 0 19px;;
+        }
+      }
+      
+      .selected-address-container * {
+        font-family: "Assistant", sans-serif;
+    }
+      .selected-address-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 10px 15px 0px 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        max-width: 500px;
+        height: 90px;
+        margin: auto;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      
+      .selected-address {
+        text-align: left;
+       
+        margin-bottom: 20px;
+      }
+    
+      .selected-address span {
+        margin: 3px 0;
+        font-size: 13px;
+        color: #666;
+      }
+      .cart-notification {
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: max-content;
+        max-width: 350px; /* Restricts width to 80% for responsiveness */
+        max-height: 100px;
+        
+        font-size: 5cqi;
+        background: linear-gradient(135deg, #d40606, #E63946); /* Beautiful red gradient */
+        color: white;
+        padding: 3cqi 4cqi; /* Adjusted for better spacing */
+        border-radius: 2cqi;
+        z-index: 100;
+        animation: fadeInOut 3s ease-in-out;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Adds a subtle shadow */
+      }
+      
+      /* Keyframes for fadeInOut animation */
+      @keyframes fadeInOut {
+        0% {
+          opacity: 0; /* Completely invisible */
+        }
+        25% {
+          opacity: 1; /* Fully visible */
+        }
+        75% {
+          opacity: 1; /* Fully visible */
+        }
+        100% {
+          opacity: 0; /* Completely invisible */
+        }
+      }
+      
+       @media (max-width: 480px) {
+        .selected-address-container {
+         position: sticky;
+         top: 55px;
+         z-index: 600;
+        }
+      }
+       
+      .address-done-button{
+        background-color: #1c1c1c;
+        height: 35px;
+        display: block;
+        width: 80%;
+        margin-inline: auto;
+        border-radius: 10px;
+        outline: none;
+        border: none;
+        color: white;
+        opacity: 1;
+        }
       

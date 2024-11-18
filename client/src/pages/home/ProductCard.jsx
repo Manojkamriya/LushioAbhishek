@@ -1,7 +1,7 @@
 import React, { useRef, useState, useContext } from "react";
 import HeightBasedSelection from "./HeightBasedSelection";
 import ColorOptions from "./ColorOptions";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaHeart, FaHeartBroken } from "react-icons/fa";
 import { UserContext } from "../../components/context/UserContext";
@@ -9,7 +9,7 @@ import { useWishlist } from "../../components/context/WishlistContext";
 import "./productCard.css";
 function ProductCard(props) {
   const menuRef = useRef();
-
+const navigate= useNavigate();
   const isHeightBased = props.height;
   const [isLoading, setIsLoading] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
@@ -26,10 +26,14 @@ function ProductCard(props) {
   const { wishlist, wishlistIds, toggleWishlist } = useWishlist();
   const productId = props?.id;
   const wishlistItem = wishlist.find((item) => item.productId === productId);
+  
   const [liked, setLiked] = useState(wishlistIds.has(productId));
  
   const handleToggleWishlist = async (id, productId) => {
-   
+   if(!user){
+    navigate("/login");
+    return;
+   }
   
     if (liked) {
       setIsRemoving(true);
@@ -96,7 +100,7 @@ function ProductCard(props) {
       menuRef.current.style.height = "auto"; // Reset the height on close
       menuRef.current.style.top = "101%";
       setHeightCategory(isHeightBased ? "aboveHeight" : null);
-      setSelectedColor(null);
+     
       setSelectedSize(null);
     }
   };
@@ -113,7 +117,7 @@ function ProductCard(props) {
       )}
       <div className="item-image-container">
         <div className="item-image">
-        <Link to={`/${props.id}`}>
+        <Link to={`/product/${props.id}`}>
         <img src={props.image1} alt="" />
         <img src={props.image2} alt="" />
         </Link>
@@ -128,7 +132,7 @@ function ProductCard(props) {
               />
             </span>
             <span>
-              {props.rating > 0 ? <p>{props.rating}</p> : <p>4.5</p>}
+            <p>{props.rating > 0 ? props.rating.toFixed(1) : "4.5"}</p>
               <img src="/Images/star.png" alt="icon" />
             </span>
           </div>

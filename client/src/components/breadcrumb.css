@@ -1,0 +1,51 @@
+/* Base Breadcrumb Styling */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  color: #ccc; /* Light gray for text on dark background */
+  background-color: #1a1a1a; /* Dark background */
+  padding: 8px 16px;
+  width: fit-content;
+  border-radius: 8px;
+  margin-block: 3cqi;
+  margin-left: 3cqi;
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumb-link {
+  color: #e1e4e5; /* Bright color for contrast on dark theme */
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+
+.breadcrumb-separator {
+  margin: 0 8px;
+  color: #666; /* Lighter separator for a subtle look */
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+  .breadcrumb {
+    font-size: 0.875rem; /* Slightly smaller font size on smaller screens */
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .breadcrumb-item {
+    display: inline-flex; /* Inline layout to avoid wrapping on very small screens */
+  }
+
+  .breadcrumb {
+    margin-block: 5cqi;
+    margin-left: 5cqi;
+    font-size: 0.8rem; /* Even smaller font size for mobile */
+  }
+}

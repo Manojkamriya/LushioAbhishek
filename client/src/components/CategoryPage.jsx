@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import ProductCard from "../pages/home/ProductCard"; // Assuming you have a ProductCard component
 import "./categoryPage.css";
 import axios from "axios"; // Import axios for making API requests
-
+import Breadcrumb from "./BreadCrumb";
 function CategoryPage() {
   const { category, subCategory } = useParams(); // Get category and subCategory from URL params
   const [products, setProducts] = useState([]); // State to store fetched products
@@ -32,10 +32,17 @@ console.log(response.data);
     fetchProducts(); // Call the function to fetch products when component mounts or params change
   }, [category, subCategory]); // Dependency array to re-run when params change
   if (loading) return <div className="loader-container"> <span className="loader"></span></div>;
+
+  const breadcrumbItems = [
+    { label: 'Home', link: '/' },
+    { label: category, link: `/${category}` },
+    { label: subCategory, link: `/${category}` },
+   
+  ];
   return (
     <div className="category-page">
-      <h1 className="category-page-heading">Products in {subCategory || category}</h1>
-
+    
+      <Breadcrumb items={breadcrumbItems} />
       {loading ? (
        <div className="loader-container"> <span className="loader"></span></div>
       ) : error ? (

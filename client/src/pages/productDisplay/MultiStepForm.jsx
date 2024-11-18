@@ -3,6 +3,7 @@ import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import MediaRenderer from "../../components/MediaRenderer";
 import { storage } from "../../firebaseConfig"; // Import storage from Firebase config
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import './MultiStepForm.css';
 import axios from "axios";
 import { UserContext } from '../../components/context/UserContext';
@@ -22,18 +23,7 @@ const MultiStepForm = ({productId, handleClose}) => {
   const totalSteps = 5; // Updated to 5 steps (star rating, quality, fit, media, review)
   const [buttonState, setButtonState] = useState("");
   const [uploadedImageUrls, setUploadedImageUrls] = useState([]); 
-  const handleClickAndClose = () => {
-    setButtonState("onclic");
-    setTimeout(() => {
-      setButtonState("validate");
-      setTimeout(() => {
-        setButtonState("");
-        handleSubmit();
-        setCurrentStep(1);
-      }, 700);
-    }, 1250);
-  };
-
+ 
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
 
@@ -123,10 +113,15 @@ const MultiStepForm = ({productId, handleClose}) => {
   };
 
 
-  const handleSubmit = async () => {
+  // Step 1: Star Rating
+  const handleClickAndSubmit = async () => {
     try {
+      // Initial button state change
+      setButtonState("onclic");
+  
+      // Upload images and submit the form
       const urls = await uploadImagesToFirebase(); 
-      setUploadedImageUrls(urls); 
+      setUploadedImageUrls(urls);
   
       const payload = {
         starRating: formData.starRating,
@@ -138,34 +133,38 @@ const MultiStepForm = ({productId, handleClose}) => {
       };
   
       console.log('Payload being sent:', payload); // Log the payload
-
-      //
-      // in the below request replace the hardcoded dummy product id 
-      //
+  
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/reviews/${productId}`, payload, {
         headers: {
           'Content-Type': 'application/json',
         },
       });
-      
+  
       console.log('Review submitted successfully:', response.data);
-      alert('Form submitted successfully!');
-     
+
+      
+      // Set state to "validate" upon success
+      setButtonState("validate");
+      await new Promise(resolve => setTimeout(resolve, 1250));
+            alert('Form submitted successfully!');
+      // Reset form and close modal/steps
+      setCurrentStep(1);
   
     } catch (error) {
       console.error('Error uploading images or submitting form:', error.response?.data || error.message);
       alert('There was an error submitting your form: ' + (error.response?.data?.message || error.message));
-    }
-    finally{
+      
+      // Set state to an error state or clear if needed
+      setButtonState("");
+    } finally {
       handleClose();
+      setButtonState("");
     }
   };
   
-
-  // Step 1: Star Rating
   const Step1 = (
     <div className="form-step">
-      <h2>Rate the Item:</h2>
+      <h3>Rate the Item:</h3>
       <div className="star-rating">
         {[1, 2, 3, 4, 5].map((star) => (
           <span
@@ -246,11 +245,11 @@ const MultiStepForm = ({productId, handleClose}) => {
         />
       </div>
 
-      <div className="image-preview">
+      <div className="image-preview-review">
         {images.map((image, index) => (
-          <div key={index} className="image-item">
+          <div key={index} className="image-preview-item">
             <MediaRenderer src={URL.createObjectURL(image)} file={image} alt={`Preview ${index}`} />
-            <button className="image-remove-button" onClick={() => handleRemoveImage(index)}>
+            <button className="image-preview-button" onClick={() => handleRemoveImage(index)}>
               Remove
             </button>
           </div>
@@ -303,23 +302,24 @@ const MultiStepForm = ({productId, handleClose}) => {
         </CSSTransition>
       </SwitchTransition>
 
-      <div className="form-button-container">
-        {currentStep > 1 && (
-          <button className="btn prev" onClick={prevStep}>
-            Back
-          </button>
-        )}
-        {renderPagination()}
-        {currentStep < totalSteps && (
-          <button className="btn next" onClick={nextStep}>
-            Next
-          </button>
-        )}
-      </div>
+  {  currentStep>1 &&  <div className="form-button-container">
+      {currentStep > 1 && (
+  <button className="btn prev" onClick={prevStep}>
+    <FaArrowLeft className="arrow-icon" /> Back
+  </button>
+)}
+{renderPagination()}
+{currentStep < totalSteps && (
+  <button className="btn next" onClick={nextStep}>
+    Next <FaArrowRight className="arrow-icon" />
+  </button>
+)}
 
+      </div>
+}
       {currentStep === totalSteps && (
         <div className="container">
-          <button className={buttonState} onClick={handleClickAndClose}>
+          <button className={buttonState} onClick={handleClickAndSubmit}>
           
           </button>
         </div>

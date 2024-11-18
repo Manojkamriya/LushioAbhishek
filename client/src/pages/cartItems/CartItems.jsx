@@ -4,12 +4,18 @@ import "./cartitems.css";
 import CartRow from "./CartRow";
 import EmptyCart from "./EmptyCart";
 import axios from "axios";
-//import { Modal, Box, Fade, Backdrop } from "@mui/material";
 import { UserContext } from "../../components/context/UserContext";
-import Coupon from "./Coupon";
-
+import { useWishlist } from "../../components/context/WishlistContext";
+import PriceDetails from "./PriceDetails";
+import PlaceOrder from "../orders/PlaceOrder";
+import { useAddress } from "../../components/context/AddressContext";
+import { LocalShipping } from "@mui/icons-material";
 const CartItems = () => {
   const navigate = useNavigate();
+  const {
+   selectedAddress
+    
+  } = useAddress();
   const [promoCode, setPromoCode] = useState("");
   const [discountPercentage, setDiscountPercentage] = useState(0);
   const [useWalletPoints, setUseWalletPoints] = useState(true);
@@ -19,24 +25,27 @@ const CartItems = () => {
   const [isAllSelected, setIsAllSelected] = useState(true); // default all selected
   const [open, setOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-const[loading,setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { user } = useContext(UserContext);
-
+  const { wishlist, toggleWishlist } = useWishlist();
+  const [showNotification, setShowNotification] = useState(false);
+  const [isActive, setIsActive] = useState(false);
+  const fetchCartItems = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/cart/${user.uid}`
+      );
+      setCartProducts(response.data.cartItems);
+      console.log(response.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+ 
   useEffect(() => {
-    const fetchCartItems = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/cart/${user.uid}`);
-        setCartProducts(response.data.cartItems);
-        console.log(response.data);
-      } catch (err) {
-        console.error(err);
-      }
-      finally{
-        setLoading(false);
-      }
-    };
-
     if (user) {
       fetchCartItems();
     }
@@ -46,7 +55,9 @@ const[loading,setLoading] = useState(false);
     if (user) {
       const fetchUserData = async () => {
         try {
-          const response = await axios.get(`${process.env.REACT_APP_API_URL}/wallet/${user.uid}`);
+          const response = await axios.get(
+            `${process.env.REACT_APP_API_URL}/wallet/${user.uid}`
+          );
           const data = response.data;
           setWalletPoints(data.totalCredits);
           console.log("Fetched user data:", response.data);
@@ -85,8 +96,6 @@ const[loading,setLoading] = useState(false);
     setUseWalletPoints(!useWalletPoints);
   };
 
-  
-
   const handleCheckboxChange = (id) => {
     const updatedSelected = { ...selectedItems, [id]: !selectedItems[id] };
     setSelectedItems(updatedSelected);
@@ -110,7 +119,15 @@ const[loading,setLoading] = useState(false);
     setSelectedItems(updatedSelections);
     setIsAllSelected(false);
   };
-
+  const handleProceedToPayment = () => {
+    if (!selectedAddress) {
+      setShowNotification(true);
+      setTimeout(() => setShowNotification(false), 3000); 
+      return;
+    }
+    console.log("Selected Address:", selectedAddress);
+    // Add further logic for proceeding to payment, like API calls or navigation
+  };
   const getSelectedTotalAmount = () => {
     let total = 0;
     cartProducts.forEach((item) => {
@@ -118,7 +135,7 @@ const[loading,setLoading] = useState(false);
       const inStock = isHeightBased
         ? item.product[item.height]?.quantities?.[item.color]?.[item.size] > 0
         : item.product.quantities[item.color]?.[item.size] > 0;
-  
+
       if (selectedItems[item.id] && inStock) {
         total += item.product.price * item.quantity; // Only add price for items in stock and selected
       }
@@ -126,36 +143,57 @@ const[loading,setLoading] = useState(false);
     return total;
   };
 
-  const handleIncrement = (id) => {
-    // Increment logic here (if required)
-  };
+  const handleMoveToWishlist = async (
+    wishlistItemID,
+    productID,
+    cartItemId
+  ) => {
+    console.log("Removing from cart and adding to wishlist");
 
-  const handleDecrement = (id) => {
-    // Decrement logic here (if required)
-  };
-
-  const handleAddToWishlist = (id) => {
-    // Add to wishlist logic here (if required)
-  };
-
-  const handleRemoveFromCart = (id) => {
-    // Remove from cart logic here (if required)
-  };
-
-  const handleSubmitPromoCode = () => {
-    // Logic to validate the promo code and set the discount percentage
-    if (promoCode === "DISCOUNT10") {
-      setDiscountPercentage(10);
-      alert("Promo code applied: 10% discount!");
-    } else if (promoCode === "DISCOUNT5") {
-      setDiscountPercentage(5);
-      alert("Promo code applied: 5% discount!");
-    } else {
-      setDiscountPercentage(0);
-      alert("Invalid promo code.");
+    try {
+      setIsActive(true);
+      await toggleWishlist(wishlistItemID, productID);
+    } catch (error) {
+      console.error("Error adding item to wishlist:", error);
     }
+
+    try {
+      await handleRemoveFromCart(user.uid, cartItemId);
+    } catch (error) {
+      console.error("Error removing item from cart:", error);
+    }
+    setIsActive(false);
   };
-  if (loading) return <div className="loader-container"> <span className="loader"></span></div>;
+
+  const handleRemoveFromCart = async (uid, cartItemId) => {
+    console.log(uid, cartItemId);
+    setIsActive(true);
+    try {
+      const response = await axios.delete(
+        `${process.env.REACT_APP_API_URL}/cart/delete/${cartItemId}`,
+        {
+          data: { uid: uid },
+        }
+      );
+      console.log("Item removed:", response.data);
+      await fetchCartItems();
+      handleClose();
+    } catch (error) {
+      console.error(
+        "Error removing item from cart:",
+        error.response || error.message
+      );
+    }
+    setIsActive(false);
+  };
+
+  if (loading)
+    return (
+      <div className="loader-container">
+        {" "}
+        <span className="loader"></span>
+      </div>
+    );
   if (cartProducts.length === 0) {
     return <EmptyCart />; // Render empty cart message
   }
@@ -180,7 +218,9 @@ const[loading,setLoading] = useState(false);
       );
     }
     if (totalAmount >= 1000) {
-      return <p style={{ color: "red" }}>You are eligible for a 5% discount!</p>;
+      return (
+        <p style={{ color: "red" }}>You are eligible for a 5% discount!</p>
+      );
     }
     if (totalAmount >= 500) {
       return (
@@ -192,108 +232,86 @@ const[loading,setLoading] = useState(false);
     return null;
   };
 
+  const shippingFee = "FREE";
+
   return (
-    <div className="cartitems">
-      <div className="select-all-buttons">
-        {isAllSelected ? (
-          <button className="select-button" onClick={handleDeselectAll}>
-            Deselect All
-          </button>
-        ) : (
-          <button className="select-button" onClick={handleSelectAll}>
-            Select All
-          </button>
-        )}
+    <>
+     {showNotification && (
+        <div className="cart-notification" style={{ aspectRatio: 180 / 25 }}>
+           Select Address to Proceed
+        </div>
+      )}
+      {isActive && (
+        <div className="spinner-overlay">
+          <div></div>
+        </div>
+      )}
+      <div className="selected-address-container">
+     
+      {selectedAddress  ?
+  <div className="selected-address">
+    <h3>Delivery Address:</h3>
+    <span>{selectedAddress.name},</span>
+    <span>{selectedAddress.flatDetails},</span>
+    <span>{selectedAddress.areaDetails},</span>
+  { selectedAddress.landmark&& <span>{selectedAddress.landmark},</span>}
+    <span>
+      {selectedAddress.townCity}, {selectedAddress.state},
+    </span>
+    <p>Pin Code: {selectedAddress.pinCode}</p>
+  </div>: <p>No addresses found. Please add a new address.</p>
+}  
+<PlaceOrder/>
       </div>
-
-      <div className="cartitems-format-main">
-        <p>Select</p>
-        <p>Products</p>
-        <p>Title</p>
-        <p>Price</p>
-        <p>Quantity</p>
-        <p>Total</p>
-        <p>Remove</p>
-      </div>
-      <hr />
-
-      {cartProducts.map((item, i) => (
-        <CartRow
-          key={i}
-          item={item}
-          selectedItems={selectedItems}
-          handleCheckboxChange={handleCheckboxChange}
-          handleIncrement={handleIncrement}
-          handleDecrement={handleDecrement}
-          handleOpen={handleOpen}
-          handleClose={handleClose}
-          open={open}
-          selectedProduct={selectedProduct}
-          handleAddToWishlist={handleAddToWishlist}
-          handleRemoveFromCart={handleRemoveFromCart}
-        />
-      ))}
-
-      <div className="cartitems-down">
-        <div className="cartitems-total">
-          <h1>Cart Totals</h1>
-          <div className="cartitems-total-item">
-            <p>Subtotal</p>
-            <p>{getSelectedTotalAmount()}</p>
-          </div>
-          <hr />
-          <div className="cartitems-total-item">
-            <p>Shipping Fee</p>
-            <p>Free</p>
-          </div>
-          <hr />
-          
-          <div className="cartitems-total-item">
-            <p>Use Wallet Points ({walletPoints} points)</p>
-            <input
-              type="checkbox"
-              checked={useWalletPoints}
-              onChange={handleWalletCheckboxChange}
-            />
-          </div>
-          {useWalletPoints && (
-            <>
-              <p className="cartitems-total-item">
-                Wallet Discount: -Rs {walletPoints}
-              </p>
-              <hr />
-            </>
+    
+      <div className="cartitems">
+        <div className="select-all-buttons">
+          {isAllSelected ? (
+            <button className="select-button" onClick={handleDeselectAll}>
+              Deselect All
+            </button>
+          ) : (
+            <button className="select-button" onClick={handleSelectAll}>
+              Select All
+            </button>
           )}
-          {
-            discountPercentage > 0 && <>
-               <div className="cartitems-total-item">
-   <p>Promo Code Discount</p>
-   <p>{discountPercentage}%</p>
- </div>
- <hr />
-
-            </>
-          }
-       
-          <div className="cartitems-total-item">
-            <p>Total</p>
-            <p>{getTotalWithWalletAndDiscount()}</p>
-          </div>
-          <button onClick={() => navigate("/place-order")}>
-            PROCEED TO PAY Rs. {getTotalWithWalletAndDiscount()}
-           </button>
-           {renderCartMessages()}
-        </div>
-
-        <div className="cartitems-promocode">
-          <p>If you have a promocode,Use it here</p>
-          <div className="cartitems-promobox">
-           
-            <Coupon discount={discountPercentage} setDiscount={setDiscountPercentage} cartAmount={getSelectedTotalAmount()}/>
+          <div className="cart-items">
+            {cartProducts.map((item, i) => (
+              <CartRow
+                key={i}
+                item={item}
+                selectedItems={selectedItems}
+                handleCheckboxChange={handleCheckboxChange}
+               
+                handleOpen={handleOpen}
+                handleClose={handleClose}
+                open={open}
+                selectedProduct={selectedProduct}
+                handleMoveToWishlist={handleMoveToWishlist}
+                handleRemoveFromCart={handleRemoveFromCart}
+              />
+            ))}
           </div>
         </div>
+
+        <PriceDetails
+          discountPercentage={discountPercentage}
+          setDiscountPercentage={setDiscountPercentage}
+          walletPoints={walletPoints}
+          useWalletPoints={useWalletPoints}
+          handleWalletCheckboxChange={handleWalletCheckboxChange}
+          getSelectedTotalAmount={getSelectedTotalAmount}
+          getTotalWithWalletAndDiscount={getTotalWithWalletAndDiscount}
+          renderCartMessages={renderCartMessages}
+          shippingFee={shippingFee}
+        />
       </div>
-    </div>
+      <div className="priceBlock-button-mobile">
+      <button onClick={handleProceedToPayment} className="proceed-to-pay-button">
+        PROCEED TO PAY ₹{getTotalWithWalletAndDiscount()}
+      </button>
+      </div>
+    </>
   );
 };
 

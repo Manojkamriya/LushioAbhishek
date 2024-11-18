@@ -1,18 +1,29 @@
-import React, { useState } from "react";
+import React, { useState,useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { Modal, Box, Fade, Backdrop } from "@mui/material";
 import "./button.css";
-import MultiStepForm from "../shopCategory/MultiStepForm";
+import MultiStepForm from "./MultiStepForm";
+import { UserContext } from "../../components/context/UserContext";
 import "./modal.css";
-const AnimatedModal = ({ productId }) => {
+const RatingModal = ({ productId }) => {
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const { user } = useContext(UserContext);
+  const navigate = useNavigate(); // Hook for navigation
+
+  const handleOpen = () => {
+    if (!user) {
+    //  setOpen(true);
+      navigate('/login');
+    } else {
+      setOpen(true);
+    }
+  };
   return (
     <div>
-      <button onClick={handleOpen} className="open-rating-button">
+     <button onClick={handleOpen} className="open-rating-button">
         Rate Us
       </button>
-
       <Modal
         open={open}
         onClose={handleClose}
@@ -52,4 +63,4 @@ const AnimatedModal = ({ productId }) => {
   );
 };
 
-export default AnimatedModal;
+export default RatingModal;

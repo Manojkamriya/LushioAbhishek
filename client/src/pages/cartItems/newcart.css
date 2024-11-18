@@ -1,0 +1,424 @@
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&display=swap');
+/* *{
+    font-family: "Assistant";
+} */
+.itemContainer-base-item, 
+.itemContainer-base-item * {
+    font-family: "Assistant", sans-serif;
+}
+
+.itemContainer-base-item {
+    font-family: "Assistant";
+  
+   min-width: 500px;
+    background: #fff;
+    font-size: 14px;
+    border: 1px solid #eaeaec;
+    border-radius: 4px;
+    position: relative;
+    padding: 12px 12px 0
+}
+.returnPeriod-base-returnItem {
+    display: inline-flex;
+    font-size: 12px;
+    padding-top: 8px
+}
+
+.returnPeriod-base-returnIcon {
+    padding-top: 2px
+}
+
+.returnPeriod-base-returnText {
+    margin-left: 6px
+}
+
+.returnPeriod-base-returnDays {
+    font-weight: 700
+}
+.itemContainer-base-itemLeft {
+    position: absolute;
+}
+.itemContainer-base-itemLeft input{
+    position: absolute;
+    top: 10px;
+    border: none;
+    left: 10px;
+    height: 15px;
+    width: 15px;
+}
+
+.itemContainer-base-itemRight {
+    padding-left: 12px;
+    position: relative;
+    min-height: 148px;
+    margin-left: 111px;
+    margin-bottom: 12px
+}
+
+.itemContainer-base-brand,.itemContainer-base-itemLink,.itemContainer-base-itemName {
+    width: 80%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 16px
+}
+
+.itemContainer-base-brand {
+    margin-bottom: 4px
+}
+
+.itemContainer-base-details,.itemContainer-base-itemLink {
+    text-decoration: none;
+    padding-bottom: 0;
+    margin-right: 6px
+}
+
+.itemContainer-base-itemLink {
+    display: block
+}
+
+.itemContainer-base-details {
+    min-height: 97px;
+    z-index: 554;
+    position: block;
+}
+
+.itemContainer-base-editModal {
+    width: 10%;
+    top: 25%
+}
+
+.itemContainer-base-brand {
+    font-weight: 700
+}
+
+.itemContainer-base-comboOfferComplete {
+    margin-bottom: 8px;
+    padding: 12px;
+    background: #e5f6f2;
+    border: 1px solid #e5f6f2;
+    border-radius: 4px
+}
+
+.itemContainer-base-comboOfferInComplete {
+    margin-bottom: 8px;
+    padding: 12px;
+    background: #fff1ec;
+    border: 1px solid #fff1ec;
+    border-radius: 4px
+}
+
+.itemContainer-base-comboOfferComplete:last-child,.itemContainer-base-comboOfferInComplete:last-child {
+    margin-bottom: 0
+}
+
+.itemContainer-base-comboOffer:first-child {
+    margin-top: 0
+}
+
+.itemContainer-base-comboText {
+    font-size: 16px
+}
+
+.itemContainer-base-sizeAndQty {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: 8px
+}
+
+.itemContainer-base-sizeAndQtyContainer {
+    padding: 8px 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap
+}
+
+.itemContainer-base-discountStrikedAmount {
+    position: absolute;
+    top: 32px;
+    right: 12px
+}
+
+.itemContainer-base-mrpStrikedAmount {
+    color: #535766
+}
+
+.itemContainer-base-tradeDiscount {
+    color: #f16565;
+    border-left: 1px solid #d4d5d9;
+    padding-left: 8px
+}
+
+.itemContainer-base-couponDiscount {
+    padding-bottom: 6px
+}
+
+.itemContainer-base-offerDiscountText {
+    border-left: 1px solid #d4d5d9
+}
+
+.itemContainer-base-comboOfferComplete .itemContainer-base-disabledItem,.itemContainer-base-comboOfferInComplete .itemContainer-base-disabledItem,.itemContainer-base-disabledItem {
+    border: 1px solid #ff5722
+}
+
+.itemContainer-base-bankOfferText {
+    cursor: pointer;
+    font-weight: 700
+}
+.itemComponents-base-size {
+    display: inline-block;
+    white-space: nowrap;
+    padding: 2px 8px;
+    background: #f5f5f6;
+    color: #282c3f;
+    font-weight: 700;
+    cursor: pointer;
+    margin-right: 12px;
+    border-radius: 2px;
+    line-height: 16px;}
+.itemContainer-base-dropDown {
+    fill: #282c3f;
+    cursor: pointer;
+    position: relative;
+    margin-left: 4px;
+    top: -1px
+}
+.itemComponents-base-quantity {
+    display: inline-block;
+    white-space: nowrap;
+    padding: 2px 8px;
+    background: #f5f5f6;
+    color: #282c3f;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 2px;
+    line-height: 16px
+}
+
+.itemComponents-base-quantityValue {
+    background-color: #f5f5f6;
+    padding: 2px 14px
+}
+
+.itemComponents-base-quantityAction {
+    padding: 0 8px
+}
+
+.itemContainer-base-closeIcon {
+    position: absolute;
+    top: 12px;
+    right: 11px;
+    width: 10px;
+    height: 10px;
+}
+.image-base-imgResponsive{
+    width: 100%;
+}
+.remove-cart-delete{
+    height: 20px;
+    width: 20px;
+    position: absolute;
+    cursor: pointer;
+    top: 20px;
+    right: 20px;
+}
+.itemContainer-base-description{
+/* width: 80%; */
+width: 80%;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+line-height: 16px
+}
+
+
+
+
+
+.coupons-base-content{
+    display: flex;
+    justify-content: space-between;
+
+}
+.coupon-image{
+    display: flex;
+    gap: 16px;
+}
+.coupons-base-content img{
+    height: 20px;
+    width: auto;
+}
+.coupons-base-content button{
+    padding: 4px 16px;
+    font-size: 12px;
+  
+    font-weight: 700;
+    border-radius: 2px;
+    background-color: rgb(255, 255, 255);
+    color: rgb(41, 40, 40);
+    border-color: rgb(24, 24, 24);
+    border-width: 1px;
+    border-style: solid;
+    cursor: pointer;
+}
+
+.priceBlock-base-wrapper, 
+.priceBlock-base-wrapper * {
+    font-family: "Assistant", sans-serif;
+}
+.priceBlock-base-wrapper{
+    padding: 15px;
+}
+.priceBlock-base-container {
+    /* margin-left: auto; */
+    border-left: 1px solid #f5f5f6;;
+    margin-bottom: 16px;
+    width: 100%;
+    padding: 20px;
+}
+
+.priceBlock-base-priceHeader {
+    font-size: 12px;
+    font-weight: 700;
+    margin: 24px 0 16px;
+    color: #535766
+}
+.priceDetail-base-value {
+    float: right
+}
+
+.priceDetail-base-redesignRow,.priceDetail-base-row {
+    margin-bottom: 12px;
+    line-height: 16px
+}
+
+.priceDetail-base-redesignRow {
+    font-size: 16px;
+    color: #686b77
+}
+
+.priceDetail-base-bankDiscount {
+    margin: 12px 0;
+    line-height: 16px
+}
+
+.priceDetail-base-discount {
+    color: #03a685
+}
+
+.priceDetail-base-redesignKnowMore {
+    font-size: 14px;
+    margin-left: 8px;
+    color: #ff3f6c;
+    font-weight: 700
+}
+
+.priceDetail-base-redesignDiffHeading {
+    margin-top: 16px
+}
+
+.priceDetail-base-discount .priceDetail-base-icon {
+    fill: #03a685
+}
+.priceDetail-base-discount input[type="checkbox"]{
+height: 20px;
+width: 20px;
+border: 1px solid rgb(151, 151, 150);
+
+}
+.priceDetail-base-discount input[type="checkbox"]:checked{
+    border: none;
+    
+    }
+.priceDetail-base-hideShow {
+    margin-left: 5px;
+    font-weight: 700;
+    text-transform: uppercase
+}
+
+.priceDetail-base-action {
+    font-size: 14px;
+    color: #ff3f6c;
+    cursor: pointer
+}
+
+.priceDetail-base-total {
+    font-weight: 700;
+    font-size: 15px;
+    padding-top: 16px;
+    border-top: 1px solid #eaeaec;
+    color: #3e4152;
+    line-height: 16px
+}
+
+.priceDetail-base-totalSpace {
+    padding-bottom: 16px
+}
+
+.priceDetail-base-simplTotal {
+    font-weight: 700;
+    font-size: 15px;
+    padding-top: 16px;
+    border-top: 1px solid #eaeaec;
+    color: #3e4152;
+    line-height: 16px
+}
+.priceBlock-button-mobile{
+    display: none;
+}
+.priceBlock-button-mobile button, .priceBlock-button-desktop button{
+    font-size: 14px;
+    padding: 10px 16px;
+    margin-top: 20px;
+    width: 100%;
+    letter-spacing: 1px;
+    font-weight: 700;
+    border-radius: 2px;
+    border-width: 0px;
+    background-color: rgb(36, 35, 36);
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+}
+@media(max-width: 1080px){
+    .itemContainer-base-item {
+        min-width: 350px;
+        width: 90%;
+    }
+}
+@media(max-width: 950px){
+    .itemContainer-base-item {
+        min-width: 290px;
+        width: 96%;
+    }
+}
+@media(max-width: 760px){
+    .priceBlock-button-desktop{
+        display: none;
+    }
+    .priceBlock-base-container {
+        width: 99%;
+        padding-bottom: 0;
+        padding: 3px;
+        margin-bottom: 4px;
+    }
+    
+    .priceBlock-button-mobile{
+        position: sticky;
+        bottom: 0;
+        display: flex;
+        padding: 15px;
+        justify-content: center;
+       margin-top: 5px;
+        background-color: #fff;
+        border-top: 1px solid #ddd;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+       
+    }
+    .itemContainer-base-item {
+        font-family: "Assistant";
+       min-width:200px;
+    }
+   
+    
+  }

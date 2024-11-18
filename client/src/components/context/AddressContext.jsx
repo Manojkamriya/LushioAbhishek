@@ -1,4 +1,3 @@
-// AddressContext.js
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { UserContext } from "./UserContext"; 
@@ -9,6 +8,7 @@ export const AddressProvider = ({ children }) => {
   const [addressData, setAddressData] = useState([]);
   const { user } = useContext(UserContext); 
   const [isChangingDefault, setISChangingDefault] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState(null); 
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     if (user) {
@@ -22,6 +22,7 @@ export const AddressProvider = ({ children }) => {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/addresses/${user.uid}`);
       const sortedAddresses = response.data.addresses.sort((a, b) => b.isDefault - a.isDefault);
       setAddressData(sortedAddresses);
+      console.log(response.data);
     } catch (error) {
       console.error('Error fetching addresses:', error);
     } finally {
@@ -58,10 +59,14 @@ export const AddressProvider = ({ children }) => {
   const handleRemoveAddress = async (id) => {
     if (window.confirm("Are you sure you want to delete this address?")) {
       try {
+        setISChangingDefault(true);
         await axios.delete(`${process.env.REACT_APP_API_URL}/user/addresses/delete/${user.uid}/${id}`);
         setAddressData(addressData.filter((address) => address.id !== id));
       } catch (error) {
         console.error('Error deleting address:', error);
+      }
+      finally {
+        setISChangingDefault(false);
       }
     }
   };
@@ -79,7 +84,12 @@ export const AddressProvider = ({ children }) => {
       setISChangingDefault(false);
     }
   };
-
+  useEffect(() => {
+    const defaultAddress = addressData.find((addr) => addr.isDefault);
+    if (defaultAddress) {
+      setSelectedAddress(defaultAddress);
+    }
+  }, [addressData]);
   return (
     <AddressContext.Provider value={{
       addressData,
@@ -90,6 +100,8 @@ export const AddressProvider = ({ children }) => {
       handleRemoveAddress,
       handleSetDefault,
       setAddressData,
+      selectedAddress,
+      setSelectedAddress,
     }}>
       {children}
     </AddressContext.Provider>

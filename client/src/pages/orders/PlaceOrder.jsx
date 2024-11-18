@@ -1,54 +1,55 @@
-import React, { useContext } from "react";
-import { ShopContext } from "../../components/context/ShopContext";
+import React,{useState} from "react";
+import { Modal, Box, Fade, Backdrop } from "@mui/material";
 import AddressSelection from "./AddressSelection"
-// import PaymentMethod from "./PaymentMethod";
-function PlaceOrder() {
-  const { getTotalCartAmount } = useContext(ShopContext);
+const PlaceOrder = ({selectedAddress, setSelectedAddress})=> {
+  const [open, setOpen] = useState(false);
+  const handleClose = () => setOpen(false);
+ const handleOpen = () => {
+        setOpen(true);
+  };
+  console.log(selectedAddress);
   return (
-    <form  className="place-order">
-      {/* <div className="place-order-left">
-        <p className="title"> Delivery Information</p>
-        <div className="multi-fields">
-          <input type="text" placeholder="First Name" />
-          <input type="text" placeholder="Last Name" />
-        </div>
-        <input type="email" placeholder="Email Address" />
-        <input type="text" placeholder="Street" />
-        <div className="multi-fields">
-          <input type="text" placeholder="City" />
-          <input type="text" placeholder="State" />
-        </div>
-        <div className="multi-fields">
-          <input type="text" placeholder="PIN Code" />
-          <input type="text" placeholder="Country" />
-        </div>
-        <input type="text" placeholder="Phone Number" />
-      </div> */}
-      <AddressSelection/>
-      <div className="place-order-right">
-        <div className="cartitems-total">
-          <h1>Cart Totals</h1>
-          <div>
-            <div className="cartitems-total-item">
-              <p>Subtotal</p>
-              <p>{getTotalCartAmount()}</p>
-            </div>
-            <hr />
-            <div className="cartitems-total-item">
-              <p>Shipping Fee</p>
-              <p>Free</p>
-            </div>
-            <hr />
-            <div className="cartitems-total-item">
-              <h3>Total</h3>
-              <h3>{getTotalCartAmount()}</h3>
-            </div>
-          </div>
-          <button>PROCEED TO PAYMENT</button>
-          {/* <PaymentMethod/> */}
-        </div>
-      </div>
-    </form>
+    <div>
+     <button onClick={handleOpen} className="address-selection-button open-rating-button">
+       Change
+      </button>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={open}>
+          <Box
+           className="modal-box"
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: 400,
+              bgcolor: "background.paper",
+              border: ".5px solid #000",
+              borderRadius: "5px",
+              boxShadow: 24,
+              p: 4,
+            }}
+          >
+            <img
+              src="/Images/icons/cross.png"
+              alt=""
+              className="modal-close"
+              onClick={handleClose}
+            />
+<AddressSelection selectedAddress={selectedAddress} setSelectedAddress={setSelectedAddress}/>
+<button  onClick={handleClose} className="address-done-button">Done</button>
+          </Box>
+        </Fade>
+      </Modal>
+    </div>
   );
 }
 

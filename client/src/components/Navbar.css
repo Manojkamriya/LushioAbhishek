@@ -271,18 +271,16 @@
     top: -155px;
   }
   .submenu {
-    display: block;
+    display: flex;
     position: fixed;
-    flex-direction: column;
     top: 0px;
-    gap: 30px;
-    background-color: #1c1b1b;
+    background-color: transparent;
     align-items: start;
-    width: 350px;
+    width: 100%;
     min-height: 100vh;
     z-index: 998;
-    transition: left 0.5s;
-    left: -550px;
+    transition: left 0.3s;
+    left: -1148px;
   }
 
   .search-icon {

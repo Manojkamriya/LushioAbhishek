@@ -26,11 +26,8 @@ container-type: initial;
   container-name: card;
 }
 
-@container  (max-width: 400px){
-.product-card{
-background-color: #00b852;
-}
-}
+
+
 .item-image-container {
   width: 100%;
   height: 83%;
@@ -145,7 +142,7 @@ font-size: 4.5cqi;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
+  font-family: "montserrat", sans-serif;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -166,7 +163,7 @@ font-size: 4.5cqi;
 
 .heart-icon.liked {
   color: red;
-  animation: heartbeat 0.6s ease-in-out;
+  animation: heartbeat 0.4s ease-in-out;
   border: none;
 }
 
@@ -393,6 +390,25 @@ border-radius: 2cqi;
 z-index: 100;
 animation: fadeInOut 3s ease-in-out;
 }
+/* Keyframes for fadeInOut animation */
+@keyframes fadeInOut {
+  0% {
+    opacity: 0; /* Completely invisible */
+  }
+  25% {
+    opacity: 1; /* Fully visible */
+  }
+  75% {
+    opacity: 1; /* Fully visible */
+  }
+ 
+  100% {
+    opacity: 0; /* Completely invisible */
+  }
+}
+
+
+
 @keyframes spin {
 0% { transform: rotate(0deg); }
 100% { transform: rotate(360deg); }
@@ -419,4 +435,10 @@ animation: fadeInOut 3s ease-in-out;
   /* box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 3px #2c2b2b; */
   box-shadow: inset 0 0 0 2px #fff, 0 0 0 1px #1c1c1c;
 } 
+.info h4{
+  font-size: 4.5cqi;
+}
+.item-price span{
+  font-size: 6cqi;
+}
 }

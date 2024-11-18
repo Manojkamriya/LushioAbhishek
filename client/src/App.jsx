@@ -26,6 +26,7 @@ import BackendAnalytics from "./pages/bakendAnalytics/BackendAnalytics";
 import CategoryPage from "./components/CategoryPage";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "./firebaseConfig";
+import ScrollToTop from "./components/ScrollTop";
 
 function App() {
   const [backend, setBackend] = useState(null);
@@ -65,6 +66,7 @@ function App() {
       <>
         <BrowserRouter>
           <Navbar />
+          <ScrollToTop/>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/:category/:subCategory" element={<CategoryPage />} /> 
@@ -74,7 +76,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/finishSignIn" element={<FinishEmailSignUp />} />
-            <Route path="/:productID" element={<ProductDisplay />} />
+            <Route path="/product/:productID" element={<ProductDisplay />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/wishlist" element={<WishList />} />
             <Route exact path="/user/orders" element={<Orders />} />

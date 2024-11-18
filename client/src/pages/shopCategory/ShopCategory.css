@@ -66,7 +66,19 @@
 .filter-container label input{
 cursor: pointer;
 margin-inline: 6px;
+
 }
+.filter-container label input[type="checkbox"]{
+border: 1px solid #bdbdbd;
+height: 15px;
+width: 15px;
+}
+.filter-container label input[type="checkbox"]:checked{
+ border: none;
+  }
+  .filter-container label input[type="radio"]{
+    accent-color: #1c1b1b;
+     }
 .filter-container button, .clear-filter-button{
     width: 150px;
     height: 40px;
@@ -242,7 +254,7 @@ margin-inline: 6px;
     display: block;
     height: 28px;
     width: 28px;
-    margin: 10px 10px;
+    margin: 10px 0px;
     cursor: pointer;
   }
   .apply-filter-button{
@@ -318,6 +330,7 @@ margin-inline: 6px;
   }
   .shopcategory-indexSort p button{
     width: 100px;
+    padding: 0px;
     height: 30px;
     font-size: 11px;
     margin-top: 10px;

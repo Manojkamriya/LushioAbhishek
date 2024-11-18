@@ -52,6 +52,14 @@ export default function Address() {
       alert("Please fill in all required fields!");
       return;
     }
+// Extract numeric part (without country code)
+const numericValue = newAddress.contactNo.replace(/\D/g, "");
+
+// Check if the phone number has exactly 10 digits
+if (numericValue.length !== 12) {
+  alert("Phone number must be exactly 10 digits.");
+  return;
+}
 
     if (editingIndex !== null) {
       handleEditAddress(newAddress, editingIndex);
@@ -156,6 +164,7 @@ export default function Address() {
             id="name"
             value={newAddress.name}
             onChange={handleInputChange}
+            autoFocus
           />
 
           <label htmlFor="contactNo">Contact Number</label>
@@ -168,7 +177,7 @@ export default function Address() {
             inputProps={{
               name: "contactNo",
               required: true,
-              autoFocus: true,
+              autoFocus: false,
             }}
           />
 
@@ -258,6 +267,12 @@ export default function Address() {
       )}
 
       <div className="address-container">
+      {!(isAddingNew || editingIndex !== null) && (
+                <div className="Add-new-address" onClick={handleAddNewAddress}>
+                  <span>+</span>
+                  <p>Add new addresses</p>
+                </div>
+             )}
         {!(isAddingNew || editingIndex !== null) && (
           <>
             {addressData.map((info, i) => (
@@ -277,12 +292,7 @@ export default function Address() {
               </div>
             ))}
             {/* <button onClick={handleAddNewAddress}>Add New Address</button> */}
-            {!(isAddingNew || editingIndex !== null) && (
-                <div className="Add-new-address" onClick={handleAddNewAddress}>
-                  <span>+</span>
-                  <p>Add new addresses</p>
-                </div>
-             )}
+           
           </>
         )}
       </div>

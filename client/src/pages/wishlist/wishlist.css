@@ -19,6 +19,9 @@ container-type: initial;
   margin-left: clamp(2%, 4vw, 3%);
  
 }
+.wishlist-pagination{
+z-index: 400;
+}
 @media (max-width: 950px) {
   .wishlist-container{
     grid-template-columns: repeat(3, 1fr);
@@ -32,6 +35,7 @@ container-type: initial;
   
   @media (max-width: 480px) {
     .wishlist-container {
+      margin-top: 10px;
    padding: 3%;
   }
   

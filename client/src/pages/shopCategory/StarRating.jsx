@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-// import './StarRatng.css';
- // Assuming you have a CSS file for styling
+
 
 const ratings = [
   { id: 1, name: "Terrible" },

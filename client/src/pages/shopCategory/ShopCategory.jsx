@@ -7,7 +7,6 @@ function ShopCategory(props) {
   const [filterProducts, setFilterProducts] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [sortType, setSortType] = useState("rating");
   const [subCategory, setSubCategory] = useState([]);
   const [priceRange, setPriceRange] = useState("");
@@ -18,24 +17,22 @@ function ShopCategory(props) {
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
-      setError(null);
+   
 
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/products/allProducts`
+          `${process.env.REACT_APP_API_URL}/filters/${props.category}`
         );
         const data = response.data;
-
-        if (Array.isArray(data.products)) {
-       const categoryProducts  =  data.products.filter((product) =>
-        product.categories.includes(props.category)
-      );
-          setProducts(categoryProducts);
+console.log(data);
+        if (Array.isArray(data)) {
+     
+          setProducts(data);
         } else {
           throw new Error("Unexpected response format");
         }
       } catch (err) {
-        setError("Failed to fetch products. Please try again later.");
+        console.log(err);
       } finally {
         setLoading(false);
       }
@@ -205,7 +202,7 @@ if (color.length > 0) {
         : [...prev, value]
     );
   };
-
+  if (loading) return <div className="loader-container"> <span className="loader"></span></div>;
   return (
     <div className="shop-category">
       <img className="shopcategory-banner" src={props.banner} alt="" />
@@ -256,6 +253,7 @@ if (color.length > 0) {
                   type="checkbox"
                   value={sub}
                   onChange={toggleSubCategory}
+                  className={`checkbox ${subCategory.includes(sub) ? "checked" : ""}`}
                   checked={subCategory.includes(sub)}
                 />
                 {sub}
@@ -313,6 +311,8 @@ if (color.length > 0) {
               <label key={col}>
                 <input
                   type="checkbox"
+                  //className="checkbox"
+                 className={`checkbox ${color.includes(col) ? "checked" : ""}`}
                   value={col}
                   onChange={toggleColor}
                   checked={color.includes(col)}

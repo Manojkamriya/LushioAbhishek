@@ -34,7 +34,7 @@ const { wishlist} = useWishlist();
 
   const closeMenu = () => {
     if (menuRef.current) {
-      menuRef.current.style.left = "-550px";
+      menuRef.current.style.left = "-1148px";
       document.body.classList.remove('no-scroll');
     }
   };
@@ -137,7 +137,7 @@ const { wishlist} = useWishlist();
             <Dropdown
             setActiveDropdown={setActiveDropdown}
               category="men"
-              topProducts={["Upperwear", "Joggers", "Outerwear", "Pants", "Hats/Caps"]}
+              topProducts={["Upperwear", "Hoodie", "Outerwear", "Jeans", "Tanks"]}
               featured={["New Drop", "Coming Soon", "Restock", "Best Seller", "Sale"]}
               imageSrc="/Images/card-image-6.webp"
               launchTitle="NEW LAUNCH FOR MEN"

@@ -125,6 +125,7 @@ function EditProfile() {
         />
 
         <label>Phone no.</label>
+      
         <input
           type="tel"
           name="phoneNumber"
@@ -132,6 +133,8 @@ function EditProfile() {
           value={userData.phoneNumber}
           onChange={handleChange}
           required
+           pattern="\d{10}"
+  maxlength="10"
         />
 
         <label>Birthday Date</label>

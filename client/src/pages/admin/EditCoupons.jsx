@@ -89,9 +89,9 @@ function EditCoupons() {
       {error && <p style={{ color: "red" }}>{error}</p>}
       {success && <p style={{ color: "green" }}>{success}</p>}
       <div className="edit-coupon-wrapper">
-      <div className="coupon-cards">
+      <div className="admin-coupon-cards">
         {coupons.map((coupon) => (
-          <div key={coupon.code} className="coupon-card">
+          <div key={coupon.code} className="admin-coupon-card">
             <p>Code: {coupon.code}</p>
             <p>Validity: {convertToDisplayDate(new Date(coupon.validity).toISOString().split("T")[0])}</p>
             <button onClick={() => handleEditClick(coupon)}>Edit</button>
