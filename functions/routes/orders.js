@@ -27,12 +27,11 @@ const validateOrderRequest = (req, res, next) => {
   next();
 };
 
-
 // Shiprocket creds
 const SHIPROCKET_API_URL = process.env.SHIPROCKET_API_URL;
 const SHIPROCKET_API_TOKEN = process.env.SHIPROCKET_API_TOKEN;
 
-// Endpoint to create a new order
+// Create a order
 router.post("/createOrder", validateOrderRequest, async (req, res) => {
   const {
     uid, modeOfPayment, orderedProducts, address,
@@ -182,6 +181,109 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
 
     res.status(500).json({
       message: "Failed to create order",
+      error: error.message,
+    });
+  }
+});
+
+// Get order details by orderId
+router.get("/:orderId", async (req, res) => {
+  try {
+    const {orderId} = req.params;
+    const {uid} = req.body; // For validation that this user owns the order
+
+    // Check required fields
+    if (!uid || !orderId) {
+      return res.status(400).json({message: "Required fields missing."});
+    }
+
+    // Check if the `uid` exists in the `users` collection
+    const userDoc = await db.collection("users").doc(uid).get();
+    if (!userDoc.exists) {
+      return res.status(404).json({message: "Invalid User ID"});
+    }
+
+    // Get the order document
+    const orderDoc = await db.collection("orders").doc(orderId).get();
+
+    if (!orderDoc.exists) {
+      return res.status(404).json({message: "Order not found"});
+    }
+
+    const orderData = orderDoc.data();
+
+    // Validate user owns this order
+    if (orderData.uid !== uid) {
+      return res.status(403).json({message: "Unauthorized access to order"});
+    }
+
+    // Get ordered products subcollection
+    const productsSnapshot = await orderDoc.ref.collection("orderedProducts").get();
+    const orderedProducts = productsSnapshot.docs.map((doc) => doc.data());
+
+    res.status(200).json({
+      ...orderData,
+      orderedProducts,
+    });
+  } catch (error) {
+    console.error("Error fetching order:", error);
+    res.status(500).json({
+      message: "Failed to fetch order details",
+      error: error.message,
+    });
+  }
+});
+
+// Get all orders for a user
+router.get("/", async (req, res) => {
+  try {
+    const {uid, limit = 5, lastOrderId} = req.body;
+
+    // Validate if `uid` is provided
+    if (!uid) {
+      return res.status(400).json({message: "User ID is required"});
+    }
+
+    // Check if the `uid` exists in the `users` collection
+    const userDoc = await db.collection("users").doc(uid).get();
+    if (!userDoc.exists) {
+      return res.status(404).json({message: "Invalid User ID"});
+    }
+
+    // Build the base query for fetching orders
+    let query = db.collection("orders").where("uid", "==", uid).orderBy("dateOfOrder", "desc").limit(parseInt(limit));
+
+    // Add pagination if `lastOrderId` is provided
+    if (lastOrderId) {
+      const lastOrderDoc = await db.collection("orders").doc(lastOrderId).get();
+      if (lastOrderDoc.exists) {
+        query = query.startAfter(lastOrderDoc);
+      }
+    }
+
+    // Execute the query to get orders
+    const ordersSnapshot = await query.get();
+
+    // Process orders
+    const orders = ordersSnapshot.docs.map((doc) => ({
+      orderId: doc.id,
+      ...doc.data(),
+    }));
+
+    // Pagination metadata
+    const lastVisible = ordersSnapshot.docs[ordersSnapshot.docs.length - 1];
+
+    res.status(200).json({
+      orders,
+      pagination: {
+        hasMore: orders.length === parseInt(limit),
+        lastOrderId: lastVisible?.id,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    res.status(500).json({
+      message: "Failed to fetch orders",
       error: error.message,
     });
   }
