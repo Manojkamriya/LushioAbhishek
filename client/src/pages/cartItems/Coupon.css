@@ -95,8 +95,8 @@
 }
 @media(max-width: 480px){
   .coupon-container-mobile{
-    width: 80%;
-    margin: 30% auto;
+    width: 99%;
+    margin: 1% auto;
   
   }
   .coupon-close{

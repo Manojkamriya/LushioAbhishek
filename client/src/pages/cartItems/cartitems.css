@@ -47,6 +47,7 @@
 .checkbox.checked,.checkbox:checked {
   background-image: url("/public/Images/icons/checked.png"); /* Replace with your image URL */
   background-size: cover;
+  border-radius: 2px;
   background-repeat: no-repeat;
 }
 .cartitems-down {
@@ -65,7 +66,7 @@
 .cartitems-total-item {
   display: flex;
   justify-content: space-between;
-  padding: 10px 0px;
+  padding: 0px 0px 10px 0px;
 }
 .cartitems-total-item input{
   cursor: pointer;
@@ -306,6 +307,44 @@ width: 80%;
     border-radius: 50%;
     border: 1px solid #ccc;
   }
+  .cart-notification {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: max-content;
+    max-width: 350px; 
+    max-height: 100px;
+    
+    font-size: 5cqi;
+    background: linear-gradient(180deg, #950303, #f00d1e);
+    color: white;
+    padding: 3cqi 4cqi;
+    border-radius: 2cqi;
+    z-index: 602;
+    animation: fadeInOut 3s ease-in-out;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); 
+  }
+  
+  /* Keyframes for fadeInOut animation */
+  @keyframes fadeInOut {
+    0% {
+      opacity: 0; /* Completely invisible */
+    }
+    25% {
+      opacity: 1; /* Fully visible */
+    }
+    75% {
+      opacity: 1; /* Fully visible */
+    }
+    100% {
+      opacity: 0; /* Completely invisible */
+    }
+  }
+  
   @media (max-width: 480px) {
     .empty-cart{
       margin-block: 100px;

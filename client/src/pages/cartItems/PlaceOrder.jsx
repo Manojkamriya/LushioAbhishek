@@ -1,13 +1,13 @@
 import React,{useState} from "react";
 import { Modal, Box, Fade, Backdrop } from "@mui/material";
 import AddressSelection from "./AddressSelection"
-const PlaceOrder = ({selectedAddress, setSelectedAddress})=> {
+const PlaceOrder = ()=> {
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
  const handleOpen = () => {
         setOpen(true);
   };
-  console.log(selectedAddress);
+ 
   return (
     <div>
      <button onClick={handleOpen} className="address-selection-button open-rating-button">
@@ -44,7 +44,7 @@ const PlaceOrder = ({selectedAddress, setSelectedAddress})=> {
               className="modal-close"
               onClick={handleClose}
             />
-<AddressSelection selectedAddress={selectedAddress} setSelectedAddress={setSelectedAddress}/>
+<AddressSelection/>
 <button  onClick={handleClose} className="address-done-button">Done</button>
           </Box>
         </Fade>

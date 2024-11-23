@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { storage } from "../../firebaseConfig";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-// import MediaRenderer from '../../components/MediaRenderer';
 import URLMedia from "../../components/URLMediaRenderer";
 const Editor = ({ product: initialProduct,onClose}) => {
   const [product, setProduct] = useState(null);
   const [isHeightBased, setIsHeightBased] = useState(false);
   const [newColor, setNewColor] = useState({ name: '', code: '#43da86' });
+  const [isLoading,setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 
@@ -235,7 +235,6 @@ const Editor = ({ product: initialProduct,onClose}) => {
     setIsUploading(false);
   };
 
-  // const MediaPreview = ({ url, onRemove }) => {
   //   const isVideo = url.toLowerCase().match(/\.(mp4|webm|ogg)$/);
   //   return (
   //     <div className="relative inline-block m-2 image-item">
@@ -275,6 +274,7 @@ const Editor = ({ product: initialProduct,onClose}) => {
   // };
   const handleSubmit = async () => {
     try {
+      setIsLoading(true);
       // Ensure required fields are set for non-height-based products
       const updatedProduct = { ...product };
   
@@ -297,11 +297,15 @@ const Editor = ({ product: initialProduct,onClose}) => {
       console.error('Error updating product:', error);
       alert("Update failed");
     }
+    finally{
+      setIsLoading(false);
+    }
   };
   
   return (
     <div className="max-w-4xl mx-auto p-4">
       {/* <h2 className="text-2xl font-bold mb-4">Edit Product</h2> */}
+      {isLoading && <div className="spinner-overlay"><div></div></div>}
       <button className="save-update-change" //    type="submit"
           onClick={()=>handleSubmit()}
             disabled={isUploading}>Save changes</button>
@@ -467,13 +471,14 @@ const Editor = ({ product: initialProduct,onClose}) => {
                   </button>
                 </div>
                 {product[`${heightType}Height`].colorOptions.map((color) => (
-                  <div key={color.name} className="mt-4 border-t pt-4">
+                  <div key={color.name} className='color-based-media-size'>
                     <div className="flex items-center space-x-2">
-                      <span className="font-medium">{color.name}</span>
+                    <h2 className="font-medium"  style={{color: color.code }}>{color.name}{", "}{color.code}</h2>
+                      {/* <span className="font-medium">{color.name}</span>
                       <div
                         className="w-6 h-6 rounded-full"
                         style={{ backgroundColor: color.code }}
-                      ></div>
+                      ></div> */}
                     </div>
                     <div className="file-upload-container">
                     <label  htmlFor={`height-${heightType}-${color.name}`}>Choose images for color</label>
@@ -512,9 +517,9 @@ const Editor = ({ product: initialProduct,onClose}) => {
                       ))}
                     </div>
                   </div>
-                ))}
+                )).reverse()}
               </div>
-            )).reverse()}
+            ))}
           </div>
         ) : (
           <div className="space-y-4">
@@ -541,9 +546,9 @@ const Editor = ({ product: initialProduct,onClose}) => {
               </button>
             </div>
             {product.colorOptions.map((color) => (
-              <div key={color.name} className="border p-4 rounded">
+              <div key={color.name} className='color-based-media-size'>
                 <div className="flex items-center space-x-2">
-                  <span className="font-medium">{color.name}</span>
+                  <h2 className="font-medium">{color.name}{", "}{color.code}</h2>
                   <div
                     className="w-6 h-6 rounded-full"
                     style={{ backgroundColor: color.code }}

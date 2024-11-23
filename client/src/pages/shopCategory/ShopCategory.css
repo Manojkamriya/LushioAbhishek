@@ -321,11 +321,11 @@ width: 15px;
     height: 20px;
   }
   .shopcategory-sort {
-    width: 130px;
-    font-size: 10px;
+    width: 230px;
+    font-size: 15px;
   }
   .shopcategory-sort select{
-    font-size: 10px;
+    font-size: 15px;
     padding: 5px 8px;
   }
   .shopcategory-indexSort p button{

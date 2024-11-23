@@ -62,4 +62,8 @@ margin-bottom: 5px;
       border-radius: 0;
       /* padding: 15px; */
     }
+    .modal-box-coupon{
+      width: calc(80%);
+      height: calc(60%);
+    }
   }

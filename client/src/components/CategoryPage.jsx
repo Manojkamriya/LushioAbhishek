@@ -14,7 +14,7 @@ function CategoryPage() {
     const fetchProducts = async () => {
       try {
         setLoading(true); // Start loading
-        setError(null); // Clear previous errors
+       
 
         // Make a POST request to fetch products by category
         const response = await axios.post(`${process.env.REACT_APP_API_URL}/filters/getByCategory`, {
@@ -23,7 +23,7 @@ function CategoryPage() {
 console.log(response.data);
         setProducts(response.data); // Update products state with the response data
       } catch (err) {
-        setError("Failed to load products. Please try again."); // Handle error
+       console.log(error);
       } finally {
         setLoading(false); // Stop loading
       }
@@ -45,9 +45,7 @@ console.log(response.data);
       <Breadcrumb items={breadcrumbItems} />
       {loading ? (
        <div className="loader-container"> <span className="loader"></span></div>
-      ) : error ? (
-        <p className="error-message">{error}</p> // Show error message if there's an error
-      ) : products.length > 0 ? (
+      )  : products.length > 0 ? (
         <div className="products-grid">
           {products.map((item) => (
             <ProductCard
@@ -69,7 +67,10 @@ console.log(response.data);
           ))}
         </div>
       ) : (
-        <p>No products found in this category.</p> // Show message if no products found
+        <> <p>No products found in this category.</p> 
+        <img src="/Images/no-item-found.webp" alt=""/>
+        </>
+       
       )}
     </div>
   );

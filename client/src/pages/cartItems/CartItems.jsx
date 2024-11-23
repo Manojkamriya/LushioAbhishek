@@ -3,27 +3,28 @@ import { useNavigate } from "react-router-dom";
 import "./cartitems.css";
 import CartRow from "./CartRow";
 import EmptyCart from "./EmptyCart";
+import PaymentMethod from "./PaymentMethod";
 import axios from "axios";
 import { UserContext } from "../../components/context/UserContext";
 import { useWishlist } from "../../components/context/WishlistContext";
 import PriceDetails from "./PriceDetails";
-import PlaceOrder from "../orders/PlaceOrder";
+import PlaceOrder from "./PlaceOrder";
+import Success from "./Success";
 import { useAddress } from "../../components/context/AddressContext";
-import { LocalShipping } from "@mui/icons-material";
 const CartItems = () => {
   const navigate = useNavigate();
-  const {
-   selectedAddress
-    
-  } = useAddress();
+  const { selectedAddress } = useAddress();
   const [promoCode, setPromoCode] = useState("");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('phonepe');
   const [discountPercentage, setDiscountPercentage] = useState(0);
+  const [couponApplied, setCouponApplied] = useState("");
   const [useWalletPoints, setUseWalletPoints] = useState(true);
   const [walletPoints, setWalletPoints] = useState(null);
   const [selectedItems, setSelectedItems] = useState({});
   const [cartProducts, setCartProducts] = useState([]);
   const [isAllSelected, setIsAllSelected] = useState(true); // default all selected
   const [open, setOpen] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [loading, setLoading] = useState(false);
   const { user } = useContext(UserContext);
@@ -37,7 +38,7 @@ const CartItems = () => {
         `${process.env.REACT_APP_API_URL}/cart/${user.uid}`
       );
       setCartProducts(response.data.cartItems);
-      console.log(response.data);
+     // console.log(response.data);
     } catch (err) {
       console.error(err);
     } finally {
@@ -60,7 +61,7 @@ const CartItems = () => {
           );
           const data = response.data;
           setWalletPoints(data.totalCredits);
-          console.log("Fetched user data:", response.data);
+       //   console.log("Fetched user data:", response.data);
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
@@ -83,19 +84,63 @@ const CartItems = () => {
   };
   const handleClose = () => setOpen(false);
   // Calculate total after applying wallet points and discount
+  // const getTotalWithWalletAndDiscount = () => {
+  //   let total = getSelectedTotalAmount();
+  //   if (useWalletPoints && walletPoints > 0) {
+  //     total = Math.max(0, total - walletPoints); // Ensure total doesn't go below zero
+  //   }
+  //   const discountAmount = (total * discountPercentage) / 100; // Calculate discount
+  //   return Math.max(0, total - discountAmount); // Apply discount and ensure total doesn't go below zero
+  // };
   const getTotalWithWalletAndDiscount = () => {
     let total = getSelectedTotalAmount();
+  
+    // Apply wallet points if applicable
     if (useWalletPoints && walletPoints > 0) {
       total = Math.max(0, total - walletPoints); // Ensure total doesn't go below zero
     }
-    const discountAmount = (total * discountPercentage) / 100; // Calculate discount
-    return Math.max(0, total - discountAmount); // Apply discount and ensure total doesn't go below zero
+  
+    // Calculate coupon discount
+    const couponDiscountAmount = (total * discountPercentage) / 100; // Calculate coupon discount
+    total = Math.max(0, total - couponDiscountAmount); // Apply coupon discount and ensure total doesn't go below zero
+  
+    // Apply additional discount for payment method
+    if (selectedPaymentMethod !== "cashOnDelivery") {
+      const additionalDiscount = total * 0.05; // 5% additional discount for online payment
+      total = Math.max(0, total - additionalDiscount); // Apply additional discount and ensure total doesn't go below zero
+    }
+  
+    // No additional discount for "COD"
+  
+    return total;
   };
-
+  
   const handleWalletCheckboxChange = () => {
     setUseWalletPoints(!useWalletPoints);
   };
-
+  const getSelectedProductDetails = (cartProducts) => {
+    // Extract product details for selected items from cartProducts
+    const selectedProductDetails = Object.keys(selectedItems)
+      .filter((id) => selectedItems[id]) // Include only selected items
+      .map((id) => {
+        const cartProduct = cartProducts.find((product) => product.id === id);
+        
+        if (cartProduct) {
+        
+          const { productId, color, height, quantity, size, product } = cartProduct;
+          const { name: name } = product; // Extract `name` and rename it to `productName`
+          
+          return {productId, color, height, quantity,size, name  }; // Adjust fields as needed
+        }
+        return null; // Handle missing products gracefully
+      })
+      .filter(Boolean); // Remove null values
+  
+    return selectedProductDetails;
+  };
+  const selectedProductDetails = getSelectedProductDetails(cartProducts);
+ // console.log(selectedProductDetails); 
+ 
   const handleCheckboxChange = (id) => {
     const updatedSelected = { ...selectedItems, [id]: !selectedItems[id] };
     setSelectedItems(updatedSelected);
@@ -109,6 +154,7 @@ const CartItems = () => {
     });
     setSelectedItems(updatedSelections);
     setIsAllSelected(true);
+  //  console.log(cartProducts);
   };
 
   const handleDeselectAll = () => {
@@ -119,13 +165,14 @@ const CartItems = () => {
     setSelectedItems(updatedSelections);
     setIsAllSelected(false);
   };
+ 
   const handleProceedToPayment = () => {
     if (!selectedAddress) {
       setShowNotification(true);
       setTimeout(() => setShowNotification(false), 3000); 
       return;
     }
-    console.log("Selected Address:", selectedAddress);
+   // console.log("Selected Address:", selectedAddress);
     // Add further logic for proceeding to payment, like API calls or navigation
   };
   const getSelectedTotalAmount = () => {
@@ -186,7 +233,41 @@ const CartItems = () => {
     }
     setIsActive(false);
   };
+  const orderDetails = {
+    uid: user.uid,
+    modeOfPayment: selectedPaymentMethod,
+    totalAmount: getSelectedTotalAmount(),
+    payableAmount: getTotalWithWalletAndDiscount(),
+       discount: getSelectedTotalAmount()-getTotalWithWalletAndDiscount(),
+    lushioCurrencyUsed: useWalletPoints && walletPoints,
+    couponCode: "",
+    address: selectedAddress,
+    orderedProducts:selectedProductDetails
+    // razorpay_payment_id: "pay_29QQoUBi66xm2f",
+    // razorpay_order_id: "order_9A33XWu170gUtm",
+    // razorpay_signature: "af0a9dc9d4b19122304de94f3d1f9ac",
+  };
+  
+ 
+  const handleCreateOrder = async () => {
+  if(selectedPaymentMethod==="phonepe"){
+    return;
+  }
+   console.log(orderDetails);
 
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:5001/lushio-fitness/us-central1/api/orders/createOrder",
+        orderDetails
+      );
+    
+      console.log("Response:", response.data);
+      setSuccessOpen(true);
+      setTimeout(() => setSuccessOpen(false), 4000); 
+    } catch (error) {
+    console.log(error);
+    }
+  };
   if (loading)
     return (
       <div className="loader-container">
@@ -199,7 +280,7 @@ const CartItems = () => {
   }
 
   const renderCartMessages = () => {
-    const totalAmount = getSelectedTotalAmount();
+    const totalAmount = getTotalWithWalletAndDiscount();
     if (totalAmount === 0) {
       return (
         <p style={{ color: "gray" }}>
@@ -250,20 +331,24 @@ const CartItems = () => {
      
       {selectedAddress  ?
   <div className="selected-address">
-    <h3>Delivery Address:</h3>
-    <span>{selectedAddress.name},</span>
+    <h4>Delivery Address:</h4>
+    <div style={{display: "flex"}}> 
+    <strong>{selectedAddress.name},</strong> <strong >{selectedAddress.pinCode} </strong>
+    </div>
+  
     <span>{selectedAddress.flatDetails},</span>
     <span>{selectedAddress.areaDetails},</span>
   { selectedAddress.landmark&& <span>{selectedAddress.landmark},</span>}
     <span>
       {selectedAddress.townCity}, {selectedAddress.state},
     </span>
-    <p>Pin Code: {selectedAddress.pinCode}</p>
+  
   </div>: <p>No addresses found. Please add a new address.</p>
 }  
 <PlaceOrder/>
+
       </div>
-    
+    <Success successOpen={successOpen} setSuccessOpen={setSuccessOpen}/>
       <div className="cartitems">
         <div className="select-all-buttons">
           {isAllSelected ? (
@@ -293,8 +378,9 @@ const CartItems = () => {
             ))}
           </div>
         </div>
-
         <PriceDetails
+        couponApplied={couponApplied}
+        setCouponApplied={setCouponApplied}
           discountPercentage={discountPercentage}
           setDiscountPercentage={setDiscountPercentage}
           walletPoints={walletPoints}
@@ -306,9 +392,13 @@ const CartItems = () => {
           shippingFee={shippingFee}
         />
       </div>
+      <PaymentMethod
+      selectedPaymentMethod={selectedPaymentMethod}
+      setSelectedPaymentMethod={setSelectedPaymentMethod}
+      />
       <div className="priceBlock-button-mobile">
-      <button onClick={handleProceedToPayment} className="proceed-to-pay-button">
-        PROCEED TO PAY ₹{getTotalWithWalletAndDiscount()}
+      <button onClick={handleCreateOrder} className="proceed-to-pay-button">
+        PLACE ORDER ₹{getTotalWithWalletAndDiscount()}
       </button>
       </div>
     </>

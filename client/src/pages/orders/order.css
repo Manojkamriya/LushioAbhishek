@@ -1,4 +1,10 @@
- .order-wrapper{
+.no-orders{
+  width: 70%;
+  max-width: 400px;
+  height: auto;
+  margin-inline: auto;
+}
+.order-wrapper{
     width: 100%;
     max-width: 1000px;
     display: flex;
@@ -39,133 +45,7 @@
 }
 
 
-      .address-selection-container {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        padding: 10px;
-        max-width: 600px; /* Optional to control width */
-        margin: auto;
-      }
-      
-      .address-option {
-        padding: 15px 20px;
-        border: 2px solid #ddd;
-        border-radius: 8px;
-        background-color: #f8f8f8;
-        cursor: pointer;
-        transition: background-color 0.3s ease, color 0.3s ease;
-        display: flex;
-        align-items: center;
-        /* gap: 15px; */
-        position: relative;
-      }
-      
-      .address-option:hover {
-        background-color: #eaeaea;
-        border-color: #bbb;
-      }
-      .address{
-        margin-left: 3%;
-      }
-      .address-option.selected {
-        background-color: #333;
-        color: #fff;
-        border-color: #333;
-      }
-      
-      .address-option input[type="radio"] {
-        accent-color: #333; /* Darker accent color for better contrast */
-        cursor: pointer;
-        height: 20px;
-        width: 20px;
-        margin-right: 10px;
-      
-      }
-      
-      .address-option.selected input[type="radio"] {
-        /* display: none; */
-        visibility: hidden;
-      }
-   
-      .address-option.selected::before {
-        content: '✔';
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        height: 20px;
-        width: 20px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 14px;
-        color: #333;
-        background-color: #fff;
-        border-radius: 50%;
-        border: 2px solid #333;
-      }
-     
-      .address-option .address-info {
-        flex-grow: 1;
-      }
-      
-      .address-title {
-        font-size: 18px;
-        font-weight: bold;
-      }
-      
-      .address-details {
-        font-size: 14px;
-        color: #555;
-      }
-      
-      /* Optional: additional styling for disabled options */
-      .address-option.disabled {
-        background-color: #f1f1f1;
-        color: #aaa;
-        border-color: #ddd;
-        cursor: not-allowed;
-      }
-      
-      .address-option.disabled:hover {
-        background-color: #f1f1f1;
-      }
-
-      .Add-new-address {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        padding: 15px 20px;
-        background-color: #f8f8f8;
-        color: #333;
-        border: 2px dashed #bbb;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background-color 0.3s ease, border-color 0.3s ease;
-        max-width: 300px; /* Optional, controls width */
-        margin: 20px auto; /* Centers the button horizontally */
-        text-align: center;
-      }
-      
-      .Add-new-address:hover {
-        background-color: #e6e6e6;
-        border-color: #888;
-      }
-      
-      .Add-new-address span {
-        font-size: 24px;
-        font-weight: bold;
-        color: #555;
-      }
-      
-      .Add-new-address p {
-        font-size: 16px;
-        font-weight: 500;
-        color: #555;
-        margin: 0;
-      }
+    
       .order-wrapper {
         width: 90%;
         margin: 0 auto;
@@ -264,9 +144,10 @@
         background-color: #2196F3;
       }
       
-      .order-button-container {
+      .order-button-container,.item-button-container {
         margin-top: 1rem;
         display: flex;
+        justify-content: space-between;
         gap: 0.5rem;
       }
       
@@ -304,92 +185,20 @@ margin-top: 20px;
           margin: 15px 0 19px;;
         }
       }
-      
-      .selected-address-container * {
-        font-family: "Assistant", sans-serif;
-    }
-      .selected-address-container {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-        align-items: center;
-        padding: 10px 15px 0px 15px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        background-color: #f9f9f9;
-        max-width: 500px;
-        height: 90px;
-        margin: auto;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      }
-      
-      .selected-address {
-        text-align: left;
-       
-        margin-bottom: 20px;
-      }
     
-      .selected-address span {
-        margin: 3px 0;
-        font-size: 13px;
-        color: #666;
-      }
-      .cart-notification {
-        position: absolute;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: max-content;
-        max-width: 350px; /* Restricts width to 80% for responsiveness */
-        max-height: 100px;
-        
-        font-size: 5cqi;
-        background: linear-gradient(135deg, #d40606, #E63946); /* Beautiful red gradient */
-        color: white;
-        padding: 3cqi 4cqi; /* Adjusted for better spacing */
-        border-radius: 2cqi;
-        z-index: 100;
-        animation: fadeInOut 3s ease-in-out;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Adds a subtle shadow */
-      }
+     
+        @media (max-width: 480px) {
+          .item-button-container button{
+height: 30px;
+width: 75px;
+font-size: 13px;
+          }
+          .product-info h3 {
+           font-size: 15px;
+          }
+          .product-info p {
+            font-size: 13px;
+           }
+        }
       
-      /* Keyframes for fadeInOut animation */
-      @keyframes fadeInOut {
-        0% {
-          opacity: 0; /* Completely invisible */
-        }
-        25% {
-          opacity: 1; /* Fully visible */
-        }
-        75% {
-          opacity: 1; /* Fully visible */
-        }
-        100% {
-          opacity: 0; /* Completely invisible */
-        }
-      }
-      
-       @media (max-width: 480px) {
-        .selected-address-container {
-         position: sticky;
-         top: 55px;
-         z-index: 600;
-        }
-      }
-       
-      .address-done-button{
-        background-color: #1c1c1c;
-        height: 35px;
-        display: block;
-        width: 80%;
-        margin-inline: auto;
-        border-radius: 10px;
-        outline: none;
-        border: none;
-        color: white;
-        opacity: 1;
-        }
       

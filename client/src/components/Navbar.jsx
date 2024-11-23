@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect,useContext } from "react";
-//import { ShopContext } from "./context/ShopContext";
 import "./Navbar.css";
 import { Link } from "react-router-dom";
 import Dropdown from "./Dropdown";
@@ -11,7 +10,7 @@ import { UserContext } from "./context/UserContext";
 
 function Navbar() {
   
-  const [activeDropdown, setActiveDropdown] = useState(null);
+const [activeDropdown, setActiveDropdown] = useState(null);
 const [wishlistCount, setWishlistCount] = useState(0);
 const [cartCount, setCartCount] = useState(0);
 const { wishlist} = useWishlist();
@@ -85,6 +84,29 @@ const { wishlist} = useWishlist();
     cartCount();
   }, [user]);
   // Cleanup function to ensure scrolling is re-enabled if the component unmounts while the menu is open
+
+  const [subcategories, setSubcategories] = useState({
+    men: [],
+    women: [],
+    accessories: [],
+  });
+ 
+
+  useEffect(() => {
+    const fetchSubcategories = async () => {
+     
+      try {
+        const response = await axios.get("http://127.0.0.1:5001/lushio-fitness/us-central1/api/search/subcategories"); // Update with the correct URL
+        setSubcategories(response.data);
+        console.log(response.data);
+      } catch (err) {
+       
+        console.error(err);
+      }
+    };
+
+    fetchSubcategories();
+  }, []);
   useEffect(() => {
     return () => {
       document.body.classList.remove('no-scroll');
@@ -169,7 +191,7 @@ const { wishlist} = useWishlist();
           <img src="/Images/icons/dropdown2.png" alt="" />
           {activeDropdown === "accessories" && (
             <Dropdown
-            setActiveDropdown={setActiveDropdown}
+              setActiveDropdown={setActiveDropdown}
               category="accessories"
               topProducts={["Gloves", "Shakers", "Wrist Band", "Deadlift Band"]}
               featured={["New Drop", "Coming Soon", "Restock", "Best Seller", "Sale"]}
@@ -208,7 +230,8 @@ const { wishlist} = useWishlist();
 </Link>
         </div>
        
-            <Submenu menuRef={menuRef} closeMenu={closeMenu}/>
+            <Submenu menuRef={menuRef} closeMenu={closeMenu}  apiEndpoint="http://127.0.0.1:5001/lushio-fitness/us-central1/api/search/subcategories"
+  defaultMenu="men"/>
         
       
         <Search searchRef={searchRef} closeSearch={closeSearch}/>

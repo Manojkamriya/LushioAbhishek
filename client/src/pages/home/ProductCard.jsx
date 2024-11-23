@@ -50,7 +50,26 @@ const navigate= useNavigate();
   
     setIsRemoving(false);
   };
-  
+  const [quantity, setQuantity] = useState(null);
+ 
+
+  // Define the object with input data
+  const requestData = {
+    pid: "12345", // Replace with actual product ID
+    color: "red", // Replace with actual color
+    heightType: "above", // Options: "normal", "above", "below"
+    size: "M", // Replace with actual size
+  };
+
+  const fetchQuantity = async () => {
+    try {
+      const response = await axios.post("http://localhost:5000/getQty", requestData);
+      setQuantity(response.data.quantity);
+    } catch (err) {
+      console.error("Error fetching quantity:", err);
+    
+    }
+  };
   const addToCart = async (id) => {
     setIsLoading(true);
 
@@ -65,14 +84,14 @@ const navigate= useNavigate();
 
     try {
       // Start both the API call and a 2-second timer
-      const apiCall = axios.post(
+      const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/cart/add`,
         cartItem
       );
-      const minimumDelay = new Promise((resolve) => setTimeout(resolve, 2000));
+      // const minimumDelay = new Promise((resolve) => setTimeout(resolve, 2000));
 
-      // Wait for both to complete
-      const [response] = await Promise.all([apiCall, minimumDelay]);
+      // // Wait for both to complete
+      // const [response] = await Promise.all([apiCall, minimumDelay]);
 
       if (response.status === 201) {
       
@@ -209,8 +228,14 @@ const navigate= useNavigate();
       </div>
       <div className="item-naming">
         <div className="info">
-          <h3>LushioFitness®</h3>
-          <h4>{props.description}</h4>
+          {/* <h3>LushioFitness®</h3> */}
+          <h3>{props.displayName}</h3>
+          <div className="item-price">
+        <span className="new-price">₹{props.price}</span>
+        <span className="old-price">₹{props.price}</span>
+
+        <span className="discount">{props.discount}% OFF</span>
+      </div>
         </div>
         <div className="add-wishlist">
           {isRemoving ? (
@@ -222,16 +247,11 @@ const navigate= useNavigate();
             />
           )}
 
-          {/* {isRemoving ? <AiFillHeart color="red" /> : <AiOutlineHeart color="black" />} */}
+        
         </div>
       </div>
-      <div className="item-price">
-        <span className="new-price">₹ {props.price}</span>
-        <span className="old-price">₹ {props.price}</span>
-
-        <span className="discount">{props.discount}% OFF</span>
-      </div>
-      {/* <p>{props.displayName}</p> */}
+     
+   
     </div>
   );
 }

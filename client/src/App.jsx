@@ -20,13 +20,12 @@ import Register from "./pages/login/Register";
 import Login from "./pages/login/Login";
 import ReferAndEarn from "./pages/ReferAndEarn/ReferAndEarn";
 import Address from "./pages/userProfile/Address";
-import PlaceOrder from "./pages/orders/PlaceOrder";
 import AdminPanel from "./pages/admin/AdminPanel";
 import BackendAnalytics from "./pages/bakendAnalytics/BackendAnalytics";
 import CategoryPage from "./components/CategoryPage";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "./firebaseConfig";
-import ScrollToTop from "./components/ScrollTop";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   const [backend, setBackend] = useState(null);
@@ -83,14 +82,14 @@ function App() {
             <Route path="/user" element={<User />} />
             <Route path="/user-editProfile" element={<EditProfile />} />
             <Route path="/wallet" element={<Wallet />} />
-            <Route path="/place-order" element={<PlaceOrder/>} />
-          
             <Route path="/user-address" element={<Address />} />
             <Route path="/user-referAndEarn" element={<ReferAndEarn />} />
             <Route path="/lushioGods" element={<AdminPanel />} />
           </Routes>
           <Footer />
         </BrowserRouter>
+          
+           
       </>
     );
   }

@@ -72,7 +72,7 @@ const ColorOptions = ({ data, selectedColor,
       {selectedColor && (
         <>
           {/* <p>Select Size:</p> */}
-          <p>Available Sizes for {selectedColor}:</p>
+          <p>Sizes for {selectedColor}:</p>
           {availableSizes.length > 0 ? (
             <div className="size-selector">
               {availableSizes.map((size) => (

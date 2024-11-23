@@ -119,14 +119,14 @@ useEffect(() => {
     try {
       // Start both the API call and a 2-second timer
       setIsLoadingCart(true);
-      const apiCall = axios.post(
+      const response = axios.post(
         `${process.env.REACT_APP_API_URL}/cart/add`,
         cartItem
       );
-      const minimumDelay = new Promise((resolve) => setTimeout(resolve, 2000));
+      // const minimumDelay = new Promise((resolve) => setTimeout(resolve, 2000));
 
-      // Wait for both to complete
-      const [response] = await Promise.all([apiCall, minimumDelay]);
+      // // Wait for both to complete
+      // const [response] = await Promise.all([apiCall, minimumDelay]);
     
       
         setShowNotification(true);

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import './PaymentMethod.css'; // Import your CSS file
 
-const PaymentMethod = () => {
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
+const PaymentMethod = ({selectedPaymentMethod, setSelectedPaymentMethod}) => {
+ // const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
 
   const handlePaymentMethodChange = (e) => {
     setSelectedPaymentMethod(e.target.value);
@@ -10,6 +10,10 @@ const PaymentMethod = () => {
 
   return (
     <div className="payment-method-container">
+      <div className="pulse-message">
+ Get 5% OFF if Pay online
+</div>
+
       <h2>Select a Payment Method</h2>
       <div className="payment-method-options">
         <label className={`payment-option ${selectedPaymentMethod === 'phonepe' ? 'selected' : ''}`}>
@@ -20,10 +24,10 @@ const PaymentMethod = () => {
             checked={selectedPaymentMethod === 'phonepe'}
             onChange={handlePaymentMethodChange}
           />
-          <span className="icon"><img src="/Images/icons/cod.png" alt=''/></span>
+        
           <span>PhonePe</span>
         </label>
-        <label className={`payment-option ${selectedPaymentMethod === 'razorpay' ? 'selected' : ''}`}>
+        {/* <label className={`payment-option ${selectedPaymentMethod === 'razorpay' ? 'selected' : ''}`}>
           <input
             type="radio"
             name="payment-method"
@@ -31,15 +35,15 @@ const PaymentMethod = () => {
             checked={selectedPaymentMethod === 'razorpay'}
             onChange={handlePaymentMethodChange}
           />
-          <span className="icon">{/* Razorpay Icon */}</span>
+         
           <span>Razorpay</span>
-        </label>
-        <label className={`payment-option ${selectedPaymentMethod === 'cod' ? 'selected' : ''}`}>
+        </label> */}
+        <label className={`payment-option ${selectedPaymentMethod === 'cashOnDelivery' ? 'selected' : ''}`}>
           <input
             type="radio"
             name="payment-method"
-            value="cod"
-            checked={selectedPaymentMethod === 'cod'}
+            value="cashOnDelivery"
+            checked={selectedPaymentMethod === 'cashOnDelivery'}
             onChange={handlePaymentMethodChange}
           />
           <span className="icon">{/* COD Icon */}</span>

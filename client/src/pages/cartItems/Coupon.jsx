@@ -4,7 +4,6 @@ import { Modal, Backdrop, Fade, Box, Typography } from "@mui/material";
 import { AiOutlineLoading } from "react-icons/ai";
 import "./Coupon.css";
 import { UserContext } from "../../components/context/UserContext";
-
 function Coupon({ setDiscount, cartAmount }) {
   const [open, setOpen] = useState(false);
   const { user } = useContext(UserContext);
@@ -100,13 +99,14 @@ function Coupon({ setDiscount, cartAmount }) {
       >
         <Fade in={open}>
           <Box
-            className="modal-box"
+            className="modal-box modal-box-coupon"
             sx={{
               position: "absolute",
               top: "50%",
               left: "50%",
               transform: "translate(-50%, -50%)",
-              width: 400,
+              width: "76%",
+              maxWidth: "400px",
               bgcolor: "background.paper",
               borderRadius: "9px",
               boxShadow: 10,

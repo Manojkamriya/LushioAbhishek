@@ -26,6 +26,7 @@ const AddProducts = () => {
   const [isHeightBased, setIsHeightBased] = useState(false);
   const [newColor, setNewColor] = useState({ name: '', code: '#43da86' });
 const [isUploading, setIsUploading] = useState(false);
+const [isLoading, setIsLoading] = useState(false);
   const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 
   const handleInputChange = (e) => {
@@ -278,6 +279,7 @@ const [isUploading, setIsUploading] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setIsLoading(true);
       // Ensure proper structure before submitting
       let productData = initializeProduct(product);
       
@@ -295,10 +297,14 @@ const [isUploading, setIsUploading] = useState(false);
       console.error('Error adding product:', error);
       alert("Failed");
     }
+    finally{
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="max-w-4xl mx-auto p-4">
+       {isLoading && <div className="spinner-overlay"><div></div></div>}
       <h2 className="text-2xl font-bold mb-4">Add New Product</h2>
       <form onSubmit={handleSubmit} className="add-product-form" >
         <div className="name-inputs">
@@ -469,9 +475,9 @@ const [isUploading, setIsUploading] = useState(false);
                   </button>
                 </div>
                 {product[`${heightType}Height`].colorOptions.map((color) => (
-                  <div key={color.name} className="mt-2">
-                    <div className="flex items-center space-x-2 ">
-                      <span style={{ color: color.code }} className="w-6 h-6 rounded-full">{color.name}{", "}{color.code}</span>
+                  <div key={color.name} className='color-based-media-size' >
+                    <div className="flex items-center space-x-2 " >
+                      <h2 style={{ color: color.code }} className="w-6 h-6 rounded-full">{color.name}{", "}{color.code}</h2>
                     </div>
                     <div className="file-upload-container">
                       <label  htmlFor={`height-${heightType}-${color.name}`}>Choose images for color</label>
@@ -543,8 +549,8 @@ const [isUploading, setIsUploading] = useState(false);
                 </button>
               </div>
               {product.colorOptions.map(color => (
-                <div key={color.name}>
-                  <h4 className="flex items-center space-x-2"><span style={{ color: color.code }} className="w-6 h-6 rounded-full">{color.name}</span></h4>
+                <div key={color.name} className='color-based-media-size'>
+                  <h2 className="flex items-center space-x-2"><span style={{ color: color.code }} className="w-6 h-6 rounded-full">{color.name}{", "}{color.code}</span></h2>
                   <div className="file-upload-container">
                     <label  htmlFor={`file-upload-${color.name}`}>Choose Media</label>
                   <input

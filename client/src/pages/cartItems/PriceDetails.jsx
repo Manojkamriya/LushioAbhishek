@@ -2,6 +2,8 @@ import React from "react";
 import Coupon from "./Coupon";
 
 const PriceDetails = ({
+  couponApplied,
+  setCouponApplied,
   discountPercentage,
   setDiscountPercentage,
   walletPoints,
@@ -21,6 +23,8 @@ const PriceDetails = ({
             <div className="coupons-base-label">Apply Coupons</div>
           </div>
           <Coupon
+            couponApplied={couponApplied}
+            setCouponApplied={setCouponApplied}
             discount={discountPercentage}
             setDiscount={setDiscountPercentage}
             cartAmount={getSelectedTotalAmount()}
@@ -36,6 +40,15 @@ const PriceDetails = ({
             ₹{getSelectedTotalAmount()}
           </span>
         </div>
+      
+        <div className="priceDetail-base-row">
+          <span>Coupon Discount</span>
+          <span className="priceDetail-base-value priceDetail-base-action">
+            {discountPercentage}%
+          </span>
+        </div>
+        <div class="coupons-base-discountMessage"><span>You saved additional </span> <span>{discountPercentage}%</span>
+        </div>
         <div className="priceDetail-base-row">
           <span>Use Wallet Points ({walletPoints} points)</span>
           <span className="priceDetail-base-value priceDetail-base-discount">
@@ -47,18 +60,21 @@ const PriceDetails = ({
             />
           </span>
         </div>
-        {walletPoints > 0 && (
-          <p className="cartitems-total-item">
-            Wallet Discount: -Rs {walletPoints}
-          </p>
-        )}
-        <div className="priceDetail-base-row">
-          <span>Coupon Discount</span>
+        {
+          useWalletPoints &&   <div className="priceDetail-base-row">
+          <span>Wallet Discount</span>
+            <span className="priceDetail-base-value priceDetail-base-action">
+            -₹ {walletPoints}
+            </span>
+          </div>
+        }
+      
+      <div className="priceDetail-base-row">
+          <span>Additional 5% OFF if pay Online</span>
           <span className="priceDetail-base-value priceDetail-base-action">
-            {discountPercentage}%
+           5%
           </span>
         </div>
-
         <div className="priceDetail-base-row">
           <span className="priceDetail-base-value">
             <span className="priceDetail-base-striked priceDetail-base-spaceRight">
@@ -79,7 +95,7 @@ const PriceDetails = ({
       </div>
       {renderCartMessages()}
       <div className="priceBlock-button-desktop">
-        <button>PROCEED TO PAY ₹{getTotalWithWalletAndDiscount()}</button>
+        <button>PLACE ORDER ₹{getTotalWithWalletAndDiscount()}</button>
       </div>
     </div>
   );
