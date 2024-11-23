@@ -277,4 +277,32 @@ router.delete("/addresses/delete/:uid/:id", async (req, res) => {
   }
 });
 
+// Fetch default address by UID
+router.get("/defaultAddress/:uid", async (req, res) => {
+  try {
+    const uid = req.params.uid;
+    const addressesRef = db.collection("users").doc(uid).collection("addresses");
+
+    // Query for the default address
+    const defaultAddressSnapshot = await addressesRef
+        .where("isDefault", "==", true)
+        .limit(1)
+        .get();
+
+    if (defaultAddressSnapshot.empty) {
+      return res.status(404).send("No default address found");
+    }
+
+    // Get the first (and should be only) default address
+    const defaultAddress = {
+      id: defaultAddressSnapshot.docs[0].id,
+      ...defaultAddressSnapshot.docs[0].data(),
+    };
+
+    return res.status(200).json({defaultAddress});
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+});
+
 module.exports = router;
