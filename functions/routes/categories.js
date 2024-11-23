@@ -4,7 +4,8 @@ const router = express.Router();
 const admin = require("firebase-admin");
 const db = admin.firestore();
 
-router.get("/subcategories", async (req, res) => {
+// categories arrays of men, women, accessories
+router.get("/", async (req, res) => {
   try {
     // Initialize empty sets for unique subcategories
     const menSubcategories = new Set();

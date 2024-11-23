@@ -42,7 +42,7 @@ const productFilterRoute = require("./routes/productFilters.js");
 const getQtyRoute = require("./routes/getQty.js");
 const couponRoute = require("./routes/coupons.js");
 const subscribeRoute = require("./routes/subscribe.js");
-const searchRoute = require("./routes/search.js");
+const getCategoriesRoute = require("./routes/categories.js");
 const ordersRoute = require("./routes/orders.js");
 
 // Import cloud functions
@@ -82,7 +82,7 @@ app.use("/coupon", couponRoute);
 app.use("/subscribe", subscribeRoute);
 
 // Search routes
-app.use("/search", searchRoute);
+app.use("/subCategories", getCategoriesRoute);
 
 // Orders routes
 app.use("/orders", ordersRoute);
