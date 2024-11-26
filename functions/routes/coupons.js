@@ -151,6 +151,10 @@ router.post("/use", async (req, res) => {
     }
 
     const couponData = couponDoc.data();
+    if (!couponData) {
+      return res.status(404).json({error: "Coupon details not found"});
+    }
+
     const currentDate = new Date();
 
     // Check if the coupon is valid (not expired)
