@@ -14,6 +14,7 @@ const PriceDetails = ({
   renderCartMessages,
   shippingFee,
 }) => {
+  const totalAmount = getTotalWithWalletAndDiscount();
   return (
     <div className="priceBlock-base-wrapper">
       <div className="priceBlock-base-container">
@@ -47,7 +48,7 @@ const PriceDetails = ({
             {discountPercentage}%
           </span>
         </div>
-        <div class="coupons-base-discountMessage"><span>You saved additional </span> <span>{discountPercentage}%</span>
+        <div className="coupons-base-discountMessage"><span>You saved additional </span> <span>{discountPercentage}%</span>
         </div>
         <div className="priceDetail-base-row">
           <span>Use Wallet Points ({walletPoints} points)</span>
@@ -93,7 +94,7 @@ const PriceDetails = ({
           </span>
         </div>
       </div>
-      {renderCartMessages()}
+      {renderCartMessages(totalAmount)}
       <div className="priceBlock-button-desktop">
         <button>PLACE ORDER ₹{getTotalWithWalletAndDiscount()}</button>
       </div>

@@ -7,13 +7,18 @@ import Submenu from "./Submenu";
 import { useWishlist } from "./context/WishlistContext";
 import Search from "./Search";
 import { UserContext } from "./context/UserContext";
-
+import { useCart } from "./context/CartContext";
+import useCartCount from './useCartCount'; // Import the custom hook
 function Navbar() {
   
 const [activeDropdown, setActiveDropdown] = useState(null);
 const [wishlistCount, setWishlistCount] = useState(0);
-const [cartCount, setCartCount] = useState(0);
+//const [cartCount, setCartCount] = useState(0);
 const { wishlist} = useWishlist();
+const { user } = useContext(UserContext);
+//const { cartCount,fetchCartCount } = useCartCount(user?.id);
+const { cartCount, fetchCartCount } = useCart();
+
   const handleMouseEnter = (dropdownName) => {
     setActiveDropdown(dropdownName);
   };
@@ -22,7 +27,7 @@ const { wishlist} = useWishlist();
     setActiveDropdown(null);
   };
   const menuRef = useRef();
-  const { user } = useContext(UserContext);
+  
   const openMenu = () => {
     if (menuRef.current) {
       menuRef.current.style.left = "0";
@@ -61,29 +66,6 @@ const { wishlist} = useWishlist();
   
     fetchWishlistCount();
   }, [user,wishlist]);
-  useEffect(() => {
-    const cartCount = async () => {
-      // Ensure the user is defined before proceeding
-      if (!user?.uid) return;
-  
-      try {
-     
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/cart/count/${user.uid}`
-        );
-        console.log(response.data.count);
-        // Validate response format
-      setCartCount(response.data.count);
-      } catch (error) {
-        console.error("Error fetching wishlist Count", error);
-        // setError("Failed to load wishlist items."); // Uncomment if you want to handle errors in state
-      }
-      
-    };
-  
-    cartCount();
-  }, [user]);
-  // Cleanup function to ensure scrolling is re-enabled if the component unmounts while the menu is open
 
   const [subcategories, setSubcategories] = useState({
     men: [],
@@ -96,7 +78,7 @@ const { wishlist} = useWishlist();
     const fetchSubcategories = async () => {
      
       try {
-        const response = await axios.get("http://127.0.0.1:5001/lushio-fitness/us-central1/api/search/subcategories"); // Update with the correct URL
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/subcategories`); // Update with the correct URL
         setSubcategories(response.data);
         console.log(response.data);
       } catch (err) {
@@ -230,7 +212,7 @@ const { wishlist} = useWishlist();
 </Link>
         </div>
        
-            <Submenu menuRef={menuRef} closeMenu={closeMenu}  apiEndpoint="http://127.0.0.1:5001/lushio-fitness/us-central1/api/search/subcategories"
+            <Submenu menuRef={menuRef} closeMenu={closeMenu} 
   defaultMenu="men"/>
         
       

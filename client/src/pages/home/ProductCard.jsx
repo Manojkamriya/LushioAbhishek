@@ -6,6 +6,8 @@ import axios from "axios";
 import { FaHeart, FaHeartBroken } from "react-icons/fa";
 import { UserContext } from "../../components/context/UserContext";
 import { useWishlist } from "../../components/context/WishlistContext";
+import { useCart } from "../../components/context/CartContext";
+import useCartCount from "../../components/useCartCount";
 import "./productCard.css";
 function ProductCard(props) {
   const menuRef = useRef();
@@ -18,11 +20,12 @@ const navigate= useNavigate();
   );
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
+  const { cartCount, fetchCartCount } = useCart();
 
 
   const [isRemoving, setIsRemoving] = useState(false);
   const { user } = useContext(UserContext);
-
+ // const { fetchCartCount } = useCartCount(user?.id);
   const { wishlist, wishlistIds, toggleWishlist } = useWishlist();
   const productId = props?.id;
   const wishlistItem = wishlist.find((item) => item.productId === productId);
@@ -94,7 +97,7 @@ const navigate= useNavigate();
       // const [response] = await Promise.all([apiCall, minimumDelay]);
 
       if (response.status === 201) {
-      
+       fetchCartCount();
         setShowNotification(true);
         setTimeout(() => setShowNotification(false), 3000); // Show notification for 3 seconds
       }

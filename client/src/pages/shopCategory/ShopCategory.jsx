@@ -335,7 +335,7 @@ if (color.length > 0) {
        
         </div>
 
-        <div className="shopcategory-products">
+        {/* <div className="shopcategory-products">
           {filterProducts.map((item, i) => (
             <ProductCard
               key={i}
@@ -354,7 +354,37 @@ if (color.length > 0) {
               height={item.height || ""}
             />
           ))}
-        </div>
+        </div> */}
+     
+     {filterProducts.length === 0 ? (
+      <div className="no-product-image-container">
+<img src="/Images/noProduct.jpeg" alt="No products available" className="no-product-image" />
+<button onClick={clearFilter}  >Clear All Filters</button>
+      </div>
+  
+) : (
+  <div className="shopcategory-products">
+    {filterProducts.map((item, i) => (
+      <ProductCard
+        key={i}
+        id={item.id}
+        displayName={item.displayName}
+        image1={item.cardImages?.[0] || ""}
+        image2={item.cardImages?.[1] || ""}
+        rating={item.rating || 0}
+        price={item.price || 0}
+        description={item.description}
+        discount={item.discount || 0}
+        aboveHeight={item.aboveHeight || {}}
+        belowHeight={item.belowHeight || {}}
+        colorOptions={item.colorOptions || []}
+        quantities={item.quantities || {}}
+        height={item.height || ""}
+      />
+    ))}
+  </div>
+)}
+
       </div>
     </div>
   );

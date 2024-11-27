@@ -91,7 +91,7 @@ const orderDetails = {
   lastOrderId: pagination.lastOrderId,
 };
 console.log(orderDetails);
-      const response = await axios.get("http://127.0.0.1:5001/lushio-fitness/us-central1/api/orders/", {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/orders/`, {
      params: orderDetails
       });
       console.log(response.data);

@@ -10,6 +10,7 @@ import { FaHeart, FaShoppingCart, FaSpinner } from "react-icons/fa";
 // 3. Absolute Imports/Global Components
 import { UserContext } from "../../components/context/UserContext";
 import { useWishlist } from "../../components/context/WishlistContext";
+import { useCart } from "../../components/context/CartContext";
 import MediaRenderer from "../../components/MediaRenderer";
 
 // 4. Relative Imports
@@ -52,6 +53,7 @@ function ProductDisplay() {
   const navigate = useNavigate();
 const [showError, setShowError] = useState(false);
  const { user } = useContext(UserContext);
+ const {fetchCartCount} = useCart();
  const { wishlist, toggleWishlist } = useWishlist();
  const isHeightBased = product?.height;
  const id = productID;
@@ -69,7 +71,7 @@ const [showError, setShowError] = useState(false);
        
        const data = await response.json();
        setProduct(data);
-      //  console.log(data);
+        console.log(data);
        setReviews(data.reviews);
      } catch (err) {
        setError(err.message);
@@ -128,7 +130,7 @@ useEffect(() => {
       // // Wait for both to complete
       // const [response] = await Promise.all([apiCall, minimumDelay]);
     
-      
+      fetchCartCount();
         setShowNotification(true);
         setTimeout(() => setShowNotification(false), 3000); // Show notification for 3 seconds
       
@@ -158,17 +160,22 @@ useEffect(() => {
     "/Images/carousel/vedio4.mp4",
     "/Images/p1_product_i2.png",
     "/Images/p1_product_i3.png",
-    // "/Images/p1_product_i4.png",
     "/Images/p1_product_i4.png"
   ];
+ // const images = product?.allImages;
   const [image, setImage] = useState(images[0]);
-  
   if (loading) return <div className="loader-container"> <span className="loader"></span></div>;
  if (error) return <div>Error: {error}</div>;
  if (!product) return <div>No product found</div>;
   return (
     <div className="productDisplay">
-     
+     {showNotification && (
+        <div className="notification-container">
+  <div className="notification" style={{ aspectRatio: 180 / 25 }}>
+          Product added to cart!
+        </div>
+        </div>)
+}
       <div className="productDisplay-left">
         <div className="productDisplay-img-list">
           {images.map((img, index) => (
