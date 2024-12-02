@@ -1,13 +1,15 @@
 import React,{useState, useEffect, useContext} from "react";
 import axios from "axios";
-import RatingModal from "../productDisplay/RatingModal";
-import DeliveryStatus from "./Delivery";
+//import RatingModal from "../productDisplay/RatingModal";
+//import DeliveryStatus from "./Delivery";
 import EmptyOrder from "./EmptyOrder";
+import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../components/context/UserContext";
 import "./order.css";
 
 export default function Orders() {
-  const {user}= useContext(UserContext)
+  const {user}= useContext(UserContext);
+  const navigate = useNavigate();
   const order = [
     {
       id: "#54477622",
@@ -18,7 +20,7 @@ export default function Orders() {
           price: 1500,
           size: "M",
           color: "blue",
-          imgUrl: "/Images/assets/product_102.webp",
+          imgUrl: "/Images/product_210.webp",
         },
         {
           productName: "Men's Black T-Shirt",
@@ -26,7 +28,7 @@ export default function Orders() {
           price: 800,
           size: "L",
           color: "black",
-          imgUrl: "/Images/assets/product_105.webp",
+          imgUrl: "/Images/product_119.webp",
         },
       ],
       shippingAddress: "73, PNT Colony, Indore, Madhya Pradesh, 452003",
@@ -42,7 +44,7 @@ export default function Orders() {
           price: 1800,
           size: "L",
           color: "black",
-          imgUrl: "/Images/assets/product_103.webp",
+          imgUrl: "/Images/product_214.webp",
         },
         {
           productName: "Women's White T-Shirt",
@@ -50,7 +52,7 @@ export default function Orders() {
           price: 900,
           size: "S",
           color: "white",
-          imgUrl: "/Images/assets/product_106.webp",
+          imgUrl: "/Images/product230.jpg",
         },
       ],
       shippingAddress: "22, MG Road, Mumbai, Maharashtra, 400001",
@@ -66,7 +68,7 @@ export default function Orders() {
           price: 2500,
           size: "XL",
           color: "green",
-          imgUrl: "/Images/assets/product_104.webp",
+          imgUrl: "https://firebasestorage.googleapis.com/v0/b/lushio-fitness.appspot.com/o/products%2F1730182575086_039AF922-2EBA-4A97-BAE3-D3B4D29CE101.jpg?alt=media&token=73b7ac0e-8760-4afe-918c-be7220f7841c",
         }
       ],
       shippingAddress: "19, JP Nagar, Bengaluru, Karnataka, 560078",
@@ -78,7 +80,7 @@ export default function Orders() {
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({ hasMore: true, lastOrderId: null });
   const [error, setError] = useState(null);
-const userId = "wwzOIF1KUvgqINpbDiyK8ZMaE6K2";
+//const userId = "wwzOIF1KUvgqINpbDiyK8ZMaE6K2";
   const fetchOrders = async () => {
     try {
       setLoading(true);
@@ -131,7 +133,7 @@ console.log(orderDetails);
       fetchOrders();
     }
   };
-if(order.length>0){
+if(order.length===0){
   return <EmptyOrder/>
 }
   return (
@@ -221,7 +223,7 @@ if(order.length>0){
       >
         Cancel Order
       </button>
-      <button className="open-rating-button">Order Info</button>
+      <button className="open-rating-button" onClick={()=>navigate("/orderInfo")}>Order Info</button>
     </div>
   </div>
 ))}

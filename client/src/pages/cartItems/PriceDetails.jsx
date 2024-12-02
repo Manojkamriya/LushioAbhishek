@@ -1,6 +1,6 @@
 import React from "react";
 import Coupon from "./Coupon";
-
+import PaymentMethod from "./PaymentMethod";
 const PriceDetails = ({
   couponApplied,
   setCouponApplied,
@@ -13,6 +13,9 @@ const PriceDetails = ({
   getTotalWithWalletAndDiscount,
   renderCartMessages,
   shippingFee,
+  selectedPaymentMethod, 
+  setSelectedPaymentMethod,
+  handleCreateOrder,
 }) => {
   const totalAmount = getTotalWithWalletAndDiscount();
   return (
@@ -95,9 +98,14 @@ const PriceDetails = ({
         </div>
       </div>
       {renderCartMessages(totalAmount)}
+      <PaymentMethod
+        selectedPaymentMethod={selectedPaymentMethod}
+        setSelectedPaymentMethod={setSelectedPaymentMethod}
+      />
       <div className="priceBlock-button-desktop">
-        <button>PLACE ORDER ₹{getTotalWithWalletAndDiscount()}</button>
+        <button onClick={handleCreateOrder}>PLACE ORDER ₹{getTotalWithWalletAndDiscount()}</button>
       </div>
+    
     </div>
   );
 };

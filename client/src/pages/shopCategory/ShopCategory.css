@@ -67,7 +67,7 @@ padding-bottom: 30px;
 .filter-container {
   display: flex;
   flex-direction: column;
-  /* margin-left: 20px; */
+ padding-inline: 50px;
 }
 .filter-container div{
   display: flex;
@@ -127,8 +127,9 @@ width: 15px;
   margin: 20px 50px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+  height: fit-content;
   grid-gap: 3px;
-  row-gap: 3px;
+  row-gap: 20px;
  padding-inline: 9px;
   background-color: #efefef;
 }

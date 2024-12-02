@@ -19,7 +19,7 @@ const CartRow = ({
     ? item.product[item.height]?.quantities?.[item.color]?.[item.size] > 0 
     : item.product.quantities[item.color]?.[item.size] > 0;
     const { user } = useContext(UserContext);
-    const { wishlist, toggleWishlist } = useWishlist();
+    const { wishlist } = useWishlist();
     const wishlistItem = wishlist.find((e) => e.productId === item.product.id); 
     //console.log(wishlistItem);
   return (

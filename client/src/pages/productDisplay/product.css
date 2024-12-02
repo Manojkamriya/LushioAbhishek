@@ -610,6 +610,7 @@ display: flex;
   }
   .productDisplay-right-prices {
     gap: 13px;
+    margin: 0;
   }
   .productDisplay-right-stars img {
     height: 100%;
@@ -730,6 +731,17 @@ display: flex;
     grid-template-columns: repeat(7, 1fr);
     /* grid-template-columns: repeat(6,1fr); */
     gap: 11px;
+  }
+  .productDisplay-right-prices {
+    gap: 10px;
+    margin: 0;
+  }
+  .productDisplay-right-prices div{
+  font-size: 4cqi;
+  }
+  .tax-statement {
+    color: #8c8c8c;
+    margin-bottom: 2px;
   }
   .chart-header img {
     height: 24px;

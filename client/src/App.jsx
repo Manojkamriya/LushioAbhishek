@@ -22,6 +22,9 @@ import ReferAndEarn from "./pages/ReferAndEarn/ReferAndEarn";
 import Address from "./pages/userProfile/Address";
 import AdminPanel from "./pages/admin/AdminPanel";
 import BackendAnalytics from "./pages/bakendAnalytics/BackendAnalytics";
+import OrderInfo from "./pages/orders/OrderInfo";
+import BuyNow from "./pages/BuyNow/BuyNow";
+import PaymentStatus from "./pages/orders/PaymentStatus";
 import CategoryPage from "./components/CategoryPage";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "./firebaseConfig";
@@ -82,9 +85,13 @@ function App() {
             <Route path="/user" element={<User />} />
             <Route path="/user-editProfile" element={<EditProfile />} />
             <Route path="/wallet" element={<Wallet />} />
+            <Route path="/orderInfo" element={<OrderInfo />} />
+            <Route path="/buyNow" element={<BuyNow />} />
+            <Route path="/paymentStatus" element={<PaymentStatus />} />
             <Route path="/user-address" element={<Address />} />
             <Route path="/user-referAndEarn" element={<ReferAndEarn />} />
             <Route path="/lushioGods" element={<AdminPanel />} />
+            
           </Routes>
           <Footer />
         </BrowserRouter>

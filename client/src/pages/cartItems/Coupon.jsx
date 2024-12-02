@@ -123,23 +123,24 @@ function Coupon({ setDiscount, cartAmount }) {
 
               {!success ? (
                 <>
-                  {" "}
-                  <div className="coupon-input-container">
-                    <input
-                      type="text"
-                      placeholder="Enter Coupon Code"
-                      onChange={(e) => setInputCoupon(e.target.value)}
-                      value={inputCoupon}
-                      className="coupon-input"
-                    />
-                    <button onClick={handleSubmit} className="apply-button">
-                      Check
-                    </button>
-                  </div>
-                  <h2 className="coupon-select-heading">Select a Coupon</h2>
-                  <div className="coupon-options">
-                    {coupons.length > 0 ? (
-                      coupons.map((coupon) => (
+                <div className="coupon-input-container">
+                  <input
+                    type="text"
+                    placeholder="Enter Coupon Code"
+                    onChange={(e) => setInputCoupon(e.target.value)}
+                    value={inputCoupon}
+                    className="coupon-input"
+                  />
+                  <button onClick={handleSubmit} className="apply-button">
+                    Check
+                  </button>
+                </div>
+               
+                <div className="coupon-options">
+                  {coupons.length > 0 ? (
+                    <>
+                     <h2 className="coupon-select-heading">Select a Coupon</h2>
+                      {coupons.map((coupon) => (
                         <label
                           key={coupon.code}
                           className={`option ${
@@ -166,12 +167,29 @@ function Coupon({ setDiscount, cartAmount }) {
                             </p>
                           </div>
                         </label>
-                      ))
-                    ) : (
-                      <p className="no-coupons-message">No coupons available</p>
-                    )}
-                  </div>
-                </>
+                      ))}
+                      <div className="coupon-button-container">
+                        <button onClick={handleClose} className="cancel-button">
+                          Cancel
+                        </button>
+                        <button onClick={handleSubmit} className="apply-button">
+                          {isApplying ? (
+                            <>
+                              <AiOutlineLoading className="spinner-icon" />
+                              Applying...
+                            </>
+                          ) : (
+                            "Apply Coupon"
+                          )}
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <p className="no-coupons-message">No coupons available</p>
+                  )}
+                </div>
+              </>
+              
               ) : (
                 <video
                   autoPlay
@@ -185,21 +203,7 @@ function Coupon({ setDiscount, cartAmount }) {
                 </video>
               )}
 
-              <div className="coupon-button-container">
-                <button onClick={handleClose} className="cancel-button">
-                  Cancel
-                </button>
-                <button onClick={handleSubmit} className="apply-button">
-                  {isApplying ? (
-                    <>
-                      <AiOutlineLoading className="spinner-icon" />
-                      Applying...
-                    </>
-                  ) : (
-                    "Apply Coupon"
-                  )}
-                </button>
-              </div>
+             
 
               {validationMessage && (
                 <Typography color="warning">{validationMessage}</Typography>

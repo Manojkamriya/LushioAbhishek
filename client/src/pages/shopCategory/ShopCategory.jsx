@@ -149,12 +149,13 @@ if (color.length > 0) {
         case "latest":
           setFilterProducts([...fpCopy].sort((a, b) => {
             if (a.createdAt._seconds === b.createdAt._seconds) {
-              // If _seconds are the same, compare _nanoseconds
-              return a.createdAt._nanoseconds - b.createdAt._nanoseconds;
+              // If _seconds are the same, compare _nanoseconds in descending order
+              return b.createdAt._nanoseconds - a.createdAt._nanoseconds;
             }
-            // Otherwise, compare by _seconds
-            return a.createdAt._seconds - b.createdAt._seconds;
+            // Otherwise, compare by _seconds in descending order
+            return b.createdAt._seconds - a.createdAt._seconds;
           }));
+        
           break;
       default:
         break;
@@ -335,31 +336,13 @@ if (color.length > 0) {
        
         </div>
 
-        {/* <div className="shopcategory-products">
-          {filterProducts.map((item, i) => (
-            <ProductCard
-              key={i}
-              id={item.id}
-              displayName={item.displayName}
-              image1={item.cardImages?.[0] || ""}
-              image2={item.cardImages?.[1] || ""}
-              rating={item.rating || 0}
-              price={item.price || 0}
-              description={item.description}
-              discount={item.discount || 0}
-              aboveHeight={item.aboveHeight || {}}
-              belowHeight={item.belowHeight || {}}
-              colorOptions={item.colorOptions || []}
-              quantities={item.quantities || {}}
-              height={item.height || ""}
-            />
-          ))}
-        </div> */}
+       
      
      {filterProducts.length === 0 ? (
       <div className="no-product-image-container">
 <img src="/Images/noProduct.jpeg" alt="No products available" className="no-product-image" />
-<button onClick={clearFilter}  >Clear All Filters</button>
+{isFilterApplied && <button onClick={clearFilter}  >Clear All Filters</button>}
+
       </div>
   
 ) : (

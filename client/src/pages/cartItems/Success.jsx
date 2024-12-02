@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import { Dialog, DialogContent, Typography } from "@mui/material";
 import { FaCheckCircle } from "react-icons/fa";
 
 const Success = ({successOpen,setSuccessOpen}) => {
   //const [successOpen, setSuccessOpen] = useState(false);
 
-  const handleOpen = () => {
-    setSuccessOpen(true);
-    setTimeout(() => setSuccessOpen(false), 4000); 
-  };
+  // const handleOpen = () => {
+  //   setSuccessOpen(true);
+  //   setTimeout(() => setSuccessOpen(false), 4000); 
+  // };
 
   return (
     <div style={{ textAlign: "center", marginTop: "5px" }}>

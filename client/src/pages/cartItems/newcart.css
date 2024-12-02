@@ -406,6 +406,7 @@ border: 1px solid rgb(151, 151, 150);
         position: sticky;
         bottom: 0;
         display: flex;
+        flex-direction: column;
         padding: 15px;
         justify-content: center;
        margin-top: 5px;

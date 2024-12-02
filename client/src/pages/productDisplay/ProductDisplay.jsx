@@ -67,11 +67,9 @@ const [showError, setShowError] = useState(false);
 
      try {
        const response = await fetch(`${process.env.REACT_APP_API_URL}/products/${id}`);
-       if (!response.ok) throw new Error('Failed to fetch product');
-       
+     
        const data = await response.json();
        setProduct(data);
-        console.log(data);
        setReviews(data.reviews);
      } catch (err) {
        setError(err.message);
@@ -130,8 +128,9 @@ useEffect(() => {
       // // Wait for both to complete
       // const [response] = await Promise.all([apiCall, minimumDelay]);
     
-      fetchCartCount();
+     
         setShowNotification(true);
+       await fetchCartCount();
         setTimeout(() => setShowNotification(false), 3000); // Show notification for 3 seconds
       
      
@@ -164,6 +163,24 @@ useEffect(() => {
   ];
  // const images = product?.allImages;
   const [image, setImage] = useState(images[0]);
+  const handleBuyNow = () => {
+    // Build the query parameters
+    if (selectedSize==null) {
+     
+      setShowError(true); // Show error if size is not selected
+      return;
+    } 
+    if (!user) return; 
+    const queryParams = new URLSearchParams({
+      heightCategory,
+      selectedColor,
+      selectedSize,
+      image,  // Passing the image URL as a query param
+    }).toString();
+
+    // Navigate to the new page with the query params
+    //navigate(`/buyNow?${queryParams}`);
+  };
   if (loading) return <div className="loader-container"> <span className="loader"></span></div>;
  if (error) return <div>Error: {error}</div>;
  if (!product) return <div>No product found</div>;
@@ -207,8 +224,8 @@ useEffect(() => {
         <h1>{product.displayName}</h1>
         <div ref={targetRef}></div>
         <div className="productDisplay-right-prices">
-          <div className="productDisplay-right-price-new">₹ {product.price}</div>
-          <div className="productDisplay-right-price-old">₹ {product.price}</div>
+          <div className="productDisplay-right-price-new">₹{product.price} </div>
+          <div className="productDisplay-right-price-old">₹{product.price} </div>
           <div className="productDisplay-right-price-discount">20% OFF</div>
         </div>
         <p className="tax-statement">Inclusive of all taxes</p>
@@ -258,7 +275,9 @@ useEffect(() => {
           <button onClick={()=>addToCart(product.id)}>ADD TO CART</button> 
         </div>
 
-  <button className="buy-button" onClick={() => navigate("/place-order")}>BUY NOW</button>
+        <button className="buy-button" onClick={handleBuyNow}>
+        BUY NOW
+      </button>
 
        
       <div className="productDisplay-desktop">

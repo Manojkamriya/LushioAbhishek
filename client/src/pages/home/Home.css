@@ -133,12 +133,14 @@
    .pagination_dot-active {
      background-color: rgb(249, 249, 249);
    }
+   .fluid-button-container{
+  background-color: #efefef;
+ }
   
   .fluid-button {
     padding: 14px 40px; /* Base padding */
     border: 1px solid transparent;
     background-color: black;
-    margin-top: 20px;
     display: block;
     margin-inline: auto; /* Center button horizontally */
     color: #fffefd;
@@ -251,17 +253,17 @@
  
   @media (max-width: 768px) {
     .fluid-button {
-      padding: 12px 30px; /* Smaller padding for mobile */
-      font-size: 14px; /* Smaller font size for mobile */
-      margin-top: 15px; /* Adjust margin */
+      padding: 12px 30px; 
+      font-size: 14px; 
+      /* margin-top: 15px;  */
     }
   }
   
   @media (max-width: 480px) {
     .fluid-button {
-      padding: 10px 20px; /* Further reduce padding for small screens */
-      font-size: 12px; /* Even smaller font size for very small screens */
-      margin-top: 10px; /* Adjust margin */
+      padding: 10px 20px; 
+      font-size: 12px; 
+      /* margin-top: 10px;  */
     }
   }
   

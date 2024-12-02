@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext,useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./cartitems.css";
 import CartRow from "./CartRow";
@@ -14,7 +14,7 @@ import PlaceOrder from "./PlaceOrder";
 import Success from "./Success";
 import { useAddress } from "../../components/context/AddressContext";
 const CartItems = () => {
-  const navigate = useNavigate();
+//  const navigate = useNavigate();
   const { selectedAddress } = useAddress();
   const [formData, setFormData] = useState({
     name: selectedAddress && selectedAddress.name,
@@ -42,6 +42,7 @@ const CartItems = () => {
   const [isActive, setIsActive] = useState(false);
   const [selectedProductIds, setSelectedProductIds] = useState([]);
 const [additionalDiscount,setAddtionalDiscount] = useState(0);
+const additionalDiscountRef = useRef(0); 
   const fetchCartItems = async () => {
     setLoading(true);
     try {
@@ -110,7 +111,7 @@ const [additionalDiscount,setAddtionalDiscount] = useState(0);
     // Apply additional discount for payment method
     if (selectedPaymentMethod !== "cashOnDelivery") {
       const additionalDiscount = total * 0.05; // 5% additional discount for online payment
-    //  setAddtionalDiscount(additionalDiscount);
+      additionalDiscountRef.current = additionalDiscount; // Store it in useRef without causing re-renders
       total = Math.max(0, total - additionalDiscount); // Apply additional discount and ensure total doesn't go below zero
     }
 
@@ -247,6 +248,19 @@ const [additionalDiscount,setAddtionalDiscount] = useState(0);
     }
     setIsActive(false);
   };
+  const orderDetails = {
+    uid: user.uid,
+    modeOfPayment: selectedPaymentMethod,
+    totalAmount: getSelectedTotalAmount(),
+    payableAmount: getTotalWithWalletAndDiscount(),
+    discount: getSelectedTotalAmount() - getTotalWithWalletAndDiscount(),
+    lushioCurrencyUsed: useWalletPoints && walletPoints,
+    couponCode: couponApplied,
+    address: selectedAddress,
+    orderedProducts: selectedProductDetails,
+ //   paymentData: paymentData,
+  
+  };
 
   const handleSubmit = async () => {
     console.log("User Details Submitted:", formData);
@@ -259,12 +273,18 @@ const [additionalDiscount,setAddtionalDiscount] = useState(0);
       MUID: "MUIDW" + Date.now(),
       transactionId: "T" + Date.now(),
     };
-    console.log("Sending Data:", data);
+     // Combine orderDetails with paymentData
+  const combinedData = {
+    ...orderDetails, // Include all the properties of orderDetails
+    ...data,  // Override or add properties from paymentData
+  };
+
+    console.log("Sending Data:", combinedData);
 
     await axios
       .post(
         `${process.env.REACT_APP_API_URL}/payment`,
-        data
+        combinedData
       )
       .then((response) => {
         console.log("API Response:", response.data);
@@ -276,8 +296,7 @@ const [additionalDiscount,setAddtionalDiscount] = useState(0);
          
           window.location.href =
             response.data.data.instrumentResponse.redirectInfo.url;
-            console.log("API Response:", response.data);
-          
+           
         
         } else {
           console.error("Redirect URL not found in response:", response.data);
@@ -288,24 +307,10 @@ const [additionalDiscount,setAddtionalDiscount] = useState(0);
         console.log("Error:", error);
       });
   };
-  const orderDetails = {
-    uid: user.uid,
-    modeOfPayment: selectedPaymentMethod,
-    totalAmount: getSelectedTotalAmount(),
-    payableAmount: getTotalWithWalletAndDiscount(),
-    discount: getSelectedTotalAmount() - getTotalWithWalletAndDiscount(),
-    lushioCurrencyUsed: useWalletPoints && walletPoints,
-    couponCode: "",
-    address: selectedAddress,
-    orderedProducts: selectedProductDetails,
-    paymentData: paymentData,
-    // razorpay_payment_id: "pay_29QQoUBi66xm2f",
-    // razorpay_order_id: "order_9A33XWu170gUtm",
-    // razorpay_signature: "af0a9dc9d4b19122304de94f3d1f9ac",
-  };
-
+ 
   const createOrder = async () => {
     try {
+      setIsActive(true);
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/orders/createOrder`,
         orderDetails
@@ -313,10 +318,14 @@ const [additionalDiscount,setAddtionalDiscount] = useState(0);
       console.log(orderDetails);
       console.log("Response:", response.data);
       await deleteCartItems(selectedProductIds);
+      setIsActive(false);
       setSuccessOpen(true);
       setTimeout(() => setSuccessOpen(false), 4000);
     } catch (error) {
       console.log(error);
+    }
+    finally{
+      setIsActive(false);
     }
   };
   const handleCreateOrder = async () => {
@@ -445,15 +454,18 @@ const [additionalDiscount,setAddtionalDiscount] = useState(0);
           getTotalWithWalletAndDiscount={getTotalWithWalletAndDiscount}
           renderCartMessages={renderCartMessages}
           shippingFee={shippingFee}
+          selectedPaymentMethod={selectedPaymentMethod}
+          setSelectedPaymentMethod={setSelectedPaymentMethod}
+          handleCreateOrder={handleCreateOrder}
         />
       </div>
-      <PaymentMethod
+      {/* <PaymentMethod
         selectedPaymentMethod={selectedPaymentMethod}
         setSelectedPaymentMethod={setSelectedPaymentMethod}
-      />
+      /> */}
       <div className="priceBlock-button-mobile">
-      {selectedPaymentMethod==="cashOnDelivery" && <p>Pay Online to get 5% OFF</p>}
-      {selectedPaymentMethod==="phonepe" && <p>Hurray you get ₹{additionalDiscount} OFF</p>}
+      {selectedPaymentMethod==="cashOnDelivery" && <p>Pay Online to get ₹{additionalDiscountRef.current} OFF</p>}
+      {selectedPaymentMethod==="phonepe" && <p>Hurray you get ₹{additionalDiscountRef.current} OFF</p>}
         <button onClick={handleCreateOrder} className="proceed-to-pay-button">
           PLACE ORDER ₹{getTotalWithWalletAndDiscount()}
         </button>

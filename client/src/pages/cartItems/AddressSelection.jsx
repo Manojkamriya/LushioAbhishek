@@ -127,11 +127,9 @@ if (numericValue.length !== 12) {
   const fetchDistrictAndState = async (code) => {
     try {
       const response = await fetch(`https://api.postalpincode.in/pincode/${code}`);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
+     
       const data = await response.json();
-
+console.log(data);
       if (data && data[0] && data[0].Status === "Success") {
         setLocationInfo({
           district: data[0].PostOffice[0].District,
@@ -334,6 +332,7 @@ if (numericValue.length !== 12) {
                         </div>
                       </label>
                     ))}
+                    <button className="address-done-button">Done</button>
                   </>
                 )
               )}

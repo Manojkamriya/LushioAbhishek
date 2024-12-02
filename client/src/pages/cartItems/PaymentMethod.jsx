@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './PaymentMethod.css'; // Import your CSS file
 
 const PaymentMethod = ({selectedPaymentMethod, setSelectedPaymentMethod}) => {

@@ -24,13 +24,14 @@ const PlaceOrder = ()=> {
       >
         <Fade in={open}>
           <Box
-           className="modal-box"
+           className="modal-box address-modal"
             sx={{
               position: "absolute",
               top: "50%",
               left: "50%",
               transform: "translate(-50%, -50%)",
-              width: 400,
+            
+              padding: "0px",
               bgcolor: "background.paper",
               border: ".5px solid #000",
               borderRadius: "5px",
@@ -41,11 +42,11 @@ const PlaceOrder = ()=> {
             <img
               src="/Images/icons/cross.png"
               alt=""
-              className="modal-close"
+              className="modal-close "
               onClick={handleClose}
             />
 <AddressSelection/>
-<button  onClick={handleClose} className="address-done-button">Done</button>
+
           </Box>
         </Fade>
       </Modal>

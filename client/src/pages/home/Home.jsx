@@ -2,7 +2,6 @@ import React from "react";
 import Media from "./data";
 import Carousel from "./Carousel";
 import CollectionCard from "./CollectionCard";
-import ProductCards from "./ProductCards";
 import FeaturedProducts from "./FeaturedProducts";
 export default function Home() {
   return (
@@ -12,15 +11,15 @@ export default function Home() {
       <FeaturedProducts/>
       <div className="collection-card-container">
         <CollectionCard
-          image="/Images/assets/card-image-7.webp"
+          image="/Images/card-image-6.png"
           name="SHIRTS"
         />
         <CollectionCard
-          image="/Images/assets/card-image-5.webp"
+          image="/Images/card-image-7.png"
           name="BEST SELLERS"
         />
         <CollectionCard
-          image="/Images/assets/card-image-6.webp"
+          image="/Images/card-image-5.png"
           name="SALE"
         />
       </div>

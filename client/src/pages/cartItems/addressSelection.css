@@ -131,7 +131,7 @@
   .selected-address-container {
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     padding: 10px 15px 0px 15px;
     border: 1px solid #ccc;

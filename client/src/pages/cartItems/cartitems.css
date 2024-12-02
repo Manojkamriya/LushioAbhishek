@@ -367,7 +367,7 @@ width: 80%;
     .remove-cart-buttons{
       width: 88%;
       margin-inline: auto;
-      gap: 10px;
+      gap: 1px;
     }
     .remove-product-details {
       
@@ -377,7 +377,7 @@ width: 80%;
       padding-bottom: 1rem;
     }
     .remove-product-image {
-      width: 75px;
+      width: 79px;
       height: auto;
      
       border-radius: 8px;
@@ -385,12 +385,12 @@ width: 80%;
     .remove-cart-popup-buttons{
       display: flex;
       justify-content: space-evenly;
-      width: 90%;
+      width: 100%;
         }
         .remove-cart-buttons button{
           background-color: #1c1c1c;
-          height: 35px;
-          width: 150px;
+          height: 40px;
+          width: 170px;
           border-radius: 10px;
           outline: none;
           border: none;
@@ -404,11 +404,11 @@ width: 80%;
           }
           .remove-product-info h3 {
           
-            font-size: 4.5cqi;
+            font-size: 4.9cqi;
           }
           .remove-product-info p {
           
-            font-size: 3.4cqi;
+            font-size: 3.8cqi;
           }
           
   }
