@@ -68,7 +68,7 @@
   }
   
   /* Coupon Card */
-  .coupon-cards {
+  .admin-coupon-cards {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
@@ -76,7 +76,7 @@
     justify-content: space-between;
   }
   
-  .coupon-card {
+  .admin-coupon-card {
     background-color: #ffffff;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -85,13 +85,13 @@
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   }
   
-  .coupon-card p {
+  .admin-coupon-card p {
     margin: 5px 0;
     font-size: 1rem;
     color: #555;
   }
   
-  .coupon-card button {
+  .admin-coupon-card button {
     background-color: #007bff;
     color: #ffffff;
     padding: 8px 12px;
@@ -103,16 +103,16 @@
     transition: background-color 0.3s ease;
   }
   
-  .coupon-card button:hover {
+  .admin-coupon-card button:hover {
     background-color: #0056b3;
   }
   
-  .coupon-card button + button {
+  .admin-coupon-card button + button {
     background-color: #dc3545;
     margin-left: 10px;
   }
   
-  .coupon-card button + button:hover {
+  .admin-coupon-card button + button:hover {
     background-color: #c82333;
   }
   

@@ -1,0 +1,85 @@
+/* PaymentMethod.css */
+
+.payment-method-container {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 400px;
+    margin: 20px auto;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .payment-method-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Space between payment options */
+  }
+  
+  .payment-option {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    background-color: #f0efef;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+  
+  .payment-option:hover {
+    background-color: #e6e6e6;
+    border-color: #999;
+  }
+  
+  .payment-option.selected {
+    /* background-color: #1c1c1c; */
+    /* color: #fff; */
+    border-color: #1c1c1c;
+  }
+  
+  .payment-option input[type="radio"] {
+    margin-right: 10px;
+    accent-color: #1c1c1c; /* Customize radio button color */
+  }
+  
+  .icon {
+    margin-right: 10px; /* Space between icon and text */
+  }
+  .icon img{
+    height: 30px;
+  }
+  .selected-method {
+    margin-top: 15px;
+    font-weight: bold;
+  }
+  .pulse-message {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #4caf50; /* Green background */
+    background: linear-gradient(135deg, #4ADE80, #16A34A); 
+    color: #fff; /* White text */
+    font-size: 0.8rem;
+    font-family: "Assistant";
+    border-radius: 4px;
+    text-align: center;
+    animation: pulsemessage 1.5s infinite;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  @keyframes pulsemessage {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+    50% {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(76, 175, 80, 0.8);
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+  }
+  
+  

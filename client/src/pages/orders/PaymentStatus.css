@@ -1,0 +1,130 @@
+/* Container Styles */
+.payment-status-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: #1c1b1b; /* Dark theme background */
+    color: #ffffff; /* White text for readability */
+    font-family: "Arial", sans-serif;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box; /* Ensure padding doesn't affect width/height */
+  }
+  
+  /* Success Icon */
+  .success-icon {
+    font-size: 5rem;
+    color: #4caf50; /* Green for success */
+    animation: bounceIn 1.5s ease-in-out;
+    margin-bottom: 20px;
+  }
+  
+  /* Success Text Styles */
+  .order-success-text {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 1.5s ease-in-out;
+    margin-bottom: 30px;
+  }
+  
+  /* Button Styles */
+  .button-group {
+    display: flex;
+    flex-direction: row; /* Horizontal layout for larger screens */
+    gap: 20px;
+  }
+  
+  .view-order-button,
+  .continue-shopping-button {
+    padding: 15px 30px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: 2px solid #ffffff; /* White border for visibility */
+    border-radius: 25px;
+    cursor: pointer;
+    background: transparent;
+    color: #ffffff;
+    transition: transform 0.3s, background-color 0.3s, color 0.3s;
+  }
+  
+  /* Hover Effects */
+  .view-order-button:hover {
+    background: #4caf50; /* Green background on hover */
+    color: #1c1b1b; /* Dark theme text color */
+    transform: scale(1.1);
+  }
+  
+  .continue-shopping-button:hover {
+    background: #ffffff; /* White background on hover */
+    color: #1c1b1b; /* Dark theme text color */
+    transform: scale(1.1);
+  }
+  
+  /* Animations */
+  @keyframes bounceIn {
+    0% {
+      transform: scale(0.5);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .order-success-text {
+      font-size: 2rem; /* Slightly smaller text for medium screens */
+    }
+  
+    .button-group {
+      flex-direction: column; /* Stack buttons vertically */
+      gap: 15px;
+    }
+  
+    .view-order-button,
+    .continue-shopping-button {
+      padding: 12px 20px;
+      font-size: 0.9rem; /* Slightly smaller buttons */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .success-icon {
+      font-size: 4rem; /* Smaller icon for small screens */
+    }
+  
+    .order-success-text {
+      font-size: 1.8rem; /* Further reduce text size */
+      margin-bottom: 20px;
+    }
+  
+    .button-group {
+      gap: 10px;
+    }
+  
+    .view-order-button,
+    .continue-shopping-button {
+      padding: 10px 15px;
+      font-size: 0.8rem; /* Smaller buttons for compact screens */
+      border-radius: 20px; /* Adjust border radius */
+    }
+  }
+  

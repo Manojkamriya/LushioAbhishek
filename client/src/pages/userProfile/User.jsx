@@ -32,23 +32,7 @@ function User() {
 }, []);
   const navigate = useNavigate();
 
-  // const handleLogout = () => {
-  //   // Add confirmation dialog
-  //   const confirmLogout = window.confirm("Are you sure you want to sign out?");
-    
-  //   if (confirmLogout) {
-  //     signOut(auth)
-  //       .then(() => {
-  //         alert("Logged out Successfully!");
-       
-  //         window.location.href = "/";
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error signing out:", error);
-  //         alert("Couldn't Log out, please try again.");
-  //       });
-  //   }
-  // };
+  
   const handleLogout = () => {
     // Add confirmation dialog
     const confirmLogout = window.confirm("Are you sure you want to sign out?");

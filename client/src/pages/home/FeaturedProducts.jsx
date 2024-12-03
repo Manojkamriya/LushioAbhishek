@@ -68,9 +68,12 @@ const FeaturedProducts = () => {
             />
           ))}
         </div>
+        <div className='fluid-button-container'>
         <button className="fluid-button" onClick={() => navigate(route)}>
           {buttonText}
         </button>
+        </div>
+      
       </>
     );
   };

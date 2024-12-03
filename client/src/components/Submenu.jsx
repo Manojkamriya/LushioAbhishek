@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./submenu.css";
-// import "./search.css";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
-function SubmenuItems({ items, imageSrc, description, category, closeMenu }) {
+
+function SubmenuItems({ items, category, imageSrc, description, closeMenu }) {
   return (
     <>
       <ul>
@@ -12,9 +13,7 @@ function SubmenuItems({ items, imageSrc, description, category, closeMenu }) {
         </li>
         {items.map((item, index) => (
           <li key={index} onClick={closeMenu}>
-            <Link to={`/${category.toLowerCase()}/${item.label.toLowerCase()}`}>
-              {item.label}
-            </Link>
+            <Link to={`/${category}/${item.toLowerCase()}`}>{item}</Link>
           </li>
         ))}
       </ul>
@@ -24,58 +23,48 @@ function SubmenuItems({ items, imageSrc, description, category, closeMenu }) {
   );
 }
 
-function Submenu({ menuRef, closeMenu }) {
-  const [menu, setMenu] = useState("Men");
+function Submenu({ menuRef, closeMenu,  defaultMenu = "men" }) {
+  const [menu, setMenu] = useState(defaultMenu);
+  const [menuData, setMenuData] = useState({
+    men: { items: [], imageSrc: "", description: "" },
+    women: { items: [], imageSrc: "", description: "" },
+    accessories: { items: [], imageSrc: "", description: "" },
+  });
 
-  const menus = {
-    Men: {
-      items: [
-        { label: "upperwear", link: "/men" },
-        { label: "Joggers", link: "/men" },
-        { label: "Outerwear", link: "/men" },
-        { label: "Pants", link: "/men" },
-        { label: "Hats/Caps", link: "/men" },
-        { label: "New Drop", link: "/men" },
-        { label: "Coming Soon", link: "/men" },
-        { label: "Restock", link: "/men" },
-        { label: "Best Seller", link: "/men" },
-        { label: "Sale", link: "/men" },
-      ],
-      imageSrc: "/Images/card-image-6.webp",
-      description: "New Launch for him",
-    },
-    Women: {
-      items: [
-        { label: "upperwear", link: "/women" },
-        { label: "Tops", link: "/women" },
-        { label: "Leggings", link: "/women" },
-        { label: "OuterWear", link: "/women" },
-        { label: "Matching Sets", link: "/women" },
-        { label: "New Drop", link: "/women" },
-        { label: "Coming Soon", link: "/women" },
-        { label: "Restock", link: "/women" },
-        { label: "Best Seller", link: "/women" },
-        { label: "Sale", link: "/women" },
-      ],
-      imageSrc: "/Images/card-image-2.webp",
-      description: "New Launch for her",
-    },
-    Accessories: {
-      items: [
-        { label: "Gloves", link: "/accessories" },
-        { label: "Shakers", link: "/accessories" },
-        { label: "Wrist Band", link: "/accessories" },
-        { label: "Deadlift Band", link: "/accessories" },
-        { label: "New Drop", link: "/accessories" },
-        { label: "Coming Soon", link: "/accessories" },
-        { label: "Restock", link: "/" },
-        { label: "Best Seller", link: "/accessories" },
-        { label: "Sale", link: "/accessories" },
-      ],
-      imageSrc: "/Images/assets/product_303.webp",
-      description: "New Launch",
-    },
-  };
+  useEffect(() => {
+    const fetchMenuData = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/subcategories`); 
+     const data = response.data;
+     // setMenuData(response.data);
+        setMenuData({
+          men: {
+            items: data.men,
+            imageSrc: "/Images/card-image-6.webp",
+            description: "New Launch for him",
+          },
+          women: {
+            items: data.women,
+            imageSrc: "/Images/card-image-2.webp",
+            description: "New Launch for her",
+          },
+          accessories: {
+            items: data.accessories,
+            imageSrc: "/Images/assets/product_303.webp",
+            description: "New Launch",
+          },
+        });
+      } catch (error) {
+        console.error("Error fetching submenu data:", error);
+      }
+    };
+
+    fetchMenuData();
+  }, []);
+
+  if (!menuData[menu]) {
+    return <div>Loading menu...</div>;
+  }
 
   return (
     <div ref={menuRef} className="submenu">
@@ -83,34 +72,37 @@ function Submenu({ menuRef, closeMenu }) {
         <img
           className="cross-icon"
           src="/Images/icons/cross_icon.svg"
-          alt=""
+          alt="Close"
           onClick={closeMenu}
         />
         <div className="res-navbar-headings">
           <ul className="res-navbar-headings-list">
-            {Object.keys(menus).map((menuKey) => (
+            {Object.keys(menuData).map((menuKey) => (
               <li
                 key={menuKey}
                 onClick={() => setMenu(menuKey)}
                 className={menuKey === menu ? "submenu-category-selected" : ""}
               >
-                {menuKey}
+                {menuKey.charAt(0).toUpperCase() + menuKey.slice(1)}
               </li>
             ))}
           </ul>
           <div className="res-navbar-links">
             <SubmenuItems
               category={menu}
-              items={menus[menu].items}
-              imageSrc={menus[menu].imageSrc}
-              description={menus[menu].description}
+              items={menuData[menu].items}
+              imageSrc={menuData[menu].imageSrc}
+              description={menuData[menu].description}
               closeMenu={closeMenu}
             />
           </div>
         </div>
       </div>
+      <div className="overlay" onClick={closeMenu}></div>
     </div>
   );
 }
 
 export default Submenu;
+
+

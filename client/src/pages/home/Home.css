@@ -59,7 +59,7 @@
     transform: translateY(-50%);
     width: 48px;
     height: 48px;
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(255, 255, 255, 0.6);
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -99,14 +99,14 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
   
-  .carousel_arrow_left:hover::before {
+  /* .carousel_arrow_left:hover::before {
     transform: translate(-65%, -50%) rotate(-135deg);
   }
   
   .carousel_arrow_right:hover::before {
     transform: translate(-35%, -50%) rotate(45deg);
   }
-  
+   */
  
    .carousel_pagination {
      position: absolute;
@@ -133,12 +133,14 @@
    .pagination_dot-active {
      background-color: rgb(249, 249, 249);
    }
+   .fluid-button-container{
+  background-color: #efefef;
+ }
   
   .fluid-button {
     padding: 14px 40px; /* Base padding */
     border: 1px solid transparent;
     background-color: black;
-    margin-top: 20px;
     display: block;
     margin-inline: auto; /* Center button horizontally */
     color: #fffefd;
@@ -251,17 +253,17 @@
  
   @media (max-width: 768px) {
     .fluid-button {
-      padding: 12px 30px; /* Smaller padding for mobile */
-      font-size: 14px; /* Smaller font size for mobile */
-      margin-top: 15px; /* Adjust margin */
+      padding: 12px 30px; 
+      font-size: 14px; 
+      /* margin-top: 15px;  */
     }
   }
   
   @media (max-width: 480px) {
     .fluid-button {
-      padding: 10px 20px; /* Further reduce padding for small screens */
-      font-size: 12px; /* Even smaller font size for very small screens */
-      margin-top: 10px; /* Adjust margin */
+      padding: 10px 20px; 
+      font-size: 12px; 
+      /* margin-top: 10px;  */
     }
   }
   

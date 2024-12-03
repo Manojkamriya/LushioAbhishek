@@ -9,14 +9,14 @@ export default function Wallet() {
   const {user} = useContext(UserContext);
 
  const [userCoins, setUserCoins]= useState(null);
-
+ const[loading,setLoading] = useState(false);
 
  
   useEffect(() => {
     if (user) {
       const fetchUserData = async () => {
         try {
-     
+          setLoading(true);
          const response = await axios.get(`${process.env.REACT_APP_API_URL}/wallet/${user.uid}`);
       const data = response.data;
       setUserCoins(
@@ -26,10 +26,15 @@ export default function Wallet() {
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
+        finally{
+          setLoading(false);
+        }
       };
       fetchUserData();
     }
   }, [user]);
+
+  if (loading) return <div className="loader-container"> <span className="loader"></span></div>;
   return (
 <>
    {

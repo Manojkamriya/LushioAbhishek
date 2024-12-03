@@ -121,3 +121,9 @@
 #submit-otp{
     margin-left: 15px;
 }
+@media(max-width: 500px){
+    .auth-form{
+        width: 80%;
+        padding: 15px 20px;
+    }
+}

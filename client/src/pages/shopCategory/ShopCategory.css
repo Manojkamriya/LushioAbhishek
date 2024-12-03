@@ -34,6 +34,32 @@
   display: flex;
   justify-content: space-around;
 }
+.no-product-image-container{
+  display: flex;
+  flex-direction: column;
+
+ align-items: center;
+  margin: 20px 10px 0px 10px;
+  width: 100%;
+padding-bottom: 30px;
+  background-color: #f3f3f3;
+  background-color: #ebeff1;
+}
+.no-product-image{
+  width: 256px;
+  height: 192px;
+}
+.no-product-image-container button{
+  width: 100px;
+    padding: 0px;
+    height: 30px;
+    font-size: 11px;
+    background-color: #1c1b1b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+}
 .filter-open{
  cursor: pointer;
   display: none;
@@ -41,7 +67,7 @@
 .filter-container {
   display: flex;
   flex-direction: column;
-  /* margin-left: 20px; */
+ padding-inline: 50px;
 }
 .filter-container div{
   display: flex;
@@ -66,7 +92,19 @@
 .filter-container label input{
 cursor: pointer;
 margin-inline: 6px;
+
 }
+.filter-container label input[type="checkbox"]{
+border: 1px solid #bdbdbd;
+height: 15px;
+width: 15px;
+}
+.filter-container label input[type="checkbox"]:checked{
+ border: none;
+  }
+  .filter-container label input[type="radio"]{
+    accent-color: #1c1b1b;
+     }
 .filter-container button, .clear-filter-button{
     width: 150px;
     height: 40px;
@@ -89,8 +127,9 @@ margin-inline: 6px;
   margin: 20px 50px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+  height: fit-content;
   grid-gap: 3px;
-  row-gap: 3px;
+  row-gap: 20px;
  padding-inline: 9px;
   background-color: #efefef;
 }
@@ -242,7 +281,7 @@ margin-inline: 6px;
     display: block;
     height: 28px;
     width: 28px;
-    margin: 10px 10px;
+    margin: 10px 0px;
     cursor: pointer;
   }
   .apply-filter-button{
@@ -305,22 +344,23 @@ margin-inline: 6px;
     font-size: 10px;
   }
   .filter-open{
-    margin-top: 5px;
-    height: 20px;
+    margin-top: 0px;
+    height: 29px;
   }
   .shopcategory-sort {
-    width: 130px;
-    font-size: 10px;
+    width: 230px;
+    font-size: 15px;
   }
   .shopcategory-sort select{
-    font-size: 10px;
+    font-size: 15px;
     padding: 5px 8px;
   }
   .shopcategory-indexSort p button{
     width: 100px;
+    padding: 0px;
     height: 30px;
     font-size: 11px;
-    margin-top: 10px;
-    margin-left: 10px;
+    margin-top: 0px;
+    margin-left: 12px;
   }
 }

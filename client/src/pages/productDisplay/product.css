@@ -136,6 +136,18 @@
   font-weight: 500;
   color: #00b852;
 }
+.productDisplay-right-price-discount {
+  background: linear-gradient(to right, #28a745, #1e7e34); /* Green gradient */
+  color: white; /* Text color for contrast */
+  font-size: 1rem; /* Adjust font size as needed */
+  font-weight: bold;
+  text-align: center;
+  padding: 0.5rem 1rem;
+  clip-path: polygon(10% 0, 90% 0, 100% 100%, 0% 100%); /* Creates trapezium shape */
+  display: inline-block;
+  width: fit-content; /* Adjust width based on content */
+}
+
 .productDisplay-right-size {
   container-type: inline-size;
 }
@@ -348,6 +360,14 @@
       0
     ); /* End with the message visible and in its place */
   }
+}
+.spinner-icon {
+  animation: spinIcon 1s linear infinite;
+}
+
+@keyframes spinIcon {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 @media (max-width: 1280px) {
   .productDisplay {
@@ -602,6 +622,7 @@ display: flex;
   }
   .productDisplay-right-prices {
     gap: 13px;
+    margin: 0;
   }
   .productDisplay-right-stars img {
     height: 100%;
@@ -636,6 +657,7 @@ display: flex;
     /* width: 200px; */
     font-size: 13px;
     margin-block: 5px;
+    height: 40px;
     border-radius: 25px;
   }
 
@@ -722,7 +744,21 @@ display: flex;
     /* grid-template-columns: repeat(6,1fr); */
     gap: 11px;
   }
+  .productDisplay-right-prices {
+    gap: 10px;
+    margin: 0;
+  }
+  .productDisplay-right-prices div{
+  font-size: 4cqi;
+  }
+  .tax-statement {
+    color: #8c8c8c;
+    margin-bottom: 2px;
+  }
+  .chart-header img {
+    height: 24px;
  
+  }
 }
 @media (max-width: 420px) {
   .productDisplay-img img,

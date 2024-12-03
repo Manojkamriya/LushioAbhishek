@@ -107,7 +107,8 @@ gap: 2%;
    grid-template-columns: repeat(1,1fr);
       }
       .collection-card button {
-        font-size: 2.6cqi;
+        font-size: 3.4cqi;
+        font-weight: 500;
       }
       .collection-card h1{
         font-size: 6cqi;

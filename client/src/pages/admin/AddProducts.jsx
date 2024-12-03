@@ -28,7 +28,7 @@ const AddProducts = () => {
   const [newColor, setNewColor] = useState({ name: '', code: '#43da86' });
   const [isUploading, setIsUploading] = useState(false);
   const sizeOptions = ['XXXS', 'XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'SizeFree'];
-
+const [isLoading, setIsLoading] = useState(false);
   const handleRemoveColor = (colorName, heightType = null) => {
     setProduct(prev => {
       if (heightType) {
@@ -309,6 +309,7 @@ const AddProducts = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setIsLoading(true);
       // Ensure proper structure before submitting
       let productData = initializeProduct(product);
       
@@ -326,10 +327,14 @@ const AddProducts = () => {
       console.error('Error adding product:', error);
       alert("Failed");
     }
+    finally{
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="max-w-4xl mx-auto p-4">
+       {isLoading && <div className="spinner-overlay"><div></div></div>}
       <h2 className="text-2xl font-bold mb-4">Add New Product</h2>
       <form onSubmit={handleSubmit} className="add-product-form" >
         <div className="name-inputs">

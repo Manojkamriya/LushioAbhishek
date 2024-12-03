@@ -1,20 +1,23 @@
 /* Review List Container */
 .admin-review-container{
 display: flex;
+justify-content: space-between;
+width: 100%;
 }
-.review-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.admin-review-list {
+  display: grid;
+ grid-template-columns: repeat(2,1fr);
+ row-gap: 20px;
   margin-top: 20px;
   padding: 10px;
   background-color: #f9f9f9;
   border-radius: 8px;
+  width: 70%;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 /* Review Card */
-.review-card {
+.admin-review-card {
   background-color: #ffffff;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -23,7 +26,7 @@ display: flex;
   transition: background-color 0.3s ease;
 }
 
-.review-card p {
+.admin-review-card p {
   margin: 5px 0;
   color: #333;
   font-size: 1rem;
@@ -36,7 +39,7 @@ display: flex;
 }
 
 /* Review Button */
-.review-card button {
+.admin-review-card button {
   background-color: #007bff;
   color: #ffffff;
   padding: 8px 12px;
@@ -49,57 +52,58 @@ display: flex;
   margin-top: 10px;
 }
 
-.review-card button:hover {
+.admin-review-card button:hover {
   background-color: #0056b3;
 }
 
   
  /* Review Details Container */
-.review-details {
+.admin-review-details {
   background-color: #f8f9fa;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   max-width: 600px;
-  margin: 0 auto;
+  width: 30%;
+  margin: 0;
   margin-top: 20px;
 }
 
-.review-details h3 {
+.admin-review-details h3 {
   color: #333;
   font-size: 1.6em;
   margin-bottom: 15px;
   text-align: center;
 }
 
-.review-details p {
+.admin-review-details p {
   font-size: 1rem;
   color: #555;
   line-height: 1.5;
   margin: 8px 0;
 }
 
-.review-details p strong {
+.admin-review-details p strong {
   color: #333;
 }
 
 /* Media Section */
-.review-media {
+.admin-review-media {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 10px;
 }
 
-.review-media div {
+.admin-review-media div {
   flex: 1 1 45%;
   border-radius: 8px;
   
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
 }
 
-.review-media img,
-.review-media video {
+.admin-review-media img,
+.admin-review-media video {
   width: 150px;
   height: 250px;
   object-fit: cover;
@@ -107,7 +111,7 @@ display: flex;
 }
 
 /* Buttons */
-.review-details button {
+.admin-review-details button {
   background-color: #007bff;
   color: #ffffff;
   padding: 10px 20px;
@@ -121,15 +125,15 @@ display: flex;
   display: inline-block;
 }
 
-.review-details button:hover {
+.admin-review-details button:hover {
   background-color: #0056b3;
 }
 
-.review-details button + button {
+.admin-review-details button + button {
   background-color: #dc3545;
   margin-left: 10px;
 }
 
-.review-details button + button:hover {
+.admin-review-details button + button:hover {
   background-color: #c82333;
 }

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { storage } from "../../firebaseConfig";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-// import MediaRenderer from '../../components/MediaRenderer';
 import URLMedia from "../../components/URLMediaRenderer";
 const Editor = ({ product: initialProduct,onClose}) => {
   const [product, setProduct] = useState(null);
@@ -272,6 +271,7 @@ const Editor = ({ product: initialProduct,onClose}) => {
 
   const handleSubmit = async () => {
     try {
+      setIsLoading(true);
       // Ensure required fields are set for non-height-based products
       const updatedProduct = { ...product };
   
@@ -287,6 +287,9 @@ const Editor = ({ product: initialProduct,onClose}) => {
     } catch (error) {
       console.error('Error updating product:', error);
       alert("Update failed");
+    }
+    finally{
+      setIsLoading(false);
     }
   };
   
@@ -503,7 +506,7 @@ const Editor = ({ product: initialProduct,onClose}) => {
                   </button>
                 </div>
                 {product[`${heightType}Height`].colorOptions.map((color) => (
-                  <div key={color.name} className="mt-4 border-t pt-4">
+                  <div key={color.name} className='color-based-media-size'>
                     <div className="flex items-center space-x-2">
                       <span className="font-medium" style={{ color: color.code }}>{color.name}{", "}{color.code}</span>
                       <button 
@@ -551,9 +554,9 @@ const Editor = ({ product: initialProduct,onClose}) => {
                       ))}
                     </div>
                   </div>
-                ))}
+                )).reverse()}
               </div>
-            )).reverse()}
+            ))}
           </div>
         ) : (
           <div className="space-y-4">
@@ -580,7 +583,7 @@ const Editor = ({ product: initialProduct,onClose}) => {
               </button>
             </div>
             {product.colorOptions.map((color) => (
-              <div key={color.name} className="border p-4 rounded">
+              <div key={color.name} className='color-based-media-size'>
                 <div className="flex items-center space-x-2">
                   <span className="font-medium" style={{ color: color.code }}>{color.name}{", "}{color.code}</span>
                   <button 

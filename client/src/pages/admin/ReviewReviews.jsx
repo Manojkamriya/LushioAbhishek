@@ -59,11 +59,11 @@ const ReviewReviews = () => {
 
   return (
     <div className="admin-review-container">
-      <div className="review-list">
+      <div className="admin-review-list">
         {reviews.map((review) => (
           <div
             key={review.id}
-            className={`review-card ${review.approved ? "review-approved" : ""}`}
+            className={`admin-review-card ${review.approved ? "review-approved" : ""}`}
           >
             <p>Review ID: {review.id}</p>
             <p>Rating: {review.rating}</p>
@@ -72,7 +72,7 @@ const ReviewReviews = () => {
           </div>
         ))}
       </div>
-      <div className="review-details">
+      <div className="admin-review-details">
         {selectedReview && (
           <div>
             <h3>Review Details</h3>
@@ -81,7 +81,7 @@ const ReviewReviews = () => {
             <p><strong>Review:</strong> {selectedReview.review}</p>
             <p><strong>Rating:</strong> {selectedReview.rating}</p>
             <p><strong>Media:</strong></p>
-            <div className="review-media">
+            <div className="admin-review-media">
               {selectedReview.media.map((url, index) => (
                 <div key={index}>
                   {url.endsWith('.mp4') ? (

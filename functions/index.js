@@ -13,15 +13,15 @@ const app = express();
 app.use(cors({origin: true}));
 
 // CORS pre-flight handeling
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
-  if (req.method === "OPTIONS") {
-    return res.status(200).json({});
-  }
-  next();
-});
+// app.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+//   res.header("Access-Control-Allow-Headers", "Content-Type");
+//   if (req.method === "OPTIONS") {
+//     return res.status(200).json({});
+//   }
+//   next();
+// });
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
@@ -44,7 +44,7 @@ const couponRoute = require("./routes/coupons.js");
 const subscribeRoute = require("./routes/subscribe.js");
 const getCategoriesRoute = require("./routes/categories.js");
 const ordersRoute = require("./routes/orders.js");
-
+const paymentRoute = require("./routes/payment.js")
 // Import cloud functions
 const generateReferralCode = require("./cloudFunctions/generateReferralCode.js");
 
@@ -86,6 +86,10 @@ app.use("/subCategories", getCategoriesRoute);
 
 // Orders routes
 app.use("/orders", ordersRoute);
+
+//Payment routes
+
+app.use("/payment",paymentRoute);
 
 // Export the API
 exports.api = functions.https.onRequest(app);

@@ -12,10 +12,9 @@
   -webkit-user-select: none;
   user-select: none;
 }
-/* *, *::before, *::after {
-  box-sizing: border-box;
-} */
-
+input[type="search"]::-webkit-search-cancel-button {
+  display: none;
+}
 /* * {
   -webkit-tap-highlight-color: rgba(0,0,0,0.1); 
 } */
@@ -41,7 +40,7 @@ body {
   overflow: auto;
 }
 .loader-container{
-  width: 100vw;
+  width: 97vw;
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -70,5 +69,43 @@ height: 50px;
     radial-gradient(farthest-side,#ffa516 94%,#0000) top/4px 4px no-repeat,
     conic-gradient(#0000 30%,#ffa516);
   -webkit-mask: radial-gradient(farthest-side,#0000 calc(100% - 4px),#000 0);
+  }
+}
+.spinner-overlay,.notification-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Ensure the spinner appears on top */
+}
+
+/* Spinner */
+.spinner-overlay div {
+  border: 6px solid rgba(255, 255, 255, 0.3); /* Light semi-transparent border */
+  border-top: 6px solid #ffffff; /* White top border for the rotating effect */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: transParentSpin 1s linear infinite;
+}
+
+/* Spinner animation */
+@keyframes transParentSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@media (max-width: 768px) {
+  .spinner-overlay div {
+    border: 4px solid rgba(255, 255, 255, 0.3); /* Light semi-transparent border */
+    border-top: 4px solid #ffffff; /* White top border for the rotating effect */
+   
+    width: 35px;
+    height: 35px;
+    
   }
 }

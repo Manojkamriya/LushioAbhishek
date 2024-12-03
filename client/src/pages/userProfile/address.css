@@ -1,9 +1,3 @@
-.test-color-selector button{
-outline: none;
-border: none;
-width: 60px;
-height: 40px;
-}
 
 
   .address-wrapper {
@@ -181,34 +175,7 @@ height: 40px;
     border-radius: 4px;
  }
   }
-  .spinner-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999; /* Ensure the spinner appears on top */
-  }
-  
-  /* Spinner */
-  .spinner-overlay div {
-    border: 6px solid rgba(255, 255, 255, 0.3); /* Light semi-transparent border */
-    border-top: 6px solid #ffffff; /* White top border for the rotating effect */
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: transParentSpin 1s linear infinite;
-  }
-  
-  /* Spinner animation */
-  @keyframes transParentSpin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
+ 
   @media (max-width: 768px) {
     .address-container {
       grid-template-columns: 1fr;
@@ -219,100 +186,4 @@ height: 40px;
       margin-left: 3%;
     }
   }
-  /* .size-selector-outer{
-    height: 90%;
-    width: 100%;
-   
-    background-color: #fffefe;
-   
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    position: absolute;
-    top: 103%;
-    left: 0;
-    right: 0;
-    z-index: 6;
-   border-radius: 10px;
-    transition: 0.2s;
-    display: flex;
-    flex-direction: column;
-  }
-  .size-selector-my{
-   
-    padding: 8% 4%;
-    height: 100%;
-    position: relative;
-  }  
-  .size-selector-my img{
-  width: 7%;
-    position: absolute;
-    cursor: pointer;
-    left: 85%;
-    margin-left: auto;
-  }
-  .size-selector-my p {
-    margin-bottom: 4%;
-    color: #1c1b1b;
-    font-size:  clamp(11px, 10cqi, 16px);
-  }
   
-  .size-selector-my div {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 5%;
-  
-    height: auto;
-  }
-  .size-selector-my div:not(.height-selector) {
-    
-    display: grid;
-    grid-template-columns: repeat(7,1fr);
-    grid-template-columns:  repeat(auto-fill, minmax(10%, 1fr)); ;
-    row-gap: 17px;
-    width: 85%;
-  }
-  .size-selector-my .height-selector button{
-height: 38px;
-width: 35%;
-
-margin-left: 2px;
-  }
-  @media(max-width: 765px){
-    .size-selector-my .height-selector button{
-      
-      font-size:  clamp(10px, 1vw, 16px);
-    }
-    .size-selector-my p{
-  font-size:  clamp(9px, 2vw, 17px);
-  margin-bottom: 3%;
-    }
-    .add-to-cart-button {
-      width: 60%;
-      height: 10%;
-      font-size: 10px;
-    }
-  }
-  @media(max-width: 500px){
-    .size-selector-my .height-selector button{
-      height: 20px;
-      font-size:  clamp(8px, 0.5vw, 12px);
-    }
-      .size-selector-my div:not(.height-selector){
-      row-gap: 9px;
-      width: 95%;
-    }
-    
-    .add-to-cart-button {
-      font-size: 10px;
-    }
-    .size-selector-my{
-padding: 4%;
-    }
-  }
-
-  @media(max-width: 500px){
-    .add-to-cart-button{
-      font-size: 8px;
-    }
-  } */

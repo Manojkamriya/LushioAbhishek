@@ -5,7 +5,7 @@ import { UserContext } from "../../components/context/UserContext";
 import EmptyWishList from "./EmptyWishList";
 import ProductCard from "../home/ProductCard";
 import { Pagination } from "@mui/material"; 
-
+import Breadcrumb from "../../components/BreadCrumb";
 function WishList() {
  
   const {user} = useContext(UserContext);
@@ -58,14 +58,14 @@ useEffect(() => {
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedProducts = wishlist.slice(startIndex, endIndex);
-
+  const breadcrumbItems = [
+    { label: 'Home', link: '/' },
+    { label: 'Wishlist', link: '/wishlist' },
+   
+  ];
   return (
     <>
-    
-   
-    <h3 className="wishlist-title">Your Wishlist</h3>
-
- 
+   <Breadcrumb items={breadcrumbItems} />
     <div className="wishlist-container">
   {paginatedProducts.map((items, id) => (
     items.product ? ( // Check if items.product exists
@@ -98,6 +98,7 @@ useEffect(() => {
         siblingCount={1} // How many pagination buttons to show around the current one
         variant="outlined"
         shape="rounded"
+        className="wishlist-pagination"
         sx={{
           "& .Mui-selected": {
             backgroundColor: "#000000 !important", // Pure black background

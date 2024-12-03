@@ -1,15 +1,17 @@
 import React, { useRef, useState, useContext } from "react";
 import HeightBasedSelection from "./HeightBasedSelection";
 import ColorOptions from "./ColorOptions";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaHeart, FaHeartBroken } from "react-icons/fa";
 import { UserContext } from "../../components/context/UserContext";
 import { useWishlist } from "../../components/context/WishlistContext";
+import { useCart } from "../../components/context/CartContext";
+import useCartCount from "../../components/useCartCount";
 import "./productCard.css";
 function ProductCard(props) {
   const menuRef = useRef();
-
+const navigate= useNavigate();
   const isHeightBased = props.height;
   const [isLoading, setIsLoading] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
@@ -18,18 +20,23 @@ function ProductCard(props) {
   );
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
+  const { cartCount, fetchCartCount } = useCart();
 
 
   const [isRemoving, setIsRemoving] = useState(false);
   const { user } = useContext(UserContext);
-
+ // const { fetchCartCount } = useCartCount(user?.id);
   const { wishlist, wishlistIds, toggleWishlist } = useWishlist();
   const productId = props?.id;
   const wishlistItem = wishlist.find((item) => item.productId === productId);
+  
   const [liked, setLiked] = useState(wishlistIds.has(productId));
  
   const handleToggleWishlist = async (id, productId) => {
-   
+   if(!user){
+    navigate("/login");
+    return;
+   }
   
     if (liked) {
       setIsRemoving(true);
@@ -46,7 +53,26 @@ function ProductCard(props) {
   
     setIsRemoving(false);
   };
-  
+  const [quantity, setQuantity] = useState(null);
+ 
+
+  // Define the object with input data
+  const requestData = {
+    pid: "12345", // Replace with actual product ID
+    color: "red", // Replace with actual color
+    heightType: "above", // Options: "normal", "above", "below"
+    size: "M", // Replace with actual size
+  };
+
+  const fetchQuantity = async () => {
+    try {
+      const response = await axios.post("http://localhost:5000/getQty", requestData);
+      setQuantity(response.data.quantity);
+    } catch (err) {
+      console.error("Error fetching quantity:", err);
+    
+    }
+  };
   const addToCart = async (id) => {
     setIsLoading(true);
 
@@ -61,17 +87,17 @@ function ProductCard(props) {
 
     try {
       // Start both the API call and a 2-second timer
-      const apiCall = axios.post(
+      const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/cart/add`,
         cartItem
       );
-      const minimumDelay = new Promise((resolve) => setTimeout(resolve, 2000));
+      // const minimumDelay = new Promise((resolve) => setTimeout(resolve, 2000));
 
-      // Wait for both to complete
-      const [response] = await Promise.all([apiCall, minimumDelay]);
+      // // Wait for both to complete
+      // const [response] = await Promise.all([apiCall, minimumDelay]);
 
       if (response.status === 201) {
-      
+       fetchCartCount();
         setShowNotification(true);
         setTimeout(() => setShowNotification(false), 3000); // Show notification for 3 seconds
       }
@@ -96,7 +122,7 @@ function ProductCard(props) {
       menuRef.current.style.height = "auto"; // Reset the height on close
       menuRef.current.style.top = "101%";
       setHeightCategory(isHeightBased ? "aboveHeight" : null);
-      setSelectedColor(null);
+     
       setSelectedSize(null);
     }
   };
@@ -113,7 +139,7 @@ function ProductCard(props) {
       )}
       <div className="item-image-container">
         <div className="item-image">
-        <Link to={`/${props.id}`}>
+        <Link to={`/product/${props.id}`}>
         <img src={props.image1} alt="" />
         <img src={props.image2} alt="" />
         </Link>
@@ -128,7 +154,7 @@ function ProductCard(props) {
               />
             </span>
             <span>
-              {props.rating > 0 ? <p>{props.rating}</p> : <p>4.5</p>}
+            <p>{props.rating > 0 ? props.rating.toFixed(1) : "4.5"}</p>
               <img src="/Images/star.png" alt="icon" />
             </span>
           </div>
@@ -205,8 +231,14 @@ function ProductCard(props) {
       </div>
       <div className="item-naming">
         <div className="info">
-          <h3>LushioFitness®</h3>
-          <h4>{props.description}</h4>
+          {/* <h3>LushioFitness®</h3> */}
+          <h3>{props.displayName}</h3>
+          <div className="item-price">
+        <span className="new-price">₹{props.price}</span>
+        <span className="old-price">₹{props.price}</span>
+
+        <span className="discount">{props.discount}% OFF</span>
+      </div>
         </div>
         <div className="add-wishlist">
           {isRemoving ? (
@@ -218,16 +250,11 @@ function ProductCard(props) {
             />
           )}
 
-          {/* {isRemoving ? <AiFillHeart color="red" /> : <AiOutlineHeart color="black" />} */}
+        
         </div>
       </div>
-      <div className="item-price">
-        <span className="new-price">₹ {props.price}</span>
-        <span className="old-price">₹ {props.price}</span>
-
-        <span className="discount">{props.discount}% OFF</span>
-      </div>
-      {/* <p>{props.displayName}</p> */}
+     
+   
     </div>
   );
 }

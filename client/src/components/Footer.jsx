@@ -42,9 +42,7 @@ const handleEmailChange = (e) => {
         <div className="business-section">
           <h4>SHOP WITH US</h4>
           <ul>
-            <li>
-              <Link to="/">Search</Link>
-            </li>
+           
             <li>
               <Link to="/">All Products</Link>
             </li>
