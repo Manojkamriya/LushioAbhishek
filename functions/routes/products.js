@@ -17,7 +17,7 @@ router.post("/addProduct", async (req, res) => {
       description,
       price,
       gst,
-      discount,
+      discountedPrice,
       categories,
       height,
       aboveHeight,
@@ -25,10 +25,12 @@ router.post("/addProduct", async (req, res) => {
       colorOptions,
       quantities,
       cardImages,
+      soldOut,
+      toDisplay,
     } = req.body;
 
     // Validation checks
-    if (!name || !displayName || !description || !price || !gst || !discount || !categories || !cardImages || cardImages.length !== 2) {
+    if (!name || !displayName || !description || !price || !gst || !discountedPrice || !categories || !cardImages || cardImages.length !== 2 ) {
       return res.status(400).json({error: "All required fields must be filled, including only two card images"});
     }
 
@@ -40,11 +42,25 @@ router.post("/addProduct", async (req, res) => {
       description: description.trim(),
       price: parseFloat(price),
       gst: parseFloat(gst),
-      discount: parseFloat(discount),
+      soldOut,
+      toDisplay,
+      discountedPrice: parseFloat(discountedPrice),
       categories: typeof categories === "string" ? categories.split(",").map((cat) => cat.trim().toLowerCase()) : categories.map((cat) => cat.toLowerCase()), // Convert to lowercase
       cardImages: cardImages, // Array of two card image URLs
       rating: 0, // Default rating
       allImages: [...cardImages],
+    };
+
+    // Function to extract unique sizes from quantities
+    const extractUniqueSizes = (quantitiesMap) => {
+      if (!quantitiesMap) return [];
+
+      // For height-based products, the quantities map is nested by color
+      const allSizes = Object.values(quantitiesMap).flatMap((colorQuantities) =>
+        typeof colorQuantities === "object" ? Object.keys(colorQuantities) : [],
+      );
+
+      return [...new Set(allSizes)].sort();
     };
 
     // Process color options and images
@@ -68,6 +84,14 @@ router.post("/addProduct", async (req, res) => {
           ]),
       ).map((str) => JSON.parse(str));
 
+      // Create sizeOptions array with unique sizes from both height ranges
+      productData.sizeOptions = Array.from(
+          new Set([
+            ...extractUniqueSizes(aboveHeight.quantities),
+            ...extractUniqueSizes(belowHeight.quantities),
+          ]),
+      );
+
       // Append images from aboveHeight and belowHeight colorOptions to allImages
       aboveHeight.colorOptions.forEach((option) => {
         if (option.images && Array.isArray(option.images)) {
@@ -83,6 +107,9 @@ router.post("/addProduct", async (req, res) => {
       // Non-height-based classification
       productData.colorOptions = colorOptions;
       productData.quantities = quantities;
+
+      // Create sizeOptions array from quantities
+      productData.sizeOptions = extractUniqueSizes(quantities);
 
       // Append images from non-height-based colorOptions to allImages
       colorOptions.forEach((option) => {
@@ -257,6 +284,18 @@ router.put("/update/:id", async (req, res) => {
       updatedAt: new Date(),
     };
 
+    // Function to extract unique sizes from quantities map
+    const extractUniqueSizes = (quantitiesMap) => {
+      if (!quantitiesMap) return [];
+
+      // For height-based products, the quantities map is nested by color
+      const allSizes = Object.values(quantitiesMap).flatMap((colorQuantities) =>
+        typeof colorQuantities === "object" ? Object.keys(colorQuantities) : [],
+      );
+
+      return [...new Set(allSizes)].sort();
+    };
+
     // Ensure allImages array exists
     updatedProductData.allImages = [...(currentProductData.allImages || [])];
 
@@ -267,9 +306,11 @@ router.put("/update/:id", async (req, res) => {
       "description",
       "price",
       "gst",
-      "discount",
+      "discountedPrice",
       "categories",
       "cardImages",
+      "soldOut",
+      "toDisplay",
     ];
 
     for (const field of requiredFields) {
@@ -308,6 +349,12 @@ router.put("/update/:id", async (req, res) => {
           ]),
       ).map((str) => JSON.parse(str));
 
+      // Generate sizeOptions from quantities
+      updatedProductData.sizeOptions = extractUniqueSizes({
+        ...updatedProductData.aboveHeight.quantities,
+        ...updatedProductData.belowHeight.quantities,
+      });
+
       // Add new images from aboveHeight colorOptions
       updatedProductData.aboveHeight.colorOptions.forEach((option) => {
         if (option.images && Array.isArray(option.images)) {
@@ -336,6 +383,9 @@ router.put("/update/:id", async (req, res) => {
           error: "colorOptions, sizeOptions, and quantities are required for non-height-based products",
         });
       }
+
+      // Generate sizeOptions from quantities
+      updatedProductData.sizeOptions = extractUniqueSizes(updatedProductData.quantities);
 
       // Add new images from colorOptions
       updatedProductData.colorOptions.forEach((option) => {

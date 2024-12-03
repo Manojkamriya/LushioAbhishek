@@ -3,7 +3,6 @@ import axios from 'axios';
 import { storage } from "../../firebaseConfig"; // Import storage from Firebase config
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import "./AddProducts.css";
-// import MediaRenderer from '../../components/MediaRenderer';
 import URLMedia from '../../components/URLMediaRenderer';
 
 const AddProducts = () => {
@@ -13,9 +12,11 @@ const AddProducts = () => {
     description: '',
     price: '',
     gst: '',
-    discount: '',
+    discountedPrice: '',
     categories: '',
     height: '',
+    soldOut: false,
+    toDisplay: true,
     aboveHeight: { colorOptions: [], quantities: {} },
     belowHeight: { colorOptions: [], quantities: {} },
     colorOptions: [],
@@ -25,8 +26,36 @@ const AddProducts = () => {
 
   const [isHeightBased, setIsHeightBased] = useState(false);
   const [newColor, setNewColor] = useState({ name: '', code: '#43da86' });
-const [isUploading, setIsUploading] = useState(false);
-  const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+  const [isUploading, setIsUploading] = useState(false);
+  const sizeOptions = ['XXXS', 'XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'SizeFree'];
+
+  const handleRemoveColor = (colorName, heightType = null) => {
+    setProduct(prev => {
+      if (heightType) {
+        const heightSection = `${heightType}Height`;
+        return {
+          ...prev,
+          [heightSection]: {
+            ...prev[heightSection],
+            colorOptions: prev[heightSection].colorOptions.filter(color => color.name !== colorName),
+            quantities: {
+              ...prev[heightSection].quantities,
+              [colorName]: undefined // Remove quantities for this color
+            }
+          }
+        };
+      } else {
+        return {
+          ...prev,
+          colorOptions: prev.colorOptions.filter(color => color.name !== colorName),
+          quantities: {
+            ...prev.quantities,
+            [colorName]: undefined // Remove quantities for this color
+          }
+        };
+      }
+    });
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -206,6 +235,7 @@ const [isUploading, setIsUploading] = useState(false);
       setIsUploading(false); // Set isUploading to false after the upload process is complete
     }
   };
+
   const handleRemoveImage = (imageUrl, colorName = null, heightType = null) => {
     setIsUploading(true);
     setProduct(prev => {
@@ -258,6 +288,7 @@ const [isUploading, setIsUploading] = useState(false);
     });
     setIsUploading(false);
   };
+
   // Helper function to ensure proper initialization of product structure
   const initializeProduct = (product) => {
     return {
@@ -307,7 +338,6 @@ const [isUploading, setIsUploading] = useState(false);
             <input
               id="name"
               name="name"
-             
               value={product.name}
               onChange={handleInputChange}
               required
@@ -367,13 +397,13 @@ const [isUploading, setIsUploading] = useState(false);
             />
           </div>
           <div>
-            <label htmlFor="discount" className="block mb-1">Discount (%)</label>
+            <label htmlFor="discountedPrice" className="block mb-1">Discounted Price</label>
             <input
-              id="discount"
-              name="discount"
+              id="discountedPrice"
+              name="discountedPrice"
               type="number"
                  min="0"
-              value={product.discount}
+              value={product.discountedPrice}
               onChange={handleInputChange}
               required
               className="w-full p-2 border rounded"
@@ -392,6 +422,56 @@ const [isUploading, setIsUploading] = useState(false);
            
           />
         </div>
+
+        <div className="boolean-fields">
+           <div>
+              <label className="block mb-2">Sold Out</label>
+              <div className="flex space-x-4">
+                <label>
+                  <input
+                    type="radio"
+                    name="soldOut"
+                    value="yes"
+                    checked={product.soldOut === true}
+                    onChange={(e) => setProduct(prev => ({ ...prev, soldOut: true }))}
+                  /> Yes
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="soldOut"
+                    value="no"
+                    checked={product.soldOut === false}
+                    onChange={(e) => setProduct(prev => ({ ...prev, soldOut: false }))}
+                  /> No
+                </label>
+            </div>
+          </div>
+
+          <div>
+             <label className="block mb-2">Display</label>
+             <div className="flex space-x-4">
+                <label>
+                  <input
+                    type="radio"
+                    name="toDisplay"
+                    value="yes"
+                    checked={product.toDisplay === true}
+                    onChange={(e) => setProduct(prev => ({ ...prev, toDisplay: true }))}
+                  /> Yes
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="toDisplay"
+                    value="no"
+                    checked={product.toDisplay === false}
+                    onChange={(e) => setProduct(prev => ({ ...prev, toDisplay: false }))}
+                  /> No
+                </label>
+              </div>
+            </div>
+          </div>
 
         <div className="file-upload-container">
           <label htmlFor="cardImages" className="block mb-1">Card Images (2 required)</label>
@@ -472,6 +552,13 @@ const [isUploading, setIsUploading] = useState(false);
                   <div key={color.name} className="mt-2">
                     <div className="flex items-center space-x-2 ">
                       <span style={{ color: color.code }} className="w-6 h-6 rounded-full">{color.name}{", "}{color.code}</span>
+                      <button 
+                        type="button"
+                        onClick={() => handleRemoveColor(color.name, heightType)}
+                        className="text-red-500 ml-2 hover:text-red-700"
+                      >
+                        ✕
+                      </button>
                     </div>
                     <div className="file-upload-container">
                       <label  htmlFor={`height-${heightType}-${color.name}`}>Choose images for color</label>
@@ -484,16 +571,16 @@ const [isUploading, setIsUploading] = useState(false);
                       onChange={(e) => handleImageUpload(e, color.name, heightType)}
                       className="mt-1 w-full p-2 border rounded"
                     />
-     <div className="product-upload-image-preview">
-        {color.images?.map((url, index) => (
-          <div key={index} className="product-upload-image-item">
-          <URLMedia src={url} />
-            <button className="image-remove-button" onClick={() => handleRemoveImage(url, color.name, heightType)}>
-              Remove
-            </button>
-          </div>
-        ))}
-      </div>
+                    <div className="product-upload-image-preview">
+                        {color.images?.map((url, index) => (
+                          <div key={index} className="product-upload-image-item">
+                          <URLMedia src={url} />
+                            <button className="image-remove-button" onClick={() => handleRemoveImage(url, color.name, heightType)}>
+                              Remove
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                     
                   
@@ -544,7 +631,14 @@ const [isUploading, setIsUploading] = useState(false);
               </div>
               {product.colorOptions.map(color => (
                 <div key={color.name}>
-                  <h4 className="flex items-center space-x-2"><span style={{ color: color.code }} className="w-6 h-6 rounded-full">{color.name}</span></h4>
+                  <span style={{ color: color.code }} className="w-6 h-6 rounded-full">{color.name}{", "}{color.code}</span>
+                  <button 
+                    type="button"
+                    onClick={() => handleRemoveColor(color.name)}
+                    className="text-red-500 ml-2 hover:text-red-700"
+                  >
+                    ✕
+                  </button>
                   <div className="file-upload-container">
                     <label  htmlFor={`file-upload-${color.name}`}>Choose Media</label>
                   <input
