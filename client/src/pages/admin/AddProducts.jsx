@@ -28,7 +28,7 @@ const AddProducts = () => {
   const [newColor, setNewColor] = useState({ name: '', code: '#43da86' });
   const [isUploading, setIsUploading] = useState(false);
   const sizeOptions = ['XXXS', 'XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'SizeFree'];
-
+const [isLoading, setIsLoading] = useState(false);
   const handleRemoveColor = (colorName, heightType = null) => {
     setProduct(prev => {
       if (heightType) {

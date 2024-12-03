@@ -170,6 +170,14 @@ function Navbar() {
   "Pullovers",
   "Raincoats",
   "Scarves",
+  "Denims",
+  "Formalwear",
+  "Casualwear",
+  "Tracksuits",
+  "Overcoats",
+  "Pullovers",
+  "Raincoats",
+  "Scarves",
                   ]}
                   featured={[
                     "New Drop",

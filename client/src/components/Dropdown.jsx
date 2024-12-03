@@ -16,7 +16,7 @@ function Dropdown({
         <div className="sub-menu-categories">
           <h5>TOP PRODUCTS</h5>
           <ul>
-            {topProducts.slice(0, 25).map((product, index) => (
+            {topProducts.slice(0, 35).map((product, index) => (
               <li key={index} onClick={() => setActiveDropdown(null)}>
                 <Link to={`/${category}/${product.toLowerCase()}`}>
                   {product}

@@ -229,6 +229,29 @@ useEffect(() => {
           <div className="productDisplay-right-price-discount">20% OFF</div>
         </div>
         <p className="tax-statement">Inclusive of all taxes</p>
+        <div className="productDisplay-right-size">
+       
+       {isHeightBased ? (
+             <HeightBasedSelection
+               data={product}
+               selectedHeight={heightCategory}
+               setSelectedHeight={setHeightCategory}
+               selectedColor={selectedColor}
+               setSelectedColor={setSelectedColor}
+               selectedSize={selectedSize}
+               setSelectedSize={setSelectedSize}
+             />
+           ) : (
+             <ColorOptions
+               data={product}
+               selectedColor={selectedColor}
+               setSelectedColor={setSelectedColor}
+               selectedSize={selectedSize}
+               setSelectedSize={setSelectedSize}
+             />
+           )}
+        
+       </div>
         <div className="productDisplay-right-discription">
         {product.description}
         </div>
@@ -241,29 +264,7 @@ useEffect(() => {
         </>
         </p>
        
-        <div className="productDisplay-right-size">
-       
-        {isHeightBased ? (
-              <HeightBasedSelection
-                data={product}
-                selectedHeight={heightCategory}
-                setSelectedHeight={setHeightCategory}
-                selectedColor={selectedColor}
-                setSelectedColor={setSelectedColor}
-                selectedSize={selectedSize}
-                setSelectedSize={setSelectedSize}
-              />
-            ) : (
-              <ColorOptions
-                data={product}
-                selectedColor={selectedColor}
-                setSelectedColor={setSelectedColor}
-                selectedSize={selectedSize}
-                setSelectedSize={setSelectedSize}
-              />
-            )}
-         
-        </div>
+      
       
          {/* Display error message if no size is selected */}
       {showError && !selectedSize && <p className="product-display-error-message">Please select a size before adding to cart!</p>}
