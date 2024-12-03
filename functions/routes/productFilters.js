@@ -34,14 +34,14 @@ router.post("/getByCategory", async (req, res) => {
     const productsRef = db.collection("products");
     let results = [];
 
-    const snapshot1 = await productsRef.where("categories", "array-contains", categories[0]).limit(20).get();
+    const snapshot1 = await productsRef.where("categories", "array-contains", categories[0]).where("toDisplay", "==", true).limit(20).get();
     snapshot1.forEach((doc) => {
       results.push({id: doc.id, ...doc.data()});
     });
 
     if (categories.length === 2) {
       const results2 = [];
-      const snapshot2 = await productsRef.where("categories", "array-contains", categories[1]).limit(20).get();
+      const snapshot2 = await productsRef.where("categories", "array-contains", categories[1]).where("toDisplay", "==", true).limit(20).get();
       snapshot2.forEach((doc) => {
         results2.push({id: doc.id, ...doc.data()});
       });
@@ -67,14 +67,14 @@ router.get("/featuredMen", async (req, res) => {
     const productsRef = db.collection("products");
 
     // First query for 'featured'
-    const featuredSnapshot = await productsRef.where("categories", "array-contains", "featured").get();
+    const featuredSnapshot = await productsRef.where("categories", "array-contains", "featured").where("toDisplay", "==", true).get();
     const featuredProducts = [];
     featuredSnapshot.forEach((doc) => {
       featuredProducts.push({id: doc.id, ...doc.data()});
     });
 
     // Second query for 'men'
-    const menSnapshot = await productsRef.where("categories", "array-contains", "men").get();
+    const menSnapshot = await productsRef.where("categories", "array-contains", "men").where("toDisplay", "==", true).get();
     const menProducts = [];
     menSnapshot.forEach((doc) => {
       menProducts.push({id: doc.id, ...doc.data()});
@@ -99,14 +99,14 @@ router.get("/featuredWomen", async (req, res) => {
     const productsRef = db.collection("products");
 
     // First query for 'featured'
-    const featuredSnapshot = await productsRef.where("categories", "array-contains", "featured").get();
+    const featuredSnapshot = await productsRef.where("categories", "array-contains", "featured").where("toDisplay", "==", true).get();
     const featuredProducts = [];
     featuredSnapshot.forEach((doc) => {
       featuredProducts.push({id: doc.id, ...doc.data()});
     });
 
     // Second query for 'women'
-    const womenSnapshot = await productsRef.where("categories", "array-contains", "women").get();
+    const womenSnapshot = await productsRef.where("categories", "array-contains", "women").where("toDisplay", "==", true).get();
     const womenProducts = [];
     womenSnapshot.forEach((doc) => {
       womenProducts.push({id: doc.id, ...doc.data()});
@@ -132,14 +132,14 @@ router.get("/featuredAccessories", async (req, res) => {
     const productsRef = db.collection("products");
 
     // First query for 'featured'
-    const featuredSnapshot = await productsRef.where("categories", "array-contains", "featured").get();
+    const featuredSnapshot = await productsRef.where("categories", "array-contains", "featured").where("toDisplay", "==", true).get();
     const featuredProducts = [];
     featuredSnapshot.forEach((doc) => {
       featuredProducts.push({id: doc.id, ...doc.data()});
     });
 
     // Second query for 'accessories'
-    const accessoriesSnapshot = await productsRef.where("categories", "array-contains", "accessories").get();
+    const accessoriesSnapshot = await productsRef.where("categories", "array-contains", "accessories").where("toDisplay", "==", true).get();
     const accessoriesProducts = [];
     accessoriesSnapshot.forEach((doc) => {
       accessoriesProducts.push({id: doc.id, ...doc.data()});
@@ -163,7 +163,7 @@ router.get("/featuredAccessories", async (req, res) => {
 router.get("/men", async (req, res) => {
   try {
     const productsRef = db.collection("products");
-    const snapshot = await productsRef.where("categories", "array-contains", "men").limit(20).get();
+    const snapshot = await productsRef.where("categories", "array-contains", "men").where("toDisplay", "==", true).limit(20).get();
 
     const results = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
 
@@ -182,7 +182,7 @@ router.get("/men", async (req, res) => {
 router.get("/women", async (req, res) => {
   try {
     const productsRef = db.collection("products");
-    const snapshot = await productsRef.where("categories", "array-contains", "women").limit(20).get();
+    const snapshot = await productsRef.where("categories", "array-contains", "women").where("toDisplay", "==", true).limit(20).get();
 
     const results = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
 
@@ -201,7 +201,7 @@ router.get("/women", async (req, res) => {
 router.get("/accessories", async (req, res) => {
   try {
     const productsRef = db.collection("products");
-    const snapshot = await productsRef.where("categories", "array-contains", "accessories").limit(20).get();
+    const snapshot = await productsRef.where("categories", "array-contains", "accessories").where("toDisplay", "==", true).limit(20).get();
 
     const results = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
 
