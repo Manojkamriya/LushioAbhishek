@@ -1,5 +1,6 @@
 import React,{useState} from 'react'
-import "./ordermanagement.css"
+import "./OrderManagement.css"
+
 const OrderManagement = () => {
     const [dimensions, setDimensions] = useState({
         length: '',
@@ -29,8 +30,8 @@ const OrderManagement = () => {
     
       return (
         <>
-         <div className='order-dimensions-form-wrapper'>
- <form className="order-dimensions-form" onSubmit={handleSubmit}>
+          <div className='order-dimensions-form-wrapper'>
+          <form className="order-dimensions-form" onSubmit={handleSubmit}>
           <h3>Order Dimensions</h3>
           <div className='form-fields'>
           <div className="form-group">

@@ -1,4 +1,6 @@
 node_modules/
 *.local
 
+.env.example
+
 serviceAccountKey.json

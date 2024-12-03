@@ -8,6 +8,7 @@ const Editor = ({ product: initialProduct,onClose}) => {
   const [newColor, setNewColor] = useState({ name: '', code: '#43da86' });
   const [hasHeight, setHasHeight] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const sizeOptions = ['XXXS', 'XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'SizeFree'];
   
   useEffect(() => {
