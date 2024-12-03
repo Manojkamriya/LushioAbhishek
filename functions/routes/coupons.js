@@ -151,6 +151,10 @@ router.post("/use", async (req, res) => {
     }
 
     const couponData = couponDoc.data();
+    if (!couponData) {
+      return res.status(404).json({error: "Coupon details not found"});
+    }
+
     const currentDate = new Date();
 
     // Check if the coupon is valid (not expired)
@@ -313,12 +317,22 @@ router.post("/markUsed", async (req, res) => {
       return res.status(404).json({error: "User not found"});
     }
 
-    await userRef.update({
-      usedCoupons: admin.firestore.FieldValue.arrayUnion(code),
-    });
+    // Get current usedCoupons array
+    const userData = userDoc.data();
+    const currentUsedCoupons = userData.usedCoupons || [];
+
+    // Only add if not already present
+    if (!currentUsedCoupons.includes(code)) {
+      currentUsedCoupons.push(code);
+
+      await userRef.update({
+        usedCoupons: currentUsedCoupons,
+      });
+    }
 
     return res.status(200).json({message: "Coupon marked as used"});
   } catch (error) {
+    console.error("Full error:", error);
     return res.status(500).json({error: "Error marking coupon as used", details: error.message});
   }
 });

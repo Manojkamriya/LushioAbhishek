@@ -5,35 +5,43 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import URLMedia from "../../components/URLMediaRenderer";
 const Editor = ({ product: initialProduct,onClose}) => {
   const [product, setProduct] = useState(null);
-  const [isHeightBased, setIsHeightBased] = useState(false);
   const [newColor, setNewColor] = useState({ name: '', code: '#43da86' });
-  const [isLoading,setIsLoading] = useState(false);
+  const [hasHeight, setHasHeight] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
-
+  const sizeOptions = ['XXXS', 'XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'SizeFree'];
+  
   useEffect(() => {
     if (initialProduct) {
       // Initialize the product state with the provided data
       const formattedProduct = {
         ...initialProduct,
-        aboveHeight: initialProduct.aboveHeight || { colorOptions: [], quantities: {} },
-        belowHeight: initialProduct.belowHeight || { colorOptions: [], quantities: {} },
+        ...(initialProduct.height ? {
+          aboveHeight: initialProduct.aboveHeight || { colorOptions: [], quantities: {} },
+          belowHeight: initialProduct.belowHeight || { colorOptions: [], quantities: {} }
+        } : {}),
         colorOptions: initialProduct.colorOptions || [],
         quantities: initialProduct.quantities || {},
         cardImages: initialProduct.cardImages || [],
+        soldOut: initialProduct.soldOut || false,
+        toDisplay: initialProduct.toDisplay || true,
       };
       setProduct(formattedProduct);
-      setIsHeightBased(!!initialProduct.height);
+      setHasHeight(!!initialProduct.height);
     }
   }, [initialProduct]);
-
+  
   if (!product) {
     return <div className="text-center p-4">Loading...</div>;
   }
-
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setProduct(prev => ({ ...prev, [name]: value }));
+  };
+  
+  const handleBooleanChange = (e) => {
+    const { name, value } = e.target;
+    setProduct(prev => ({ ...prev, [name]: value === 'true' }));
   };
 
   const handleCategoryChange = (e) => {
@@ -234,55 +242,38 @@ const Editor = ({ product: initialProduct,onClose}) => {
     });
     setIsUploading(false);
   };
+  
+  const handleColorRemove = (colorName, type = 'normal') => {
+    setProduct(prev => {
+      if (type === 'above' || type === 'below') {
+        const heightSection = `${type}Height`;
+        return {
+          ...prev,
+          [heightSection]: {
+            ...prev[heightSection],
+            colorOptions: prev[heightSection].colorOptions.filter(color => color.name !== colorName),
+            quantities: Object.fromEntries(
+              Object.entries(prev[heightSection].quantities || {}).filter(([key]) => key !== colorName)
+            )
+          }
+        };
+      } else {
+        return {
+          ...prev,
+          colorOptions: prev.colorOptions.filter(color => color.name !== colorName),
+          quantities: Object.fromEntries(
+            Object.entries(prev.quantities || {}).filter(([key]) => key !== colorName)
+          )
+        };
+      }
+    });
+  };
 
-  //   const isVideo = url.toLowerCase().match(/\.(mp4|webm|ogg)$/);
-  //   return (
-  //     <div className="relative inline-block m-2 image-item">
-  //       {isVideo ? (
-  //         <video width="200" height="200" className="rounded" autoPlay muted>
-  //           <source src={url} type={`video/${url.split('.').pop()}`} />
-  //           Your browser does not support the video tag.
-  //         </video>
-  //       ) : (
-  //         <img src={url} alt="preview" className="w-48 h-48 object-cover rounded" />
-  //       )}
-  //       <button
-  //         onClick={onRemove}
-  //         className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 w-6 h-6 flex items-center justify-center"
-  //         type="button"
-  //       >
-  //         ×
-  //       </button>
-  //     </div>
-  //   );
-  // };
- 
-  // const handleSubmit = async () => {
-  //   //e.preventDefault();
-  //   try {
-  //     console.log(product);
-  //     const response = await axios.put(
-  //       `${process.env.REACT_APP_API_URL}/products/update/${product.id}`,
-  //       product
-  //     );
-  //     console.log('Product updated:', response.data);
-  //     alert("Updated successfully");
-  //   } catch (error) {
-  //     console.error('Error updating product:', error);
-  //     alert("Update failed");
-  //   }
-  // };
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
       // Ensure required fields are set for non-height-based products
       const updatedProduct = { ...product };
-  
-      if (!isHeightBased) {
-        updatedProduct.colorOptions = updatedProduct.colorOptions || [];
-        updatedProduct.quantities = updatedProduct.quantities || {};
-     //   updatedProduct.sizeOptions = sizeOptions;  // Add sizeOptions if it's required in the backend
-      }
   
       const response = await axios.put(
         `${process.env.REACT_APP_API_URL}/products/update/${product.id}`,
@@ -291,8 +282,8 @@ const Editor = ({ product: initialProduct,onClose}) => {
       
       console.log('Product updated:', response.data);
       alert("Updated successfully");
-     // window.location.reload();
-     onClose();
+      window.location.reload();
+      onClose();
     } catch (error) {
       console.error('Error updating product:', error);
       alert("Update failed");
@@ -304,8 +295,6 @@ const Editor = ({ product: initialProduct,onClose}) => {
   
   return (
     <div className="max-w-4xl mx-auto p-4">
-      {/* <h2 className="text-2xl font-bold mb-4">Edit Product</h2> */}
-      {isLoading && <div className="spinner-overlay"><div></div></div>}
       <button className="save-update-change" //    type="submit"
           onClick={()=>handleSubmit()}
             disabled={isUploading}>Save changes</button>
@@ -373,12 +362,12 @@ const Editor = ({ product: initialProduct,onClose}) => {
             />
           </div>
           <div>
-            <label htmlFor="discount" className="block mb-1">Discount (%)</label>
+            <label htmlFor="discountedPrice" className="block mb-1">Discounted Price</label>
             <input
-              id="discount"
-              name="discount"
+              id="discountedPrice"
+              name="discountedPrice"
               type="number"
-              value={product.discount}
+              value={product.discountedPrice}
               onChange={handleInputChange}
               required
               className="w-full p-2 border rounded"
@@ -396,6 +385,63 @@ const Editor = ({ product: initialProduct,onClose}) => {
             required
             className="w-full p-2 border rounded"
           />
+        </div>
+
+        <div className="radio-group">
+          <label className="block mb-1">Sold Out</label>
+          <div className="flex items-center space-x-4">
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                name="soldOut"
+                value="true"
+                checked={product.soldOut === true}
+                onChange={handleBooleanChange}
+                className="form-radio"
+              />
+              <span className="ml-2">Yes</span>
+            </label>
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                name="soldOut"
+                value="false"
+                checked={product.soldOut === false}
+                onChange={handleBooleanChange}
+                className="form-radio"
+              />
+              <span className="ml-2">No</span>
+            </label>
+          </div>
+        </div>
+
+        {/* To Display Radio Buttons */}
+        <div className="radio-group">
+          <label className="block mb-1">Display Product</label>
+          <div className="flex items-center space-x-4">
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                name="toDisplay"
+                value="true"
+                checked={product.toDisplay === true}
+                onChange={handleBooleanChange}
+                className="form-radio"
+              />
+              <span className="ml-2">Yes</span>
+            </label>
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                name="toDisplay"
+                value="false"
+                checked={product.toDisplay === false}
+                onChange={handleBooleanChange}
+                className="form-radio"
+              />
+              <span className="ml-2">No</span>
+            </label>
+          </div>
         </div>
 
         <div className="file-upload-container">
@@ -420,18 +466,7 @@ const Editor = ({ product: initialProduct,onClose}) => {
           </div>
         </div>
 
-        <div className="height-checkmark-container">
-          <input
-            id="isHeightBased"
-            type="checkbox"
-            checked={isHeightBased}
-            onChange={(e) => setIsHeightBased(e.target.checked)}
-            className="rounded"
-          />
-          <label htmlFor="isHeightBased">Height-based classification</label>
-        </div>
-
-        {isHeightBased ? (
+        {hasHeight ? (
           <div className="space-y-4">
             <div className="height-input">
               <label htmlFor="height" className="block mb-1">Height (cm)</label>
@@ -473,12 +508,14 @@ const Editor = ({ product: initialProduct,onClose}) => {
                 {product[`${heightType}Height`].colorOptions.map((color) => (
                   <div key={color.name} className='color-based-media-size'>
                     <div className="flex items-center space-x-2">
-                    <h2 className="font-medium"  style={{color: color.code }}>{color.name}{", "}{color.code}</h2>
-                      {/* <span className="font-medium">{color.name}</span>
-                      <div
-                        className="w-6 h-6 rounded-full"
-                        style={{ backgroundColor: color.code }}
-                      ></div> */}
+                      <span className="font-medium" style={{ color: color.code }}>{color.name}{", "}{color.code}</span>
+                      <button 
+                        onClick={() => handleColorRemove(color.name, heightType)}
+                        className="text-red-500 hover:text-red-700"
+                        title="Remove Color"
+                      >
+                        ✕
+                      </button>
                     </div>
                     <div className="file-upload-container">
                     <label  htmlFor={`height-${heightType}-${color.name}`}>Choose images for color</label>
@@ -492,16 +529,16 @@ const Editor = ({ product: initialProduct,onClose}) => {
                     />
 
                     <div className="product-upload-image-preview">
-        {color.images?.map((url, index) => (
-          <div key={index} className="product-upload-image-item">
-          <URLMedia src={url} />
-            <button className="image-remove-button" onClick={() => handleRemoveImage(url, color.name, heightType)}>
-              Remove
-            </button>
-          </div>
-        ))}
-      </div>
-      </div>
+                      {color.images?.map((url, index) => (
+                        <div key={index} className="product-upload-image-item">
+                        <URLMedia src={url} />
+                          <button className="image-remove-button" onClick={() => handleRemoveImage(url, color.name, heightType)}>
+                            Remove
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                     <div className="size-quantity">
                       {sizeOptions.map((size) => (
                         <div key={size} className="space-y-1">
@@ -548,11 +585,14 @@ const Editor = ({ product: initialProduct,onClose}) => {
             {product.colorOptions.map((color) => (
               <div key={color.name} className='color-based-media-size'>
                 <div className="flex items-center space-x-2">
-                  <h2 className="font-medium">{color.name}{", "}{color.code}</h2>
-                  <div
-                    className="w-6 h-6 rounded-full"
-                    style={{ backgroundColor: color.code }}
-                  ></div>
+                  <span className="font-medium" style={{ color: color.code }}>{color.name}{", "}{color.code}</span>
+                  <button 
+                    onClick={() => handleColorRemove(color.name)}
+                    className="text-red-500 hover:text-red-700"
+                    title="Remove Color"
+                  >
+                    ✕
+                  </button>
                 </div>
                 <div className="file-upload-container">
                 <label  htmlFor={`file-upload-${color.name}`}>Choose Media</label>
