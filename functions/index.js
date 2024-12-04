@@ -89,7 +89,6 @@ app.use("/subCategories", getCategoriesRoute);
 app.use("/orders", ordersRoute);
 
 // Payment routes
-
 app.use("/payment", paymentRoute);
 
 // Export the API

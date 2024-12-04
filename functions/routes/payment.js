@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable camelcase */
 /* eslint-disable new-cap */
 /* eslint-disable max-len */
 // require('dotenv').config();
@@ -15,6 +17,7 @@ const merchant_id = process.env.REACT_APP_PHONEPE_MERCHANT_ID;
 
 // Global variable to store order details
 let globalOrderDetails = null;
+
 router.post("/", async (req, res)=>{
   try {
     const {
@@ -167,6 +170,7 @@ router.post("/status", async (req, res) => {
     res.status(500).json({error: "Internal Server Error"});
   }
 });
+
 module.exports = router;
 
 
