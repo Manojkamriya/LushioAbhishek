@@ -45,15 +45,23 @@ const PriceDetails = ({
           </span>
         </div>
       
+      {
+        discountPercentage>0 && 
+        <>
+       
         <div className="priceDetail-base-row">
-          <span>Coupon Discount</span>
-          <span className="priceDetail-base-value priceDetail-base-action">
-            {discountPercentage}%
-          </span>
-        </div>
-        <div className="coupons-base-discountMessage"><span>You saved additional </span> <span>{discountPercentage}%</span>
-        </div>
-        <div className="priceDetail-base-row">
+        <span>Coupon Discount</span>
+        <span className="priceDetail-base-value priceDetail-base-action">
+          -₹ {discountPercentage}
+        </span>
+      </div>
+      <div className="coupons-base-discountMessage"><span>You saved additional </span> <span>{discountPercentage}</span>
+      </div>
+      </>
+      }
+       {
+        walletPoints>0 ? <>
+           <div className="priceDetail-base-row">
           <span>Use Wallet Points ({walletPoints} points)</span>
           <span className="priceDetail-base-value priceDetail-base-discount">
             <input
@@ -73,6 +81,9 @@ const PriceDetails = ({
           </div>
         }
       
+        </>:<p className="coupons-base-discountMessage">No Wallet Points to use</p>
+       }
+     
       <div className="priceDetail-base-row">
           <span>Additional 5% OFF if pay Online</span>
           <span className="priceDetail-base-value priceDetail-base-action">

@@ -73,6 +73,7 @@
     margin: 0px;
     font-weight: 400;
     font-family: "montserrat", sans-serif;
+    text-transform: capitalize;
     color: #1c1b1b;
 }
 .sub-menu-image{

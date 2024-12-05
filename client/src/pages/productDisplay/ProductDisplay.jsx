@@ -12,11 +12,13 @@ import { UserContext } from "../../components/context/UserContext";
 import { useWishlist } from "../../components/context/WishlistContext";
 import { useCart } from "../../components/context/CartContext";
 import MediaRenderer from "../../components/MediaRenderer";
+import URLMediaRenderer from "../../components/URLMediaRenderer";
 
 // 4. Relative Imports
 import "./product.css";
 import RatingModal from "./RatingModal";
 import "./ReviewCard.css";
+import ImagePopUp from "./ImagePopUp";
 import ColorOptions from "./ColorOptions";
 import HeightBasedSelection from "./HeightBasedSelection";
 import SizeChart from "./SizeChart";
@@ -56,6 +58,7 @@ const [showError, setShowError] = useState(false);
  const {fetchCartCount} = useCart();
  const { wishlist, toggleWishlist } = useWishlist();
  const isHeightBased = product?.height;
+ const [image, setImage] = useState(null);
  const id = productID;
  const wishlistItem = wishlist.find((item) => item.productId === id); 
 
@@ -71,8 +74,10 @@ const [showError, setShowError] = useState(false);
        const data = await response.json();
        setProduct(data);
        setReviews(data.reviews);
+       setImage(data.allImages[0]);
      } catch (err) {
        setError(err.message);
+       console.log(err);
      } finally {
        setLoading(false);
      }
@@ -128,12 +133,12 @@ useEffect(() => {
       // // Wait for both to complete
       // const [response] = await Promise.all([apiCall, minimumDelay]);
     
-     
+      await fetchCartCount();
         setShowNotification(true);
-       await fetchCartCount();
+     
         setTimeout(() => setShowNotification(false), 3000); // Show notification for 3 seconds
       
-     
+     setSelectedSize(null);
     } catch (error) {
       console.error("Error adding item to cart:", error);
     } 
@@ -161,8 +166,21 @@ useEffect(() => {
     "/Images/p1_product_i3.png",
     "/Images/p1_product_i4.png"
   ];
+
+  const [isOpen, setIsOpen] = useState(false); // Control the open/close state
+  
+
+  const openGallery = () => {
+    setIsOpen(true); // Set isOpen to true to open the gallery
+    document.body.classList.add("no-scroll");
+  };
+
+  const closeGallery = () => {
+    setIsOpen(false); // Set isOpen to false to close the gallery
+  };
+
  // const images = product?.allImages;
-  const [image, setImage] = useState(images[0]);
+  // const [image, setImage] = useState(images[0]);
   const handleBuyNow = () => {
     // Build the query parameters
     if (selectedSize==null) {
@@ -195,10 +213,15 @@ useEffect(() => {
 }
       <div className="productDisplay-left">
         <div className="productDisplay-img-list">
-          {images.map((img, index) => (
+          {product.allImages.map((img, index) => (
            
-            <MediaRenderer
-               onClick={() => setImage(img)}
+            // <MediaRenderer
+            //    onClick={() => setImage(img)}
+            //   className={img === image ? "size-selected" : "size-not-selected"}
+            //   src={img}
+            // />
+            <URLMediaRenderer
+                 onClick={() => setImage(img)}
               className={img === image ? "size-selected" : "size-not-selected"}
               src={img}
             />
@@ -206,12 +229,17 @@ useEffect(() => {
         </div>
         <div className="productDisplay-img">
          
-          <MediaRenderer src={image} className="productDisplay-main-img"/>
+          {/* <MediaRenderer src={image} className="productDisplay-main-img"/> */}
+          <URLMediaRenderer
+           key={image} // Assign a unique key based on the `image` source
+                src={image} className="productDisplay-main-img"
+                onClick={openGallery}
+            />
           <div className="productDisplay-right-stars">
           <span>
          
             {/* {product.rating > 0 ? <p>{product.rating}</p> : <p>4.5</p>} */}
-            <p>{product.rating > 0 ? product.rating.toFixed(1) : "4.5"}</p>
+            <strong>{product.rating > 0 ? product.rating.toFixed(1) : "4.5"}</strong>
 
             <img src="/Images/icons/star.png" alt="icon" />
             <p>(122)</p>
@@ -220,9 +248,16 @@ useEffect(() => {
         </div>
         </div>
       </div>
+      <ImagePopUp
+        images={product.allImages}   // Pass the images array as prop
+        isOpen={isOpen}    // Pass the open/close state as prop
+        closeGallery={closeGallery} // Pass the close function as prop
+        openGallery={openGallery}   // Pass the open function as prop
+      />
       <div className="productDisplay-right">
+      <div ref={targetRef}></div>
         <h1>{product.displayName}</h1>
-        <div ref={targetRef}></div>
+     
         <div className="productDisplay-right-prices">
           <div className="productDisplay-right-price-new">₹{product.price} </div>
           <div className="productDisplay-right-price-old">₹{product.price} </div>
@@ -252,9 +287,11 @@ useEffect(() => {
            )}
         
        </div>
-        <div className="productDisplay-right-discription">
-        {product.description}
-        </div>
+          {/* Display error message if no size is selected */}
+      {showError && !selectedSize && <p className="product-display-error-message">Please select a size before adding to cart!</p>}
+        {/* <div className="productDisplay-right-discription">
+       <strong>Description: </strong> {product.description}
+        </div> */}
         <p className="productDisplay-right-category">
           <span>Category :</span>
           <>
@@ -266,8 +303,7 @@ useEffect(() => {
        
       
       
-         {/* Display error message if no size is selected */}
-      {showError && !selectedSize && <p className="product-display-error-message">Please select a size before adding to cart!</p>}
+      
     <SizeChart/>
   
         <div className="button-container">

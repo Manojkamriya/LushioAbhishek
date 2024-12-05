@@ -14,7 +14,7 @@ function CategoryPage() {
     const fetchProducts = async () => {
       try {
         setLoading(true); // Start loading
-       
+       setProducts([]);
 
         // Make a POST request to fetch products by category
         const response = await axios.post(`${process.env.REACT_APP_API_URL}/filters/getByCategory`, {
@@ -67,10 +67,15 @@ console.log(response.data);
           ))}
         </div>
       ) : (
-        <> <p>No products found in this category.</p> 
-        <img src="/Images/no-item-found.webp" alt=""/>
-        </>
-       
+        <div className="no-products-container">
+        <p className="no-products-message">No products found in this category.</p>
+        <img
+          src="/Images/notFound2.png"
+          alt="No items found"
+          className="no-products-image"
+        />
+      </div>
+      
       )}
     </div>
   );

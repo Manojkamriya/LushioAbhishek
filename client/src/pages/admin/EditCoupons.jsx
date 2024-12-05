@@ -99,9 +99,9 @@ function EditCoupons() {
       {error && <p style={{ color: "red" }}>{error}</p>}
       {success && <p style={{ color: "green" }}>{success}</p>}
       <div className="edit-coupon-wrapper">
-        <div className="coupon-cards">
+        <div className="admin-coupon-cards">
           {coupons.map((coupon) => (
-            <div key={coupon.id} className="coupon-card">
+            <div key={coupon.id} className="admin-coupon-card">
               <p>ID: {coupon.id}</p>
               <p>
                 Validity:{" "}
