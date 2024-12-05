@@ -22,11 +22,13 @@ function Coupon({ setDiscount, cartAmount }) {
         const response = await axios.get(
           `${process.env.REACT_APP_API_URL}/coupon/usableCoupons/${user.uid}`
         );
+       
         if (response.data) {
           const couponsData = Object.values(response.data); // Convert object to array
+          console.log(couponsData);
           setCoupons(couponsData);
           if (couponsData.length > 0) {
-            setSelectedCoupon(couponsData[0].code); // Set the first coupon as selected
+            setSelectedCoupon(couponsData[0].id); // Set the first coupon as selected
           }
         }
       } catch (error) {
@@ -52,10 +54,10 @@ function Coupon({ setDiscount, cartAmount }) {
     const couponCode = inputCoupon || selectedCoupon; // Prioritize input coupon if available
 
     // Check if all necessary data is present
-    if (!user?.uid || !couponCode || !cartAmount) {
-      setValidationMessage("All fields are required.");
-      return;
-    }
+    // if (!user?.uid || !couponCode || !cartAmount) {
+    //   setValidationMessage("All fields are required.");
+    //   return;
+    // }
 
     try {
       setIsApplying(true);
@@ -142,23 +144,23 @@ function Coupon({ setDiscount, cartAmount }) {
                      <h2 className="coupon-select-heading">Select a Coupon</h2>
                       {coupons.map((coupon) => (
                         <label
-                          key={coupon.code}
+                          key={coupon.id}
                           className={`option ${
-                            selectedCoupon === coupon.code ? "selected" : ""
+                            selectedCoupon === coupon.id ? "selected" : ""
                           }`}
                         >
                           <input
                             type="radio"
                             name="coupon"
-                            value={coupon.code}
+                            value={coupon.id}
                             checked={
-                              selectedCoupon === coupon.code && !inputCoupon
+                              selectedCoupon === coupon.id && !inputCoupon
                             } // Prevent radio selection if inputCoupon is used
-                            onChange={() => setSelectedCoupon(coupon.code)}
+                            onChange={() => setSelectedCoupon(coupon.id)}
                           />
                           <div>
                             <p>
-                              {coupon.code} - Valid until:{" "}
+                              {coupon.id} - Valid until:{" "}
                               {coupon.validity || "N/A"}
                             </p>
                             <p>

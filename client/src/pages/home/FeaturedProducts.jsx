@@ -43,7 +43,7 @@ const FeaturedProducts = () => {
       return <div className="loader-container"><span className="loader"></span></div>;
     }
     if (error) {
-      return <p>{error}</p>;
+      return <p></p>;
     }
 
     return (

@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&display=swap');
 .productDisplay {
   display: flex;
   justify-content: center;
@@ -50,6 +51,18 @@
   height: 600px;
   width: 500px;
   border-radius: 7%;
+  transition:all 0.5s ease-in;
+  animation: fadeIn 0.3s ease-in forwards; /* Apply fade-in animation */
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+   
+  }
+  100% {
+    opacity: 1;
+   
+  }
 }
 .productDisplay-right {
   position: relative;
@@ -91,8 +104,8 @@
   background-color: rgb(250, 249, 249);
   border: 0.3px solid #949494;
   font-size: 16px;
-  width: 30%;
-  height: 10%;
+  width: 35%;
+  height: 8%;
   border-radius: 9px;
  
   display: none;
@@ -119,6 +132,7 @@
   gap: 20px;
   font-size: 24px;
   font-weight: 700;
+  font-family: "Assistant", sans-serif;
 }
 .productDisplay-right-price-old {
   color: #8c8c8c;
@@ -137,13 +151,15 @@
   color: #00b852;
 }
 .productDisplay-right-price-discount {
-  background: linear-gradient(to right, #28a745, #1e7e34); /* Green gradient */
+  background: linear-gradient(135deg, #4ADE80, #ebf1ee); 
+  background: radial-gradient(266px at 12% 29.3%, rgba(58, 219, 154, 0.93) 2%, rgb(153, 228, 208) 38.6%, rgba(169, 251, 229, 0.82) 73.9%, rgb(253, 255, 238) 100.7%);
   color: white; /* Text color for contrast */
   font-size: 1rem; /* Adjust font size as needed */
-  font-weight: bold;
+  /* font-weight: bold; */
   text-align: center;
-  padding: 0.5rem 1rem;
-  clip-path: polygon(10% 0, 90% 0, 100% 100%, 0% 100%); /* Creates trapezium shape */
+  /* padding: 0.5rem 1rem; */
+ padding: 3px 7px;
+ border-radius: 8px;
   display: inline-block;
   width: fit-content; /* Adjust width based on content */
 }
@@ -193,6 +209,8 @@
 .size-selected {
   /* border: 2px solid #1b1c1c; */
   border: 2px ridge rgba(227, 83, 16, 0.6);
+  border: 2px solid #e41029;
+
 }
 
 .women-size button {
@@ -543,9 +561,7 @@ display: flex;
     border-radius: 9px;
   }
   
-  .productDisplay-right-stars p {
-    /* margin-left: 5px; */
-  }
+  
   .productDisplay-right-stars img {
     height: 100%;
     margin-left: 4%;
@@ -586,24 +602,30 @@ display: flex;
   .productDisplay-left {
     gap: 10px;
     flex-direction: row;
-    margin: auto;
+    margin-inline: 10px;
   }
   .productDisplay-img-list {
     flex-direction: column;
     gap: 8px;
-    height: 330px;
+    height: 440px;
     width: 86px;
     overflow: scroll;
     overflow-x: visible;
   }
   .productDisplay-img-list img,
   .productDisplay-img-list video {
-    height: 75px;
+    height: auto;
     width: 75px;
+  }
+  .productDisplay-img{
+    width: 80%;
+  
   }
   .productDisplay-img img,
   .productDisplay-img video {
-    height: 330px;
+    /* height: 330px; */
+    width: 100%;
+    height: auto;
   }
   .productDisplay-right {
     height: auto;
@@ -632,6 +654,10 @@ display: flex;
   }
   .productDisplay-right-size-discription {
     font-size: 10px;
+  
+  }
+  .productDisplay-right-discription{
+    margin-top: 13px;
   }
   .productDisplay-right-sizes {
     margin: 20px 0px;
@@ -760,7 +786,56 @@ display: flex;
  
   }
 }
+@media (max-width: 470px) {
+  .productDisplay-left{
+    width: calc(100% - 47px);
+  height: 100vw;
+  }
+  .productDisplay-img{
+    width: 75%;
+    height: auto;
+  
+  }
+  .productDisplay-img-list {
+    width: 23%;
+    /* height:100%; */
+    height: 95vw;
+    margin-right: 5px;
+    overflow-y: scroll;
+   overflow-x: hidden;
+  }
+  .productDisplay-img-list::-webkit-scrollbar {
+    width: 5px;
+    margin-left: 10px;
+  }
+  .productDisplay-img-list img,
+  .productDisplay-img-list video {
+    width: 90%;
+    height: auto;
+  }
+  .productDisplay-img img,
+  .productDisplay-img video {
+   width: 100%;
+   height: auto;
+  }
+}
 @media (max-width: 420px) {
+  .productDisplay-img-list {
+    width: 23%;
+   
+    height: 95vw;
+   
+  }
+}
+@media (max-width: 395px) {
+  .productDisplay-img-list {
+    width: 23%;
+   
+    height: 95vw;
+   
+  }
+}
+/* @media (max-width: 420px) {
   .productDisplay-img img,
   .productDisplay-img video {
     height: 300px;
@@ -798,5 +873,5 @@ display: flex;
     height: 63px;
     width: 63px;
   }
-}
+} */
 

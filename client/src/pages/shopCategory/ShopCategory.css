@@ -37,7 +37,7 @@
 .no-product-image-container{
   display: flex;
   flex-direction: column;
-
+justify-content: center;
  align-items: center;
   margin: 20px 10px 0px 10px;
   width: 100%;
@@ -46,8 +46,10 @@ padding-bottom: 30px;
   background-color: #ebeff1;
 }
 .no-product-image{
-  width: 256px;
-  height: 192px;
+  width: 70%;
+  max-width: 600px;
+  /* height: 192px; */
+  height: auto;
 }
 .no-product-image-container button{
   width: 100px;

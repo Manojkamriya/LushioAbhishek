@@ -261,7 +261,7 @@ width: 80%;
 }
 @media(max-width: 960px){
   .cartitems{
-    margin: 6% 2%;
+    margin: 6% 4%;
     flex-direction: column;
   }
 }
@@ -316,15 +316,16 @@ width: 80%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: max-content;
-    max-width: 350px; 
-    max-height: 100px;
+   
     
-    font-size: 5cqi;
+    font-size: min(5cqi, 20px);
     background: linear-gradient(180deg, #950303, #f00d1e);
     color: white;
     padding: 3cqi 4cqi;
     border-radius: 2cqi;
     z-index: 602;
+    max-width: 270px; 
+    max-height: 40px;
     animation: fadeInOut 3s ease-in-out;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); 
   }

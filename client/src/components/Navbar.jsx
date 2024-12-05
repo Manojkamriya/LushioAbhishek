@@ -131,61 +131,65 @@ function Navbar() {
             <li
               onMouseEnter={() => handleMouseEnter("men")}
               onMouseLeave={handleMouseLeave}
-              onClick={() => navigate("/men")}
+             
             >
-              MEN <img src="/Images/icons/dropdown.png" alt="" />
+              <span
+    onClick={() => {
+      navigate("/men");
+      setActiveDropdown(null);
+    }}
+  >
+    MEN
+  </span>
+
+              <img src="/Images/icons/dropdown.png" alt="" />
               
               {activeDropdown === "men" && (
                 <Dropdown
                   setActiveDropdown={setActiveDropdown}
                   category="men"
-                  topProducts={[
-"Upperwear",
-  "Hoodie",
-  "Outerwear",
-  "Jeans",
-  "Tanks",
-  "Shirts",
-  "Sweaters",
-  "Blazers",
-  "Coats",
-  "Cardigans",
-  "Trousers",
-  "Joggers",
-  "Shorts",
-  "Skirts",
-  "Dresses",
-  "Suits",
-  "Sportswear",
-  "Pajamas",
-  "Activewear",
-  "Vests",
-  "Blouses",
-  "Jackets",
-  "Denims",
-  "Formalwear",
-  "Casualwear",
-  "Tracksuits",
-  "Overcoats",
-  "Pullovers",
-  "Raincoats",
-  "Scarves",
-  "Denims",
-  "Formalwear",
-  "Casualwear",
-  "Tracksuits",
-  "Overcoats",
-  "Pullovers",
-  "Raincoats",
-  "Scarves",
-                  ]}
-                  featured={[
-                    "New Drop",
-                    "Coming Soon",
-                    "Restock",
-                    "Best Seller",
-                    "Sale",
-                  ]}
+//                   topProducts={[
+// "Upperwear",
+//   "Hoodie",
+//   "Outerwear",
+//   "Jeans",
+//   "Tanks",
+//   "Shirts",
+//   "Sweaters",
+//   "Blazers",
+//   "Coats",
+//   "Cardigans",
+//   "Trousers",
+//   "Joggers",
+//   "Shorts",
+//   "Skirts",
+//   "Dresses",
+//   "Suits",
+//   "Sportswear",
+//   "Pajamas",
+//   "Activewear",
+//   "Vests",
+//   "Blouses",
+//   "Jackets",
+//   "Denims",
+//   "Formalwear",
+//   "Casualwear",
+//   "Tracksuits",
+//   "Overcoats",
+//   "Pullovers",
+//   "Raincoats",
+//   "Scarves",
+//   "Denims",
+//   "Formalwear",
+//   "Casualwear",
+//   "Tracksuits",
+//   "Overcoats",
+//   "Pullovers",
+//   "Raincoats",
+//   "Scarves",
+//                   ]}
+topProducts={subcategories.men}
+
                   imageSrc="/Images/card-image-6.webp"
                   launchTitle="NEW LAUNCH FOR MEN"
                 />
@@ -194,27 +198,24 @@ function Navbar() {
             <li
               onMouseEnter={() => handleMouseEnter("women")}
               onMouseLeave={handleMouseLeave}
-              onClick={() => navigate("/women")}
+              
             >
-              WOMEN <img src="/Images/icons/dropdown.png" alt="" />
+           <span
+    onClick={() => {
+      navigate("/women");
+      setActiveDropdown(null);
+    }}
+  >
+    WOMEN
+  </span>
+ <img src="/Images/icons/dropdown.png" alt="" />
               {activeDropdown === "women" && (
                 <Dropdown
                   setActiveDropdown={setActiveDropdown}
                   category="women"
-                  topProducts={[
-                    "Upperwear",
-                    "Tops",
-                    "Leggings",
-                    "Outerwear",
-                    "Matching Sets",
-                  ]}
-                  featured={[
-                    "New Drop",
-                    "Coming Soon",
-                    "Restock",
-                    "Best Seller",
-                    "Sale",
-                  ]}
+                
+                  topProducts={subcategories.women}
+                
                   imageSrc="/Images/card-image-2.webp"
                   launchTitle="NEW LAUNCH FOR WOMEN"
                 />
@@ -223,19 +224,28 @@ function Navbar() {
             <li
               onMouseEnter={() => handleMouseEnter("accessories")}
               onMouseLeave={handleMouseLeave}
-              onClick={() => navigate("/accessories")}
+            
             >
-              ACCESSORIES <img src="/Images/icons/dropdown.png" alt="" />
+ <span
+    onClick={() => {
+      navigate("/accessories");
+      setActiveDropdown(null);
+    }}
+  >
+    ACCESSORIES
+  </span>
+  <img src="/Images/icons/dropdown.png" alt="" />
               {activeDropdown === "accessories" && (
                 <Dropdown
                   setActiveDropdown={setActiveDropdown}
                   category="accessories"
-                  topProducts={[
-                    "Gloves",
-                    "Shakers",
-                    "Wrist Band",
-                    "Deadlift Band",
-                  ]}
+                  // topProducts={[
+                  //   "Gloves",
+                  //   "Shakers",
+                  //   "Wrist Band",
+                  //   "Deadlift Band",
+                  // ]}
+                  topProducts={subcategories.accessories}
                   featured={[
                     "New Drop",
                     "Coming Soon",
@@ -243,7 +253,7 @@ function Navbar() {
                     "Best Seller",
                     "Sale",
                   ]}
-                  imageSrc="/Images/shopping.webp"
+                  imageSrc="/Images/card-image-4.webp"
                   launchTitle="NEW LAUNCH"
                 />
               )}
@@ -282,7 +292,7 @@ function Navbar() {
     <img
       src="/Images/icons/profile.png"
       alt="Profile"
-      onClick={() => navigate("/login")}
+      onClick={() => navigate("/user")}
     />
   </div>
 </div>

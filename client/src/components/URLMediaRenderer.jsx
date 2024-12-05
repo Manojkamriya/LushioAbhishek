@@ -11,14 +11,22 @@ const getMediaType = (src) => {
   return 'unknown';
 };
 
-const URLMediaRenderer = ({ src, alt }) => {
+const URLMediaRenderer = ({ src, alt,className,onClick }) => {
   const mediaType = getMediaType(src);
 
   return (
     <>
-      {mediaType === 'image' && <img src={src} alt={alt} className="media-preview" />}
+      {mediaType === 'image' && <img src={src} alt={alt}
+      // className="media-preview" 
+      className={className}
+      onClick={onClick}
+       />}
       {mediaType === 'video' && (
-        <video autoPlay muted  playsInline loop src={src} className="media-preview">
+        <video autoPlay muted  playsInline loop src={src} 
+     //   className="media-preview"
+     className={className}
+     onClick={onClick}
+        >
           Your browser does not support the video tag.
         </video>
       )}

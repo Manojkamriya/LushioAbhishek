@@ -52,11 +52,15 @@ margin-block: 0px;
   height: 100%;
 }
 .list ul li {
-  margin: 10px 10px;
+  padding: 14px 10px;
   display: flex;
   align-items: center;
   cursor: pointer;
+ 
+}
+.list ul li span{
   font-family: "Montserrat", sans-serif;
+  padding-block: 10px;
   font-size: 15px;
   height: 100%;
 }
@@ -294,9 +298,9 @@ width: 133px;
     height: 50px;
   }
 }
-@media (max-width: 400px) {
+@media (max-width: 390px) {
   .left-icons{
-    width: auto;
+    width: 27%;
   }
   .left-icons img{
     margin: 0;
@@ -312,11 +316,14 @@ width: 133px;
       margin-top: 4px;
       height: 47%;
        }
+       .lushio-text{
+        width: 25%;
+       }
   .lushio-text img{
   height: 40%;
    }
    .right-icons{
-    width: auto;
+    width: 26%;
    }
   .right-icon-wrapper img{
     height: 40%;

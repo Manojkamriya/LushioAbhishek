@@ -5,7 +5,6 @@ import "./dropdown.css";
 function Dropdown({
   category,
   topProducts,
-  featured,
   imageSrc,
   launchTitle,
   setActiveDropdown,

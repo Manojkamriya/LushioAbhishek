@@ -93,8 +93,8 @@ const orderDetails = {
   lastOrderId: pagination.lastOrderId,
 };
 console.log(orderDetails);
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/orders/`, {
-     params: orderDetails
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/orders`, {
+     data: orderDetails
       });
       console.log(response.data);
       const { orders: fetchedOrders, pagination: fetchedPagination } = response.data;

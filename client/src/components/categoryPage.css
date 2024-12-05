@@ -28,4 +28,59 @@
     }}
   
   /* Add a decorative underline using a pseudo-element */
- 
+  .no-products-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    height: 100%;
+    min-height: 50vh; /* Ensures the component takes up space even with less content */
+    background-color: #f9f9f9; /* Light background for visibility */
+  }
+  
+  .no-products-message {
+    font-size: 1.5rem; /* Adjust font size for readability */
+    font-weight: bold;
+    color: #333; /* Neutral text color */
+    margin-bottom: 20px;
+  }
+  
+  .no-products-image {
+    max-width: 100%; /* Ensure the image scales with the container */
+    width: 300px; /* Default width */
+    height: auto; /* Maintain aspect ratio */
+    margin: 0 auto;
+    opacity: 0.8; /* Slightly muted image for aesthetic */
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  .no-products-image:hover {
+    opacity: 1; /* Image becomes fully visible on hover */
+  }
+  
+  @media (max-width: 768px) {
+    .no-products-message {
+      font-size: 1.2rem; /* Smaller font size for smaller screens */
+    }
+  
+    .no-products-image {
+      width: 200px; /* Scale image down on smaller screens */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .no-products-container {
+      padding: 10px; /* Reduce padding for smaller devices */
+    }
+  
+    .no-products-message {
+      font-size: 1rem; /* Even smaller font for very small screens */
+    }
+  
+    .no-products-image {
+      width: 150px; /* Adjust image size */
+    }
+  }
+  
