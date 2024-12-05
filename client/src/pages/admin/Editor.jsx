@@ -16,6 +16,15 @@ const Editor = ({ product: initialProduct,onClose}) => {
       // Initialize the product state with the provided data
       const formattedProduct = {
         ...initialProduct,
+        description: initialProduct.description
+          ? (typeof initialProduct.description === 'string'
+            ? {
+              productDetails: initialProduct.description,
+              sizeFit: '',
+              MaterialCare: ''
+            }
+            : initialProduct.description)
+          : { productDetails: '', sizeFit: '', MaterialCare: '' },
         ...(initialProduct.height ? {
           aboveHeight: initialProduct.aboveHeight || { colorOptions: [], quantities: {} },
           belowHeight: initialProduct.belowHeight || { colorOptions: [], quantities: {} }
@@ -37,7 +46,18 @@ const Editor = ({ product: initialProduct,onClose}) => {
   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setProduct(prev => ({ ...prev, [name]: value }));
+    if (['productDetails', 'sizeFit', 'MaterialCare'].includes(name)) {
+      setProduct(prev => ({
+        ...prev,
+        description: {
+          ...prev.description,
+          [name]: value
+        }
+      }));
+    } else {
+      // Handle other inputs as before
+      setProduct(prev => ({ ...prev, [name]: value }));
+    }
   };
   
   const handleBooleanChange = (e) => {
@@ -327,13 +347,34 @@ const Editor = ({ product: initialProduct,onClose}) => {
 
         <div className="description-container">
           <label htmlFor="description" >Description</label>
+          <label className="block mb-2 font-medium">Product Details</label>
           <textarea
-            id="description"
-            name="description"
-            value={product.description}
+            name="productDetails"
+            value={product.description.productDetails}
             onChange={handleInputChange}
-            required
+            className="w-full p-2 border rounded mb-4"
+            placeholder="Enter product details"
+            rows="4"
+          />
+
+          <label className="block mb-2 font-medium">Size & Fit</label>
+          <textarea
+            name="sizeFit"
+            value={product.description.sizeFit}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded mb-4"
+            placeholder="Enter size and fit information"
+            rows="4"
+          />
+
+          <label className="block mb-2 font-medium">Material & Care</label>
+          <textarea
+            name="MaterialCare"
+            value={product.description.MaterialCare}
+            onChange={handleInputChange}
             className="w-full p-2 border rounded"
+            placeholder="Enter material and care instructions"
+            rows="4"
           />
         </div>
 

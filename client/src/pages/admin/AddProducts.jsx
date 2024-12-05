@@ -9,7 +9,11 @@ const AddProducts = () => {
   const [product, setProduct] = useState({
     name: '',
     displayName: '',
-    description: '',
+    description: {
+      productDetails: '',
+      sizeFit: '',
+      MaterialCare: ''
+    },
     price: '',
     gst: '',
     discountedPrice: '',
@@ -28,7 +32,7 @@ const AddProducts = () => {
   const [newColor, setNewColor] = useState({ name: '', code: '#43da86' });
   const [isUploading, setIsUploading] = useState(false);
   const sizeOptions = ['XXXS', 'XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'SizeFree'];
-const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const handleRemoveColor = (colorName, heightType = null) => {
     setProduct(prev => {
       if (heightType) {
@@ -59,7 +63,18 @@ const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setProduct({ ...product, [name]: value });
+    if (['productDetails', 'sizeFit', 'MaterialCare'].includes(name)) {
+      setProduct(prev => ({
+        ...prev,
+        description: {
+          ...prev.description,
+          [name]: value
+        }
+      }));
+    } else {
+      // Handle other inputs as before
+      setProduct({ ...product, [name]: value });
+    }
   };
 
   const handleCategoryChange = (e) => {
@@ -293,6 +308,11 @@ const [isLoading, setIsLoading] = useState(false);
   const initializeProduct = (product) => {
     return {
       ...product,
+      description: {
+        productDetails: product.description?.productDetails || '',
+        sizeFit: product.description?.sizeFit || '',
+        MaterialCare: product.description?.MaterialCare || ''
+      },
       cardImages: product.cardImages || [],
       colorOptions: product.colorOptions || [],
       aboveHeight: {
@@ -363,15 +383,45 @@ const [isLoading, setIsLoading] = useState(false);
         </div>
 
         <div className="description-container">
-          <label htmlFor="description" className="block mb-1">Description</label>
-          <textarea
-            id="description"
-            name="description"
-            value={product.description}
-            onChange={handleInputChange}
-            required
-            className="w-full p-2 border rounded"
-          />
+          <label htmlFor="description" className="block mb-1"><b>Description</b></label>
+          <div className="mb-4">
+            <label htmlFor="productDetails" className="block mb-1">Product Details</label>
+            <textarea
+              id="productDetails"
+              name="productDetails"
+              value={product.description.productDetails}
+              onChange={handleInputChange}
+              required
+              className="w-full p-2 border rounded"
+              rows={4}
+            />
+          </div>
+          
+          <div className="mb-4">
+            <label htmlFor="sizeFit" className="block mb-1">Size & Fit</label>
+            <textarea
+              id="sizeFit"
+              name="sizeFit"
+              value={product.description.sizeFit}
+              onChange={handleInputChange}
+              required
+              className="w-full p-2 border rounded"
+              rows={4}
+            />
+          </div>
+          
+          <div className="mb-4">
+            <label htmlFor="MaterialCare" className="block mb-1">Material & Care</label>
+            <textarea
+              id="MaterialCare"
+              name="MaterialCare"
+              value={product.description.MaterialCare}
+              onChange={handleInputChange}
+              required
+              className="w-full p-2 border rounded"
+              rows={4}
+            />
+          </div>
         </div>
 
         <div className="price-inputs">
