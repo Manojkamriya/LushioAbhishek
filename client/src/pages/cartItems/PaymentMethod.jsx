@@ -6,11 +6,11 @@ const PaymentMethod = ({selectedPaymentMethod, setSelectedPaymentMethod}) => {
 
   const handlePaymentMethodChange = (e) => {
     setSelectedPaymentMethod(e.target.value);
-  };
+  }; 
 
   return (
     <div className="payment-method-container">
-      <div className="pulse-message">
+      <div className="pulse-message skeleton">
  Get 5% OFF if Pay online
 </div>
 
@@ -24,8 +24,11 @@ const PaymentMethod = ({selectedPaymentMethod, setSelectedPaymentMethod}) => {
             checked={selectedPaymentMethod === 'phonepe'}
             onChange={handlePaymentMethodChange}
           />
-        
-          <span>PhonePe</span>
+                     <div className='payment-method-statement'>
+                     <img src='/Images/payOnline.png'/>
+                     <span>Pay Online</span>
+                     </div>
+     
         </label>
         {/* <label className={`payment-option ${selectedPaymentMethod === 'razorpay' ? 'selected' : ''}`}>
           <input
@@ -46,8 +49,14 @@ const PaymentMethod = ({selectedPaymentMethod, setSelectedPaymentMethod}) => {
             checked={selectedPaymentMethod === 'cashOnDelivery'}
             onChange={handlePaymentMethodChange}
           />
-          <span className="icon">{/* COD Icon */}</span>
-          <span>Cash on Delivery (COD)</span>
+       
+           <div className='payment-method-statement'>
+            <img src='/Images/cod.png'/>
+            <span>Cash on Delivery (COD)</span>
+            </div>
+         
+
+       
         </label>
       </div>
       <div className="selected-method">

@@ -492,7 +492,7 @@ const [isLoading, setIsLoading] = useState(false);
                <div className="product-upload-image-preview">
         {product.cardImages?.map((url, index) => (
           <div key={index} className="product-upload-image-item">
-          <URLMedia src={url} />
+          <URLMedia src={url} className="media-preview" />
             <button className="image-remove-button" onClick={() => handleRemoveImage(url)}>
               Remove
             </button>
@@ -554,8 +554,8 @@ const [isLoading, setIsLoading] = useState(false);
                   </button>
                 </div>
                 {product[`${heightType}Height`].colorOptions.map((color) => (
-                  <div key={color.name} className="mt-2">
-                    <div className="flex items-center space-x-2 ">
+                  <div key={color.name} className='color-based-media-size'>
+                    <div className='color-delete-button'>
                       <span style={{ color: color.code }} className="w-6 h-6 rounded-full">{color.name}{", "}{color.code}</span>
                       <button 
                         type="button"
@@ -579,7 +579,7 @@ const [isLoading, setIsLoading] = useState(false);
                     <div className="product-upload-image-preview">
                         {color.images?.map((url, index) => (
                           <div key={index} className="product-upload-image-item">
-                          <URLMedia src={url} />
+                          <URLMedia src={url} className="media-preview" />
                             <button className="image-remove-button" onClick={() => handleRemoveImage(url, color.name, heightType)}>
                               Remove
                             </button>
@@ -635,8 +635,9 @@ const [isLoading, setIsLoading] = useState(false);
                 </button>
               </div>
               {product.colorOptions.map(color => (
-                <div key={color.name}>
-                  <span style={{ color: color.code }} className="w-6 h-6 rounded-full">{color.name}{", "}{color.code}</span>
+                <div key={color.name} className='color-based-media-size'>
+                <div className='color-delete-button'>
+                <span style={{ color: color.code }} className="w-6 h-6 rounded-full">{color.name}{", "}{color.code}</span>
                   <button 
                     type="button"
                     onClick={() => handleRemoveColor(color.name)}
@@ -644,6 +645,8 @@ const [isLoading, setIsLoading] = useState(false);
                   >
                     ✕
                   </button>
+                </div>
+                 
                   <div className="file-upload-container">
                     <label  htmlFor={`file-upload-${color.name}`}>Choose Media</label>
                   <input
@@ -657,7 +660,7 @@ const [isLoading, setIsLoading] = useState(false);
                        <div className="product-upload-image-preview">
         {color.images?.map((url, index) => (
           <div key={index} className="product-upload-image-item">
-          <URLMedia src={url} />
+          <URLMedia src={url} className="media-preview" />
             <button className="image-remove-button" onClick={() => handleRemoveImage(url, color.name)}>
               Remove
             </button>

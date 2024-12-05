@@ -1,7 +1,7 @@
 /* eslint-disable new-cap */
 /* eslint-disable max-len */
 // require('dotenv').config();
-require('dotenv-safe').config();
+require('dotenv').config();
 
 const express = require("express");
 const router = express.Router();
@@ -53,10 +53,10 @@ try {
       name: name,
       amount: payableAmount*100,
 
-     redirectUrl: `${process.env.REACT_APP_API_URL}/payment/status?id=${transactionId}`,
-     // redirectUrl:"http://localhost:3000/cart",
+      redirectUrl: `${process.env.REACT_APP_API_URL}/payment/status?id=${transactionId}`,
+  
       redirectMode: "POST",
-   //   mobileNumber: "7489236022",
+ 
       paymentInstrument: {
         type: "PAY_PAGE",
       },

@@ -76,7 +76,7 @@ const ProductDetails = ({ data, selectedHeight, setSelectedHeight, selectedColor
 
             {selectedColor && (
                 <>
-                    <p>Available Sizes for {selectedColor}:</p>
+                    <p>Select Size for: {selectedColor}</p>
                     {Object.keys(quantities).length > 0 ? (
                         <div className="size-selector">
                             {Object.entries(quantities).map(([size, quantity]) => (

@@ -55,7 +55,7 @@ const ProductDetails = ({ data, selectedHeight, setSelectedHeight, selectedColor
             </div>
 
             {/* Color Selector */}
-            <p>Select Color:</p>
+            <p>Select Color: </p>
             {data[selectedHeight]?.colorOptions?.length > 0 ? (
                 <div className="color-selector">
                     {data[selectedHeight].colorOptions.map((color) => (
@@ -76,7 +76,7 @@ const ProductDetails = ({ data, selectedHeight, setSelectedHeight, selectedColor
 
             {selectedColor && (
                 <>
-                    <p>Sizes for {selectedColor}:</p>
+                    <p>Select Size for: {selectedColor}</p>
                     {Object.keys(quantities).length > 0 ? (
                         <div className="size-selector">
                             {Object.entries(quantities).map(([size, quantity]) => (

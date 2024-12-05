@@ -384,7 +384,9 @@ align-items: center;
 top: 17%;
 left: 45%;
 width: 60%;
-font-size: 5cqi;
+font-size: min(5cqi, 20px);
+
+
 /* height: 25px; */
 transform: translateX(-50%);
 background-color: #4CAF50;
@@ -393,6 +395,8 @@ color: white;
 padding: 3cqi 3cqi;
 border-radius: 2cqi;
 z-index: 997;
+max-width: 230px;
+max-height: 30px;
 animation: fadeInOut 3s ease-in-out;
 }
 /* Keyframes for fadeInOut animation */

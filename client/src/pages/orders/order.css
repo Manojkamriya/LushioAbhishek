@@ -147,10 +147,12 @@
       .order-button-container,.item-button-container {
         margin-top: 1rem;
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
         gap: 0.5rem;
       }
-      
+      .order-button-container{
+        justify-content: space-between;
+      }
       .info-button, .rate-button, .cancel-button {
         padding: 0.6rem 1.2rem;
         font-size: 0.9rem;

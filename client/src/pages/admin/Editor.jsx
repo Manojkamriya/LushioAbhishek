@@ -8,6 +8,7 @@ const Editor = ({ product: initialProduct,onClose}) => {
   const [newColor, setNewColor] = useState({ name: '', code: '#43da86' });
   const [hasHeight, setHasHeight] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const sizeOptions = ['XXXS', 'XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'SizeFree'];
   
   useEffect(() => {
@@ -457,7 +458,7 @@ const Editor = ({ product: initialProduct,onClose}) => {
           <div className="product-upload-image-preview">
             {product.cardImages?.map((url, index) => (
               <div key={index} className="product-upload-image-item">
-                <URLMedia src={url} />
+                <URLMedia src={url} className="media-preview" />
                 <button className="image-remove-button" onClick={() => handleRemoveImage(url)}>
                   Remove
                 </button>
@@ -507,7 +508,7 @@ const Editor = ({ product: initialProduct,onClose}) => {
                 </div>
                 {product[`${heightType}Height`].colorOptions.map((color) => (
                   <div key={color.name} className='color-based-media-size'>
-                    <div className="flex items-center space-x-2">
+                    <div  className='color-delete-button'>
                       <span className="font-medium" style={{ color: color.code }}>{color.name}{", "}{color.code}</span>
                       <button 
                         onClick={() => handleColorRemove(color.name, heightType)}
@@ -531,7 +532,7 @@ const Editor = ({ product: initialProduct,onClose}) => {
                     <div className="product-upload-image-preview">
                       {color.images?.map((url, index) => (
                         <div key={index} className="product-upload-image-item">
-                        <URLMedia src={url} />
+                        <URLMedia src={url} className="media-preview" />
                           <button className="image-remove-button" onClick={() => handleRemoveImage(url, color.name, heightType)}>
                             Remove
                           </button>
@@ -584,7 +585,7 @@ const Editor = ({ product: initialProduct,onClose}) => {
             </div>
             {product.colorOptions.map((color) => (
               <div key={color.name} className='color-based-media-size'>
-                <div className="flex items-center space-x-2">
+                <div  className='color-delete-button'>
                   <span className="font-medium" style={{ color: color.code }}>{color.name}{", "}{color.code}</span>
                   <button 
                     onClick={() => handleColorRemove(color.name)}
@@ -608,7 +609,7 @@ const Editor = ({ product: initialProduct,onClose}) => {
                 <div className="product-upload-image-preview">
         {color.images?.map((url, index) => (
           <div key={index} className="product-upload-image-item">
-          <URLMedia src={url} />
+          <URLMedia src={url} className="media-preview" />
             <button className="image-remove-button" onClick={() => handleRemoveImage(url, color.name)}>
               Remove
             </button>

@@ -105,7 +105,8 @@ const additionalDiscountRef = useRef(0);
     }
 
     // Calculate coupon discount
-    const couponDiscountAmount = (total * discountPercentage) / 100; // Calculate coupon discount
+  //  const couponDiscountAmount = (total * discountPercentage) / 100; // Calculate coupon discount
+  const couponDiscountAmount = discountPercentage;
     total = Math.max(0, total - couponDiscountAmount); // Apply coupon discount and ensure total doesn't go below zero
 
     // Apply additional discount for payment method
@@ -317,7 +318,7 @@ const additionalDiscountRef = useRef(0);
       );
       console.log(orderDetails);
       console.log("Response:", response.data);
-      await deleteCartItems(selectedProductIds);
+   //   await deleteCartItems(selectedProductIds);
       setIsActive(false);
       setSuccessOpen(true);
       setTimeout(() => setSuccessOpen(false), 4000);
@@ -465,7 +466,7 @@ const additionalDiscountRef = useRef(0);
       /> */}
       <div className="priceBlock-button-mobile">
       {selectedPaymentMethod==="cashOnDelivery" && <p>Pay Online to get ₹{additionalDiscountRef.current} OFF</p>}
-      {selectedPaymentMethod==="phonepe" && <p>Hurray you get ₹{additionalDiscountRef.current} OFF</p>}
+      {selectedPaymentMethod==="phonepe" && <p>Hurray you get ₹{additionalDiscountRef.current} OFF by paying online</p>}
         <button onClick={handleCreateOrder} className="proceed-to-pay-button">
           PLACE ORDER ₹{getTotalWithWalletAndDiscount()}
         </button>

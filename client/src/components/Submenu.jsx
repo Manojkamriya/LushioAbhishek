@@ -50,7 +50,7 @@ function Submenu({ menuRef, closeMenu,  defaultMenu = "men" }) {
           },
           accessories: {
             items: data.accessories,
-            imageSrc: "/Images/assets/product_303.webp",
+            imageSrc: "/Images/card-image-4.webp",
             description: "New Launch",
           },
         });

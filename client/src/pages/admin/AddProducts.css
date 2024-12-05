@@ -108,7 +108,7 @@ box-sizing: border-box;
   display: block;
 }
 .size-quantity input, .height-input input{
-  width: 80px;
+  width: 60px;
   height: 20px;
   padding: 8px;
 }
@@ -170,6 +170,19 @@ box-sizing: border-box;
  border: 2px solid black;
  padding: 20px;
  margin-block: 15px;
+}
+.color-delete-button{
+  display: flex;
+  justify-content: space-between;
+}
+.color-delete-button button{
+ 
+  width: 100px;
+  height: 35px;
+  background-color: red;
+  color: white;
+  border: none;
+  cursor: pointer;
 }
 .height-checkmark-container {
  
