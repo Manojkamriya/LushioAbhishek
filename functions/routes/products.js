@@ -30,7 +30,12 @@ router.post("/addProduct", async (req, res) => {
     } = req.body;
 
     // Validation checks
-    if (!name || !displayName || !description || !price || !gst || !discountedPrice || !categories || !cardImages || cardImages.length !== 2 ) {
+    if (!name || !displayName ||
+        !description ||
+        !description.productDetails ||
+        !description.sizeFit ||!description.MaterialCare ||
+        !price || !gst || !discountedPrice ||
+        !categories || !cardImages || cardImages.length !== 2 ) {
       return res.status(400).json({error: "All required fields must be filled, including only two card images"});
     }
 
@@ -39,7 +44,11 @@ router.post("/addProduct", async (req, res) => {
       createdAt: new Date(),
       name: name.trim(),
       displayName: displayName.trim(),
-      description: description.trim(),
+      description: {
+        productDetails: description.productDetails.trim(),
+        sizeFit: description.sizeFit.trim(),
+        MaterialCare: description.MaterialCare.trim(),
+      },
       price: parseFloat(price),
       gst: parseFloat(gst),
       soldOut,
@@ -284,6 +293,25 @@ router.put("/update/:id", async (req, res) => {
       updatedAt: new Date(),
     };
 
+    // Validate description object
+    if (updatedProductData.description) {
+      // Ensure description has all required fields
+      if (!updatedProductData.description.productDetails ||
+          !updatedProductData.description.sizeFit ||
+          !updatedProductData.description.MaterialCare) {
+        return res.status(400).json({
+          error: "Description must include productDetails, sizeFit, and MaterialCare",
+        });
+      }
+
+      // Trim description fields
+      updatedProductData.description = {
+        productDetails: updatedProductData.description.productDetails.trim(),
+        sizeFit: updatedProductData.description.sizeFit.trim(),
+        MaterialCare: updatedProductData.description.MaterialCare.trim(),
+      };
+    }
+
     // Function to extract unique sizes from quantities map
     const extractUniqueSizes = (quantitiesMap) => {
       if (!quantitiesMap) return [];
@@ -324,6 +352,7 @@ router.put("/update/:id", async (req, res) => {
       updatedProductData.categories = Array.isArray(updatedProductData.categories) ? updatedProductData.categories.map((cat) => cat.toLowerCase()) : updatedProductData.categories.split(",").map((cat) => cat.trim().toLowerCase());
     }
 
+    // Ensure cardImages are present and valid
     if (!updatedProductData.cardImages || updatedProductData.cardImages.length !== 2) {
       return res.status(400).json({error: "Two card images are required"});
     }

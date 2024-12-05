@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "./Addcoupon.css"
+import "./AddCoupon.css"
 function AddCoupons() {
   const [formData, setFormData] = useState({
     code: "",

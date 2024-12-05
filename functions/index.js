@@ -13,18 +13,36 @@ const app = express();
 app.use(cors({origin: true}));
 
 // CORS pre-flight handeling
-// app.use((req, res, next) => {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-//   res.header("Access-Control-Allow-Headers", "Content-Type");
-//   if (req.method === "OPTIONS") {
-//     return res.status(200).json({});
-//   }
-//   next();
-// });
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") {
+    return res.status(200).json({});
+  }
+  next();
+});
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+
+// ENV setup
+const path = process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
+
+require("dotenv-safe").config({
+  path,
+  allowEmptyValues: true,
+  example: ".env", // Verifies required variables are defined
+});
+
+// Mini Debugging
+console.log("Loaded NODE_ENV:", process.env.NODE_ENV);
+console.log("Using env file:", path);
+console.log("Loaded API URL:", process.env.REACT_APP_API_URL);
+console.log("Loaded Frontend URL:", process.env.REACT_APP_FRONTEND_URL);
+
+// Extreme Debugging
+// console.log("Loaded environment variables:", process.env);
 
 // Import cron jobs
 const {assignBirthdayCoins, assignAnniversaryCoins} = require("./cronjobs/birthdayAnniversaryCoins.js");
@@ -44,7 +62,8 @@ const couponRoute = require("./routes/coupons.js");
 const subscribeRoute = require("./routes/subscribe.js");
 const getCategoriesRoute = require("./routes/categories.js");
 const ordersRoute = require("./routes/orders.js");
-const paymentRoute = require("./routes/payment.js")
+const paymentRoute = require("./routes/payment.js");
+
 // Import cloud functions
 const generateReferralCode = require("./cloudFunctions/generateReferralCode.js");
 
@@ -87,9 +106,8 @@ app.use("/subCategories", getCategoriesRoute);
 // Orders routes
 app.use("/orders", ordersRoute);
 
-//Payment routes
-
-app.use("/payment",paymentRoute);
+// Payment routes
+app.use("/payment", paymentRoute);
 
 // Export the API
 exports.api = functions.https.onRequest(app);

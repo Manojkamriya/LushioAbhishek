@@ -41,8 +41,8 @@ const CartItems = () => {
   const [showNotification, setShowNotification] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [selectedProductIds, setSelectedProductIds] = useState([]);
-const [additionalDiscount,setAddtionalDiscount] = useState(0);
-const additionalDiscountRef = useRef(0); 
+  const [additionalDiscount,setAddtionalDiscount] = useState(0);
+  const additionalDiscountRef = useRef(0); 
   const fetchCartItems = async () => {
     setLoading(true);
     try {
@@ -284,7 +284,7 @@ const additionalDiscountRef = useRef(0);
 
     await axios
       .post(
-        `${process.env.REACT_APP_API_URL}/payment`,
+        `${process.env.REACT_APP_API_URL}/payment/`,
         combinedData
       )
       .then((response) => {

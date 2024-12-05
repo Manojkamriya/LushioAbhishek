@@ -1,5 +1,11 @@
 node_modules/
 *.local
 
+<<<<<<< HEAD
 serviceAccountKey.json
 .env.example
+=======
+.env.example
+
+serviceAccountKey.json
+>>>>>>> 56cb15b1969ae2dd558d67cca4d8de3a0b2280d2
