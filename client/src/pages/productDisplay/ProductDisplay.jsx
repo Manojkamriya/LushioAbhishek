@@ -289,9 +289,9 @@ useEffect(() => {
        </div>
           {/* Display error message if no size is selected */}
       {showError && !selectedSize && <p className="product-display-error-message">Please select a size before adding to cart!</p>}
-        <div className="productDisplay-right-discription">
+        {/* <div className="productDisplay-right-discription">
        <strong>Description: </strong> {product.description}
-        </div>
+        </div> */}
         <p className="productDisplay-right-category">
           <span>Category :</span>
           <>

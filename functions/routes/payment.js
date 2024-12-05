@@ -2,12 +2,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable new-cap */
 /* eslint-disable max-len */
-<<<<<<< HEAD
-// require('dotenv').config();
-require('dotenv').config();
-
-=======
->>>>>>> 56cb15b1969ae2dd558d67cca4d8de3a0b2280d2
 const express = require("express");
 const router = express.Router();
 const admin = require("firebase-admin");
@@ -59,18 +53,9 @@ router.post("/", async (req, res) => {
       merchantTransactionId: transactionId,
       merchantUserId: uid,
       name: name,
-<<<<<<< HEAD
-      amount: payableAmount*100,
-
-      redirectUrl: `${process.env.REACT_APP_API_URL}/payment/status?id=${transactionId}`,
-  
-      redirectMode: "POST",
- 
-=======
       amount: payableAmount * 100,
       redirectUrl: `${API_URL}/payment/status?id=${transactionId}`,
       redirectMode: "POST",
->>>>>>> 56cb15b1969ae2dd558d67cca4d8de3a0b2280d2
       paymentInstrument: {
         type: "PAY_PAGE",
       },
