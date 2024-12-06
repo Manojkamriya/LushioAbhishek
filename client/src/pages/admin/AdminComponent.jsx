@@ -10,7 +10,8 @@ import ViewComplaints from "./ViewComplaints";
 import AdminControls from "./AdminControls";
 import ReviewReviews from "./ReviewReviews";
 import Coupons from "./Coupons";
-import OrderManagement from "./OrderManagement"
+import OrderLogistics from "./OrderLogistics"
+import OrderManagement from "./OrderManagement.jsx";
 
 const AdminComponent = () => {
   const [selectedComponent, setSelectedComponent] = useState(null);
@@ -49,8 +50,10 @@ const AdminComponent = () => {
         return <ReviewReviews />;
       case "Coupons":
         return <Coupons />;
-        case "OrderManagement":
-          return <OrderManagement />;
+      case "OrderLogistics":
+        return <OrderLogistics />;
+      case "OrderManagement":
+        return <OrderManagement />;
       default:
         return <h1>Welcome Admin</h1>;
     }
@@ -82,6 +85,9 @@ const AdminComponent = () => {
         </button>
         <button onClick={() => setSelectedComponent("AdminControls")} className="admin-button">
           Admin Controls
+        </button>
+        <button onClick={() => setSelectedComponent("OrderLogistics")} className="admin-button">
+          Order Logistics
         </button>
         <button onClick={() => setSelectedComponent("OrderManagement")} className="admin-button">
           Order Management
