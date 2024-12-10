@@ -8,12 +8,11 @@ const API_ENDPOINTS = {
   women: `${process.env.REACT_APP_API_URL}/filters/featuredWomen`,
   featured: `${process.env.REACT_APP_API_URL}/filters/featuredAccessories`,
 };
-
 const FeaturedProducts = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState({ men: [], women: [], featured: [] });
   const [loadingStates, setLoadingStates] = useState({ men: true, women: true, featured: true });
-  const [error, setError] = useState(null);
+  const [errors, setErrors] = useState({ men: null, women: null, featured: null });
 
   const fetchCategoryData = async (category, url) => {
     try {
@@ -23,7 +22,11 @@ const FeaturedProducts = () => {
         [category]: response.data,
       }));
     } catch (error) {
-      setError(`Failed to fetch data for ${category}`);
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [category]: `Failed to fetch data for ${category}`,
+      }));
+      console.error(error);
     } finally {
       setLoadingStates((prevLoading) => ({
         ...prevLoading,
@@ -42,39 +45,49 @@ const FeaturedProducts = () => {
     if (loadingStates[category]) {
       return <div className="loader-container"><span className="loader"></span></div>;
     }
-    if (error) {
-      return <p></p>;
-    }
+
+    // if (errors[category]) {
+    //   return <p className="error-message">{errors[category]}</p>;
+    // }
 
     return (
       <>
-        <div className="product-card-container">
-          {products[category].map((item) => (
-            <ProductCard
-              key={item.id}
-              id={item.id}
-              displayName={item.displayName}
-              image1={item.cardImages?.[0] || ""}
-              image2={item.cardImages?.[1] || ""}
-              rating={item.rating || 0}
-              price={item.price || 0}
-              description={item.description}
-              discount={item.discount || 0}
-              aboveHeight={item.aboveHeight || {}}
-              belowHeight={item.belowHeight || {}}
-              colorOptions={item.colorOptions || []}
-              quantities={item.quantities || {}}
-              height={item.height || ""}
-            />
-          ))}
+      {
+        products[category].length > 0 && (
+<>
+<div className="product-card-container">
+        {products[category].map((item) => (
+          <ProductCard
+            key={item.id}
+            id={item.id}
+            displayName={item.displayName}
+            image1={item.cardImages?.[0] || ""}
+            image2={item.cardImages?.[1] || ""}
+            rating={item.rating || 0}
+            price={item.price || 0}
+            description={item.description}
+            discount={item.discount || 0}
+            aboveHeight={item.aboveHeight || {}}
+            belowHeight={item.belowHeight || {}}
+            colorOptions={item.colorOptions || []}
+            quantities={item.quantities || {}}
+            height={item.height || ""}
+          />
+        ))}
+      </div>
+      {products[category].length > 0 && (
+        <div className="fluid-button-container">
+          <button className="fluid-button" onClick={() => navigate(route)}>
+            {buttonText}
+          </button>
         </div>
-        <div className='fluid-button-container'>
-        <button className="fluid-button" onClick={() => navigate(route)}>
-          {buttonText}
-        </button>
-        </div>
-      
-      </>
+      )}
+</>
+        )
+      }
+    
+    </>
+    
     );
   };
 

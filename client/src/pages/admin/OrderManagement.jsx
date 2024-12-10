@@ -1,5 +1,5 @@
 import React,{useState} from 'react'
-import "./ordermanagement.css"
+import "./OrderManagement.css"
 
 const OrderManagement = () => {
     const [dimensions, setDimensions] = useState({

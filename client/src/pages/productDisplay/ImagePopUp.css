@@ -46,9 +46,9 @@
   }
   
   .popup-content.popup-slide-out {
-    animation: slideOut 0.3s ease; /* Animation for closing */
+    animation: slideOut 0.2s ease; /* Animation for closing */
   }
-  
+
   /* Keyframes for sliding animations */
   @keyframes slideIn {
     from {
@@ -143,17 +143,17 @@
   
   .thumbnails {
     display: flex;
-    justify-content: center;
+    justify-content:flex-start;
     gap: 10px;
-    margin-top: 10px;
-    width: 100%;
+    margin-block: 10px;
+    width: 98%;
    
     height: 100px;
     overflow-x: scroll;
   }
   
   .thumbnail {
-    height: 100px;
+    height: 90px;
     cursor: pointer;
     border-radius: 10%;
     /* opacity: 0.7; */
@@ -181,14 +181,7 @@
     }
   }
   
-  @keyframes scaleUp {
-    from {
-      transform: scale(0.9);
-    }
-    to {
-      transform: scale(1);
-    }
-  }
+ 
   @media (min-width: 550px) {
     .popup{
       align-items: center;
@@ -197,6 +190,9 @@
       width: 400px;
       height: 600px;
       padding: 20px;
+    }
+    .popup-content.popup-slide-out {
+      animation: scaleUpClose 0.2s ease;
     }
     .main-image{
       width: 300px;
@@ -208,3 +204,20 @@
   overflow-x: auto ;
     }
   }
+  @keyframes scaleUp {
+    from {
+      transform: scale(0.9);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+  @keyframes scaleUpClose {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(150%);
+    }
+  }
+  

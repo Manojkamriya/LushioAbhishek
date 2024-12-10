@@ -201,11 +201,9 @@ font-size: min(7cqi, 18px);
  width: 120%;
 }
 .item-price span {
-  margin-right: 4%;
   font-family: "montserrat", sans-serif;
   display: inline-block;
   font-size: min(6.9cqi, 17px);
-
   margin-right: 5%;
 }
 .new-price {
@@ -264,6 +262,14 @@ font-size: min(7cqi, 18px);
     font-size:  7cqi;
   }
   .color-size-selector div {
+    /* display: flex;
+    justify-content: flex-start;
+    align-items: center; */
+    gap: 3%;
+    margin-bottom: 5%;
+    height: auto;
+  }
+ .height-selector {
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -272,14 +278,16 @@ font-size: min(7cqi, 18px);
     /* width: 100%; */
     height: auto;
   }
-  .color-size-selector div:not(.height-selector) {
+  .color-size-selector div:not(.height-selector):not(.size-selector) {
     /* Your styles here */
     display: grid;
     grid-template-columns: repeat(7,1fr);
     row-gap: 15%;
     width: 90%;
   }
-
+.size-selector{
+  grid-template-columns: repeat(5,1fr);
+}
   .height-selector button,
 .size-selector button,
 .add-to-cart-button {
@@ -311,9 +319,9 @@ transition: all 0.2s ease;
   }
   .size-selector button{
  width: 100%;
- border-radius: 15%;
+ border-radius: 3.6cqi;
  margin-left: 5%;
- font-size: 3.9cqi;
+ font-size: 3.3cqi;
  position: relative;
   }
   .color-selector button.selected {
@@ -446,20 +454,6 @@ animation: fadeInOut 3s ease-in-out;
  font-size: 7cqi;
 }
  .color-selector button.selected {
-  /* box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 3px #2c2b2b; */
   box-shadow: inset 0 0 0 2px #fff, 0 0 0 1px #1c1c1c;
 } 
-.add-wishlist svg{
-  font-size: 10cqi;
-}
-.info h4{
-  font-size: 4.5cqi;
-}
-.info h3{
-  font-size: 6.3cqi;
-}
-.item-price span{
-  font-size: 6.9cqi;
-  margin-right: 5%;
-}
 }

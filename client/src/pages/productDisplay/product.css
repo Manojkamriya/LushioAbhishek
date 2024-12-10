@@ -186,10 +186,18 @@
   border-radius: 3px;
   cursor: pointer;
 }
-.productDisplay-right-size div:not(.height-selector) {
+.productDisplay-right-size div:not(.height-selector):not(.size-selector) {
   display: grid;
   width: 70%;
-  grid-template-columns: repeat(auto-fill, minmax(13%, 1fr));
+  /* grid-template-columns: repeat(auto-fill, minmax(13%, 1fr)); */
+  grid-template-columns: repeat(6,1fr);
+  /* grid-template-columns: repeat(6,1fr); */
+  gap: 11px;
+}
+.size-selector{
+  display: grid;
+  width: 70%;
+  grid-template-columns: repeat(auto-fill, minmax(19%, 1fr));
   /* grid-template-columns: repeat(6,1fr); */
   gap: 11px;
 }
@@ -690,7 +698,7 @@ display: flex;
   .productDisplay-right-category {
     font-size: 16px;
   }
-  .productDisplay-right-size div:not(.height-selector) {
+  .productDisplay-right-size div:not(.height-selector):not(.size-selector) {
     width: 85%;
     grid-template-columns: repeat(8, 1fr);
 
@@ -764,12 +772,22 @@ display: flex;
   }
 }
 @media (max-width: 500px) {
-  .productDisplay-right-size div:not(.height-selector) {
+  .productDisplay-right-size div:not(.height-selector):not(.size-selector) {
     width: 80%;
     grid-template-columns: repeat(7, 1fr);
     /* grid-template-columns: repeat(6,1fr); */
     gap: 11px;
   }
+  .productDisplay-right-size .size-selector {
+    width: 99%;
+    grid-template-columns: repeat(5, 1fr);
+   
+  }
+  .productDisplay-right-size .size-selector button{
+   border-radius: 4.3cqi;
+   font-size: 3.5cqi;
+  }
+  
   .productDisplay-right-prices {
     gap: 10px;
     margin: 0;
@@ -835,43 +853,3 @@ display: flex;
    
   }
 }
-/* @media (max-width: 420px) {
-  .productDisplay-img img,
-  .productDisplay-img video {
-    height: 300px;
-  }
-  .productDisplay-img-list {
-    
-    height: 300px;
-    width: 80px;
-    overflow: scroll;
-    overflow-x: visible;
-  }
-  .productDisplay-img-list img,
-  .productDisplay-img-list video {
-    height: 70px;
-    width: 70px;
-  }
-}
-@media (max-width: 385px) {
-  .productDisplay-left {
-   padding-inline: 8px;
-  }
-  .productDisplay-img img,
-  .productDisplay-img video {
-    height: 270px;
-  }
-  .productDisplay-img-list {
-    
-    height: 270px;
-    width: 72px;
-    overflow: scroll;
-    overflow-x: visible;
-  }
-  .productDisplay-img-list img,
-  .productDisplay-img-list video {
-    height: 63px;
-    width: 63px;
-  }
-} */
-

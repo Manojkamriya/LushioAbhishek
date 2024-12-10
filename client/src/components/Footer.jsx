@@ -26,7 +26,7 @@ const handleEmailChange = (e) => {
           <h4>HELP</h4>
           <ul>
             <li>
-              <Link to="/">FAQ</Link>
+              <Link to="/privacyPolicy">Privacy Policy</Link>
             </li>
             <li>
               <Link to="/">Return & Exchanges</Link>

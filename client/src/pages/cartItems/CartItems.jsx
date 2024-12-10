@@ -263,7 +263,7 @@ const CartItems = () => {
   
   };
 
-  const handleSubmit = async () => {
+  const handlePayment = async () => {
     console.log("User Details Submitted:", formData);
     const { name, mobile } = formData;
 
@@ -336,7 +336,7 @@ const CartItems = () => {
       return;
     }
     if (selectedPaymentMethod === "phonepe") {
-      await handleSubmit();
+      await handlePayment();
      // await createOrder();
     } else {
       await createOrder();

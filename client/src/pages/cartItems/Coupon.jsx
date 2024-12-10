@@ -4,7 +4,7 @@ import { Modal, Backdrop, Fade, Box, Typography } from "@mui/material";
 import { AiOutlineLoading } from "react-icons/ai";
 import "./Coupon.css";
 import { UserContext } from "../../components/context/UserContext";
-function Coupon({ setDiscount, cartAmount }) {
+function Coupon({ setDiscount, cartAmount,setCouponApplied }) {
   const [open, setOpen] = useState(false);
   const { user } = useContext(UserContext);
   const [coupons, setCoupons] = useState([]);
@@ -72,6 +72,7 @@ function Coupon({ setDiscount, cartAmount }) {
 
       const discountValue = response.data.discount;
       setDiscount(discountValue); // Update discount in parent component
+      setCouponApplied(couponCode);
       setSuccessMessage(
         "Coupon applied successfully! Discount: ₹" + discountValue
       );

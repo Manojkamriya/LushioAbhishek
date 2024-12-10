@@ -1,4 +1,4 @@
-import React,{useContext} from 'react';
+import React,{useState,useContext} from 'react';
 import { Modal, Backdrop, Fade, Box } from '@mui/material'; // Adjust imports if using a different library
 import { UserContext } from "../../components/context/UserContext";
 import { useWishlist } from "../../components/context/WishlistContext";
@@ -20,7 +20,26 @@ const CartRow = ({
     : item.product.quantities[item.color]?.[item.size] > 0;
     const { user } = useContext(UserContext);
     const { wishlist } = useWishlist();
+    const [quantity, setQuantity] = useState(null);
     const wishlistItem = wishlist.find((e) => e.productId === item.product.id); 
+    // const fetchQuantity = async () => {
+    //   try {
+       
+    //     setQuantity(null); // Reset quantity before fetching
+  
+    //     const response = await axios.post(`${process.env.REACT_APP_API_URL}/getQty`, {
+    //       pid,
+    //       color,
+    //       heightType,
+    //       size,
+    //     });
+    //     setQuantity(response.data.quantity);
+    //   } catch (err) {
+       
+    //       console.log("Unable to connect to the server");
+        
+    //   }
+    // };
     //console.log(wishlistItem);
   return (
     <> 
