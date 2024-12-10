@@ -93,7 +93,7 @@ router.post("/", async (req, res) => {
     axios.request(option).then((response) => {
       res.json(response.data);
     }).catch((error) => {
-      console.log("Error in / route inner catch", error.message);
+      console.log("Error in / route inner catch", error);
 
       res.status(500).json({error: error.message});
     });
