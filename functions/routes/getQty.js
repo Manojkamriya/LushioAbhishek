@@ -21,6 +21,12 @@ router.post("/", async (req, res) => {
     const product = productDoc.data();
     let quantity;
 
+    // Validate heightType
+    const validHeightTypes = ["normal", "aboveHeight", "belowHeight"];
+    if (!validHeightTypes.includes(heightType)) {
+      return res.status(400).json({message: "Invalid height type."});
+    }
+
     // Check if height is normal
     if (heightType === "normal") {
       // Check if color exists in quantities
@@ -30,7 +36,7 @@ router.post("/", async (req, res) => {
       }
     } else {
       // Check specific height arrays (aboveHeight or belowHeight)
-      const targetArray = heightType === "above" ? product.aboveHeight.quantities : product.belowHeight.quantities;
+      const targetArray = heightType === "aboveHeight" ? product.aboveHeight.quantities : product.belowHeight.quantities;
 
       // Check if color exists in target array
       const qtyInfo = targetArray[color] && targetArray[color][size];

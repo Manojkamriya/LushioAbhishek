@@ -36,10 +36,10 @@ require("dotenv-safe").config({
 });
 
 // Mini Debugging
-console.log("Loaded NODE_ENV:", process.env.NODE_ENV);
-console.log("Using env file:", path);
-console.log("Loaded API URL:", process.env.REACT_APP_API_URL);
-console.log("Loaded Frontend URL:", process.env.REACT_APP_FRONTEND_URL);
+// console.log("Loaded NODE_ENV:", process.env.NODE_ENV);
+// console.log("Using env file:", path);
+// console.log("Loaded API URL:", process.env.REACT_APP_API_URL);
+// console.log("Loaded Frontend URL:", process.env.REACT_APP_FRONTEND_URL);
 
 // Extreme Debugging
 // console.log("Loaded environment variables:", process.env);

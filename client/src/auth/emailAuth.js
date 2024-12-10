@@ -18,7 +18,7 @@ const handleEmailSignUp = async (email, password, referralCode) => {
     });
 
     const actionCodeSettings = {
-      url: "http://localhost:3000/finishSignIn?cartId=1234",
+      url: `${process.env.REACT_APP_FRONTEND_URL}/finishSignIn?cartId=1234`,
       handleCodeInApp: true,
     };
     await sendSignInLinkToEmail(auth, email, actionCodeSettings);
@@ -63,7 +63,7 @@ const handleEmailLogin = async (email, password) => {
 const sendEmailSignInLink = async (email) => {
   try {
     const actionCodeSettings = {
-      url: "http://localhost:3000/finishSignIn",
+      url: `${process.env.REACT_APP_FRONTEND_URL}/finishSignIn`,
       handleCodeInApp: true,
     };
     await sendSignInLinkToEmail(auth, email, actionCodeSettings);

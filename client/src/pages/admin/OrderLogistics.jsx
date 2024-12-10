@@ -6,7 +6,7 @@ import './OrderLogistics.css';
 const OrderLogistics = () => {
   const [formData, setFormData] = useState({
     length: '',
-    width: '',
+    breadth: '',
     height: '',
     weight: '',
     companyName: '',
@@ -87,15 +87,15 @@ const OrderLogistics = () => {
     try {
       const adminDocRef = doc(db, 'controls', 'admin');
       
-      // Convert string inputs to numbers with two decimal places
       const sanitizedData = {
-        ...formData,
         length: formData.length ? parseFloat(parseFloat(formData.length).toFixed(2)) : 0,
-        width: formData.width ? parseFloat(parseFloat(formData.width).toFixed(2)) : 0,
+        breadth: formData.breadth ? parseFloat(parseFloat(formData.breadth).toFixed(2)) : 0,
         height: formData.height ? parseFloat(parseFloat(formData.height).toFixed(2)) : 0,
         weight: formData.weight ? parseFloat(parseFloat(formData.weight).toFixed(2)) : 0,
+        companyName: formData.companyName || '',
+        resellerName: formData.resellerName || '',
         deliveryCharges: formData.deliveryCharges ? parseFloat(parseFloat(formData.deliveryCharges).toFixed(2)) : 0,
-        discounts: Object.fromEntries(
+        orderDiscounts: Object.fromEntries(
           Object.entries(formData.orderDiscounts).map(([key, value]) => [
             key, 
             value ? Math.max(0, Math.min(100, parseFloat(parseFloat(value).toFixed(2)))) : 0
@@ -132,13 +132,13 @@ const OrderLogistics = () => {
               />
             </label>
             <label>
-              Width (cm):
+              Breadth (cm):
               <input
                 type="text"
-                name="width"
-                value={formData.width}
+                name="breadth"
+                value={formData.breadth}
                 onChange={handleChange}
-                placeholder="Enter width (2 decimal places)"
+                placeholder="Enter breadth (2 decimal places)"
               />
             </label>
           </div>
@@ -244,7 +244,7 @@ export default OrderLogistics;
 // const OrderLogistics = () => {
 //     const [dimensions, setDimensions] = useState({
 //         length: '',
-//         width: '',
+//         breadth: '',
 //         height: '',
 //         weight: '',
 //       });
@@ -259,10 +259,10 @@ export default OrderLogistics;
     
 //       const handleSubmit = (e) => {
 //         e.preventDefault();
-//         const { length, width, height, weight } = dimensions;
+//         const { length, breadth, height, weight } = dimensions;
     
-//         if (length && width && height && weight) {
-//           alert(`Order Dimensions:\nLength: ${length} cm\nWidth: ${width} cm\nHeight: ${height} cm\nWeight: ${weight} cm`);
+//         if (length && breadth && height && weight) {
+//           alert(`Order Dimensions:\nLength: ${length} cm\nbreadth: ${breadth} cm\nHeight: ${height} cm\nWeight: ${weight} cm`);
 //         } else {
 //           alert('Please fill in all fields.');
 //         }
@@ -289,13 +289,13 @@ export default OrderLogistics;
 //           </div>
 //           <div className="form-group">
 //             <label>
-//               Width (cm):
+//               breadth (cm):
 //               <input
 //                 type="number"
-//                 name="width"
-//                 value={dimensions.width}
+//                 name="breadth"
+//                 value={dimensions.breadth}
 //                 onChange={handleChange}
-//                 placeholder="Enter width"
+//                 placeholder="Enter breadth"
 //                 required
 //               />
 //             </label>
