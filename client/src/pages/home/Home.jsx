@@ -9,7 +9,7 @@ export default function Home() {
       <Carousel images={Media} />
       {/* <ProductCards /> */}
       <FeaturedProducts/>
-      <div className="collection-card-container">
+      {/* <div className="collection-card-container">
         <CollectionCard
           image="/Images/card-image-6.png"
           name="SHIRTS"
@@ -22,7 +22,7 @@ export default function Home() {
           image="/Images/card-image-5.png"
           name="SALE"
         />
-      </div>
+      </div> */}
       <br></br>
     </>
   );

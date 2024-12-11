@@ -29,17 +29,17 @@ const handleEmailChange = (e) => {
               <Link to="/privacyPolicy">Privacy Policy</Link>
             </li>
             <li>
-              <Link to="/">Return & Exchanges</Link>
+              <Link to="/refundPolicy">Refund Policy</Link>
             </li>
             <li>
-              <Link to="/">Contact Us</Link>
+              <Link to="/shippingPolicy">Shipping Policy</Link>
             </li>
             <li>
-              <Link to="/">Terms Of Service</Link>
+              <Link to="/termAndConditions">Terms and Conditions</Link>
             </li>
           </ul>
         </div>
-        <div className="business-section">
+        {/* <div className="business-section">
           <h4>SHOP WITH US</h4>
           <ul>
            
@@ -70,7 +70,7 @@ const handleEmailChange = (e) => {
               <Link to="/user">Account</Link>
             </li>
           </ul>
-        </div>
+        </div> */}
         <div className="business-section">
           <h4>JOIN THE LUSHIO FAMILY</h4>
           <p>
@@ -120,7 +120,7 @@ const handleEmailChange = (e) => {
         </div>
       </div>
       <div className="secondary">
-        <h4>2024 © LushioFitness.com {user && <span>{user.displayName}</span>} </h4>
+        <h4>2024 © LUSHIO {user && <span>{user.displayName}</span>} </h4>
       </div>
     </footer>
   );

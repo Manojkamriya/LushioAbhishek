@@ -20,7 +20,7 @@ const CartItems = () => {
     name: selectedAddress && selectedAddress.name,
     mobile: selectedAddress && selectedAddress.contactNo,
   });
-
+const navigate = useNavigate();
   // const [promoCode, setPromoCode] = useState("");
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("phonepe");
   const [discountPercentage, setDiscountPercentage] = useState(0);
@@ -340,7 +340,7 @@ const CartItems = () => {
      // await createOrder();
     } else {
       await createOrder();
-     
+     await deleteCartItems();
     }
   };
   const deleteCartItems = async (arrayData) => {
@@ -355,7 +355,7 @@ const CartItems = () => {
 
       // Handle the response
       console.log("Response from backend:", response.data);
-
+navigate("/user/orders");
       // Return the response if needed
       return response.data;
     } catch (error) {
