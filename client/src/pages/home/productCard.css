@@ -266,7 +266,9 @@ font-size: min(7cqi, 18px);
     justify-content: flex-start;
     align-items: center; */
     gap: 3%;
+    row-gap: 23%;
     margin-bottom: 5%;
+    width: 92%;
     height: auto;
   }
  .height-selector {
@@ -286,7 +288,8 @@ font-size: min(7cqi, 18px);
     width: 90%;
   }
 .size-selector{
-  grid-template-columns: repeat(5,1fr);
+  grid-template-columns: repeat(4,1fr);
+  row-gap: 15cqi;
 }
   .height-selector button,
 .size-selector button,
@@ -319,19 +322,20 @@ transition: all 0.2s ease;
   }
   .size-selector button{
  width: 100%;
- border-radius: 3.6cqi;
- margin-left: 5%;
- font-size: 3.3cqi;
+ border-radius:4.5cqi;
+ margin-left: 2%;
+ font-size: 4.5cqi;
  position: relative;
+ overflow: hidden;
   }
   .color-selector button.selected {
     /* box-shadow: inset 0 0 0 3px #fff, inset 0 0 0 4px #1c1b1b; */
     box-shadow: inset 0 0 0 3px #fff, 0 0 0 1px #1b1b1b;
   } 
   
-  .size-selector{
+  /* .size-selector{
     grid-template-columns: repeat(6, 1fr);
-  }
+  } */
   .height-selector button.selected,
 .size-selector button.selected {
 
@@ -343,18 +347,18 @@ content: "Sold Out";
 position: absolute;
 top: 50%;
 left: 50%;
-transform: translate(-50%, -50%) rotate(-45deg);
+transform: translate(-50%, -50%) rotate(-25deg);
 background-color: rgba(236, 20, 20, 0.5); 
 color: #ffffff;
-padding: 1cqi 3cqi; 
+padding: 1.5cqi 4.7cqi; 
 font-weight: bold;
 text-transform: uppercase;
-font-size: 1cqi; 
+font-size: 1.8cqi; 
 z-index: 1;
 cursor: not-allowed;
 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
 letter-spacing: 0.5px;
-border-radius: 12%;
+border-radius: 1.9cqi;
 opacity: 0.9;
 white-space: nowrap;
 }

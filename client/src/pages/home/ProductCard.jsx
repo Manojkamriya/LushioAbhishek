@@ -54,7 +54,7 @@ const navigate= useNavigate();
     setIsRemoving(false);
   };
   const [quantity, setQuantity] = useState(null);
- 
+ const discount =  Math.ceil(((props.price - props.discountedPrice) / props.price) * 100);
 
   // Define the object with input data
   const requestData = {
@@ -116,7 +116,7 @@ const navigate= useNavigate();
       menuRef.current.style.top = `calc(101% - ${menuHeight}px)`; // Position it based on height
     }
   };
-
+ 
   const closeMenu = () => {
     if (menuRef.current) {
       menuRef.current.style.height = "auto"; // Reset the height on close
@@ -234,10 +234,10 @@ const navigate= useNavigate();
           {/* <h3>LushioFitness®</h3> */}
           <h3>{props.displayName}</h3>
           <div className="item-price">
-        <span className="new-price">₹{props.price}</span>
+        <span className="new-price">₹{props.discountedPrice}</span>
         <span className="old-price">₹{props.price}</span>
 
-        <span className="discount">{props.discount}% OFF</span>
+        <span className="discount">{discount}% OFF</span>
       </div>
         </div>
         <div className="add-wishlist">

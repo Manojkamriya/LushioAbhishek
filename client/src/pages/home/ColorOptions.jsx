@@ -78,7 +78,11 @@ const ColorOptions = ({ data, selectedColor,
               {availableSizes.map((size) => (
                 <button
                   key={size}
-                  style={{ aspectRatio: "29 / 15" }}
+                  //style={{ aspectRatio: "29 / 15" }}
+                  style={{
+                    aspectRatio: size === "SizeFree" ? 29/10 : 29 / 15,
+                    width: size === "SizeFree" ? "140%" : "auto",       
+                  }}
                   onClick={() => handleSizeChange(size)}
                  // className={size === selectedSize ? "selected" : ""}
                  disabled= {data.quantities[selectedColor]?.[size]=== 0}

@@ -245,7 +245,7 @@ useEffect(() => {
             <strong>{product.rating > 0 ? product.rating.toFixed(1) : "4.5"}</strong>
 
             <img src="/Images/icons/star.png" alt="icon" />
-            <p>(122)</p>
+            <p>({product.reviews.length})</p>
           </span>
          
         </div>
@@ -292,11 +292,17 @@ useEffect(() => {
        </div>
           {/* Display error message if no size is selected */}
       {showError && !selectedSize && <p className="product-display-error-message">Please select a size to proceed!</p>}
-        {/* <div className="productDisplay-right-discription">
-       <strong>Description: </strong> {product.description}
-        </div> */}
+        <div className="productDisplay-right-discription">
+       <strong>Description: </strong> {product.description.productDetails}
+        </div>
+        <div className="productDisplay-right-discription">
+       <strong>Size & Fit: </strong> {product.description.sizeFit}
+        </div>
+        <div className="productDisplay-right-discription">
+       <strong>MaterialCare: </strong> {product.description.MaterialCare}
+        </div>
         <p className="productDisplay-right-category">
-          <span>Category :</span>
+          <span><strong>Category:</strong>  </span>
           <>
           {product.categories?.map((category, index) => (
             <span key={index}>{category}{", "}</span>

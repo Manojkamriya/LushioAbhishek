@@ -82,7 +82,11 @@ const ProductDetails = ({ data, selectedHeight, setSelectedHeight, selectedColor
                             {Object.entries(quantities).map(([size, quantity]) => (
                                 <button
                                     key={size}
-                                    style={{ aspectRatio: 29 / 15 }}
+                                  //  style={{ aspectRatio: 29 / 15 }}
+                                  style={{
+                                    aspectRatio:  29/15, 
+                                    width: size === "SizeFree" ? "125%" : "auto",       
+                                  }}
                                     onClick={() => handleSizeChange(size)}
                                  //   className={size === selectedSize ? "selected" : ""}
                                  disabled={ data[selectedHeight]?.quantities?.[selectedColor]?.[

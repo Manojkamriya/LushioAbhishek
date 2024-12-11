@@ -260,10 +260,12 @@
   }
   
   @media (max-width: 480px) {
+    .fluid-button-container{
+      padding-bottom: 15px;
+    }
     .fluid-button {
       padding: 10px 20px; 
       font-size: 12px; 
-      /* margin-top: 10px;  */
     }
   }
   

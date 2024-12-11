@@ -320,6 +320,65 @@ const Editor = ({ product: initialProduct,onClose}) => {
           onClick={()=>handleSubmit()}
             disabled={isUploading}>Save changes</button>
       <div  className="add-product-form">
+        <div className='boolean-fields'>
+
+        <div className="radio-group">
+          <label className="block mb-1">Sold Out</label>
+          <div className="flex items-center space-x-4">
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                name="soldOut"
+                value="true"
+                checked={product.soldOut === true}
+                onChange={handleBooleanChange}
+                className="form-radio"
+              />
+              <span className="ml-2">Yes</span>
+            </label>
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                name="soldOut"
+                value="false"
+                checked={product.soldOut === false}
+                onChange={handleBooleanChange}
+                className="form-radio"
+              />
+              <span className="ml-2">No</span>
+            </label>
+          </div>
+        </div>
+          {/* To Display Radio Buttons */}
+          <div className="radio-group">
+          <label className="block mb-1">Display Product</label>
+          <div className="flex items-center space-x-4">
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                name="toDisplay"
+                value="true"
+                checked={product.toDisplay === true}
+                onChange={handleBooleanChange}
+                className="form-radio"
+              />
+              <span className="ml-2">Yes</span>
+            </label>
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                name="toDisplay"
+                value="false"
+                checked={product.toDisplay === false}
+                onChange={handleBooleanChange}
+                className="form-radio"
+              />
+              <span className="ml-2">No</span>
+            </label>
+          </div>
+        </div>
+        </div>
+    
         <div className="name-inputs">
           <div>
             <label htmlFor="name" className="block mb-1">Name</label>
@@ -347,7 +406,9 @@ const Editor = ({ product: initialProduct,onClose}) => {
 
         <div className="description-container">
           <label htmlFor="description" >Description</label>
-          <label className="block mb-2 font-medium">Product Details</label>
+          <div className='description-values'>
+            <div className='description-value'>
+            <label className="block mb-2 font-medium">Product Details</label>
           <textarea
             name="productDetails"
             value={product.description.productDetails}
@@ -356,8 +417,9 @@ const Editor = ({ product: initialProduct,onClose}) => {
             placeholder="Enter product details"
             rows="4"
           />
-
-          <label className="block mb-2 font-medium">Size & Fit</label>
+            </div>
+            <div className='description-value'>
+            <label className="block mb-2 font-medium">Size & Fit</label>
           <textarea
             name="sizeFit"
             value={product.description.sizeFit}
@@ -367,7 +429,9 @@ const Editor = ({ product: initialProduct,onClose}) => {
             rows="4"
           />
 
-          <label className="block mb-2 font-medium">Material & Care</label>
+              </div>
+              <div className='description-value'>
+              <label className="block mb-2 font-medium">Material & Care</label>
           <textarea
             name="MaterialCare"
             value={product.description.MaterialCare}
@@ -376,6 +440,13 @@ const Editor = ({ product: initialProduct,onClose}) => {
             placeholder="Enter material and care instructions"
             rows="4"
           />
+              </div>
+       
+
+         
+
+          </div>
+        
         </div>
 
         <div className="price-inputs">
@@ -429,62 +500,9 @@ const Editor = ({ product: initialProduct,onClose}) => {
           />
         </div>
 
-        <div className="radio-group">
-          <label className="block mb-1">Sold Out</label>
-          <div className="flex items-center space-x-4">
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="soldOut"
-                value="true"
-                checked={product.soldOut === true}
-                onChange={handleBooleanChange}
-                className="form-radio"
-              />
-              <span className="ml-2">Yes</span>
-            </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="soldOut"
-                value="false"
-                checked={product.soldOut === false}
-                onChange={handleBooleanChange}
-                className="form-radio"
-              />
-              <span className="ml-2">No</span>
-            </label>
-          </div>
-        </div>
+      
 
-        {/* To Display Radio Buttons */}
-        <div className="radio-group">
-          <label className="block mb-1">Display Product</label>
-          <div className="flex items-center space-x-4">
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="toDisplay"
-                value="true"
-                checked={product.toDisplay === true}
-                onChange={handleBooleanChange}
-                className="form-radio"
-              />
-              <span className="ml-2">Yes</span>
-            </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="toDisplay"
-                value="false"
-                checked={product.toDisplay === false}
-                onChange={handleBooleanChange}
-                className="form-radio"
-              />
-              <span className="ml-2">No</span>
-            </label>
-          </div>
-        </div>
+      
 
         <div className="file-upload-container">
           <label htmlFor="cardImages" className="block mb-1">Card Images</label>
