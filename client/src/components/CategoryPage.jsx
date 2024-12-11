@@ -56,6 +56,7 @@ console.log(response.data);
             image2={item.cardImages?.[1] || ""}
             rating={item.rating || 0}
             price={item.price || 0}
+            discountedPrice={item.discountedPrice || 0}
             description={item.description}
             discount={item.discount || 0}
             aboveHeight={item.aboveHeight || {}}

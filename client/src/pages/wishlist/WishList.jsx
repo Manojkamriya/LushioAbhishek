@@ -77,6 +77,7 @@ useEffect(() => {
         image2={items.product.cardImages?.[1] || ""}
         rating={items.product.rating || 0}
         price={items.product.price || 0}
+        discountedPrice={items.discountedPrice || 0}
         description={items.product.description}
         discount={items.product.discount || 0}
         aboveHeight={items.product.aboveHeight || {}}

@@ -26,6 +26,7 @@ import OrderInfo from "./pages/orders/OrderInfo";
 import BuyNow from "./pages/BuyNow/BuyNow";
 import PaymentStatus from "./pages/orders/PaymentStatus";
 import CategoryPage from "./components/CategoryPage";
+import PrivacyPolicy from "./pages/Policy/PrivacyPolicy"
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "./firebaseConfig";
 import ScrollToTop from "./components/ScrollToTop";
@@ -87,6 +88,7 @@ function App() {
             <Route path="/wallet" element={<Wallet />} />
             <Route path="/orderInfo" element={<OrderInfo />} />
             <Route path="/buyNow" element={<BuyNow />} />
+            <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
             <Route path="/paymentStatus" element={<PaymentStatus />} />
             <Route path="/user-address" element={<Address />} />
             <Route path="/user-referAndEarn" element={<ReferAndEarn />} />

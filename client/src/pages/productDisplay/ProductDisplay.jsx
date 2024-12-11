@@ -189,15 +189,22 @@ useEffect(() => {
       return;
     } 
     if (!user) return; 
+    const imageURL = product.cardImages[0];
+    const name = product.displayName;
+    const price = product.price;
+    const productId = id;
     const queryParams = new URLSearchParams({
       heightCategory,
       selectedColor,
       selectedSize,
-      image,  // Passing the image URL as a query param
+      name,
+      price,
+      productId,
+      imageURL,  // Passing the image URL as a query param
     }).toString();
 
-    // Navigate to the new page with the query params
-    //navigate(`/buyNow?${queryParams}`);
+   // Navigate to the new page with the query params
+    navigate(`/buyNow?${queryParams}`);
   };
   if (loading) return <div className="loader-container"> <span className="loader"></span></div>;
  if (error) return <div>Error: {error}</div>;
@@ -215,11 +222,7 @@ useEffect(() => {
         <div className="productDisplay-img-list">
           {product.allImages.map((img, index) => (
            
-            // <MediaRenderer
-            //    onClick={() => setImage(img)}
-            //   className={img === image ? "size-selected" : "size-not-selected"}
-            //   src={img}
-            // />
+          
             <URLMediaRenderer
                  onClick={() => setImage(img)}
               className={img === image ? "size-selected" : "size-not-selected"}
@@ -229,9 +232,9 @@ useEffect(() => {
         </div>
         <div className="productDisplay-img">
          
-          {/* <MediaRenderer src={image} className="productDisplay-main-img"/> */}
+        
           <URLMediaRenderer
-           key={image} // Assign a unique key based on the `image` source
+           key={image} 
                 src={image} className="productDisplay-main-img"
                 onClick={openGallery}
             />
@@ -242,7 +245,7 @@ useEffect(() => {
             <strong>{product.rating > 0 ? product.rating.toFixed(1) : "4.5"}</strong>
 
             <img src="/Images/icons/star.png" alt="icon" />
-            <p>(122)</p>
+            <p>({product.reviews.length})</p>
           </span>
          
         </div>
@@ -288,12 +291,18 @@ useEffect(() => {
         
        </div>
           {/* Display error message if no size is selected */}
-      {showError && !selectedSize && <p className="product-display-error-message">Please select a size before adding to cart!</p>}
-        {/* <div className="productDisplay-right-discription">
-       <strong>Description: </strong> {product.description}
-        </div> */}
+      {showError && !selectedSize && <p className="product-display-error-message">Please select a size to proceed!</p>}
+        <div className="productDisplay-right-discription">
+       <strong>Description: </strong> {product.description.productDetails}
+        </div>
+        <div className="productDisplay-right-discription">
+       <strong>Size & Fit: </strong> {product.description.sizeFit}
+        </div>
+        <div className="productDisplay-right-discription">
+       <strong>MaterialCare: </strong> {product.description.MaterialCare}
+        </div>
         <p className="productDisplay-right-category">
-          <span>Category :</span>
+          <span><strong>Category:</strong>  </span>
           <>
           {product.categories?.map((category, index) => (
             <span key={index}>{category}{", "}</span>

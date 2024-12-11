@@ -170,15 +170,15 @@ cursor: pointer;
     margin-left: 14px;
   }
   .list ul li{
-    margin: 10px 7px;
+    margin: 0px 0px;
    
     font-size: 14px;
   }
   .left-icons{
-    width: 400px;
+    width: 430px;
   }
   .right-icons{
-    width: 400px;
+    width: 430px;
   }
 }
 @media (max-width: 1148px) {
@@ -295,7 +295,7 @@ width: 133px;
     width: 29%;
   }
   .header-search-form-control {
-    height: 50px;
+    height: 45px;
   }
 }
 @media (max-width: 390px) {

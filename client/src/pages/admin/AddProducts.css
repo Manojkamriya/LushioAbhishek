@@ -75,8 +75,9 @@ box-sizing: border-box;
  }
  
 .add-product-form textarea{
-  width: 800px;
-  height: 70px;
+  width: 100%;
+  height: 100px;
+  overflow-y: auto;
 }
   .color-option {
     margin-bottom: 20px;
@@ -130,14 +131,16 @@ box-sizing: border-box;
 }
 .boolean-fields {
   display: flex;
-  flex-direction: column;
   gap: 1.5rem;
   font-family: Arial, sans-serif;
+margin-top: 10px;
 }
 
 .boolean-fields > div {
   display: flex;
   flex-direction: column;
+  background-color: #c5c8cb;
+  padding: 10px;
 }
 
 .boolean-fields > div > label {
@@ -215,6 +218,15 @@ display: flex;
 flex-direction: column;
 
 align-items: flex-start;
+}
+.description-values{
+  display: grid;
+  grid-template-columns: 390px 260px 260px;
+  gap: 20px;
+}
+.description-value{
+  width: 100%;
+  overflow-y: auto;
 }
 .product-submit-button {
   outline: none;

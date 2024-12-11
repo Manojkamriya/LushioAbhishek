@@ -356,7 +356,57 @@ const AddProducts = () => {
     <div className="max-w-4xl mx-auto p-4">
        {isLoading && <div className="spinner-overlay"><div></div></div>}
       <h2 className="text-2xl font-bold mb-4">Add New Product</h2>
+
       <form onSubmit={handleSubmit} className="add-product-form" >
+      <div className="boolean-fields">
+           <div>
+              <label className="block mb-2">Sold Out</label>
+              <div className="flex space-x-4">
+                <label>
+                  <input
+                    type="radio"
+                    name="soldOut"
+                    value="yes"
+                    checked={product.soldOut === true}
+                    onChange={(e) => setProduct(prev => ({ ...prev, soldOut: true }))}
+                  /> Yes
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="soldOut"
+                    value="no"
+                    checked={product.soldOut === false}
+                    onChange={(e) => setProduct(prev => ({ ...prev, soldOut: false }))}
+                  /> No
+                </label>
+            </div>
+          </div>
+
+          <div>
+             <label className="block mb-2">Display</label>
+             <div className="flex space-x-4">
+                <label>
+                  <input
+                    type="radio"
+                    name="toDisplay"
+                    value="yes"
+                    checked={product.toDisplay === true}
+                    onChange={(e) => setProduct(prev => ({ ...prev, toDisplay: true }))}
+                  /> Yes
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="toDisplay"
+                    value="no"
+                    checked={product.toDisplay === false}
+                    onChange={(e) => setProduct(prev => ({ ...prev, toDisplay: false }))}
+                  /> No
+                </label>
+              </div>
+            </div>
+          </div>
         <div className="name-inputs">
           <div>
             <label htmlFor="name" className="block mb-1">Name</label>
@@ -384,7 +434,8 @@ const AddProducts = () => {
 
         <div className="description-container">
           <label htmlFor="description" className="block mb-1"><b>Description</b></label>
-          <div className="mb-4">
+          <div className='description-values'>
+          <div className="description-value">
             <label htmlFor="productDetails" className="block mb-1">Product Details</label>
             <textarea
               id="productDetails"
@@ -397,7 +448,7 @@ const AddProducts = () => {
             />
           </div>
           
-          <div className="mb-4">
+          <div className="description-value">
             <label htmlFor="sizeFit" className="block mb-1">Size & Fit</label>
             <textarea
               id="sizeFit"
@@ -410,7 +461,7 @@ const AddProducts = () => {
             />
           </div>
           
-          <div className="mb-4">
+          <div className="description-value">
             <label htmlFor="MaterialCare" className="block mb-1">Material & Care</label>
             <textarea
               id="MaterialCare"
@@ -421,6 +472,7 @@ const AddProducts = () => {
               className="w-full p-2 border rounded"
               rows={4}
             />
+          </div>
           </div>
         </div>
 
@@ -478,55 +530,7 @@ const AddProducts = () => {
           />
         </div>
 
-        <div className="boolean-fields">
-           <div>
-              <label className="block mb-2">Sold Out</label>
-              <div className="flex space-x-4">
-                <label>
-                  <input
-                    type="radio"
-                    name="soldOut"
-                    value="yes"
-                    checked={product.soldOut === true}
-                    onChange={(e) => setProduct(prev => ({ ...prev, soldOut: true }))}
-                  /> Yes
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="soldOut"
-                    value="no"
-                    checked={product.soldOut === false}
-                    onChange={(e) => setProduct(prev => ({ ...prev, soldOut: false }))}
-                  /> No
-                </label>
-            </div>
-          </div>
-
-          <div>
-             <label className="block mb-2">Display</label>
-             <div className="flex space-x-4">
-                <label>
-                  <input
-                    type="radio"
-                    name="toDisplay"
-                    value="yes"
-                    checked={product.toDisplay === true}
-                    onChange={(e) => setProduct(prev => ({ ...prev, toDisplay: true }))}
-                  /> Yes
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="toDisplay"
-                    value="no"
-                    checked={product.toDisplay === false}
-                    onChange={(e) => setProduct(prev => ({ ...prev, toDisplay: false }))}
-                  /> No
-                </label>
-              </div>
-            </div>
-          </div>
+     
 
         <div className="file-upload-container">
           <label htmlFor="cardImages" className="block mb-1">Card Images (2 required)</label>
