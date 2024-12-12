@@ -27,6 +27,9 @@ import BuyNow from "./pages/BuyNow/BuyNow";
 import PaymentStatus from "./pages/orders/PaymentStatus";
 import CategoryPage from "./components/CategoryPage";
 import PrivacyPolicy from "./pages/Policy/PrivacyPolicy"
+import TermsAndConditions from "./pages/Policy/TermsAndConditions";
+import RefundPolicy from "./pages/Policy/RefundPolicy";
+import ShippingPolicy from "./pages/Policy/ShippingPolicy";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "./firebaseConfig";
 import ScrollToTop from "./components/ScrollToTop";
@@ -89,6 +92,9 @@ function App() {
             <Route path="/orderInfo" element={<OrderInfo />} />
             <Route path="/buyNow" element={<BuyNow />} />
             <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
+            <Route path="/termAndConditions" element={<TermsAndConditions />} />
+            <Route path="/refundPolicy" element={<RefundPolicy />} />
+            <Route path="/shippingPolicy" element={<ShippingPolicy />} />
             <Route path="/paymentStatus" element={<PaymentStatus />} />
             <Route path="/user-address" element={<Address />} />
             <Route path="/user-referAndEarn" element={<ReferAndEarn />} />

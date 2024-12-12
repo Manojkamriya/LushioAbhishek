@@ -22,6 +22,10 @@ const CartRow = ({
     const { wishlist } = useWishlist();
     const [quantity, setQuantity] = useState(null);
     const wishlistItem = wishlist.find((e) => e.productId === item.product.id); 
+    const colorHex = item.product.colorOptions.find(
+      (color) => color.name === item.color
+    )?.code;
+  
     // const fetchQuantity = async () => {
     //   try {
        
@@ -90,8 +94,8 @@ const CartRow = ({
           <p className="product-color">
             <strong>Color:</strong> {item.color}
             <span
-              className="color-box"
-              style={{ backgroundColor: "pink" }}
+              className="cart-color-box"
+              style={{ backgroundColor: colorHex }}
             ></span>
           </p>
           <div className="itemContainer-base-sizeAndQtyContainer">
@@ -101,7 +105,7 @@ const CartRow = ({
                 {/* <img src="/Images/icons/quantityDropdown.svg" alt=""/> */}
               </div>
 
-              <div className="itemComponents-base-quantity">
+              <div className="itemComponents-base-quantity"   onClick={() => handleOpen(item)}>
                 <span className="">Qty: {item.quantity}</span>
                 <img src="/Images/icons/quantityDropdown.svg" alt="" />
               </div>
@@ -177,7 +181,7 @@ const CartRow = ({
                   <p><strong>Size:</strong> {selectedProduct?.size}</p>
                   <p className="remove-product-color">
                     <strong>Color:</strong> {selectedProduct?.color}
-                    <span className="remove-color-box" style={{ backgroundColor: selectedProduct?.color }}></span>
+                    {/* <span className="remove-color-box" style={{ backgroundColor: selectedProduct?.color }}></span> */}
                   </p>
                 </div>
               </div>
