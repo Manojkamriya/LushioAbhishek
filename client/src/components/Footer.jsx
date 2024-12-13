@@ -39,22 +39,22 @@ const handleEmailChange = (e) => {
             </li>
           </ul>
         </div>
-        {/* <div className="business-section">
-          <h4>SHOP WITH US</h4>
+        <div className="business-section">
+          <h4>CONTACT US</h4>
           <ul>
+          <li>
+              <Link to="/">COMPANY: LUSHIO PRIVATE LIMITED</Link>
+            </li>
+            <li>
+              <Link to="/">PHONE NUMBER +91 8319713763</Link>
+            </li>
+            <li>
+              <Link to="/">EMAIL us at officialushio@gmail.com</Link>
+            </li>
            
-            <li>
-              <Link to="/">All Products</Link>
-            </li>
-            <li>
-              <Link to="/">Gift Cards</Link>
-            </li>
-            <li>
-              <Link to="/">Rewards</Link>
-            </li>
           </ul>
         </div>
-        <div className="business-section">
+        {/* <div className="business-section">
           <h4>EXPLORE</h4>
           <ul>
             <li>
@@ -83,7 +83,7 @@ const handleEmailChange = (e) => {
           <input type="email" placeholder="Email Address" value={email} onChange={handleEmailChange} /> <button onClick={handleSubscribe}>SUBSCRIBE</button> {message && <p>{message}</p>}
         </div>
         <div className="quick-links">
-          <img src="/Images/icons/lushio-text-3-bg.png" alt="" />
+          <img src="/Images/icons/lushio-text.png" alt="" />
           <h4>
             Lushio Fitenss is a Activewear clothing brand headquartered in
             Indore. Our goal is not to make products in large quantities, but
@@ -120,7 +120,7 @@ const handleEmailChange = (e) => {
         </div>
       </div>
       <div className="secondary">
-        <h4>2024 © LUSHIO {user && <span>{user.displayName}</span>} </h4>
+        <h4>2024 © LUSHIO PRIVATE LIMITED</h4>
       </div>
     </footer>
   );

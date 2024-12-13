@@ -179,14 +179,17 @@ width: 20px;
     transform: scale(1);
   }
 }
-
+.itemContainer-base-item.sold-out{
+  border: 1px solid red;
+  position: relative;
+  overflow: hidden;
+}
 /* Sold Out Item */
 .cartitems-format.sold-out{
   opacity: 0.7;
-  position: relative;
-  overflow: hidden;
+ 
   transition: opacity 0.3s ease;
-  
+ 
 }
 
 
@@ -196,13 +199,14 @@ width: 20px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) rotate(-45deg);
-  background-color: rgba(244, 8, 8, 0.9);
-  background-color: rgba(236, 20, 20, 0.5); 
+  background-color: rgba(244, 8, 8, 0.4);
+  /* background-color: rgba(236, 20, 20, 0.5);  */
   color: #ffffff;
-  padding: 5px 50px;
+
+  padding: 2cqi 35cqi; 
   font-weight: bold;
   text-transform: uppercase;
-  font-size: 1.2em;
+  font-size: 1.7em;
   z-index: 1;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -214,6 +218,7 @@ width: 20px;
 display: flex;
 flex-direction: column;
 gap: 20px;
+max-width: 380px;
 
 }
 .remove-cart-buttons button{
@@ -229,7 +234,7 @@ gap: 20px;
   .remove-cart-popup-buttons{
 display: flex;
 justify-content: space-between;
-width: 80%;
+width: 95%;
   }
   .popup-close-img{
     display: flex;
@@ -279,18 +284,20 @@ width: 80%;
     display: flex;
     align-items: center;
     gap: 1rem;
-   
+   padding-top: 20px;
     border-bottom: 1px solid #eee;
     padding-bottom: 1rem;
   }
   
   .remove-product-image {
-    width: 150px;
-    height: 225px;
+    width: 100px;
+
     height: auto;
     border-radius: 8px;
   }
-  
+  .remove-product-info h3, .remove-product-info p{
+    text-align: left;
+  }
   .remove-product-info h3 {
     margin: 0;
     color: #555;
@@ -386,13 +393,13 @@ width: 80%;
     }
     .remove-cart-popup-buttons{
       display: flex;
-      justify-content: space-evenly;
+      justify-content: space-between;
       width: 100%;
         }
         .remove-cart-buttons button{
           background-color: #1c1c1c;
           height: 40px;
-          width: 170px;
+          width: 150px;
           border-radius: 10px;
           outline: none;
           border: none;

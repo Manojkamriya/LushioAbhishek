@@ -29,7 +29,7 @@ const BuyNowPage = () => {
   const selectedSize = queryParams.get("selectedSize");
   const name = queryParams.get("name");
   const price = queryParams.get("price");
-  const productId = queryParams.get("id");
+  const productId = queryParams.get("productId");
   const imageURL = queryParams.get("imageURL");
   const getSelectedTotalAmount = () => {
     
@@ -77,7 +77,7 @@ const BuyNowPage = () => {
       fetchUserData();
     }
   }, [user]);
-const selectedProductDetails = {productId, heightCategory,selectedColor,selectedSize, name,price};
+const selectedProductDetails = [{productId, heightCategory,selectedColor,selectedSize, name,price}];
   const orderDetails = {
     uid: user.uid,
     modeOfPayment: selectedPaymentMethod,
@@ -96,7 +96,7 @@ const selectedProductDetails = {productId, heightCategory,selectedColor,selected
     setUseWalletPoints(!useWalletPoints);
   };
   const handlePayment = async () => {
-    console.log("User Details Submitted:", formData);
+   
     const { name, mobile } = formData;
 
     const data = {
@@ -112,15 +112,14 @@ const selectedProductDetails = {productId, heightCategory,selectedColor,selected
     ...data,  // Override or add properties from paymentData
   };
 
-    console.log("Sending Data:", combinedData);
-
+   
     await axios
       .post(
         `${process.env.REACT_APP_API_URL}/payment/`,
         combinedData
       )
       .then((response) => {
-        console.log("API Response:", response.data);
+       
      //   setPaymentData(response.data);
         if (
           response.data
@@ -142,14 +141,16 @@ const selectedProductDetails = {productId, heightCategory,selectedColor,selected
   };
  
   const createOrder = async () => {
+   
     try {
       setIsActive(true);
+   
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/orders/createOrder`,
         orderDetails
       );
-      console.log(orderDetails);
-      console.log("Response:", response.data);
+     
+    
    //   await deleteCartItems(selectedProductIds);
       setIsActive(false);
       setSuccessOpen(true);

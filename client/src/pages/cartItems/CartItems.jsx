@@ -50,7 +50,7 @@ const navigate = useNavigate();
         `${process.env.REACT_APP_API_URL}/cart/${user.uid}`
       );
       setCartProducts(response.data.cartItems);
-      console.log(response.data);
+    
     } catch (err) {
       console.error(err);
     } finally {
@@ -73,7 +73,7 @@ const navigate = useNavigate();
           );
           const data = response.data;
           setWalletPoints(data.totalCredits);
-          //   console.log("Fetched user data:", response.data);
+        
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
@@ -173,7 +173,7 @@ const navigate = useNavigate();
     });
     setSelectedItems(updatedSelections);
     setIsAllSelected(true);
-    //  console.log(cartProducts);
+  
   };
 
   const handleDeselectAll = () => {
@@ -205,8 +205,7 @@ const navigate = useNavigate();
     productID,
     cartItemId
   ) => {
-    console.log("Removing from cart and adding to wishlist");
-
+   
     try {
       setIsActive(true);
       await toggleWishlist(wishlistItemID, productID);
@@ -223,7 +222,7 @@ const navigate = useNavigate();
   };
 
   const handleRemoveFromCart = async (uid, cartItemId) => {
-    console.log(uid, cartItemId);
+   
     setIsActive(true);
     try {
       const response = await axios.delete(
@@ -232,7 +231,7 @@ const navigate = useNavigate();
           data: { uid: uid },
         }
       );
-      console.log("Item removed:", response.data);
+    
       fetchCartCount();
 
       // Update the cartProducts state to remove the deleted item
@@ -264,7 +263,7 @@ const navigate = useNavigate();
   };
 
   const handlePayment = async () => {
-    console.log("User Details Submitted:", formData);
+   
     const { name, mobile } = formData;
 
     const data = {
@@ -280,7 +279,7 @@ const navigate = useNavigate();
     ...data,  // Override or add properties from paymentData
   };
 
-    console.log("Sending Data:", combinedData);
+  
 
     await axios
       .post(
@@ -288,7 +287,7 @@ const navigate = useNavigate();
         combinedData
       )
       .then((response) => {
-        console.log("API Response:", response.data);
+   
         setPaymentData(response.data);
         if (
           response.data
@@ -316,8 +315,7 @@ const navigate = useNavigate();
         `${process.env.REACT_APP_API_URL}/orders/createOrder`,
         orderDetails
       );
-      console.log(orderDetails);
-      console.log("Response:", response.data);
+     
    //   await deleteCartItems(selectedProductIds);
       setIsActive(false);
       setSuccessOpen(true);
@@ -354,8 +352,9 @@ const navigate = useNavigate();
       );
 
       // Handle the response
-      console.log("Response from backend:", response.data);
+    
 navigate("/user/orders");
+fetchCartCount();
       // Return the response if needed
       return response.data;
     } catch (error) {

@@ -9,7 +9,7 @@
 
 .itemContainer-base-item {
     font-family: "Assistant";
-  
+  container-type: inline-size;
    min-width: 500px;
     background: #fff;
     font-size: 14px;
@@ -52,7 +52,7 @@
     position: relative;
     min-height: 148px;
     margin-left: 111px;
-    margin-bottom: 12px
+    margin-bottom: 5px
 }
 
 .itemContainer-base-brand,.itemContainer-base-itemLink,.itemContainer-base-itemName {

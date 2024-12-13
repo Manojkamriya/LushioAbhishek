@@ -29,7 +29,7 @@ function Navbar() {
     if (menuRef.current) {
       menuRef.current.style.left = "0";
       document.body.classList.add("no-scroll");
-      console.log(user);
+     
     }
   };
 
@@ -49,7 +49,7 @@ function Navbar() {
         const response = await axios.get(
           `${process.env.REACT_APP_API_URL}/wishlist/count/${user.uid}`
         );
-        console.log(response.data.count);
+      
         // Validate response format
         setWishlistCount(response.data.count);
       } catch (error) {
@@ -74,7 +74,7 @@ function Navbar() {
           `${process.env.REACT_APP_API_URL}/subcategories`
         ); // Update with the correct URL
         setSubcategories(response.data);
-        console.log(response.data);
+
       } catch (err) {
         console.error(err);
       }

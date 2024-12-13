@@ -53,11 +53,6 @@ function Coupon({ setDiscount, cartAmount,setCouponApplied }) {
 
     const couponCode = inputCoupon || selectedCoupon; // Prioritize input coupon if available
 
-    // Check if all necessary data is present
-    // if (!user?.uid || !couponCode || !cartAmount) {
-    //   setValidationMessage("All fields are required.");
-    //   return;
-    // }
 
     try {
       setIsApplying(true);

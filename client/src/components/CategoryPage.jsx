@@ -20,7 +20,7 @@ function CategoryPage() {
         const response = await axios.post(`${process.env.REACT_APP_API_URL}/filters/getByCategory`, {
           categories: [category, subCategory], // Send categories array based on params
         });
-console.log(response.data);
+
         setProducts(response.data); // Update products state with the response data
       } catch (err) {
        console.log(error);

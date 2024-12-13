@@ -11,7 +11,6 @@ import { FaHeart, FaShoppingCart, FaSpinner } from "react-icons/fa";
 import { UserContext } from "../../components/context/UserContext";
 import { useWishlist } from "../../components/context/WishlistContext";
 import { useCart } from "../../components/context/CartContext";
-import MediaRenderer from "../../components/MediaRenderer";
 import URLMediaRenderer from "../../components/URLMediaRenderer";
 
 // 4. Relative Imports
@@ -87,7 +86,7 @@ const [showError, setShowError] = useState(false);
  }, [id]); // Runs the effect when `id` changes
 
  const targetRef = useRef(null); // Create a reference for the target component
-
+//  const discount =  Math.ceil(((props.price - props.discountedPrice) / props.price) * 100);
  const handleScroll = () => {
    // Scroll to the referenced component
    targetRef.current.scrollIntoView({ behavior: "smooth" });
@@ -120,25 +119,20 @@ useEffect(() => {
       size: selectedSize,
       height: heightCategory,
     };
-
     try {
       // Start both the API call and a 2-second timer
       setIsLoadingCart(true);
-      const response = axios.post(
+     await axios.post(
         `${process.env.REACT_APP_API_URL}/cart/add`,
         cartItem
       );
-      // const minimumDelay = new Promise((resolve) => setTimeout(resolve, 2000));
 
-      // // Wait for both to complete
-      // const [response] = await Promise.all([apiCall, minimumDelay]);
-    
-      await fetchCartCount();
-        setShowNotification(true);
-     
-        setTimeout(() => setShowNotification(false), 3000); // Show notification for 3 seconds
-      
-     setSelectedSize(null);
+        fetchCartCount();
+         setShowNotification(true);
+         setTimeout(() => setShowNotification(false), 3000); // Show notification for 3 seconds
+         setSelectedSize(null);
+       
+   
     } catch (error) {
       console.error("Error adding item to cart:", error);
     } 
@@ -157,14 +151,6 @@ useEffect(() => {
   const reviewTest = [
     { username: "Manoj Kamriya", rating: 4.5, review: "Great product!", dateTime: "15-09-2024" },
     { username: "Pranit Mandloi", rating: 4.7, review: "Excellent quality!", dateTime: "14-09-2024" },
-  ];
-
-  const images = [
-    "/Images/p1_product.png",
-    "/Images/carousel/vedio4.mp4",
-    "/Images/p1_product_i2.png",
-    "/Images/p1_product_i3.png",
-    "/Images/p1_product_i4.png"
   ];
 
   const [isOpen, setIsOpen] = useState(false); // Control the open/close state
@@ -262,9 +248,9 @@ useEffect(() => {
         <h1>{product.displayName}</h1>
      
         <div className="productDisplay-right-prices">
-          <div className="productDisplay-right-price-new">₹{product.price} </div>
+          <div className="productDisplay-right-price-new">₹{product.discountedPrice} </div>
           <div className="productDisplay-right-price-old">₹{product.price} </div>
-          <div className="productDisplay-right-price-discount">20% OFF</div>
+          <div className="productDisplay-right-price-discount">{Math.ceil(((product.price - product.discountedPrice) / product.price) * 100)}% OFF</div>
         </div>
         <p className="tax-statement">Inclusive of all taxes</p>
         <div className="productDisplay-right-size">

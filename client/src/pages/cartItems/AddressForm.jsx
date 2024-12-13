@@ -95,6 +95,7 @@ const AddressForm = ({
             <input
               name="townCity"
               type="text"
+              readOnly
               value={locationInfo.district}
               onChange={handleInputChange}
             />
