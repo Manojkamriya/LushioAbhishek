@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PhoneInput from "react-phone-input-2";
 import './address.css';
 import { useAddress } from '../../components/context/AddressContext';
-
+import AddressForm from '../cartItems/AddressForm';
 export default function Address() {
   const {
     addressData,
@@ -151,7 +151,21 @@ if (numericValue.length !== 12) {
         <h2>My Addresses</h2>
         <hr />
       </div>
-      {(isAddingNew || editingIndex !== null) && (
+      <AddressForm
+        isAddingNew={isAddingNew}
+        editingIndex={editingIndex}
+        newAddress={newAddress}
+        handleInputChange={handleInputChange}
+        handlePhoneInputChange={handlePhoneInputChange}
+        pinCode={pinCode}
+        setPinCode={setPinCode}
+        error={error}
+        locationInfo={locationInfo}
+        handleSave={handleSave}
+        setIsAddingNew={setIsAddingNew}
+        setEditingIndex={setEditingIndex}
+      />
+      {/* {(isAddingNew || editingIndex !== null) && (
         <div className="edit-address">
           <h4>{editingIndex !== null ? "Edit Address" : "Add New Address"}</h4>
           <label htmlFor="name">Name</label>
@@ -228,6 +242,7 @@ if (numericValue.length !== 12) {
               <input
                 name="townCity"
                 type="text"
+                readOnly
                 value={locationInfo.district}
                 onChange={handleInputChange}
               />
@@ -262,7 +277,7 @@ if (numericValue.length !== 12) {
             </button>
           </div>
         </div>
-      )}
+      )} */}
 
       <div className="address-container">
       {!(isAddingNew || editingIndex !== null) && (

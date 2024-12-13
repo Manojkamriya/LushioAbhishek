@@ -19,7 +19,7 @@ export const WishlistProvider = ({ children }) => {
         const wishlistData = response.data;
         setWishlist(wishlistData);
         setWishlistIds(new Set(wishlistData.map((item) => item.productId)));
-        console.log(wishlist);
+      
     } catch (error) {
         console.error("Failed to fetch wishlist", error);
     }
@@ -29,7 +29,7 @@ export const WishlistProvider = ({ children }) => {
  useEffect(() => {
   if (user) {
     fetchWishlist();
-    console.log("Ho there",wishlistIds);
+  
   }
 }, [user]);
 
@@ -55,7 +55,7 @@ export const WishlistProvider = ({ children }) => {
           newSet.delete(productId);
           return newSet;
         });
-        console.log("removed");
+      
         return true;
       } else {
         // Add item
@@ -65,7 +65,7 @@ export const WishlistProvider = ({ children }) => {
         });
         setWishlist((prev) => [...prev, response.data]);
         setWishlistIds((prev) => new Set(prev).add(productId));
-        console.log("added");
+       
         return true;
       }
     } catch (error) {

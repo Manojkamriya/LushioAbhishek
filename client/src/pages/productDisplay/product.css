@@ -372,6 +372,7 @@
   transform: all 0.3s;
   font-size: 13px;
   margin-top: -5px;
+  margin-bottom: 7px;
   font-weight: 400;
   transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 
