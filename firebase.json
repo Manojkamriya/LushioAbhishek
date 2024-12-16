@@ -7,6 +7,17 @@
     {
       "source": "functions",
       "codebase": "default",
+      "runtime": "nodejs22",
+      "deploy": {
+        "generateReferralCode": {
+          "platform": "gcfv2",
+          "region": "us-central1"
+        },
+        "checkDuplicateUser": {
+          "platform": "gcfv2",
+          "region": "us-central1"
+        }
+      },
       "ignore": [
         "node_modules",
         ".git",

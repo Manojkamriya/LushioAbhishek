@@ -1,10 +1,13 @@
 /* eslint-disable max-len */
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
+const {initializeApp} = require("firebase-admin/app");
+// const {getStorage} = require("firebase-admin/storage");
+const {onRequest} = require("firebase-functions/v2/https");
+// const {onSchedule} = require("firebase-functions/v2/scheduler");
 const express = require("express");
 const cors = require("cors");
 
-admin.initializeApp({
+// Initialize Firebase Admin
+initializeApp({
   storageBucket: "lushio-fitness.appspot.com",
 });
 
@@ -32,7 +35,7 @@ const path = process.env.NODE_ENV === "production" ? ".env.production" : ".env.d
 require("dotenv-safe").config({
   path,
   allowEmptyValues: true,
-  example: ".env", // Verifies required variables are defined
+  example: ".env",
 });
 
 // Mini Debugging
@@ -66,9 +69,11 @@ const paymentRoute = require("./routes/payment.js");
 
 // Import cloud functions
 const generateReferralCode = require("./cloudFunctions/generateReferralCode.js");
+const checkDuplicateUser = require("./cloudFunctions/checkDuplicateUser.js");
 
 // Export cloud functions
 exports.generateReferralCode = generateReferralCode;
+exports.checkDuplicateUser = checkDuplicateUser;
 
 // User routes
 app.use("/user", userRoutes);
@@ -109,8 +114,14 @@ app.use("/orders", ordersRoute);
 // Payment routes
 app.use("/payment", paymentRoute);
 
-// Export the API
-exports.api = functions.https.onRequest(app);
+// Main API function
+exports.api = onRequest((req, res) => {
+  // CORS handling
+  res.set("Access-Control-Allow-Origin", "*");
+
+  // Delegate to Express app
+  app(req, res);
+});
 
 // Export the cron job
 
