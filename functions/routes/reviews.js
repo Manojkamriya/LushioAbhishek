@@ -1,10 +1,16 @@
 /* eslint-disable max-len */
 /* eslint-disable new-cap */
 const express = require("express");
-const admin = require("firebase-admin");
-const db = admin.firestore();
-const storage = admin.storage();
+// const admin = require("firebase-admin");
+// const db = admin.firestore();
+// const storage = admin.storage();
+const {getFirestore} = require("firebase-admin/firestore");
+const {getStorage} = require("firebase-admin/storage");
+const db = getFirestore();
+const storage = getStorage();
 const router = express.Router();
+
+const {runTransaction} = require("firebase-admin/firestore");
 
 // Allowed values for quality and fit
 const allowedQualities = ["Poor", "Fair", "Good", "Excellent"];
@@ -16,7 +22,7 @@ router.post("/:productId", async (req, res) => {
     const {productId} = req.params;
     const {userId, starRating, review, quality, fit, media} = req.body;
 
-    const productsRef = admin.firestore().collection("users").doc(userId);
+    const productsRef = db.collection("users").doc(userId);
     const productSnapshot = await productsRef.get();
 
     // Check if the user exists
@@ -51,36 +57,64 @@ router.post("/:productId", async (req, res) => {
       timestamp: new Date(),
     };
 
-    // Add the review to the reviews collection
-    const reviewRef = await db.collection("reviews").add(reviewData);
+    await runTransaction(db, async (transaction) => {
+      const productRef = db.collection("products").doc(productId);
 
-    // Add a reference to the review in the product's reviews subcollection
-    const productRef = db.collection("products").doc(productId);
-    // console.log(productRef);
-    await productRef.collection("reviews").doc(reviewRef.id).set({});
+      // Add the review
+      const reviewRef = db.collection("reviews").doc();
+      transaction.set(reviewRef, reviewData);
 
-    // Check if the product document exists
-    const productDoc = await productRef.get();
-    if (!productDoc.exists) {
-      return res.status(404).json({error: "Product not found"});
-    }
+      // Add reference in product's reviews subcollection
+      transaction.set(productRef.collection("reviews").doc(reviewRef.id), {});
 
-    // Get product data and calculate the new average rating
-    const productData = productDoc.data();
-    const oldRating = productData.rating || 0;
-    const oldReviewCount = productData.reviewCount || 0;
-    const newReviewCount = oldReviewCount + 1;
-    const newRating = ((oldRating * oldReviewCount) + starRating) / newReviewCount;
+      // Update the product's rating and review count
+      const productDoc = await transaction.get(productRef);
+      if (!productDoc.exists) {
+        throw new Error("Product not found");
+      }
 
-    // Update the product's rating and review count
-    await productRef.update({
-      rating: newRating,
-      reviewCount: newReviewCount,
+      const productData = productDoc.data();
+      const oldRating = productData.rating || 0;
+      const oldReviewCount = productData.reviewCount || 0;
+      const newReviewCount = oldReviewCount + 1;
+      const newRating = ((oldRating * oldReviewCount) + starRating) / newReviewCount;
+
+      transaction.update(productRef, {
+        rating: newRating,
+        reviewCount: newReviewCount,
+      });
     });
+
+    // // Add the review to the reviews collection
+    // const reviewRef = await db.collection("reviews").add(reviewData);
+
+    // // Add a reference to the review in the product's reviews subcollection
+    // const productRef = db.collection("products").doc(productId);
+    // // console.log(productRef);
+    // await productRef.collection("reviews").doc(reviewRef.id).set({});
+
+    // // Check if the product document exists
+    // const productDoc = await productRef.get();
+    // if (!productDoc.exists) {
+    //   return res.status(404).json({error: "Product not found"});
+    // }
+
+    // // Get product data and calculate the new average rating
+    // const productData = productDoc.data();
+    // const oldRating = productData.rating || 0;
+    // const oldReviewCount = productData.reviewCount || 0;
+    // const newReviewCount = oldReviewCount + 1;
+    // const newRating = ((oldRating * oldReviewCount) + starRating) / newReviewCount;
+
+    // // Update the product's rating and review count
+    // await productRef.update({
+    //   rating: newRating,
+    //   reviewCount: newReviewCount,
+    // });
 
     return res.status(201).json({
       message: "Review added successfully",
-      reviewId: reviewRef.id,
+      // reviewId: reviewRef.id,
     });
   } catch (error) {
     console.error("Error adding review:", error);
@@ -204,74 +238,130 @@ router.get("/", async (req, res) => {
 router.delete("/delete/:reviewId", async (req, res) => {
   try {
     const {reviewId} = req.params;
-    const reviewRef = db.collection("reviews").doc(reviewId);
+    await runTransaction(db, async (transaction) => {
+      const reviewRef = db.collection("reviews").doc(reviewId);
+      const reviewDoc = await transaction.get(reviewRef);
 
-    // Check if the review exists
-    const reviewDoc = await reviewRef.get();
-    if (!reviewDoc.exists) {
-      return res.status(404).json({error: "Review not found"});
-    }
-
-    const reviewData = reviewDoc.data();
-    const {productId, rating, media} = reviewData;
-
-    // Helper function to delete image from Firebase Storage
-    const deleteImage = async (imageUrl) => {
-      if (imageUrl) {
-        try {
-          const path = imageUrl.split("/o/")[1].split("?")[0];
-          const decodedPath = decodeURIComponent(path);
-          const fileRef = storage.bucket().file(decodedPath);
-          await fileRef.delete();
-        } catch (error) {
-          if (error.code === 404 || error.message.includes("404")) {
-            console.warn(`Image not found (404), skipping deletion: ${imageUrl}`);
-            // Do not re-throw; continue with review deletion
-          } else {
-            console.error(`Failed to delete image: ${imageUrl}`, error);
-            throw error; // Re-throw if it’s any other error
-          }
-        }
+      if (!reviewDoc.exists) {
+        throw new Error("Review not found");
       }
-    };
 
-    // Delete media files from storage if they exist
-    if (media && media.length > 0) {
-      const deletePromises = media.map((mediaUrl) =>
-        deleteImage(mediaUrl).catch((error) => {
-          console.warn(`Failed to delete media file: ${mediaUrl}`, error);
-        }),
-      );
+      const reviewData = reviewDoc.data();
+      const {productId, rating, media} = reviewData;
 
-      // Wait for all media files to be deleted
-      await Promise.all(deletePromises);
-    }
+      // Delete associated media files
+      if (media && media.length > 0) {
+        await Promise.all(media.map(async (mediaUrl) => {
+          try {
+            const path = mediaUrl.split("/o/")[1].split("?")[0];
+            const decodedPath = decodeURIComponent(path);
+            const fileRef = storage.bucket().file(decodedPath);
+            await fileRef.delete();
+          } catch (error) {
+            if (error.code === 404 || error.message.includes("404")) {
+              console.warn(`Image not found (404), skipping deletion: ${mediaUrl}`);
+              // Do not re-throw; continue with review deletion
+            } else {
+              console.error(`Failed to delete image: ${mediaUrl}`, error);
+              throw error; // Re-throw if it’s any other error
+            }
+          }
+        }));
+      }
 
-    // Delete the review
-    await reviewRef.delete();
+      const productRef = db.collection("products").doc(productId);
 
-    // Remove the reference from the product's reviews subcollection
-    const productRef = db.collection("products").doc(productId);
-    const productDoc = await productRef.get();
-    if (productDoc.exists) {
-      await productRef.collection("reviews").doc(reviewId).delete();
+      // Update product's rating and review count
+      const productDoc = await transaction.get(productRef);
+      if (productDoc.exists) {
+        const productData = productDoc.data();
+        const oldRating = productData.rating || 0;
+        const oldReviewCount = productData.reviewCount || 0;
+        const newReviewCount = oldReviewCount - 1;
+        const newRating = newReviewCount > 0 ?
+          ((oldRating * oldReviewCount) - rating) / newReviewCount :
+          0;
 
-      // Update the product's rating and review count
-      const productData = productDoc.data();
-      const oldRating = productData.rating || 0;
-      const oldReviewCount = productData.reviewCount || 0;
-      const newReviewCount = oldReviewCount - 1;
-      const newRating = newReviewCount > 0 ?
-        ((oldRating * oldReviewCount) - rating) / newReviewCount :
-        0;
+        transaction.update(productRef, {
+          rating: newRating,
+          reviewCount: newReviewCount,
+        });
 
-      await productRef.update({
-        rating: newRating,
-        reviewCount: newReviewCount,
-      });
-    } else {
-      console.warn(`Product with ID ${productId} does not exist; skipping subcollection and rating update.`);
-    }
+        // Delete reference from product's reviews subcollection
+        transaction.delete(productRef.collection("reviews").doc(reviewId));
+      }
+
+      // Delete the review document
+      transaction.delete(reviewRef);
+    });
+    // const reviewRef = db.collection("reviews").doc(reviewId);
+
+    // // Check if the review exists
+    // const reviewDoc = await reviewRef.get();
+    // if (!reviewDoc.exists) {
+    //   return res.status(404).json({error: "Review not found"});
+    // }
+
+    // const reviewData = reviewDoc.data();
+    // const {productId, rating, media} = reviewData;
+
+    // // Helper function to delete image from Firebase Storage
+    // const deleteImage = async (imageUrl) => {
+    //   if (imageUrl) {
+    //     try {
+    //       const path = imageUrl.split("/o/")[1].split("?")[0];
+    //       const decodedPath = decodeURIComponent(path);
+    //       const fileRef = storage.bucket().file(decodedPath);
+    //       await fileRef.delete();
+    //     } catch (error) {
+    //       if (error.code === 404 || error.message.includes("404")) {
+    //         console.warn(`Image not found (404), skipping deletion: ${imageUrl}`);
+    //         // Do not re-throw; continue with review deletion
+    //       } else {
+    //         console.error(`Failed to delete image: ${imageUrl}`, error);
+    //         throw error; // Re-throw if it’s any other error
+    //       }
+    //     }
+    //   }
+    // };
+
+    // // Delete media files from storage if they exist
+    // if (media && media.length > 0) {
+    //   const deletePromises = media.map((mediaUrl) =>
+    //     deleteImage(mediaUrl).catch((error) => {
+    //       console.warn(`Failed to delete media file: ${mediaUrl}`, error);
+    //     }),
+    //   );
+
+    //   // Wait for all media files to be deleted
+    //   await Promise.all(deletePromises);
+    // }
+
+    // // Delete the review
+    // await reviewRef.delete();
+
+    // // Remove the reference from the product's reviews subcollection
+    // const productRef = db.collection("products").doc(productId);
+    // const productDoc = await productRef.get();
+    // if (productDoc.exists) {
+    //   await productRef.collection("reviews").doc(reviewId).delete();
+
+    //   // Update the product's rating and review count
+    //   const productData = productDoc.data();
+    //   const oldRating = productData.rating || 0;
+    //   const oldReviewCount = productData.reviewCount || 0;
+    //   const newReviewCount = oldReviewCount - 1;
+    //   const newRating = newReviewCount > 0 ?
+    //     ((oldRating * oldReviewCount) - rating) / newReviewCount :
+    //     0;
+
+    //   await productRef.update({
+    //     rating: newRating,
+    //     reviewCount: newReviewCount,
+    //   });
+    // } else {
+    //   console.warn(`Product with ID ${productId} does not exist; skipping subcollection and rating update.`);
+    // }
 
     return res.status(200).json({message: "Review and associated media successfully deleted"});
   } catch (error) {

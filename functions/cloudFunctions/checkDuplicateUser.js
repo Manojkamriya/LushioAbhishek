@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-const {onUserCreate} = require("firebase-functions/v2/auth");
+const functions = require("firebase-functions/v2");
 const {getFirestore, FieldValue} = require("firebase-admin/firestore");
 const {getAuth} = require("firebase-admin/auth");
 const logger = require("firebase-functions/logger");
@@ -7,7 +7,7 @@ const logger = require("firebase-functions/logger");
 const db = getFirestore();
 const auth = getAuth();
 
-const checkDuplicateUser = onUserCreate(async (user) => {
+const checkDuplicateUser = functions.auth.user().onCreate(async (user) => {
   const {email, phoneNumber, uid} = user;
 
   try {

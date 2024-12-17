@@ -1,11 +1,12 @@
 /* eslint-disable require-jsdoc */
 /* eslint-disable max-len */
 const express = require("express");
-const admin = require("firebase-admin");
 const moment = require("moment");
 
-const db = admin.firestore();
-
+// const admin = require("firebase-admin");
+// const db = admin.firestore();
+const {getFirestore} = require("firebase-admin/firestore");
+const db = getFirestore();
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
@@ -30,7 +31,7 @@ router.get("/name/:uid", async (req, res) => {
   try {
     const uid = req.params.uid;
     const userDoc = await db.collection("users").doc(uid).get();
-    // console.log(`username : ${uid}`);
+
     if (!userDoc.exists) {
       return res.status(404).send("User not found");
     }

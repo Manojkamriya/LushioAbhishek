@@ -4,8 +4,6 @@
 /* eslint-disable max-len */
 const express = require("express");
 const router = express.Router();
-const admin = require("firebase-admin");
-const db = admin.firestore();
 const axios = require("axios");
 const crypto = require("crypto");
 
@@ -94,14 +92,12 @@ router.post("/", async (req, res) => {
       res.json(response.data);
     }).catch((error) => {
       console.log("Error in / route inner catch", error);
-
       res.status(500).json({error: error.message});
     });
   } catch (error) {
     console.log("Error in / route outer catch", error);
   }
 });
-
 
 router.post("/status", async (req, res) => {
   try {

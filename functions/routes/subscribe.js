@@ -1,8 +1,10 @@
 /* eslint-disable max-len */
 /* eslint-disable new-cap */
 const express = require("express");
-const admin = require("firebase-admin");
-const db = admin.firestore();
+// const admin = require("firebase-admin");
+// const db = admin.firestore();
+const {getFirestore} = require("firebase-admin/firestore");
+const db = getFirestore();
 const router = express.Router();
 
 // Email regex pattern for basic validation

@@ -1,8 +1,10 @@
 /* eslint-disable new-cap */
 /* eslint-disable max-len */
 const express = require("express");
-const admin = require("firebase-admin");
-const db = admin.firestore();
+// const admin = require("firebase-admin");
+// const db = admin.firestore();
+const {getFirestore} = require("firebase-admin/firestore");
+const db = getFirestore();
 const router = express.Router();
 
 // Route to get the total coins and cash for a user

@@ -2,9 +2,9 @@
 /* eslint-disable new-cap */
 /* eslint-disable max-len */
 const express = require("express");
-const admin = require("firebase-admin");
 const router = express.Router();
-const db = admin.firestore();
+const {getFirestore} = require("firebase-admin/firestore");
+const db = getFirestore();
 
 // NOT NEEDED NOW
 // Helper function to combine results and remove duplicates
