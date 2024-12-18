@@ -57,7 +57,8 @@ const getQtyRoute = require("./routes/getQty.js");
 const couponRoute = require("./routes/coupons.js");
 const subscribeRoute = require("./routes/subscribe.js");
 const getCategoriesRoute = require("./routes/categories.js");
-const ordersRoute = require("./routes/orders.js");
+const ordersRoute = require("./routes/orders/orders.js");
+const pickupRoute = require("./routes/orders/pickups.js");
 const paymentRoute = require("./routes/payment.js");
 
 // Use routes
@@ -73,6 +74,7 @@ app.use("/coupon", couponRoute);
 app.use("/subscribe", subscribeRoute);
 app.use("/subCategories", getCategoriesRoute);
 app.use("/orders", ordersRoute);
+app.use("/pickup", pickupRoute);
 app.use("/payment", paymentRoute);
 
 // Export API
@@ -87,7 +89,6 @@ exports.api = onRequest(
 
 // Import and export cloud functions
 exports.generateReferralCode = require("./cloudFunctions/generateReferralCode.js");
-// exports.checkDuplicateUser = require("./cloudFunctions/checkDuplicateUser.js");
 
 // Import and export cron jobs
 exports.assignBirthdayCoins = require("./cronjobs/birthdayAnniversaryCoins.js").assignBirthdayCoins;

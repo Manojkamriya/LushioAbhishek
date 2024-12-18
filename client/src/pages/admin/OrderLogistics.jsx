@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../../firebaseConfig'; // Adjust the import path to your Firebase config
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import './OrderLogistics.css';
+import Pickups from './Pickups';
 
 const OrderLogistics = () => {
+  const [showPickups, setShowPickups] = useState(false);
   const [formData, setFormData] = useState({
     length: '',
     breadth: '',
@@ -112,8 +114,17 @@ const OrderLogistics = () => {
     }
   };
 
+  const togglePickups = () => {
+    setShowPickups(!showPickups);
+  };
+
   return (
     <div className="order-logistics-container">
+      <div className="header-actions">
+        <button type="button" onClick={togglePickups} className="pickup-button">
+          Manage Pickups
+        </button>
+      </div>
       <form onSubmit={handleSave} className="order-logistics-form">
         <h2>Order Logistics Controls</h2>
         
@@ -231,6 +242,8 @@ const OrderLogistics = () => {
           Save Controls
         </button>
       </form>
+
+      {showPickups && <Pickups onClose={() => setShowPickups(false)} />}
     </div>
   );
 };
