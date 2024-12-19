@@ -224,3 +224,21 @@
 .alert-close-button:hover {
   opacity: 0.7;
 }
+
+.pickup-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pickup-radio {
+  margin: 0;
+  cursor: pointer;
+}
+
+/* Make radio button more visible */
+.pickup-radio {
+  width: 18px;
+  height: 18px;
+  accent-color: #4CAF50;
+}

@@ -37,7 +37,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
   const {
     uid, modeOfPayment, orderedProducts, address,
     totalAmount, payableAmount, discount, lushioCurrencyUsed, couponCode,
-    ...paymentData
+    paymentData,
   } = req.body;
 
   // Start a Firestore batch
@@ -136,8 +136,8 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       discount,
       lushioCurrencyUsed,
       modeOfPayment,
-      status: "pending",
-      paymentData, // Save the entire payment data object
+      status: "Pending",
+      paymentData: paymentData?.data || null,
     };
 
     // Fetch dimensions from the admin document
@@ -146,22 +146,26 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       throw new Error("Admin document not found");
     }
 
-    const {length, breadth, height, weight} = adminDoc.data();
+    const {length, breadth, height, weight, companyName, resellerName, pickupLocation} = adminDoc.data();
     if (!length || !breadth || !height || !weight) {
-      throw new Error("Incomplete dimension or weight data in admin document");
+      throw new Error("Incomplete dimension or weight data in admin document.");
+    }
+    if (!companyName || ! resellerName || !pickupLocation) {
+      throw new Error("Missing company or pickup information.");
     }
 
     // Prepare Shiprocket order data
     const shiprocketOrderData = {
       order_id: orderRef.id,
       order_date: dateOfOrder.toISOString().split("T")[0], // Format: YYYY-MM-DD
-      pickup_location: "Home",
+      pickup_location: pickupLocation,
 
       shipping_is_billing: true,
-      company_name: process.env.COMPANY_NAME,
-      reseller_name: process.env.RESELLER_NAME,
+      company_name: companyName,
+      reseller_name: resellerName,
 
       billing_customer_name: address.name,
+      billing_last_name: address.name?.split(" ").pop() || "",
       billing_address: `${address.flatDetails}, ${address.areaDetails}`, // Concatenated flatDetails and areaDetails
       billing_address_2: address.landmark || "",
       billing_city: address.townCity,
@@ -187,6 +191,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       weight,
     };
 
+    // console.log(shiprocketOrderData);
     let token;
     try {
       token = await generateToken();
@@ -200,16 +205,14 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
             },
           },
       );
-
-      if (!shiprocketResponse.data.shipment_id || !shiprocketResponse.data.tracking_id) {
+      // console.log(shiprocketResponse.data);
+      if (!shiprocketResponse.data.shipment_id || !shiprocketResponse.data.order_id) {
         throw new Error("Invalid response from Shiprocket API");
       }
-      const {shipment_id, tracking_id} = shiprocketResponse.data;
 
       // Add Shiprocket details to the order
       orderData.shiprocket = {
-        shipment_id,
-        tracking_id,
+        ...shiprocketResponse.data,
       };
       orderData.status = "created";
 

@@ -54,7 +54,7 @@ router.post("/add", async (req, res) => {
     await destroyToken(token);
 
     // Return the response data
-    res.status(200).json(response.data);
+    res.status(201).json(response.data);
   } catch (error) {
     console.error("Error adding pickup location:", error);
     res.status(error.response?.status || 500).json({

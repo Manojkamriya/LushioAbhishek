@@ -1,8 +1,11 @@
-// Pickups.jsx
 import React, { useState, useEffect } from 'react';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../../firebaseConfig'; // Adjust the import path as needed
+import axios from 'axios';
 import './Pickups.css';
 
 const API = process.env.REACT_APP_API_URL;
+
 const CustomAlert = ({ message, type, onClose }) => (
   <div className={`custom-alert ${type}`}>
     <span>{message}</span>
@@ -34,6 +37,7 @@ const Pickups = ({ onClose }) => {
   const [pickupLocations, setPickupLocations] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [companyName, setCompanyName] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState('');
   const [formData, setFormData] = useState({
     pickup_location: '',
     name: '',
@@ -51,14 +55,31 @@ const Pickups = ({ onClose }) => {
 
   useEffect(() => {
     fetchPickupLocations();
+    fetchSelectedLocation();
   }, []);
+
+  const fetchSelectedLocation = async () => {
+    try {
+      const adminDocRef = doc(db, 'controls', 'admin');
+      const adminDoc = await getDoc(adminDocRef);
+      
+      if (adminDoc.exists()) {
+        const data = adminDoc.data();
+        if (data.pickupLocation) {
+          setSelectedLocation(data.pickupLocation);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching selected location:', error);
+      setError('Failed to fetch selected pickup location');
+    }
+  };
 
   const fetchPickupLocations = async () => {
     try {
-      // Replace with your actual API endpoint
-      const response = await fetch(`${API}/pickup/pickup-locations`);
-      const responseData = await response.json();
-      
+      const response = await axios.get(`${API}/pickup/pickup-locations`);
+      const responseData = response.data;
+
       if (responseData.data) {
         setPickupLocations(responseData.data.shipping_address);
         setCompanyName(responseData.data.company_name);
@@ -68,9 +89,28 @@ const Pickups = ({ onClose }) => {
     }
   };
 
+  const handleLocationSelect = async (location) => {
+    try {
+      const adminDocRef = doc(db, 'controls', 'admin');
+      await updateDoc(adminDocRef, {
+        pickupLocation: location.pickup_location
+      });
+      
+      setSelectedLocation(location.pickup_location);
+      setSuccess('Pickup location updated successfully!');
+      
+      setTimeout(() => {
+        setSuccess('');
+      }, 3000);
+    } catch (error) {
+      console.error('Error updating pickup location:', error);
+      setError('Failed to update pickup location');
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value
     }));
@@ -79,16 +119,13 @@ const Pickups = ({ onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Replace with your actual API endpoint
-      const response = await fetch(`${API}/pickup/add`, {
-        method: 'POST',
+      const response = await axios.post(`${API}/pickup/add`, formData, {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
       });
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         setSuccess('Pickup location added successfully!');
         setFormData({
           pickup_location: '',
@@ -104,7 +141,7 @@ const Pickups = ({ onClose }) => {
         });
         fetchPickupLocations();
         setShowAddForm(false);
-        
+
         setTimeout(() => {
           setSuccess('');
         }, 3000);
@@ -157,13 +194,22 @@ const Pickups = ({ onClose }) => {
                 {pickupLocations.map((location) => (
                   <div key={location.id} className="pickup-location-card">
                     <div className="pickup-header">
-                      <h3>{location.pickup_location}</h3>
+                      <div className="pickup-header-left">
+                        <input
+                          type="radio"
+                          name="pickupLocation"
+                          checked={selectedLocation === location.pickup_location}
+                          onChange={() => handleLocationSelect(location)}
+                          className="pickup-radio"
+                        />
+                        <h3>{location.pickup_location}</h3>
+                      </div>
                       <StatusBadge status={location.status} />
                     </div>
                     {location.is_primary_location === 1 && (
                       <div className="primary-badge">Primary Location</div>
                     )}
-                    <p><strong>Contact:</strong> {location.name}</p>
+                    <p><strong>Name:</strong> {location.name}</p>
                     <p><strong>Email:</strong> {location.email}</p>
                     <p><strong>Phone:</strong> {location.phone}</p>
                     <div className="address-section">
@@ -184,107 +230,19 @@ const Pickups = ({ onClose }) => {
           ) : (
             <form onSubmit={handleSubmit} className="pickup-form">
               <div className="form-grid">
-                <div className="form-group">
-                  <label>Pickup Location Name*</label>
-                  <input
-                    type="text"
-                    name="pickup_location"
-                    value={formData.pickup_location}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Contact Name*</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Email*</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Phone*</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Address*</label>
-                  <input
-                    type="text"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Address Line 2</label>
-                  <input
-                    type="text"
-                    name="address_2"
-                    value={formData.address_2}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>City*</label>
-                  <input
-                    type="text"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>State*</label>
-                  <input
-                    type="text"
-                    name="state"
-                    value={formData.state}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Country*</label>
-                  <input
-                    type="text"
-                    name="country"
-                    value={formData.country}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>PIN Code*</label>
-                  <input
-                    type="text"
-                    name="pin_code"
-                    value={formData.pin_code}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
+                {Object.keys(formData).map((field) => (
+                  <div key={field} className="form-group">
+                    <label>{field.replace('_', ' ').toUpperCase()}</label>
+                    <input
+                      type="text"
+                      name={field}
+                      value={formData[field]}
+                      onChange={handleInputChange}
+                      required={['pickup_location', 'name', 'email', 'phone', 'address', 'city', 'state', 'country', 'pin_code'].includes(field)}
+                    />
+                  </div>
+                ))}
               </div>
-              
               <div className="form-actions">
                 <button type="button" onClick={() => setShowAddForm(false)}>
                   Cancel
