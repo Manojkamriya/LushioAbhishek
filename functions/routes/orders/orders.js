@@ -309,7 +309,7 @@ router.get("/:orderId", async (req, res) => {
 // Get all orders for a user
 router.get("/", async (req, res) => {
   try {
-    const {uid, limit = 5, lastOrderId} = req.body;
+    const {uid, limit = 5, lastOrderId} = req.query;
 
     // Validate if `uid` is provided
     if (!uid) {
