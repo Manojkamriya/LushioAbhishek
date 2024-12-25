@@ -1,13 +1,10 @@
+/* eslint-disable new-cap */
 /* eslint-disable require-jsdoc */
 /* eslint-disable max-len */
 const express = require("express");
 const moment = require("moment");
-
-// const admin = require("firebase-admin");
-// const db = admin.firestore();
 const {getFirestore} = require("firebase-admin/firestore");
 const db = getFirestore();
-// eslint-disable-next-line new-cap
 const router = express.Router();
 
 // NOT NEEDED NOW

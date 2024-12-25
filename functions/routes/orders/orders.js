@@ -5,9 +5,10 @@
 const express = require("express");
 const axios = require("axios");
 const router = express.Router();
-const {getFirestore} = require("firebase-admin/firestore");
+const {getFirestore, FieldValue} = require("firebase-admin/firestore");
 const db = getFirestore();
 const {generateToken, destroyToken} = require("./shipRocketAuth");
+// const logger = require("firebase-functions/logger");
 
 // Validation middleware
 const validateOrderRequest = (req, res, next) => {
@@ -122,7 +123,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
     const userDoc = await db.collection("users").doc(uid).get();
     const email = userDoc.exists ? userDoc.data().email : null;
 
-    const dateOfOrder = new Date();
+    const dateOfOrder = FieldValue.serverTimestamp();
 
     // Prepare order data
     const orderData = {
@@ -191,7 +192,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       weight,
     };
 
-    // console.log(shiprocketOrderData);
+    // logger.log(shiprocketOrderData);
     let token;
     try {
       token = await generateToken();
@@ -205,7 +206,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
             },
           },
       );
-      // console.log(shiprocketResponse.data);
+      // logger.log(shiprocketResponse.data);
       if (!shiprocketResponse.data.shipment_id || !shiprocketResponse.data.order_id) {
         throw new Error("Invalid response from Shiprocket API");
       }

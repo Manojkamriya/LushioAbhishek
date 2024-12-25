@@ -2,9 +2,6 @@
 /* eslint-disable max-len */
 const express = require("express");
 const router = express.Router();
-// const admin = require("firebase-admin");
-// const db = admin.firestore();
-
 const {getFirestore} = require("firebase-admin/firestore");
 const db = getFirestore();
 

@@ -6,6 +6,7 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const crypto = require("crypto");
+const logger = require("firebase-functions/logger");
 
 // ENVs
 const PHONEPE_SALT_KEY = process.env.PHONEPE_SALT_KEY;
@@ -58,8 +59,8 @@ router.post("/", async (req, res) => {
         type: "PAY_PAGE",
       },
     };
-    console.log("backend order", globalOrderDetails);
-    console.log("data", data);
+    logger.log("backend order", globalOrderDetails);
+    logger.log("data", data);
     const KeyIndex = 1;
 
     // Base64 encode the payload
@@ -91,11 +92,11 @@ router.post("/", async (req, res) => {
     axios.request(option).then((response) => {
       res.json(response.data);
     }).catch((error) => {
-      console.log("Error in / route inner catch", error);
+      logger.log("Error in / route inner catch", error);
       res.status(500).json({error: error.message});
     });
   } catch (error) {
-    console.log("Error in / route outer catch", error);
+    logger.log("Error in / route outer catch", error);
   }
 });
 
@@ -130,7 +131,7 @@ router.post("/status", async (req, res) => {
         data: response.data,
       };
 
-      console.log("Payment Details:", paymentDetails);
+      logger.log("Payment Details:", paymentDetails);
 
       try {
         // Combine orderDetails with paymentDetails under the key 'paymentData'
@@ -139,17 +140,17 @@ router.post("/status", async (req, res) => {
           paymentData: paymentDetails, // Nest paymentDetails under the key 'paymentData'
         };
 
-        console.log("Combined Order and Payment Details:", combinedDetails);
+        logger.log("Combined Order and Payment Details:", combinedDetails);
         // Await order creation API call
         const orderResponse = await axios.post(
             `${API_URL}/orders/createOrder`,
             combinedDetails,
         );
-        console.log("Order Creation Response:", orderResponse.data);
+        logger.log("Order Creation Response:", orderResponse.data);
         const url = `${FRONTEND_URL}/paymentStatus`;
         return res.redirect(url);
       } catch (error) {
-        console.error("Error while creating order:", error);
+        logger.error("Error while creating order:", error);
         const url = `${FRONTEND_URL}/cart`;
         return res.redirect(url);
       }
@@ -158,7 +159,7 @@ router.post("/status", async (req, res) => {
       return res.redirect(url);
     }
   } catch (error) {
-    console.error("Error in /status route:", error);
+    logger.error("Error in /status route:", error);
     res.status(500).json({error: "Internal Server Error"});
   }
 });

@@ -1,19 +1,17 @@
 /* eslint-disable new-cap */
 /* eslint-disable max-len */
 const express = require("express");
-// const admin = require("firebase-admin");
-// const db = admin.firestore();
-// const storage = admin.storage();
 const {getFirestore} = require("firebase-admin/firestore");
 const {getStorage} = require("firebase-admin/storage");
 const db = getFirestore();
 const storage = getStorage();
 const router = express.Router();
+const logger = require("firebase-functions/logger");
 
 // Add a new product
 router.post("/addProduct", async (req, res) => {
   try {
-    console.log("Received product data:", req.body);
+    logger.log("Received product data:", req.body);
 
     const {
       name,

@@ -1,11 +1,10 @@
 /* eslint-disable new-cap */
 /* eslint-disable max-len */
 const express = require("express");
-// const admin = require("firebase-admin");
-// const db = admin.firestore();
 const {getFirestore} = require("firebase-admin/firestore");
 const db = getFirestore();
 const router = express.Router();
+const logger = require("firebase-functions/logger");
 
 // Route to get the total coins and cash for a user
 router.get("/:id", async (req, res) => {
@@ -40,7 +39,7 @@ router.get("/:id", async (req, res) => {
       totalCredits,
     });
   } catch (error) {
-    console.error("Error fetching user credits: ", error);
+    logger.error("Error fetching user credits: ", error);
     res.status(500).json({error: "Internal server error"});
   }
 });
@@ -69,15 +68,15 @@ router.post("/send", async (req, res) => {
 
   try {
     // Get all users
-    console.log("Fetching users from database...");
+    logger.log("Fetching users from database...");
     const usersSnapshot = await db.collection("users").get();
 
     if (usersSnapshot.empty) {
-      console.log("No users found in database");
+      logger.log("No users found in database");
       return res.status(404).json({error: "No users found in database"});
     }
 
-    console.log(`Found ${usersSnapshot.size} users`);
+    logger.log(`Found ${usersSnapshot.size} users`);
 
     const batch = db.batch();
     const expirationDate = new Date();
@@ -94,16 +93,16 @@ router.post("/send", async (req, res) => {
       });
     });
 
-    console.log("Committing batch write...");
+    logger.log("Committing batch write...");
     await batch.commit();
-    console.log("Batch write successful");
+    logger.log("Batch write successful");
 
     res.status(200).json({
       message: `Successfully sent ${numericAmount} coins to ${usersSnapshot.size} users`,
       usersAffected: usersSnapshot.size,
     });
   } catch (error) {
-    console.error("Detailed error in /send route:", error);
+    logger.error("Detailed error in /send route:", error);
     res.status(500).json({
       error: "Internal server error",
       details: error.message,
