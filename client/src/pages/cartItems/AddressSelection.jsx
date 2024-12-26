@@ -1,10 +1,10 @@
-
-import React, { useState,useEffect} from 'react';
-import PhoneInput from "react-phone-input-2";
+import React, { useState,useEffect,useContext} from 'react';
+import axios from 'axios';
 import { useAddress } from '../../components/context/AddressContext';
 import "./addressSelection.css"
 import AddressForm from './AddressForm';
-const AddressSelection = ({selectedAddres, setSelectedAddres})=> {
+import { UserContext } from "../../components/context/UserContext";
+const AddressSelection = ({handleClose})=> {
   const {
     addressData,
     isChangingDefault,
@@ -18,6 +18,7 @@ const AddressSelection = ({selectedAddres, setSelectedAddres})=> {
   } = useAddress();
 
   const [editingIndex, setEditingIndex] = useState(null);
+  const {user} = useContext(UserContext);
   //const [selectedAddress, setSelectedAddress] = useState(null); // New state
   const [newAddress, setNewAddress] = useState({
     name: '',
@@ -32,7 +33,7 @@ const AddressSelection = ({selectedAddres, setSelectedAddres})=> {
     isDefault: false,
   });
   const [isAddingNew, setIsAddingNew] = useState(false);
-
+const [isUpdating,setIsUpdating] = useState(false);
   const handleEdit = (index) => {
     setEditingIndex(index);
     setIsAddingNew(false);
@@ -51,9 +52,30 @@ const AddressSelection = ({selectedAddres, setSelectedAddres})=> {
     setSelectedAddress(defaultAddress);
   }
 }, [addressData]);
-const handleAddressSelection = (address) => {
-  setSelectedAddress(address); // Store the selected address object
+const handleSelectAddress = async () => {
+  try {
+    setIsUpdating(true);
+
+    // Create a shallow copy of selectedAddress and modify contactNo
+    const updatedAddress = {
+      ...selectedAddress,
+      contactNo: selectedAddress.contactNo.substring(2),
+    };
+
+    const res = await axios.post(
+      `${process.env.REACT_APP_API_URL}/cart/address/${user.uid}`,
+      updatedAddress
+    );
+
+    handleClose();
+    console.log(res);
+  } catch (err) {
+    console.error("Error while selecting address:", err);
+  } finally {
+    setIsUpdating(false);
+  }
 };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewAddress((prevAddress) => ({ ...prevAddress, [name]: value }));
@@ -313,7 +335,7 @@ console.log(data);
                           name="selectedAddress"
                           value={info.id}
                           checked={selectedAddress?.id === info.id}
-                          onChange={() => handleAddressSelection(info)} // Pass the entire address object
+                          onChange={() => setSelectedAddress(info)} // Pass the entire address object
                          // onChange={() => setSelectedAddress(info)}
                         />
                         <div className="address">
@@ -332,7 +354,7 @@ console.log(data);
                         </div>
                       </label>
                     ))}
-                    <button className="address-done-button">Done</button>
+                    <button className="address-done-button" onClick={()=>handleSelectAddress()}>Done</button>
                   </>
                 )
               )}

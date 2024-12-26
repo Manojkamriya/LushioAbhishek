@@ -64,15 +64,15 @@ const navigate= useNavigate();
     size: "M", // Replace with actual size
   };
 
-  const fetchQuantity = async () => {
-    try {
-      const response = await axios.post("http://localhost:5000/getQty", requestData);
-      setQuantity(response.data.quantity);
-    } catch (err) {
-      console.error("Error fetching quantity:", err);
+  // const fetchQuantity = async () => {
+  //   try {
+  //     const response = await axios.post("http://localhost:5000/getQty", requestData);
+  //     setQuantity(response.data.quantity);
+  //   } catch (err) {
+  //     console.error("Error fetching quantity:", err);
     
-    }
-  };
+  //   }
+  // };
   const addToCart = async (id) => {
     setIsLoading(true);
 
@@ -96,7 +96,7 @@ const navigate= useNavigate();
       // // Wait for both to complete
       // const [response] = await Promise.all([apiCall, minimumDelay]);
 
-      if (response.status === 201) {
+      if (response.status === 201 || response.status===200) {
        fetchCartCount();
         setShowNotification(true);
         setTimeout(() => setShowNotification(false), 3000); // Show notification for 3 seconds

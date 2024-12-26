@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 
 const getMediaType = (src) => {
  
-  const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'tiff'];
+  const imageExtensions = ['jpg', 'jpeg','avif', 'png', 'gif', 'webp', 'svg', 'bmp', 'tiff'];
   const videoExtensions = ['mp4', 'webm', 'ogg', 'avi', 'mov', 'mkv', 'flv', 'wmv'];
   const extension = src.split('?')[0].split('.').pop().toLowerCase();
   if (imageExtensions.includes(extension)) return 'image';

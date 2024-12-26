@@ -5,30 +5,50 @@
     gap: 1rem;
     padding: 1rem;
   }
-  
+ 
   .review-card {
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 1rem;
-    /* margin-inline: auto; */
+
     width: 90%;
     max-width: 250px;
     background-color: #f9f9f9;
-    /* margin-inline: auto; */
+    
   }
-  
+  @media (max-width: 650px) {
+    .reviews-list {
+display: grid;
+grid-template-columns: repeat(2,1fr);
+    }
+    .review-card{
+      width: 85%;
+    }
+  }
+ 
+  .review-media-gallery img, .review-media-gallery video{
+    width: 100%;
+    height: auto;
+  }
   .review-header {
     display: flex;
+    flex-direction: column;
+    
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
   }
   
   .review-header h3 {
     margin: 0;
-    font-size: 1rem;
+    font-size: 1.3rem;
     color: #333;
   }
-  
+  .review-details{
+    margin-block: 10px;
+  }
+  .review-details p{
+width: 100%;
+  }
   .rating {
     display: flex;
     gap: 0.2rem;

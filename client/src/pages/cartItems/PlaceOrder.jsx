@@ -45,7 +45,7 @@ const PlaceOrder = ()=> {
               className="modal-close "
               onClick={handleClose}
             />
-<AddressSelection/>
+<AddressSelection handleClose={handleClose}/>
 
           </Box>
         </Fade>

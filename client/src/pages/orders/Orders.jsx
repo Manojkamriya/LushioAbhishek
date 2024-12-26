@@ -68,17 +68,20 @@ export default function Orders() {
           price: 2500,
           size: "XL",
           color: "green",
-          imgUrl: "https://firebasestorage.googleapis.com/v0/b/lushio-fitness.appspot.com/o/products%2F1730182575086_039AF922-2EBA-4A97-BAE3-D3B4D29CE101.jpg?alt=media&token=73b7ac0e-8760-4afe-918c-be7220f7841c",
-        }
+          imgUrl: "/Images/product_214.webp",
+        },
       ],
       shippingAddress: "19, JP Nagar, Bengaluru, Karnataka, 560078",
       deliveryDate: "26 Jul, 2024",
-      status: "On the Way",
+      status: "On-the-Way",
     },
   ];
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [pagination, setPagination] = useState({ hasMore: true, lastOrderId: null });
+  const [pagination, setPagination] = useState({
+    hasMore: true,
+    lastOrderId: null,
+  });
   const [error, setError] = useState(null);
 
   const fetchOrders = async () => {

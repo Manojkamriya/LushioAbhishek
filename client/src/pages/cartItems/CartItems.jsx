@@ -38,6 +38,7 @@ const navigate = useNavigate();
   const { fetchCartCount } = useCart();
   const { toggleWishlist } = useWishlist();
   const [paymentData, setPaymentData] = useState(null);
+  const [cartAddress, setCartAddress] = useState(null);
   const [showNotification, setShowNotification] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [selectedProductIds, setSelectedProductIds] = useState([]);
@@ -50,7 +51,8 @@ const navigate = useNavigate();
         `${process.env.REACT_APP_API_URL}/cart/${user.uid}`
       );
       setCartProducts(response.data.cartItems);
-    
+    setCartAddress(response.data.cartAddress);
+    console.log(response.data.cart.cartAddress);
     } catch (err) {
       console.error(err);
     } finally {
@@ -63,7 +65,7 @@ const navigate = useNavigate();
       fetchCartItems();
     }
   }, [user]);
-
+ 
   useEffect(() => {
     if (user) {
       const fetchUserData = async () => {
@@ -106,12 +108,12 @@ const navigate = useNavigate();
 
     // Calculate coupon discount
   //  const couponDiscountAmount = (total * discountPercentage) / 100; // Calculate coupon discount
-  const couponDiscountAmount = discountPercentage;
+  const couponDiscountAmount = Math.ceil(discountPercentage);
     total = Math.max(0, total - couponDiscountAmount); // Apply coupon discount and ensure total doesn't go below zero
 
     // Apply additional discount for payment method
     if (selectedPaymentMethod !== "cashOnDelivery") {
-      const additionalDiscount = total * 0.05; // 5% additional discount for online payment
+      const additionalDiscount =  Math.ceil(total * 0.05); // 5% additional discount for online payment
       additionalDiscountRef.current = additionalDiscount; // Store it in useRef without causing re-renders
       total = Math.max(0, total - additionalDiscount); // Apply additional discount and ensure total doesn't go below zero
     }
@@ -390,28 +392,30 @@ fetchCartCount();
         </div>
       )}
       <div className="selected-address-container">
-        {selectedAddress ? (
-          <div className="selected-address">
-            <h4>Delivery Address:</h4>
-            <div style={{ display: "flex" }}>
-              <strong>{selectedAddress.name},</strong>{" "}
-              <strong>{selectedAddress.pinCode} </strong>
-            </div>
-
-            <span>{selectedAddress.flatDetails},</span>
-            <span>{selectedAddress.areaDetails},</span>
-            {selectedAddress.landmark && (
-              <span>{selectedAddress.landmark},</span>
-            )}
-            <span>
-              {selectedAddress.townCity}, {selectedAddress.state},
-            </span>
-          </div>
-        ) : (
-          <p>No addresses found. Please add a new address.</p>
-        )}
-        <PlaceOrder />
+  {cartAddress || selectedAddress ? (
+    <div className="selected-address">
+      <h4>Delivery Address:</h4>
+      <div style={{ display: "flex" }}>
+        <strong>{(cartAddress?.name || selectedAddress?.name) ?? ""},</strong>{" "}
+        <strong>{(cartAddress?.pinCode || selectedAddress?.pinCode) ?? ""} </strong>
       </div>
+
+      <span>{(cartAddress?.flatDetails || selectedAddress?.flatDetails) ?? ""},</span>
+      <span>{(cartAddress?.areaDetails || selectedAddress?.areaDetails) ?? ""},</span>
+      {(cartAddress?.landmark || selectedAddress?.landmark) && (
+        <span>{(cartAddress?.landmark || selectedAddress?.landmark) ?? ""},</span>
+      )}
+      <span>
+        {(cartAddress?.townCity || selectedAddress?.townCity) ?? ""},{" "}
+        {(cartAddress?.state || selectedAddress?.state) ?? ""},
+      </span>
+    </div>
+  ) : (
+    <p>No addresses found. Please add a new address.</p>
+  )}
+  <PlaceOrder />
+</div>
+
       {/* <button onClick={()=>handleSubmit()}>submit </button> */}
       <Success successOpen={successOpen} setSuccessOpen={setSuccessOpen} />
       <div className="cartitems">
@@ -438,6 +442,7 @@ fetchCartCount();
                 selectedProduct={selectedProduct}
                 handleMoveToWishlist={handleMoveToWishlist}
                 handleRemoveFromCart={handleRemoveFromCart}
+                setCartProducts={setCartProducts}
               />
             ))}
           </div>
