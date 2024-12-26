@@ -58,3 +58,21 @@
 .save-button:hover {
   background-color: #45a049;
 }
+
+.header-actions {
+  margin-bottom: 20px;
+}
+
+.pickup-button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pickup-button:hover {
+  background-color: #45a049;
+}

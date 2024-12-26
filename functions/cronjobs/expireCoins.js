@@ -1,45 +1,51 @@
 /* eslint-disable max-len */
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
-const db = admin.firestore();
+const {onSchedule} = require("firebase-functions/v2/scheduler");
+const {getFirestore, FieldValue} = require("firebase-admin/firestore");
+const logger = require("firebase-functions/logger");
+
+// Firestore instance
+const db = getFirestore();
 
 // Cloud Function to remove expired coins daily
-const removeExpiredCoins = functions.pubsub.schedule("0 0 * * *").onRun(async (context) => {
-  const currentDate = new Date(); // Current date
+const removeExpiredCoins = onSchedule("0 0 * * *", async () => {
+  const currentDate = FieldValue.serverTimestamp(); // Current date
   try {
     const usersRef = db.collection("users");
     const snapshot = await usersRef.get();
 
     if (snapshot.empty) {
-      console.log("No users found.");
+      logger.log("No users found.");
       return;
     }
 
-    snapshot.forEach(async (doc) => {
+    const promises = snapshot.docs.map(async (doc) => {
       const userId = doc.id;
       const coinsRef = usersRef.doc(userId).collection("coins");
       const coinsSnapshot = await coinsRef.get();
 
       if (coinsSnapshot.empty) {
-        console.log(`No coins found for user: ${userId}`);
+        logger.log(`No coins found for user: ${userId}`);
         return;
       }
 
-      coinsSnapshot.forEach(async (coinDoc) => {
+      const coinPromises = coinsSnapshot.docs.map(async (coinDoc) => {
         const coinData = coinDoc.data();
         const expiryTimestamp = coinData.expiry;
 
         if (expiryTimestamp && expiryTimestamp.toDate() < currentDate) {
-          console.log(`Removing expired coin for user: ${userId}, coin ID: ${coinDoc.id}`);
+          logger.log(`Removing expired coin for user: ${userId}, coin ID: ${coinDoc.id}`);
           await coinDoc.ref.delete();
         }
       });
+
+      await Promise.all(coinPromises);
     });
 
-    console.log("Expired coins removed successfully.");
+    await Promise.all(promises);
+    logger.log("Expired coins removed successfully.");
   } catch (error) {
-    console.error("Error removing expired coins: ", error);
+    logger.error("Error removing expired coins: ", error);
   }
 });
 
-module.exports = {removeExpiredCoins};
+module.exports = removeExpiredCoins;

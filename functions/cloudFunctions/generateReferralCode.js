@@ -1,53 +1,53 @@
 /* eslint-disable max-len */
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
+const {getFirestore, FieldValue} = require("firebase-admin/firestore");
+const {onDocumentCreated} = require("firebase-functions/v2/firestore");
+const logger = require("firebase-functions/logger");
 
-const generateReferralCode = functions.firestore
-    .document("users/{userId}")
-    .onCreate(async (snap, context) => {
-      const userId = context.params.userId;
+// Initialize Firestore
+const db = getFirestore();
+
+const generateReferralCode = onDocumentCreated(
+    {document: "users/{userId}"},
+    async (event) => {
+      const snap = event.data;
+      const userId = event.params.userId;
       const userData = snap.data();
 
       // Skip if referral code already exists
-      if (userData.referralCode) return null;
+      if (userData.referralCode) return;
 
       try {
         let referralCode = `lush-${userId.slice(-5)}`;
 
         // Check for duplicates
-        const duplicateCheck = await admin.firestore()
-            .collection("users")
+        const duplicateCheck = await db.collection("users")
             .where("referralCode", "==", referralCode)
             .get();
 
         if (!duplicateCheck.empty) {
-          // In case of duplicate, append a random char
+        // In case of duplicate, append a random char
           const extraChar = Math.random().toString(36).substring(7, 8);
           referralCode = `${referralCode}-${extraChar}`;
         }
 
-        await snap.ref.update({
+        await db.collection("users").doc(userId).update({
           referralCode,
-          referralCodeGeneratedAt: admin.firestore.FieldValue.serverTimestamp(),
+          referralCodeGeneratedAt: FieldValue.serverTimestamp(),
         });
 
-        console.log(`Generated referral code ${referralCode} for user ${userId}`);
-        return null;
+        logger.log(`Generated referral code ${referralCode} for user ${userId}`);
       } catch (error) {
-        console.error("Error generating referral code:", error);
+        logger.error("Error generating referral code:", error);
 
         // Log error to separate collection for monitoring
-        await admin.firestore()
-            .collection("errors")
-            .add({
-              type: "referral_generation",
-              userId,
-              error: error.message,
-              timestamp: admin.firestore.FieldValue.serverTimestamp(),
-            });
-
-        return null;
+        await db.collection("errors").add({
+          type: "referral_generation",
+          userId,
+          error: error.message,
+          timestamp: FieldValue.serverTimestamp(),
+        });
       }
-    });
+    },
+);
 
 module.exports = generateReferralCode;

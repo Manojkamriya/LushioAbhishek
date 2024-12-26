@@ -1,20 +1,20 @@
 /* eslint-disable max-len */
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
-const db = admin.firestore();
+const {onSchedule} = require("firebase-functions/v2/scheduler");
+const {getFirestore} = require("firebase-admin/firestore");
+const logger = require("firebase-functions/logger");
 
-// Cloud Function to assign coins based on account age (1 month, 1 year, 2 years, 5 years)
-const assignAccountAgeCoins = functions.pubsub.schedule("0 0 * * *").onRun(async (context) => {
+// Cloud Function to assign coins based on account age
+const assignAccountAgeCoins = onSchedule("every day 00:00", async (event) => {
+  const db = getFirestore();
   const currentDate = new Date();
 
   try {
-    // Fetch admin controls
     const adminControlsDoc = await db.collection("controls").doc("admin").get();
     const adminControls = adminControlsDoc.data();
 
     if (!adminControls || !adminControls.engine) {
-      console.log("Coin assignment is turned off or admin controls not found.");
-      return null;
+      logger.log("Coin assignment is turned off or admin controls not found.");
+      return;
     }
 
     const {coinSettings} = adminControls;
@@ -22,17 +22,18 @@ const assignAccountAgeCoins = functions.pubsub.schedule("0 0 * * *").onRun(async
     const usersRef = db.collection("users");
     const snapshot = await usersRef.get();
 
-    snapshot.forEach(async (doc) => {
+    const processUserPromises = snapshot.docs.map(async (doc) => {
       const user = doc.data();
       const createdOn = user.createdAt;
 
       if (createdOn) {
-        const accountCreationDate = new Date(createdOn._seconds * 1000); // Firestore timestamp to JS Date
+        const accountCreationDate = new Date(createdOn._seconds * 1000);
         const diffInMs = currentDate - accountCreationDate;
-        const diffInMonths = diffInMs / (1000 * 60 * 60 * 24 * 30); // Difference in months
-        const diffInYears = diffInMonths / 12; // Difference in years
+        const diffInMonths = diffInMs / (1000 * 60 * 60 * 24 * 30);
+        const diffInYears = diffInMonths / 12;
 
         const coinsRef = usersRef.doc(doc.id).collection("coins");
+        const milestoneTrackerRef = usersRef.doc(doc.id).collection("milestone_tracker");
 
         const milestones = [
           {name: "oneMonth", condition: Math.floor(diffInMonths) === 1},
@@ -43,24 +44,36 @@ const assignAccountAgeCoins = functions.pubsub.schedule("0 0 * * *").onRun(async
 
         for (const milestone of milestones) {
           if (milestone.condition) {
-            const settings = coinSettings[milestone.name];
-            const expiryDate = new Date(currentDate.getTime() + settings.expiry * 24 * 60 * 60 * 1000);
+            const milestoneDoc = await milestoneTrackerRef.doc(milestone.name).get();
 
-            await coinsRef.add({
-              amount: settings.coins,
-              message: settings.message,
-              expiry: expiryDate,
-            });
-            console.log(`${milestone.name} coins added for user: ${doc.id}`);
+            if (!milestoneDoc.exists) {
+              const settings = coinSettings[milestone.name];
+              const expiryDate = new Date(currentDate.getTime() + settings.expiry * 24 * 60 * 60 * 1000);
+
+              await coinsRef.add({
+                amount: settings.coins,
+                message: settings.message,
+                expiry: expiryDate,
+              });
+
+              await milestoneTrackerRef.doc(milestone.name).set({
+                assignedAt: currentDate,
+                coins: settings.coins,
+              });
+
+              logger.log(`${milestone.name} coins added for user: ${doc.id}`);
+            }
           }
         }
       }
     });
 
-    console.log("Account age coins assigned to users.");
+    await Promise.all(processUserPromises);
+
+    logger.log("Account age coins assigned to users.");
   } catch (error) {
-    console.error("Error assigning account age coins: ", error);
+    logger.error("Error assigning account age coins: ", error);
   }
 });
 
-module.exports = {assignAccountAgeCoins};
+module.exports = assignAccountAgeCoins;

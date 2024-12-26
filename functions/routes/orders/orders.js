@@ -3,11 +3,12 @@
 /* eslint-disable camelcase */
 /* eslint-disable max-len */
 const express = require("express");
-const admin = require("firebase-admin");
 const axios = require("axios");
 const router = express.Router();
-const db = admin.firestore();
-const {generateToken, destroyToken} = require("./shipRocketAuth");
+const {getFirestore, FieldValue} = require("firebase-admin/firestore");
+const db = getFirestore();
+const {generateToken, destroyToken} = require("./shiprocketAuth");
+// const logger = require("firebase-functions/logger");
 
 // Validation middleware
 const validateOrderRequest = (req, res, next) => {
@@ -37,7 +38,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
   const {
     uid, modeOfPayment, orderedProducts, address,
     totalAmount, payableAmount, discount, lushioCurrencyUsed, couponCode,
-    ...paymentData
+    paymentData,
   } = req.body;
 
   // Start a Firestore batch
@@ -62,34 +63,45 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       const productData = productDoc.data();
 
       // Reduce product inventory based on height type
-      let inventoryRef;
+      let quantitiesMap;
       if (product.heightType === "normal") {
-        inventoryRef = productDoc.ref.collection("quantities").doc(product.color);
-        const colorDoc = await inventoryRef.get();
-        const colorData = colorDoc.data() || {};
+        quantitiesMap = productData.quantities; // Access the quantities map directly
 
-        if (!colorData[product.size] || colorData[product.size] < product.quantity) {
+        const sizeQuantity = quantitiesMap?.[product.color]?.[product.size];
+        if (!sizeQuantity || sizeQuantity < product.quantity) {
           throw new Error(`Insufficient inventory for product ${product.productId}, color ${product.color}, size ${product.size}`);
         }
 
-        batch.update(inventoryRef, {
-          [product.size]: admin.firestore.FieldValue.increment(-product.quantity),
-        });
-      } else {
-        // For height-based products (above/below)
-        const heightKey = product.heightType === "above" ? "aboveHeight" : "belowHeight";
-        inventoryRef = productDoc.ref.collection("quantities").doc(heightKey);
-        const heightDoc = await inventoryRef.get();
-        const heightData = heightDoc.data() || {};
+        // Update the quantities map
+        const updatedQuantities = {
+          ...quantitiesMap,
+          [product.color]: {
+            ...quantitiesMap[product.color],
+            [product.size]: sizeQuantity - product.quantity,
+          },
+        };
 
-        const colorData = heightData[product.color] || {};
-        if (!colorData[product.size] || colorData[product.size] < product.quantity) {
+        batch.update(productDoc.ref, {quantities: updatedQuantities});
+      } else {
+        // Handle height-based products (above/below)
+        const heightKey = product.heightType === "above" ? "aboveHeight" : "belowHeight";
+        quantitiesMap = productData[heightKey]; // Access the height-specific map
+
+        const sizeQuantity = quantitiesMap?.[product.color]?.[product.size];
+        if (!sizeQuantity || sizeQuantity < product.quantity) {
           throw new Error(`Insufficient inventory for height-based product ${product.productId}, height ${product.heightType}, color ${product.color}, size ${product.size}`);
         }
 
-        batch.update(inventoryRef, {
-          [`${product.color}.${product.size}`]: admin.firestore.FieldValue.increment(-product.quantity),
-        });
+        // Update the height-based map
+        const updatedQuantities = {
+          ...quantitiesMap,
+          [product.color]: {
+            ...quantitiesMap[product.color],
+            [product.size]: sizeQuantity - product.quantity,
+          },
+        };
+
+        batch.update(productDoc.ref, {[heightKey]: updatedQuantities});
       }
 
       return {
@@ -101,8 +113,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
     const validatedProducts = await Promise.all(productPromises);
 
     // Calculate the total amount and verify
-    const calculatedTotal = validatedProducts.reduce((sum, product) =>
-      sum + product.productDetails.price * product.quantity, 0);
+    const calculatedTotal = validatedProducts.reduce((sum, product) => sum + product.productDetails.discountedPrice * product.quantity, 0);
 
     if (Math.abs(calculatedTotal - totalAmount) > 0.01) {
       throw new Error("Total amount mismatch");
@@ -112,7 +123,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
     const userDoc = await db.collection("users").doc(uid).get();
     const email = userDoc.exists ? userDoc.data().email : null;
 
-    const dateOfOrder = new Date();
+    const dateOfOrder = FieldValue.serverTimestamp();
 
     // Prepare order data
     const orderData = {
@@ -126,8 +137,8 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       discount,
       lushioCurrencyUsed,
       modeOfPayment,
-      status: "pending",
-      paymentData, // Save the entire payment data object
+      status: "Pending",
+      paymentData: paymentData?.data || null,
     };
 
     // Fetch dimensions from the admin document
@@ -136,22 +147,26 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       throw new Error("Admin document not found");
     }
 
-    const {length, breadth, height, weight} = adminDoc.data();
+    const {length, breadth, height, weight, companyName, resellerName, pickupLocation} = adminDoc.data();
     if (!length || !breadth || !height || !weight) {
-      throw new Error("Incomplete dimension or weight data in admin document");
+      throw new Error("Incomplete dimension or weight data in admin document.");
+    }
+    if (!companyName || ! resellerName || !pickupLocation) {
+      throw new Error("Missing company or pickup information.");
     }
 
     // Prepare Shiprocket order data
     const shiprocketOrderData = {
       order_id: orderRef.id,
-      order_date: dateOfOrder.toISOString(),
-      pickup_location: process.env.SHIPROCKET_PICKUP_LOCATION,
+      order_date: dateOfOrder.toISOString().split("T")[0], // Format: YYYY-MM-DD
+      pickup_location: pickupLocation,
 
       shipping_is_billing: true,
-      company_name: process.env.COMPANY_NAME,
-      reseller_name: process.env.RESELLER_NAME,
+      company_name: companyName,
+      reseller_name: resellerName,
 
       billing_customer_name: address.name,
+      billing_last_name: address.name?.split(" ").pop() || "",
       billing_address: `${address.flatDetails}, ${address.areaDetails}`, // Concatenated flatDetails and areaDetails
       billing_address_2: address.landmark || "",
       billing_city: address.townCity,
@@ -162,12 +177,14 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       billing_email: email,
       order_items: validatedProducts.map((product) => ({
         name: product.productDetails.displayName,
-        sku: product.productId,
+        sku: `SKU-${product.productId}`,
         units: product.quantity,
         selling_price: product.productDetails.price,
       })),
       payment_method: modeOfPayment === "cashOnDelivery" ? "COD" : "Prepaid",
       sub_total: payableAmount,
+
+      shipping_charges: 0,
 
       length,
       breadth,
@@ -175,24 +192,57 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       weight,
     };
 
-    // Add Shiprocket details to the order
-    orderData.shiprocket = {
-      // Commented out as before
-    };
-    orderData.status = "created";
+    // logger.log(shiprocketOrderData);
+    let token;
+    try {
+      token = await generateToken();
+      const shiprocketResponse = await axios.post(
+          `${SHIPROCKET_API_URL}/orders/create/adhoc`,
+          shiprocketOrderData,
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          },
+      );
+      // logger.log(shiprocketResponse.data);
+      if (!shiprocketResponse.data.shipment_id || !shiprocketResponse.data.order_id) {
+        throw new Error("Invalid response from Shiprocket API");
+      }
 
-    // Add order data to batch
-    batch.set(orderRef, orderData);
-    batch.set(userOrderRef, {orderId: orderRef.id, dateOfOrder});
+      // Add Shiprocket details to the order
+      orderData.shiprocket = {
+        ...shiprocketResponse.data,
+      };
+      orderData.status = "created";
 
-    // Add ordered products as subcollection
-    validatedProducts.forEach((product) => {
-      const productRef = orderRef.collection("orderedProducts").doc();
-      batch.set(productRef, product);
-    });
+      // Add order data to batch
+      batch.set(orderRef, orderData);
+      batch.set(userOrderRef, {orderId: orderRef.id, dateOfOrder});
 
-    // Commit batch
-    await batch.commit();
+      // Add ordered products as subcollection
+      validatedProducts.forEach((product) => {
+        const productRef = orderRef.collection("orderedProducts").doc();
+        batch.set(productRef, product);
+      });
+
+      // Commit batch
+      await batch.commit();
+    } catch (shiprocketError) {
+      console.error("Shiprocket API Error:", shiprocketError.response?.data || shiprocketError);
+
+      // Log detailed error information
+      if (shiprocketError.response?.data?.errors) {
+        console.error("Validation errors:", JSON.stringify(shiprocketError.response.data.errors, null, 2));
+      }
+
+      throw new Error(`Shiprocket API Error: ${shiprocketError.response?.data?.message || shiprocketError.message}`);
+    } finally {
+      if (token) {
+        await destroyToken(token);
+      }
+    }
 
     res.status(200).json({
       message: "Order created successfully",
@@ -204,11 +254,112 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
     res.status(500).json({
       message: "Failed to create order",
       error: error.message,
+      details: error.response?.data?.errors || null,
     });
   }
 });
 
-// Existing get order and get user orders routes remain the same
-// ... (rest of the code from the original file)
+// Get order details by orderId
+router.get("/:orderId", async (req, res) => {
+  try {
+    const {orderId} = req.params;
+    const {uid} = req.body; // For validation that this user owns the order
+
+    // Check required fields
+    if (!uid || !orderId) {
+      return res.status(400).json({message: "Required fields missing."});
+    }
+
+    // Check if the `uid` exists in the `users` collection
+    const userDoc = await db.collection("users").doc(uid).get();
+    if (!userDoc.exists) {
+      return res.status(404).json({message: "Invalid User ID"});
+    }
+
+    // Get the order document
+    const orderDoc = await db.collection("orders").doc(orderId).get();
+
+    if (!orderDoc.exists) {
+      return res.status(404).json({message: "Order not found"});
+    }
+
+    const orderData = orderDoc.data();
+
+    // Validate user owns this order
+    if (orderData.uid !== uid) {
+      return res.status(403).json({message: "Unauthorized access to order"});
+    }
+
+    // Get ordered products subcollection
+    const productsSnapshot = await orderDoc.ref.collection("orderedProducts").get();
+    const orderedProducts = productsSnapshot.docs.map((doc) => doc.data());
+
+    res.status(200).json({
+      ...orderData,
+      orderedProducts,
+    });
+  } catch (error) {
+    console.error("Error fetching order:", error);
+    res.status(500).json({
+      message: "Failed to fetch order details",
+      error: error.message,
+    });
+  }
+});
+
+// Get all orders for a user
+router.get("/", async (req, res) => {
+  try {
+    const {uid, limit = 5, lastOrderId} = req.query;
+
+    // Validate if `uid` is provided
+    if (!uid) {
+      return res.status(400).json({message: "User ID is required"});
+    }
+
+    // Check if the `uid` exists in the `users` collection
+    const userDoc = await db.collection("users").doc(uid).get();
+    if (!userDoc.exists) {
+      return res.status(404).json({message: "Invalid User ID"});
+    }
+
+    // Build the base query for fetching orders
+    let query = db.collection("orders").where("uid", "==", uid).orderBy("dateOfOrder", "desc").limit(parseInt(limit));
+
+    // Add pagination if `lastOrderId` is provided
+    if (lastOrderId) {
+      const lastOrderDoc = await db.collection("orders").doc(lastOrderId).get();
+      if (lastOrderDoc.exists) {
+        query = query.startAfter(lastOrderDoc);
+      }
+    }
+
+    // Execute the query to get orders
+    const ordersSnapshot = await query.get();
+
+    // Process orders
+    const orders = ordersSnapshot.docs.map((doc) => ({
+      orderId: doc.id,
+      ...doc.data(),
+    }));
+
+    // Pagination metadata
+    const lastVisible = ordersSnapshot.docs[ordersSnapshot.docs.length - 1];
+
+    res.status(200).json({
+      orders,
+      pagination: {
+        hasMore: orders.length === parseInt(limit),
+        lastOrderId: lastVisible?.id,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    res.status(500).json({
+      message: "Failed to fetch orders",
+      error: error.message,
+    });
+  }
+});
 
 module.exports = router;

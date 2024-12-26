@@ -2,7 +2,8 @@
 /* eslint-disable max-len */
 const express = require("express");
 const router = express.Router();
-const admin = require("firebase-admin");
+const {getFirestore} = require("firebase-admin/firestore");
+const db = getFirestore();
 
 // Add to wishlist
 router.post("/add", async (req, res) => {
@@ -13,7 +14,7 @@ router.post("/add", async (req, res) => {
       return res.status(400).json({error: "Missing required fields"});
     }
 
-    const productsRef = admin.firestore().collection("products").doc(productId);
+    const productsRef = db.collection("products").doc(productId);
     const productSnapshot = await productsRef.get();
 
     // Check if the product exists
@@ -21,7 +22,7 @@ router.post("/add", async (req, res) => {
       return res.status(400).json({message: "Invalid product ID"});
     }
 
-    const wishlistRef = admin.firestore().collection("users").doc(uid).collection("wishlist");
+    const wishlistRef = db.collection("users").doc(uid).collection("wishlist");
 
     // Check if the product already exists in the wishlist
     const existingItemSnapshot = await wishlistRef.where("productId", "==", productId).get();
@@ -54,7 +55,7 @@ router.delete("/delete", async (req, res) => {
       return res.status(400).json({error: "Missing required fields"});
     }
 
-    await admin.firestore()
+    await db
         .collection("users")
         .doc(uid)
         .collection("wishlist")
@@ -77,7 +78,7 @@ router.get("/:uid", async (req, res) => {
       return res.status(400).json({error: "Missing user ID"});
     }
 
-    const wishlistRef = admin.firestore().collection("users").doc(uid).collection("wishlist");
+    const wishlistRef = db.collection("users").doc(uid).collection("wishlist");
     const snapshot = await wishlistRef.get();
 
     let productsRemoved = false;
@@ -87,7 +88,7 @@ router.get("/:uid", async (req, res) => {
       const wishlistItem = {id: doc.id, ...doc.data()};
 
       // Fetch product details using the productId from the wishlist item
-      const productRef = admin.firestore().collection("products").doc(wishlistItem.productId);
+      const productRef = db.collection("products").doc(wishlistItem.productId);
       const productSnapshot = await productRef.get();
 
       if (productSnapshot.exists) {
@@ -119,7 +120,7 @@ router.get("/array/:uid", async (req, res) => {
       return res.status(400).json({error: "Missing user ID"});
     }
 
-    const wishlistRef = admin.firestore().collection("users").doc(uid).collection("wishlist");
+    const wishlistRef = db.collection("users").doc(uid).collection("wishlist");
     const snapshot = await wishlistRef.get();
 
     // Extract both document ID and productId for each wishlist item
@@ -144,7 +145,7 @@ router.get("/count/:uid", async (req, res) => {
       return res.status(400).json({error: "Missing user ID"});
     }
 
-    const wishlistRef = admin.firestore().collection("users").doc(uid).collection("wishlist");
+    const wishlistRef = db.collection("users").doc(uid).collection("wishlist");
     const snapshot = await wishlistRef.count().get();
 
     res.status(200).json({count: snapshot.data().count});

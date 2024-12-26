@@ -83,27 +83,22 @@ export default function Orders() {
     lastOrderId: null,
   });
   const [error, setError] = useState(null);
-  //const userId = "wwzOIF1KUvgqINpbDiyK8ZMaE6K2";
+
   const fetchOrders = async () => {
     try {
       setLoading(true);
 
-      const orderDetails = {
+      const params = {
         uid: user.uid,
-
         limit: 5,
         lastOrderId: pagination.lastOrderId,
       };
-      console.log(orderDetails);
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/orders`,
-        {
-          data: orderDetails,
-        }
-      );
-      console.log(response.data);
-      const { orders: fetchedOrders, pagination: fetchedPagination } =
-        response.data;
+      
+      console.log("In",params);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/orders`, {params});
+      console.log("out",response.data);
+      
+      const { orders: fetchedOrders, pagination: fetchedPagination } = response.data;
 
       setOrders((prevOrders) => [...prevOrders, ...fetchedOrders]);
       setPagination(fetchedPagination);
@@ -140,7 +135,7 @@ export default function Orders() {
     }
   };
   if (order.length === 0) {
-    return <EmptyOrder />;
+    return <EmptyOrder />
   }
   return (
     <div className="order-wrapper">
@@ -186,9 +181,7 @@ export default function Orders() {
                     <div className="item-button-container">
                       <button
                         className="open-rating-button"
-                        onClick={() =>
-                          handleCancelProduct(order.id, product.id)
-                        }
+                        onClick={() => handleCancelProduct(order.id, product.id)}
                       >
                         Cancel
                       </button>
@@ -231,16 +224,13 @@ export default function Orders() {
               >
                 Cancel Order
               </button>
-              <button
-                className="open-rating-button"
-                onClick={() => navigate("/orderInfo")}
-              >
-                Order Info
-              </button>
+              <button className="open-rating-button" onClick={() => navigate("/orderInfo")}>Order Info</button>
             </div>
           </div>
         ))}
+
       </div>
     </div>
+
   );
 }

@@ -23,7 +23,6 @@ async function destroyToken(token) {
     await axios.post(`${SHIPROCKET_API_URL}/auth/logout`, {}, {
       headers: {Authorization: `Bearer ${token}`},
     });
-    console.log("Token destroyed successfully.");
   } catch (error) {
     console.error("Error destroying Shiprocket token:", error.message);
     throw new Error("Failed to destroy token");

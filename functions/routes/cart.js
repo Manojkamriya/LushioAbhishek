@@ -2,8 +2,9 @@
 /* eslint-disable max-len */
 const express = require("express");
 const router = express.Router();
-const admin = require("firebase-admin");
-const db = admin.firestore();
+const {getFirestore, FieldValue} = require("firebase-admin/firestore");
+const db = getFirestore();
+const logger = require("firebase-functions/logger");
 
 // Add to cart
 router.post("/add", async (req, res) => {
@@ -30,7 +31,7 @@ router.post("/add", async (req, res) => {
       await userCartRef.set({
         cartCoupon: null,
         cartAddress: null,
-        createdAt: new Date(),
+        createdAt: FieldValue.serverTimestamp(),
       });
     }
 
@@ -53,7 +54,7 @@ router.post("/add", async (req, res) => {
 
       await identicalItemDoc.ref.update({
         quantity: Number(existingQuantity) + Number(quantity),
-        updatedAt: new Date(),
+        updatedAt: FieldValue.serverTimestamp(),
       });
 
       return res.status(200).json({message: "Quantity updated for identical item in cart"});
@@ -65,8 +66,8 @@ router.post("/add", async (req, res) => {
         color: color || null,
         size: size || null,
         height: height || null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
       };
 
       const newCartItemRef = await cartItemsRef.add(cartItem);
@@ -74,7 +75,7 @@ router.post("/add", async (req, res) => {
       res.status(201).json({id: newCartItemRef.id, ...cartItem});
     }
   } catch (error) {
-    console.error("Error adding item to cart:", error);
+    logger.error("Error adding item to cart:", error);
     res.status(500).json({error: "Failed to add item to cart"});
   }
 });
@@ -95,7 +96,7 @@ router.delete("/delete/:cartItemId", async (req, res) => {
 
     res.status(200).json({message: "Item removed from cart successfully"});
   } catch (error) {
-    console.error("Error removing item from cart:", error);
+    logger.error("Error removing item from cart:", error);
     res.status(500).json({error: "Failed to remove item from cart"});
   }
 });
@@ -143,7 +144,7 @@ router.post("/debug-cart", async (req, res) => {
 
     res.status(200).json(results);
   } catch (error) {
-    console.error("Cart debug error:", error);
+    logger.error("Cart debug error:", error);
     res.status(500).json({
       error: "Failed to debug cart",
       details: error.message,
@@ -155,12 +156,12 @@ router.post("/debug-cart", async (req, res) => {
 router.post("/batch-delete", async (req, res) => {
   try {
     const {uid, itemIds} = req.body;
-    console.log("\n=== Starting batch delete operation ===");
-    console.log("Input received:", {uid, itemIds});
+    logger.log("\n=== Starting batch delete operation ===");
+    logger.log("Input received:", {uid, itemIds});
 
     // Input validation
     if (!uid || !itemIds || !Array.isArray(itemIds) || itemIds.length === 0) {
-      console.error("Invalid input:", {uid, itemIds});
+      logger.error("Invalid input:", {uid, itemIds});
       return res.status(400).json({
         error: "Invalid input",
         details: "Must provide uid and non-empty array of itemIds",
@@ -169,27 +170,27 @@ router.post("/batch-delete", async (req, res) => {
 
     // Reference to the user's active cart
     const userCartRef = db.collection("users").doc(uid).collection("carts").doc("activeCart");
-    console.log("Cart reference path:", userCartRef.path);
+    logger.log("Cart reference path:", userCartRef.path);
 
     // First verify the cart exists and log its contents
     const cartSnapshot = await userCartRef.get();
-    console.log("\n=== Cart Verification ===");
-    console.log(`Cart exists: ${cartSnapshot.exists}`);
+    logger.log("\n=== Cart Verification ===");
+    logger.log(`Cart exists: ${cartSnapshot.exists}`);
     if (cartSnapshot.exists) {
-      console.log("Cart data:", cartSnapshot.data());
+      logger.log("Cart data:", cartSnapshot.data());
     }
 
     // Get all items in the cart for verification
     const cartItemsCollection = userCartRef.collection("cartItems");
     const allCartItems = await cartItemsCollection.get();
 
-    console.log("\n=== Current Cart Contents ===");
-    console.log(`Total items in cart: ${allCartItems.size}`);
+    logger.log("\n=== Current Cart Contents ===");
+    logger.log(`Total items in cart: ${allCartItems.size}`);
     const existingItems = new Map();
 
     allCartItems.forEach((doc) => {
-      console.log(`Found item - ID: ${doc.id}`);
-      console.log(`Item data:`, doc.data());
+      logger.log(`Found item - ID: ${doc.id}`);
+      logger.log(`Item data:`, doc.data());
       existingItems.set(doc.id, doc.data());
     });
 
@@ -200,13 +201,13 @@ router.post("/batch-delete", async (req, res) => {
     let successCount = 0;
 
     // Check each requested item
-    console.log("\n=== Processing Requested Deletions ===");
+    logger.log("\n=== Processing Requested Deletions ===");
     for (const itemId of itemIds) {
-      console.log(`\nProcessing item: ${itemId}`);
-      console.log(`Checking if item exists in cart items map...`);
+      logger.log(`\nProcessing item: ${itemId}`);
+      logger.log(`Checking if item exists in cart items map...`);
 
       if (existingItems.has(itemId)) {
-        console.log(`✓ Found item ${itemId} in cart`);
+        logger.log(`✓ Found item ${itemId} in cart`);
         const itemRef = cartItemsCollection.doc(itemId);
         batch.delete(itemRef);
         successfulDeletions.push({
@@ -215,7 +216,7 @@ router.post("/batch-delete", async (req, res) => {
         });
         successCount++;
       } else {
-        console.log(`✗ Item ${itemId} not found in cart`);
+        logger.log(`✗ Item ${itemId} not found in cart`);
         failedDeletions.push({
           itemId,
           reason: "Item not found in cart",
@@ -227,15 +228,15 @@ router.post("/batch-delete", async (req, res) => {
 
     // Execute batch if there are items to delete
     if (successCount > 0) {
-      console.log(`\n=== Executing batch deletion for ${successCount} items ===`);
+      logger.log(`\n=== Executing batch deletion for ${successCount} items ===`);
       await batch.commit();
-      console.log("Batch deletion completed");
+      logger.log("Batch deletion completed");
     } else {
-      console.log("No items to delete");
+      logger.log("No items to delete");
     }
 
     // Final verification
-    console.log("\n=== Final Verification ===");
+    logger.log("\n=== Final Verification ===");
     const updatedCartItems = await cartItemsCollection.get();
     const remainingItems = [];
     updatedCartItems.forEach((doc) => {
@@ -265,13 +266,13 @@ router.post("/batch-delete", async (req, res) => {
       remainingItems: remainingItems,
     };
 
-    console.log("\n=== Operation complete ===");
-    console.log("Final response:", response);
+    logger.log("\n=== Operation complete ===");
+    logger.log("Final response:", response);
     res.status(200).json(response);
   } catch (error) {
-    console.error("\n=== Error in batch delete operation ===");
-    console.error("Error message:", error.message);
-    console.error("Error stack:", error.stack);
+    logger.error("\n=== Error in batch delete operation ===");
+    logger.error("Error message:", error.message);
+    logger.error("Error stack:", error.stack);
     res.status(500).json({
       error: "Failed to process batch deletion",
       details: error.message,
@@ -329,7 +330,7 @@ router.get("/:uid", async (req, res) => {
       productsRemoved,
     });
   } catch (error) {
-    console.error("Error fetching cart items with product details:", error);
+    logger.error("Error fetching cart items with product details:", error);
     res.status(500).json({error: "Failed to fetch cart items"});
   }
 });
@@ -352,7 +353,7 @@ router.put("/update/:cartItemId", async (req, res) => {
     if (color !== undefined) updateData.color = color;
     if (size !== undefined) updateData.size = size;
     if (height !== undefined) updateData.height = height;
-    updateData.updatedAt = new Date();
+    updateData.updatedAt = FieldValue.serverTimestamp();
 
     await cartItemRef.update(updateData);
 
@@ -364,7 +365,7 @@ router.put("/update/:cartItemId", async (req, res) => {
 
     res.status(200).json({id: updatedDoc.id, ...updatedDoc.data()});
   } catch (error) {
-    console.error("Error updating cart item:", error);
+    logger.error("Error updating cart item:", error);
     res.status(500).json({error: "Failed to update cart item"});
   }
 });
@@ -388,7 +389,7 @@ router.get("/address/:uid", async (req, res) => {
     const cartData = cartSnapshot.data();
     res.status(200).json({cartAddress: cartData.cartAddress});
   } catch (error) {
-    console.error("Error fetching cart address:", error);
+    logger.error("Error fetching cart address:", error);
     res.status(500).json({error: "Failed to fetch cart address"});
   }
 });
@@ -495,12 +496,12 @@ router.post("/address/:uid", async (req, res) => {
     const userCartRef = db.collection("users").doc(uid).collection("carts").doc("activeCart");
     await userCartRef.set({
       cartAddress,
-      updatedAt: new Date(),
+      updatedAt: FieldValue.serverTimestamp(),
     }, {merge: true});
 
     res.status(200).json({cartAddress});
   } catch (error) {
-    console.error("Error setting cart address:", error);
+    logger.error("Error setting cart address:", error);
     res.status(500).json({error: "Failed to set cart address"});
   }
 });
@@ -524,7 +525,7 @@ router.get("/coupon/:uid", async (req, res) => {
     const cartData = cartSnapshot.data();
     res.status(200).json({cartCoupon: cartData.cartCoupon});
   } catch (error) {
-    console.error("Error fetching cart coupon:", error);
+    logger.error("Error fetching cart coupon:", error);
     res.status(500).json({error: "Failed to fetch cart coupon"});
   }
 });
@@ -554,7 +555,7 @@ router.post("/coupon/:uid", async (req, res) => {
     const userCartRef = db.collection("users").doc(uid).collection("carts").doc("activeCart");
     await userCartRef.set({
       cartCoupon: couponCode,
-      updatedAt: new Date(),
+      updatedAt: FieldValue.serverTimestamp(),
     }, {merge: true});
 
     // Return both coupon code and coupon details
@@ -563,7 +564,7 @@ router.post("/coupon/:uid", async (req, res) => {
       couponDetails: couponSnapshot.data(),
     });
   } catch (error) {
-    console.error("Error setting cart coupon:", error);
+    logger.error("Error setting cart coupon:", error);
     res.status(500).json({error: "Failed to set cart coupon"});
   }
 });
@@ -583,191 +584,9 @@ router.get("/count/:uid", async (req, res) => {
 
     res.status(200).json({count: snapshot.data().count});
   } catch (error) {
-    console.error("Error fetching cart count:", error);
+    logger.error("Error fetching cart count:", error);
     res.status(500).json({error: "Failed to fetch cart count"});
   }
 });
 
 module.exports = router;
-
-// /* eslint-disable new-cap */
-// /* eslint-disable max-len */
-// const express = require("express");
-// const router = express.Router();
-// const admin = require("firebase-admin");
-
-// // Add to cart
-// router.post("/add", async (req, res) => {
-//   try {
-//     const {uid, productId, quantity, color, size, height} = req.body;
-
-//     if (!uid || !productId || !quantity) {
-//       return res.status(400).json({error: "Missing required fields"});
-//     }
-
-//     const productsRef = admin.firestore().collection("products").doc(productId);
-//     const productSnapshot = await productsRef.get();
-
-//     // Check if the product exists
-//     if (!productSnapshot.exists) {
-//       return res.status(400).json({message: "Invalid product ID"});
-//     }
-
-//     const cartRef = admin.firestore().collection("users").doc(uid).collection("cart");
-
-//     // Check for an identical item in the cart
-//     const identicalItemSnapshot = await cartRef
-//         .where("productId", "==", productId)
-//         .where("color", "==", color || null)
-//         .where("size", "==", size || null)
-//         .where("height", "==", height || null)
-//         .limit(1)
-//         .get();
-
-//     if (!identicalItemSnapshot.empty) {
-//       // If an identical item exists, increase the quantity
-//       const identicalItemDoc = identicalItemSnapshot.docs[0];
-//       const existingQuantity = identicalItemDoc.data().quantity;
-
-//       await cartRef.doc(identicalItemDoc.id).update({
-//         quantity: Number(existingQuantity) + Number(quantity),
-//       });
-
-//       return res.status(200).json({message: "Quantity updated for identical item in cart"});
-//     } else {
-//       // If no identical item exists, add the new item to the cart
-//       const cartItem = {
-//         productId,
-//         quantity,
-//         color: color || null,
-//         size: size || null,
-//         height: height || null,
-//         createdAt: new Date(),
-//       };
-
-//       const newCartItemRef = await cartRef.add(cartItem);
-
-//       res.status(201).json({id: newCartItemRef.id, ...cartItem});
-//     }
-//   } catch (error) {
-//     console.error("Error adding item to cart:", error);
-//     res.status(500).json({error: "Failed to add item to cart"});
-//   }
-// });
-
-// // Delete from cart
-// router.delete("/delete/:cartItemId", async (req, res) => {
-//   try {
-//     const {uid} = req.body;
-//     const {cartItemId} = req.params;
-
-//     if (!uid || !cartItemId) {
-//       return res.status(400).json({error: "Missing required fields"});
-//     }
-
-//     const cartItemRef = admin.firestore().collection("users").doc(uid).collection("cart").doc(cartItemId);
-//     await cartItemRef.delete();
-
-//     res.status(200).json({message: "Item removed from cart successfully"});
-//   } catch (error) {
-//     console.error("Error removing item from cart:", error);
-//     res.status(500).json({error: "Failed to remove item from cart"});
-//   }
-// });
-
-// // Get cart items with product details
-// router.get("/:uid", async (req, res) => {
-//   try {
-//     const {uid} = req.params;
-
-//     if (!uid) {
-//       return res.status(400).json({error: "Missing user ID"});
-//     }
-
-//     const cartRef = admin.firestore().collection("users").doc(uid).collection("cart");
-//     const snapshot = await cartRef.get();
-
-//     let productsRemoved = false;
-
-//     // Fetch product details while filtering out missing products
-//     const cartItems = (await Promise.all(snapshot.docs.map(async (doc) => {
-//       const cartItem = {id: doc.id, ...doc.data()};
-
-//       // Fetch product details using the productId from the cart item
-//       const productRef = admin.firestore().collection("products").doc(cartItem.productId);
-//       const productSnapshot = await productRef.get();
-
-//       if (productSnapshot.exists) {
-//         // Attach product data if it exists
-//         cartItem.product = {id: productSnapshot.id, ...productSnapshot.data()};
-//         return cartItem;
-//       } else {
-//         // If the product does not exist, mark productsRemoved as true and delete the cart item
-//         productsRemoved = true;
-//         await doc.ref.delete();
-//         return null; // Filter out this item
-//       }
-//     }))).filter((item) => item !== null); // Remove null items (deleted products)
-
-//     // Send response with a flag indicating if products were removed
-//     res.status(200).json({cartItems, productsRemoved});
-//   } catch (error) {
-//     console.error("Error fetching cart items with product details:", error);
-//     res.status(500).json({error: "Failed to fetch cart items"});
-//   }
-// });
-
-// // Update cart item
-// router.put("/update/:cartItemId", async (req, res) => {
-//   try {
-//     const {uid, quantity, color, size, height} = req.body;
-//     const {cartItemId} = req.params;
-
-//     if (!uid || !cartItemId) {
-//       return res.status(400).json({error: "Missing required fields"});
-//     }
-
-//     const cartItemRef = admin.firestore().collection("users").doc(uid).collection("cart").doc(cartItemId);
-
-//     const updateData = {};
-//     if (quantity !== undefined) updateData.quantity = quantity;
-//     if (color !== undefined) updateData.color = color;
-//     if (size !== undefined) updateData.size = size;
-//     if (height !== undefined) updateData.height = height;
-//     updateData.updatedAt = new Date();
-
-//     await cartItemRef.update(updateData);
-
-//     const updatedDoc = await cartItemRef.get();
-
-//     if (!updatedDoc.exists) {
-//       return res.status(404).json({error: "Cart item not found"});
-//     }
-
-//     res.status(200).json({id: updatedDoc.id, ...updatedDoc.data()});
-//   } catch (error) {
-//     console.error("Error updating cart item:", error);
-//     res.status(500).json({error: "Failed to update cart item"});
-//   }
-// });
-
-// // Cart count
-// router.get("/count/:uid", async (req, res) => {
-//   try {
-//     const {uid} = req.params;
-
-//     if (!uid) {
-//       return res.status(400).json({error: "Missing user ID"});
-//     }
-
-//     const cartRef = admin.firestore().collection("users").doc(uid).collection("cart");
-//     const snapshot = await cartRef.count().get();
-
-//     res.status(200).json({count: snapshot.data().count});
-//   } catch (error) {
-//     console.error("Error fetching cart count:", error);
-//     res.status(500).json({error: "Failed to fetch cart count"});
-//   }
-// });
-
-// module.exports = router;

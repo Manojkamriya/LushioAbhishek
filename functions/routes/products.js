@@ -1,15 +1,17 @@
 /* eslint-disable new-cap */
 /* eslint-disable max-len */
 const express = require("express");
-const admin = require("firebase-admin");
-const db = admin.firestore();
-const storage = admin.storage();
+const {getFirestore} = require("firebase-admin/firestore");
+const {getStorage} = require("firebase-admin/storage");
+const storage = getStorage();
+const db = getFirestore();
 const router = express.Router();
+const logger = require("firebase-functions/logger");
 
 // Add a new product
 router.post("/addProduct", async (req, res) => {
   try {
-    console.log("Received product data:", req.body);
+    logger.log("Received product data:", req.body);
 
     const {
       name,
@@ -324,9 +326,6 @@ router.put("/update/:id", async (req, res) => {
       return [...new Set(allSizes)].sort();
     };
 
-    // Ensure allImages array exists
-    updatedProductData.allImages = [...(currentProductData.allImages || [])];
-
     // Validate required fields
     const requiredFields = [
       "name",
@@ -357,6 +356,8 @@ router.put("/update/:id", async (req, res) => {
       return res.status(400).json({error: "Two card images are required"});
     }
 
+    let newAllImages = [];
+
     // Process color options and images
     if (updatedProductData.height !== undefined) {
       // Height-based classification
@@ -384,25 +385,15 @@ router.put("/update/:id", async (req, res) => {
         ...updatedProductData.belowHeight.quantities,
       });
 
-      // Add new images from aboveHeight colorOptions
+      // Rebuild allImages from aboveHeight and belowHeight colorOptions
       updatedProductData.aboveHeight.colorOptions.forEach((option) => {
         if (option.images && Array.isArray(option.images)) {
-          option.images.forEach((imageUrl) => {
-            if (!updatedProductData.allImages.includes(imageUrl)) {
-              updatedProductData.allImages.push(imageUrl);
-            }
-          });
+          newAllImages = newAllImages.concat(option.images);
         }
       });
-
-      // Add new images from belowHeight colorOptions
       updatedProductData.belowHeight.colorOptions.forEach((option) => {
         if (option.images && Array.isArray(option.images)) {
-          option.images.forEach((imageUrl) => {
-            if (!updatedProductData.allImages.includes(imageUrl)) {
-              updatedProductData.allImages.push(imageUrl);
-            }
-          });
+          newAllImages = newAllImages.concat(option.images);
         }
       });
     } else {
@@ -416,17 +407,15 @@ router.put("/update/:id", async (req, res) => {
       // Generate sizeOptions from quantities
       updatedProductData.sizeOptions = extractUniqueSizes(updatedProductData.quantities);
 
-      // Add new images from colorOptions
       updatedProductData.colorOptions.forEach((option) => {
         if (option.images && Array.isArray(option.images)) {
-          option.images.forEach((imageUrl) => {
-            if (!updatedProductData.allImages.includes(imageUrl)) {
-              updatedProductData.allImages.push(imageUrl);
-            }
-          });
+          newAllImages = newAllImages.concat(option.images);
         }
       });
     }
+
+    // Deduplicate allImages
+    updatedProductData.allImages = [...new Set(newAllImages)];
 
     // Update the product
     await productRef.update(updatedProductData);
