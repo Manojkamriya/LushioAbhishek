@@ -1,14 +1,15 @@
 /* eslint-disable max-len */
 const {initializeApp} = require("firebase-admin/app");
-// const {onRequest} = require("firebase-functions/v2/https");
+const {onRequest} = require("firebase-functions/v2/https");
 const express = require("express");
 const cors = require("cors");
 // const logger = require("firebase-functions/logger");
 
 // Initialize Firebase Admin
-initializeApp({
-  storageBucket: "lushio-fitness.appspot.com",
-});
+// initializeApp({
+//   storageBucket: "lushio-fitness.appspot.com",
+// });
+initializeApp();
 
 // Initialize Express app
 const app = express();
@@ -68,13 +69,13 @@ app.use("/pickup", pickupRoute);
 app.use("/payment", paymentRoute);
 
 // Export API
-// exports.api = onRequest(app);
+exports.api = onRequest(app);
 
 // Import and export cloud functions
 exports.generateReferralCode = require("./cloudFunctions/generateReferralCode.js");
 
 // Import and export cron jobs
-// exports.assignBirthdayCoins = require("./cronjobs/birthdayAnniversaryCoins.js").assignBirthdayCoins;
-// exports.assignAnniversaryCoins = require("./cronjobs/birthdayAnniversaryCoins.js").assignAnniversaryCoins;
-// exports.assignAccountAgeCoins = require("./cronjobs/accountAgeCoins.js");
-// exports.removeExpiredCoins = require("./cronjobs/expireCoins.js");
+exports.assignBirthdayCoins = require("./cronjobs/birthdayAnniversaryCoins.js").assignBirthdayCoins;
+exports.assignAnniversaryCoins = require("./cronjobs/birthdayAnniversaryCoins.js").assignAnniversaryCoins;
+exports.assignAccountAgeCoins = require("./cronjobs/accountAgeCoins.js");
+exports.removeExpiredCoins = require("./cronjobs/expireCoins.js");

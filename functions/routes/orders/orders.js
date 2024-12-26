@@ -7,7 +7,7 @@ const axios = require("axios");
 const router = express.Router();
 const {getFirestore, FieldValue} = require("firebase-admin/firestore");
 const db = getFirestore();
-const {generateToken, destroyToken} = require("./shipRocketAuth");
+const {generateToken, destroyToken} = require("./shiprocketAuth");
 // const logger = require("firebase-functions/logger");
 
 // Validation middleware

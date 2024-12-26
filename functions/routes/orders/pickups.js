@@ -2,7 +2,7 @@
 /* eslint-disable max-len */
 const express = require("express");
 const axios = require("axios");
-const {generateToken, destroyToken} = require("./shipRocketAuth");
+const {generateToken, destroyToken} = require("./shiprocketAuth");
 
 const router = express.Router();
 const SHIPROCKET_API_URL = process.env.SHIPROCKET_API_URL;

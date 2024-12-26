@@ -3,8 +3,8 @@
 const express = require("express");
 const {getFirestore} = require("firebase-admin/firestore");
 const {getStorage} = require("firebase-admin/storage");
-const db = getFirestore();
 const storage = getStorage();
+const db = getFirestore();
 const router = express.Router();
 const logger = require("firebase-functions/logger");
 
