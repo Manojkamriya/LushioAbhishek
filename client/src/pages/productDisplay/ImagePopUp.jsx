@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useSwipeable } from "react-swipeable";
+import URLMediaRenderer from "../../components/URLMediaRenderer";
 import "./ImagePopUp.css";
 
 const ImagePopUp = ({
@@ -56,24 +57,25 @@ const ImagePopUp = ({
               <AiOutlineArrowLeft />
             </button>
             <div className="main-image-wrapper" {...handlers}>
-              <img
-                key={currentIndex}
-                src={images[currentIndex]}
-                alt={`popup ${currentIndex + 1}`}
-                className="main-image"
+             
+              <URLMediaRenderer
+               key={currentIndex}
+               src={images[currentIndex]}
+               className="main-image"
               />
             </div>
             <div className="thumbnails">
               {images.map((image, index) => (
-                <img
-                  key={index}
+               
+                <URLMediaRenderer
+                key={index}
                   src={image}
                   alt={`Thumbnail ${index + 1}`}
                   className={`thumbnail ${
                     index === currentIndex ? "active" : ""
                   }`}
                   onClick={() => handleThumbnailClick(index)}
-                />
+               />
               ))}
             </div>
           </div>

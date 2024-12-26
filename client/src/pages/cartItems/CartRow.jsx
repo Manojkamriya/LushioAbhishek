@@ -11,6 +11,7 @@ const CartRow = ({
   handleOpen,
   handleClose,
   open,
+  setCartProducts,
   selectedProduct,
   handleMoveToWishlist,
   handleRemoveFromCart,
@@ -25,7 +26,8 @@ const CartRow = ({
   const [isPopupOneOpen, setPopupOneOpen] = useState(false);
   const [isPopupTwoOpen, setPopupTwoOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-
+  const [isLoading,setIsLoading] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [cartQuantity, setCartQuantity] = useState(0);
   const wishlistItem = wishlist.find((e) => e.productId === item.product.id);
@@ -45,6 +47,7 @@ const CartRow = ({
     };
 
     try {
+      setIsLoading(true);
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/getQty`,
         data
@@ -54,17 +57,54 @@ const CartRow = ({
     } catch (err) {
       console.log(err);
     }
+    finally{
+      setIsLoading(false);
+    }
   };
   const handlePopUpTwoOpen = (e) => {
     setPopupTwoOpen(true);
     handleOpen(e);
   };
+  const handleQuantityUpdate = async(cartItemId) =>{
+    const data = {
+uid: user.uid,
+quantity: cartQuantity,
+    }
+    try {
+      setIsUpdating(true);
+      const res = await axios.put(
+        `${process.env.REACT_APP_API_URL}/cart/update/${cartItemId}`,
+        
+         data,
+        
+      );
+      setPopupOneOpen(false);
+      setCartProducts((prevItems) =>
+        prevItems.map((item) =>
+          item.id === cartItemId
+            ? { ...item, quantity: cartQuantity, }
+            : item
+        )
+      );
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
+    finally{
+      setIsUpdating(false);
+    }
+  }
   const handleQuantityChange = (quantity) => {
     setCartQuantity(quantity); // Update cart quantity when a button is clicked
   };
 
   return (
     <>
+     {isUpdating && (
+        <div className="spinner-overlay">
+          <div></div>
+        </div>
+      )}
       <div className={`itemContainer-base-item ${!inStock ? "sold-out" : ""}`}>
         <div className={`cartitems-format ${!inStock ? "sold-out" : ""}`}>
           <div className="itemContainer-base-itemLeft">
@@ -146,7 +186,7 @@ const CartRow = ({
                 </div>
               </div>
               <div className="itemContainer-base-description">
-                ₹ {item.product.price * item.quantity}
+                ₹ {item.product.discountedPrice * item.quantity}
               </div>
             </div>
 
@@ -158,7 +198,7 @@ const CartRow = ({
               />
 
               <div className="returnPeriod-base-returnText">
-                <span className="returnPeriod-base-returnDays">14 days</span>{" "}
+                <span className="returnPeriod-base-returnDays">7 days</span>{" "}
                 return available
               </div>
             </div>
@@ -170,31 +210,39 @@ const CartRow = ({
         isOpen={isPopupOneOpen}
         onClose={() => setPopupOneOpen(false)}
       >
-        <div>
-          <h2>Select Quantity</h2>
-
-          {totalQuantity < 10 && (
-            <p className="error-message"> Only {totalQuantity} Left </p>
-          )}
-          <div className="quantity-buttons">
-            {Array.from({ length: Math.min(totalQuantity, 10) }, (_, index) => {
-              const quantity = index + 1;
-              return (
-                <button
-                  key={quantity}
-                  className={`quantity-button ${
-                    quantity === cartQuantity ? "selected" : ""
-                  }`}
-                  style={{ aspectRatio: 1 }}
-                  onClick={() => handleQuantityChange(quantity)}
-                >
-                  {quantity}
-                </button>
-              );
-            })}
+        {
+          isLoading ? <div className="cart-loader-container">
+          {" "}
+          <span className="loader"></span>
+        </div>:<div className="quantity-change-container">
+          <h2>
+    Select Quantity
+    {totalQuantity < 10 && (
+      <span className="error-message"> (Only {totalQuantity} Left)</span>
+    )}
+  </h2>
+  
+            <div className="quantity-buttons">
+              {Array.from({ length: Math.min(totalQuantity, 10) }, (_, index) => {
+                const quantity = index + 1;
+                return (
+                  <button
+                    key={quantity}
+                    className={`quantity-button ${
+                      quantity === cartQuantity ? "selected" : ""
+                    }`}
+                    style={{ aspectRatio: 1 }}
+                    onClick={() => handleQuantityChange(quantity)}
+                  >
+                    {quantity}
+                  </button>
+                );
+              })}
+            </div>
+            <button className="submit-button"  onClick={() => handleQuantityUpdate(item.id)}>Submit</button>
           </div>
-          <button className="submit-button">Submit</button>
-        </div>
+        }
+        
       </ResponsivePopup>
 
       <ResponsivePopup
@@ -214,7 +262,7 @@ const CartRow = ({
                 <strong>Quantity:</strong> {selectedProduct?.quantity || "1"}
               </p>
               <p>
-                <strong>Price:</strong> Rs. {selectedProduct?.price}
+                <strong>Price:</strong>  ₹ {selectedProduct?.price}
               </p>
               <p>
                 <strong>Size:</strong> {selectedProduct?.size}

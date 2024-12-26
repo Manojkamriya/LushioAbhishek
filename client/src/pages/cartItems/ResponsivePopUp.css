@@ -64,7 +64,13 @@
       transform: translateY(0);
     }
   }
-  
+  .quantity-change-container *{
+font-family: "Assistant";
+  }
+  .quantity-change-container h2{
+    text-align: left;
+    padding-inline: 20px;
+  }
   .quantity-buttons {
     display: grid;
     grid-template-columns: repeat(5,1fr);
@@ -72,7 +78,7 @@
     gap: 10px;
     padding-inline: 20px;
     justify-content: center;
-    margin: 20px 0;
+    margin: 10px 0 20px 0px;
     max-width: 350px;
   }
   
@@ -83,7 +89,7 @@
     color: #1c1b1b;
     outline: none;
    border: 1px solid #1c1b1b;
-   border-radius: 8%;
+   border-radius: 50%;
    cursor: pointer;
    font-size: 16px;
    transition: all 0.2s ease;
