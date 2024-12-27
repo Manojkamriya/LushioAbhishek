@@ -134,9 +134,9 @@ router.post("/addProduct", async (req, res) => {
     const productRef = await db.collection("products").add(productData);
 
     // Create a subcollection for reviews
-    await productRef.collection("reviews").add({
-      // add an initial review here if needed, or leave it empty
-    });
+    // await productRef.collection("reviews").add({
+    //   // add an initial review here if needed, or leave it empty
+    // });
 
     // Return a success response with the product ID
     return res.status(201).json({
