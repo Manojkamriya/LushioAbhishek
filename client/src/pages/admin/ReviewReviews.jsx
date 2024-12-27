@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./ReviewReviews.css"; // Importing CSS for styling
-
+import URLMediaRenderer from "../../components/URLMediaRenderer";
 const ReviewReviews = () => {
   const [reviews, setReviews] = useState([]);
   const [selectedReview, setSelectedReview] = useState(null);
@@ -83,13 +83,15 @@ const ReviewReviews = () => {
             <p><strong>Media:</strong></p>
             <div className="admin-review-media">
               {selectedReview.media.map((url, index) => (
-                <div key={index}>
-                  {url.endsWith('.mp4') ? (
-                    <video src={url} controls />
-                  ) : (
-                    <img src={url} alt={`media-${index}`} />
-                  )}
-                </div>
+                // <div key={index}>
+                //   {url.endsWith('.mp4') ? (
+                //     <video src={url} controls />
+                //   ) : (
+                //     <img src={url} alt={`media-${index}`} />
+                //   )}
+                // </div>
+                <div key={index}>  <URLMediaRenderer  src={url} alt={`media-${index}`}/> </div>
+              
               ))}
             </div>
             <button onClick={handleApprove}>Approve</button>

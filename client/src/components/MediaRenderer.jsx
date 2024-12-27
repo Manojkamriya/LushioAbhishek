@@ -1,6 +1,6 @@
 import React from 'react';
 const getMediaType = (src, file) => {
-  const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'tiff'];
+  const imageExtensions = ['jpg', 'jpeg','avif', 'png', 'gif', 'webp', 'svg', 'bmp', 'tiff'];
   const videoExtensions = ['mp4', 'webm', 'ogg', 'avi', 'mov', 'mkv', 'flv', 'wmv'];
 
   if (src.startsWith('blob:') && file) {

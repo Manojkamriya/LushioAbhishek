@@ -84,28 +84,54 @@ export default function Orders() {
   });
   const [error, setError] = useState(null);
 
-  const fetchOrders = async () => {
+  // const fetchOrders = async () => {
+  //   try {
+  //     setLoading(true);
+
+  //     const params = {
+  //       uid: user.uid,
+  //       limit: 5,
+  //       lastOrderId: pagination.lastOrderId,
+  //     };
+      
+  //     console.log("In",params);
+  //     const response = await axios.get(`${process.env.REACT_APP_API_URL}/orders`, {params});
+  //     console.log("out",response.data);
+      
+  //     const { orders: fetchedOrders, pagination: fetchedPagination } = response.data;
+
+  //     setOrders((prevOrders) => [...prevOrders, ...fetchedOrders]);
+  //     setPagination(fetchedPagination);
+  //   } catch (err) {
+  //     setError(err.response?.data?.message || "Failed to fetch orders");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  const fetchOrders = async (isInitialLoad = false) => {
+    if (loading) return;
+
+    setLoading(true);
     try {
-      setLoading(true);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/orders`, {
+        params: {
+          uid: user.uid,
+          limit: 5,
+          lastOrderId: isInitialLoad ? null : pagination.lastOrderId,
+        },
+      });
 
-      const params = {
-        uid: user.uid,
-        limit: 5,
-        lastOrderId: pagination.lastOrderId,
-      };
-      
-      console.log("In",params);
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/orders`, {params});
-      console.log("out",response.data);
-      
-      const { orders: fetchedOrders, pagination: fetchedPagination } = response.data;
-
-      setOrders((prevOrders) => [...prevOrders, ...fetchedOrders]);
-      setPagination(fetchedPagination);
+      const { orders: newOrders, pagination: newPagination } = response.data;
+console.log(response.data);
+      setOrders((prevOrders) =>
+        isInitialLoad ? newOrders : [...prevOrders, ...newOrders]
+      );
+      setPagination(newPagination);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to fetch orders");
+      setError(err.response?.data?.message || "An error occurred");
     } finally {
       setLoading(false);
+      console.log(orders);
     }
   };
 
@@ -144,6 +170,11 @@ export default function Orders() {
         <hr />
         {/* <DeliveryStatus/> */}
       </div>
+      {pagination.hasMore && (
+        <button onClick={() => fetchOrders(false)} disabled={loading}>
+          {loading ? "Loading..." : "Load More"}
+        </button>
+      )}
       <div className="orders-container">
         {order.map((order) => (
           <div className="order" key={order.id}>

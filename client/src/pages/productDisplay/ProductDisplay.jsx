@@ -90,15 +90,16 @@ const ReviewCard = ({
       </div>
 
       <div className="review-details">
-        <p>
-          <strong>Review:</strong> {review}
-        </p>
-        <p>
+      <p>
           <strong>Quality:</strong> {quality}
         </p>
         <p>
           <strong>Fit:</strong> {fit}
         </p>
+        <p>
+          <strong>Review:</strong> {review}
+        </p>
+      
       </div>
       <ImagePopUp
         images={media} // Pass the images array as prop
@@ -243,20 +244,7 @@ function ProductDisplay() {
     setIsLoadingWishlist(false);
   };
 
-  const reviewTest = [
-    {
-      username: "Manoj Kamriya",
-      rating: 4.5,
-      review: "Great product!",
-      dateTime: "15-09-2024",
-    },
-    {
-      username: "Pranit Mandloi",
-      rating: 4.7,
-      review: "Excellent quality!",
-      dateTime: "14-09-2024",
-    },
-  ];
+  
 
   const [isOpen, setIsOpen] = useState(false); // Control the open/close state
 
@@ -305,6 +293,7 @@ function ProductDisplay() {
   if (error) return <div>Error: {error}</div>;
   if (!product) return <div>No product found</div>;
   return (
+    <>
     <div className="productDisplay">
       {showNotification && (
         <div className="notification-container">
@@ -318,7 +307,7 @@ function ProductDisplay() {
           {product.allImages.map((img) => (
             <URLMediaRenderer
               onClick={() => setImage(img)}
-              className={img === image ? "size-selected" : "size-not-selected"}
+              className={img === image ? "image-selected" : "image-not-selected"}
               src={img}
             />
           ))}
@@ -330,14 +319,14 @@ function ProductDisplay() {
             className="productDisplay-main-img"
             onClick={openGallery}
           />
-          <div className="productDisplay-right-stars">
+          <div className="productDisplay-left-rating">
             <span>
               {/* {product.rating > 0 ? <p>{product.rating}</p> : <p>4.5</p>} */}
               <strong>
                 {product.rating > 0 ? product.rating.toFixed(1) : "4.5"}
               </strong>
-              <SingleStar review="3.7" />
-              {/* <img src="/Images/icons/star.png" alt="icon" /> */}
+              {/* <SingleStar review="3.7" /> */}
+              <img src="/Images/icons/star.png" alt="icon" />
               <p>({product.reviews.length})</p>
             </span>
           </div>
@@ -367,8 +356,8 @@ function ProductDisplay() {
             % OFF
           </div>
         </div>
-        <p className="tax-statement">Inclusive of all taxes</p>
-        <div className="productDisplay-right-size">
+        <p className="productDisplay-tax-statement">Inclusive of all taxes</p>
+        <div className="productDisplay-color-size-selector">
           {isHeightBased ? (
             <HeightBasedSelection
               data={product}
@@ -389,12 +378,22 @@ function ProductDisplay() {
             />
           )}
         </div>
-        {/* Display error message if no size is selected */}
+       
         {showError && !selectedSize && (
           <p className="product-display-error-message">
             Please select a size to proceed!
           </p>
         )}
+           <div className="productDisplay-button-container">
+          <button onClick={() => toggleWishlist(wishlistItem?.id, id)}>
+            WISHLIST
+          </button>
+          <button onClick={() => addToCart(product.id)}>ADD TO CART</button>
+        </div>
+
+        <button className="productDisplay-buy-button" onClick={handleBuyNow}>
+          BUY NOW
+        </button>
         <div className="productDisplay-right-discription">
           <strong>Description: </strong> {product.description.productDetails}
         </div>
@@ -419,27 +418,19 @@ function ProductDisplay() {
         </p>
 
         <SizeChart />
-
-        <div className="button-container">
-          <button onClick={() => toggleWishlist(wishlistItem?.id, id)}>
-            WISHLIST
-          </button>
-          <button onClick={() => addToCart(product.id)}>ADD TO CART</button>
+        <div className="productDisplay-desktop">
+          <img className="productDisplay-trust-image" src="/Images/trust.png" alt="" />
         </div>
-
-        <button className="buy-button" onClick={handleBuyNow}>
+        <button className="productDisplay-buy-button-mobile" onClick={handleBuyNow}>
           BUY NOW
         </button>
 
-        <div className="productDisplay-desktop">
-          <img className="trust-image" src="/Images/trust.png" alt="" />
-        </div>
+      
       </div>
       <div className="mobile-button-container">
         <button
           className="wishlist-button"
-          //  onClick={() => handleWishlistClick(wishlistItem?.id, id)}
-          // disabled={isLoadingWishlist}
+       
         >
           {isRemoving ? (
             <>
@@ -472,21 +463,26 @@ function ProductDisplay() {
           ADD TO CART
         </button>
       </div>
-      <div className="productDisplay-mobile">
-        <img className="trust-image" src="/Images/trust.png" alt="" />
-        <div className="review-container">
-          <div className="review-headings">
-            <h5>Product Review</h5>
-            <RatingModal productId={product.id} />
-          </div>
-          <div className="reviews-list">
-            {reviews.map((review, index) => (
-              <ReviewCard key={index} {...review} />
-            ))}
-          </div>
-        </div>
-      </div>
     </div>
+     <div className="review-container">
+     <div className="review-headings">
+       <h5>Product Review</h5>
+       <RatingModal productId={product.id} />
+     </div>
+     <div className="reviews-container">
+  {reviews.length > 0 ? (
+    <div className="reviews-list">
+      {reviews.map((review, index) => (
+        <ReviewCard key={index} {...review} />
+      ))}
+    </div>
+  ) : (
+    <p className="no-reviews-message">No reviews available.</p>
+  )}
+</div>
+
+   </div>
+   </>
   );
 }
 

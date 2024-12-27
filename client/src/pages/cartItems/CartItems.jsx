@@ -137,16 +137,18 @@ const navigate = useNavigate();
       .filter((id) => selectedItems[id]) // Include only selected items
       .forEach((id) => {
         const cartProduct = cartProducts.find((product) => product.id === id);
-
         if (cartProduct) {
-          const { id, productId, color, height, quantity, size, product } =
-            cartProduct;
+          const { id, productId, color, height, quantity, size, product } = cartProduct;
           const { name } = product; // Extract `name`
-
+        
+          // Ensure `height` has a default value of "normal" if it's null
+          const normalizedHeight = height || "normal";
+        
           // Add details and IDs separately
-          details.push({ productId, color, height, quantity, size, name });
+          details.push({ productId, color, heightType: normalizedHeight, quantity, size, name });
           ids.push(id);
         }
+        
       });
 
     setSelectedProductDetails(details);

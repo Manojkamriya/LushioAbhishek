@@ -37,7 +37,7 @@ const ProductDetails = ({ data, selectedHeight, setSelectedHeight, selectedColor
     return (
         <>
             <p>Select Height:</p>
-            <div className="height-selector">
+            <div className="productDisplay-height-selector">
                 <button
                     onClick={() => handleHeightChange("aboveHeight")}
                     className={selectedHeight === "aboveHeight" ? "selected" : ""}
@@ -57,7 +57,7 @@ const ProductDetails = ({ data, selectedHeight, setSelectedHeight, selectedColor
             {/* Color Selector */}
             <p>Select Color:</p>
             {data[selectedHeight]?.colorOptions?.length > 0 ? (
-                <div className="color-selector">
+                <div className="productDisplay-color-selector">
                     {data[selectedHeight].colorOptions.map((color) => (
                         <button
                             key={color.name}
@@ -78,7 +78,7 @@ const ProductDetails = ({ data, selectedHeight, setSelectedHeight, selectedColor
                 <>
                     <p>Select Size for: {selectedColor}</p>
                     {Object.keys(quantities).length > 0 ? (
-                        <div className="size-selector">
+                        <div className="productDisplay-size-selector">
                             {Object.entries(quantities).map(([size, quantity]) => (
                                 <button
                                     key={size}

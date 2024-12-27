@@ -52,7 +52,7 @@ const ColorOptions = ({ data, selectedColor,
     <>
       <p>Select Color:</p>
       {colorOptions.length > 0 ? (
-        <div className="color-selector">
+        <div className="productDisplay-color-selector">
           {colorOptions.map((color) => (
             <button
               key={color.name}
@@ -73,7 +73,7 @@ const ColorOptions = ({ data, selectedColor,
           {/* <p>Select Size:</p> */}
           <p>Select Size for: {selectedColor}</p>
           {availableSizes.length > 0 ? (
-            <div className="size-selector">
+            <div className="productDisplay-size-selector">
               {availableSizes.map((size) => (
                 <button
                   key={size}
