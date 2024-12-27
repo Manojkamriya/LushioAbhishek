@@ -27,7 +27,7 @@ router.get("/:id", async (req, res) => {
 
     coinsSnapshot.forEach((doc) => {
       const coinData = doc.data();
-      lushioCoins += coinData.amount || 0; // Add the amount from each document
+      lushioCoins += Number(coinData.amount) || 0; // Add the amount from each document
     });
 
     const totalCredits = lushioCoins + lushioCash; // Sum of coins and cash

@@ -5,14 +5,14 @@
 const express = require("express");
 const axios = require("axios");
 const router = express.Router();
-const {getFirestore, FieldValue} = require("firebase-admin/firestore");
+const {getFirestore} = require("firebase-admin/firestore");
 const db = getFirestore();
 const {generateToken, destroyToken} = require("./shiprocketAuth");
 // const logger = require("firebase-functions/logger");
 
 // Validation middleware
 const validateOrderRequest = (req, res, next) => {
-  const required = ["uid", "modeOfPayment", "orderedProducts", "address", "totalAmount", "payableAmount"];
+  const required = ["uid", "modeOfPayment", "orderedProducts", "address", "totalAmount", "payableAmount", "paymentData"];
   const missing = required.filter((field) => !req.body[field]);
 
   if (missing.length > 0) {
@@ -30,8 +30,9 @@ const validateOrderRequest = (req, res, next) => {
   next();
 };
 
-// Shiprocket creds
+// URLs
 const SHIPROCKET_API_URL = process.env.SHIPROCKET_API_URL;
+const API_URL = process.env.REACT_APP_API_URL;
 
 // Create a order
 router.post("/createOrder", validateOrderRequest, async (req, res) => {
@@ -123,7 +124,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
     const userDoc = await db.collection("users").doc(uid).get();
     const email = userDoc.exists ? userDoc.data().email : null;
 
-    const dateOfOrder = FieldValue.serverTimestamp();
+    const dateOfOrder = new Date();
 
     // Prepare order data
     const orderData = {
@@ -229,6 +230,18 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
 
       // Commit batch
       await batch.commit();
+      if (couponCode) {
+        try {
+          await axios.post(`${API_URL}/coupon/markUsed`, {
+            uid,
+            code: couponCode,
+          });
+        } catch (couponError) {
+          console.error("Error marking coupon as used:", couponError);
+          // We don't throw here as the order is already created successfully
+          // Just log the error for tracking
+        }
+      }
     } catch (shiprocketError) {
       console.error("Shiprocket API Error:", shiprocketError.response?.data || shiprocketError);
 
@@ -337,11 +350,24 @@ router.get("/", async (req, res) => {
     // Execute the query to get orders
     const ordersSnapshot = await query.get();
 
-    // Process orders
-    const orders = ordersSnapshot.docs.map((doc) => ({
-      orderId: doc.id,
-      ...doc.data(),
-    }));
+    // Process orders and fetch their orderedProducts
+    const orders = await Promise.all(
+        ordersSnapshot.docs.map(async (doc) => {
+        // Get the orderedProducts subcollection for this order
+          const orderedProductsSnapshot = await doc.ref.collection("orderedProducts").get();
+
+          const orderedProducts = orderedProductsSnapshot.docs.map((productDoc) => ({
+            productId: productDoc.id,
+            ...productDoc.data(),
+          }));
+
+          return {
+            orderId: doc.id,
+            ...doc.data(),
+            orderedProducts,
+          };
+        }),
+    );
 
     // Pagination metadata
     const lastVisible = ordersSnapshot.docs[ordersSnapshot.docs.length - 1];

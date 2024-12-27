@@ -99,15 +99,24 @@ router.get("/:id", async (req, res) => {
     const reviewsRef = productRef.collection("reviews");
 
     const reviewsSnapshot = await reviewsRef.get();
-
     if (reviewsSnapshot.empty) {
       return res.status(404).json({message: "No reviews found for this product"});
     }
 
     const reviewsData = await Promise.all(
         reviewsSnapshot.docs.map(async (reviewDoc) => {
-          const reviewData = reviewDoc.data();
-
+          const mainReviewDoc = await db.collection("reviews").doc(reviewDoc.id).get();
+          const reviewData = mainReviewDoc.data();
+          // Add these logs inside the map function
+          console.log("------");
+          console.log("Review Data:", reviewData);
+          console.log("User ID:", reviewData.userId);
+          console.log("------");
+          // if (reviewData.userId) {
+          //   const userDoc = await db.collection("users").doc(reviewData.userId).get();
+          //   console.log("User Doc Exists:", userDoc.exists);
+          //   console.log("User Data:", userDoc.data());
+          // }
           let formattedTimestamp = "Timestamp not available";
           if (reviewData && reviewData.timestamp && reviewData.timestamp.toDate) {
             const timestamp = reviewData.timestamp.toDate();
@@ -312,7 +321,7 @@ router.post("/approve/:reviewId", async (req, res) => {
       // Add a new document to the user's coins subcollection
       const coinsCollectionRef = db.collection(`users/${userId}/coins`);
       await coinsCollectionRef.add({
-        amount: reviewApprovedCoins,
+        amount: Number(reviewApprovedCoins),
         expiry: expiryDate,
         message: reviewApprovedMessage,
       });
