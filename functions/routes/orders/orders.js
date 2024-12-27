@@ -12,7 +12,7 @@ const {generateToken, destroyToken} = require("./shiprocketAuth");
 
 // Validation middleware
 const validateOrderRequest = (req, res, next) => {
-  const required = ["uid", "modeOfPayment", "orderedProducts", "address", "totalAmount", "payableAmount", "paymentData"];
+  const required = ["uid", "modeOfPayment", "orderedProducts", "address", "totalAmount", "payableAmount"];
   const missing = required.filter((field) => !req.body[field]);
 
   if (missing.length > 0) {
@@ -161,11 +161,9 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       order_id: orderRef.id,
       order_date: dateOfOrder.toISOString().split("T")[0], // Format: YYYY-MM-DD
       pickup_location: pickupLocation,
-
       shipping_is_billing: true,
       company_name: companyName,
       reseller_name: resellerName,
-
       billing_customer_name: address.name,
       billing_last_name: address.name?.split(" ").pop() || "",
       billing_address: `${address.flatDetails}, ${address.areaDetails}`, // Concatenated flatDetails and areaDetails
@@ -184,9 +182,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       })),
       payment_method: modeOfPayment === "cashOnDelivery" ? "COD" : "Prepaid",
       sub_total: payableAmount,
-
       shipping_charges: 0,
-
       length,
       breadth,
       height,
@@ -212,9 +208,24 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
         throw new Error("Invalid response from Shiprocket API");
       }
 
+      const awbResponse = await axios.post(
+          `${SHIPROCKET_API_URL}/courier/assign/awb`,
+          {
+            shipment_id: shiprocketResponse.data.shipment_id,
+          },
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          },
+      );
+
       // Add Shiprocket details to the order
       orderData.shiprocket = {
         ...shiprocketResponse.data,
+        awb_code: awbResponse.data.awb_code,
+        awb_details: awbResponse.data,
       };
       orderData.status = "created";
 
@@ -263,7 +274,13 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
     });
   } catch (error) {
     console.error("Error creating order:", error);
-
+    if (error.response?.data) {
+      console.error("API Error Details:", {
+        status: error.response.status,
+        data: error.response.data,
+        endpoint: error.config?.url,
+      });
+    }
     res.status(500).json({
       message: "Failed to create order",
       error: error.message,
@@ -383,6 +400,251 @@ router.get("/", async (req, res) => {
     console.error("Error fetching orders:", error);
     res.status(500).json({
       message: "Failed to fetch orders",
+      error: error.message,
+    });
+  }
+});
+
+// Cancel an order
+router.post("/cancel", async (req, res) => {
+  const {oid, uid} = req.body;
+
+  if (!oid || !uid) {
+    return res.status(400).json({message: "Order ID and User ID are required"});
+  }
+
+  try {
+    // Get the order document
+    const orderDoc = await db.collection("orders").doc(oid).get();
+
+    if (!orderDoc.exists) {
+      return res.status(404).json({message: "Order not found"});
+    }
+
+    const orderData = orderDoc.data();
+
+    // Validate user owns this order
+    if (orderData.uid !== uid) {
+      return res.status(403).json({message: "Unauthorized access to order"});
+    }
+
+    // Check if order is already cancelled
+    if (orderData.status === "cancelled") {
+      return res.status(400).json({message: "Order is already cancelled"});
+    }
+
+    // Get Shiprocket order details
+    const shiprocketOrderId = orderData.shiprocket?.order_id;
+    if (!shiprocketOrderId) {
+      return res.status(400).json({message: "Shiprocket order ID not found"});
+    }
+
+    let token;
+    try {
+      // Cancel order on Shiprocket
+      token = await generateToken();
+      await axios.post(
+          `${SHIPROCKET_API_URL}/orders/cancel`,
+          {ids: [shiprocketOrderId]},
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          },
+      );
+
+      // Update order status in Firestore
+      await db.collection("orders").doc(oid).update({
+        status: "cancelled",
+        cancellationDate: new Date(),
+      });
+
+      res.status(200).json({
+        message: "Order cancelled successfully",
+      });
+    } catch (shiprocketError) {
+      console.error("Shiprocket API Error:", shiprocketError.response?.data || shiprocketError);
+      throw new Error(`Shiprocket API Error: ${shiprocketError.response?.data?.message || shiprocketError.message}`);
+    } finally {
+      if (token) {
+        await destroyToken(token);
+      }
+    }
+  } catch (error) {
+    console.error("Error cancelling order:", error);
+    res.status(500).json({
+      message: "Failed to cancel order",
+      error: error.message,
+    });
+  }
+});
+
+// Update dilevery address
+router.put("/address/update", async (req, res) => {
+  const {oid, address, uid} = req.body;
+
+  if (!oid || !address || !uid) {
+    return res.status(400).json({message: "Order ID, address details, and user ID are required"});
+  }
+
+  try {
+    const orderDoc = await db.collection("orders").doc(oid).get();
+    if (!orderDoc.exists) {
+      return res.status(404).json({message: "Order not found"});
+    }
+
+    const orderData = orderDoc.data();
+    if (orderData.uid !== uid) {
+      return res.status(403).json({message: "Unauthorized access to order"});
+    }
+
+    const shiprocketOrderId = orderData.shiprocket?.order_id;
+    if (!shiprocketOrderId) {
+      return res.status(400).json({message: "Shiprocket order ID not found"});
+    }
+
+    // Validate and sanitize contact number
+    const sanitizedContactNo = address.contactNo.replace(/\D/g, "").slice(-10);
+    if (sanitizedContactNo.length !== 10) {
+      return res.status(400).json({message: "Invalid contact number"});
+    }
+
+    // Get user details
+    const userDoc = await db.collection("users").doc(uid).get();
+    const email = userDoc.exists ? userDoc.data().email : null;
+
+    let token;
+    try {
+      token = await generateToken();
+
+      const shiprocketAddressData = {
+        order_id: shiprocketOrderId,
+        shipping_customer_name: address.name,
+        shipping_phone: sanitizedContactNo,
+        shipping_address: `${address.flatDetails}, ${address.areaDetails}`,
+        shipping_address_2: address.landmark || "",
+        shipping_city: address.townCity,
+        shipping_state: address.state,
+        shipping_country: address.country,
+        shipping_pincode: address.pinCode,
+        shipping_email: email,
+      };
+
+      await axios.post(
+          `${SHIPROCKET_API_URL}/orders/address/update`,
+          shiprocketAddressData,
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          },
+      );
+
+      // Update address in Firestore
+      await orderDoc.ref.update({
+        address: {
+          ...address,
+          contactNo: address.contactNo,
+        },
+      });
+
+      res.status(200).json({
+        message: "Address updated successfully",
+      });
+    } catch (shiprocketError) {
+      console.error("Shiprocket API Error:", shiprocketError.response?.data || shiprocketError);
+      throw new Error(`Shiprocket API Error: ${shiprocketError.response?.data?.message || shiprocketError.message}`);
+    } finally {
+      if (token) {
+        await destroyToken(token);
+      }
+    }
+  } catch (error) {
+    console.error("Error updating address:", error);
+    res.status(500).json({
+      message: "Failed to update address",
+      error: error.message,
+    });
+  }
+});
+
+router.get("/track/:oid", async (req, res) => {
+  const {oid} = req.params;
+  const {uid} = req.query;
+
+  if (!oid || !uid) {
+    return res.status(400).json({message: "Order ID and User ID are required"});
+  }
+
+  try {
+    const orderDoc = await db.collection("orders").doc(oid).get();
+    if (!orderDoc.exists) {
+      return res.status(404).json({message: "Order not found"});
+    }
+
+    const orderData = orderDoc.data();
+    if (orderData.uid !== uid) {
+      return res.status(403).json({message: "Unauthorized access to order"});
+    }
+
+    const {awb_code, shipment_id} = orderData.shiprocket || {};
+    if (!awb_code && !shipment_id) {
+      return res.status(400).json({message: "Tracking information not available"});
+    }
+
+    let token;
+    try {
+      token = await generateToken();
+      let trackingResponse;
+
+      // Try AWB tracking first, fall back to shipment ID
+      if (awb_code) {
+        try {
+          trackingResponse = await axios.get(
+              `${SHIPROCKET_API_URL}/courier/track/awb/${awb_code}`,
+              {
+                headers: {"Authorization": `Bearer ${token}`},
+              },
+          );
+        } catch (awbError) {
+          console.log("AWB tracking failed, trying shipment ID");
+          if (!shipment_id) throw awbError;
+
+          trackingResponse = await axios.get(
+              `${SHIPROCKET_API_URL}/courier/track/shipment/${shipment_id}`,
+              {
+                headers: {"Authorization": `Bearer ${token}`},
+              },
+          );
+        }
+      } else {
+        trackingResponse = await axios.get(
+            `${SHIPROCKET_API_URL}/courier/track/shipment/${shipment_id}`,
+            {
+              headers: {"Authorization": `Bearer ${token}`},
+            },
+        );
+      }
+
+      res.status(200).json({
+        tracking_data: trackingResponse.data,
+        awb_code,
+        shipment_id,
+      });
+    } catch (shiprocketError) {
+      console.error("Shiprocket API Error:", shiprocketError.response?.data || shiprocketError);
+      throw new Error(`Tracking failed: ${shiprocketError.response?.data?.message || shiprocketError.message}`);
+    } finally {
+      if (token) {
+        await destroyToken(token);
+      }
+    }
+  } catch (error) {
+    console.error("Error tracking order:", error);
+    res.status(500).json({
+      message: "Failed to track order",
       error: error.message,
     });
   }
