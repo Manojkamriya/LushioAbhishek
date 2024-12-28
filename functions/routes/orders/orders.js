@@ -480,7 +480,7 @@ router.post("/cancel", async (req, res) => {
   }
 });
 
-// Update dilevery address
+// Update delivery address
 router.put("/address/update", async (req, res) => {
   const {oid, address, uid} = req.body;
 
@@ -548,6 +548,7 @@ router.put("/address/update", async (req, res) => {
           ...address,
           contactNo: address.contactNo,
         },
+        updatedAt: new Date(),
       });
 
       res.status(200).json({
@@ -570,6 +571,7 @@ router.put("/address/update", async (req, res) => {
   }
 });
 
+// track order (awb + shipment)
 router.get("/track/:oid", async (req, res) => {
   const {oid} = req.params;
   const {uid} = req.query;
