@@ -30,7 +30,7 @@
 }
 
 .productDisplay-img-list {
-  overflow-y: scroll; /* Enable vertical scrolling */
+  overflow-y: auto; /* Enable vertical scrolling */
   -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
   scrollbar-width: thin; /* For modern browsers (Firefox) */
   scrollbar-color: #888 #ebebeb; /* Thumb and track colors */
@@ -53,7 +53,7 @@
 .productDisplay-img-list video {
   height: auto;
   width: calc(100%-4px);
-  border-radius: 7%;
+  border-radius: min(11%, 20px);
   transition: all 0.1s ease;
   cursor: pointer;
 }
@@ -325,7 +325,7 @@
     rgb(226 52 43) 0%,
     rgb(255 106 28) 100%
   );
-  max-width: 300px;
+  max-width: 340px;
   padding: 3cqi 6cqi;
   font-size: 16px;
   margin-block: 10px;
@@ -378,7 +378,8 @@
     gap: 20px;
   }
   .productDisplay-left {
-    width: 98%;
+    width: 95%;
+    margin-inline: auto;
    height: 98vw;
   }
   .productDisplay-right {

@@ -276,7 +276,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
 router.get("/:orderId", async (req, res) => {
   try {
     const {orderId} = req.params;
-    const {uid} = req.body; // For validation that this user owns the order
+    const {uid} = req.query; // For validation that this user owns the order
 
     // Check required fields
     if (!uid || !orderId) {

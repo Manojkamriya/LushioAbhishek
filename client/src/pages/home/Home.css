@@ -98,16 +98,6 @@
     background-color: rgba(255, 255, 255, 0.9);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
-  
-  /* .carousel_arrow_left:hover::before {
-    transform: translate(-65%, -50%) rotate(-135deg);
-  }
-  
-  .carousel_arrow_right:hover::before {
-    transform: translate(-35%, -50%) rotate(45deg);
-  }
-   */
- 
    .carousel_pagination {
      position: absolute;
      bottom: 5px;
@@ -135,6 +125,7 @@
    }
    .fluid-button-container{
   background-color: #efefef;
+  padding-bottom: 15px;
  }
   
   .fluid-button {

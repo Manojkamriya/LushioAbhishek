@@ -179,6 +179,37 @@
       .info-button:hover, .rate-button:hover, .cancel-button:hover {
         opacity: 0.9;
       }
+
+      .order-load-more-button {
+        background-color: #1c1b1b; /* Primary blue color */
+        color: white;
+        border: none;
+        padding: 10px 60px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        display: inline-block;
+        margin: 10px auto;
+      }
+      
+      .order-load-more-button:hover {
+        background-color: #1c1c1c; /* Darker blue on hover */
+        transform: scale(1.05); /* Slightly enlarges the button */
+      }
+      
+      .order-load-more-button:active {
+        transform: scale(0.95); /* Gives a "pressed" effect */
+      }
+      
+      .order-load-more-button:disabled {
+        background-color: #cccccc; /* Grey color for disabled state */
+        color: #666666;
+        cursor: not-allowed;
+      }
+      
       @media (max-width: 480px) {
         .order-title h2{
 margin-top: 20px;

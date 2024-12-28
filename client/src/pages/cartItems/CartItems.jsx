@@ -324,6 +324,7 @@ const navigate = useNavigate();
       setIsActive(false);
       setSuccessOpen(true);
       setTimeout(() => setSuccessOpen(false), 4000);
+      await deleteCartItems();
     } catch (error) {
       console.log(error);
     }
@@ -342,7 +343,7 @@ const navigate = useNavigate();
      // await createOrder();
     } else {
       await createOrder();
-     await deleteCartItems();
+   
     }
   };
   const deleteCartItems = async (arrayData) => {

@@ -275,7 +275,6 @@ function ProductDisplay() {
       selectedColor,
       selectedSize,
       name,
-      price,
       productId,
       imageURL, // Passing the image URL as a query param
     }).toString();

@@ -51,6 +51,7 @@
   @media (max-width: 500px) {
     .reviews-list {
       grid-template-columns: repeat(2,1fr);
+      gap: 10px;
     }
     .review-headings{
       width: 90%;
@@ -58,6 +59,7 @@
     }
     .review-card{
       width: 85%;
+      padding: 10px;
     }
   }
  

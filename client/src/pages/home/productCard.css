@@ -4,7 +4,7 @@ justify-items: center;
 
 background-color: #efefef;
 grid-template-columns: repeat(4, 1fr);
-padding-inline: clamp(0px, 2vw, 40px);
+padding: clamp(0px, 2vw, 40px);
 row-gap: clamp(0px, 2vw, 20px);
 container-type: initial;
   margin-top: 30px;

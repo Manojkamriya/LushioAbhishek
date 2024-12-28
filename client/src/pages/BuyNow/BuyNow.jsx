@@ -13,10 +13,13 @@ const BuyNowPage = () => {
     name: selectedAddress && selectedAddress.name,
     mobile: selectedAddress && selectedAddress.contactNo,
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showNotification, setShowNotification] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
   const [discountPercentage, setDiscountPercentage] = useState(0);
   const [couponApplied, setCouponApplied] = useState("");
+  const [product,setProduct] = useState(null);
   const [useWalletPoints, setUseWalletPoints] = useState(true);
   const [walletPoints, setWalletPoints] = useState(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("phonepe");
@@ -28,13 +31,39 @@ const BuyNowPage = () => {
   const selectedColor = queryParams.get("selectedColor");
   const selectedSize = queryParams.get("selectedSize");
   const name = queryParams.get("name");
-  const price = queryParams.get("price");
   const productId = queryParams.get("productId");
   const imageURL = queryParams.get("imageURL");
+
+  useEffect(() => {
+    // Fetch product when `id` changes
+    const fetchProduct = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_API_URL}/products/${productId}`
+        );
+
+        const data = await response.json();
+setProduct(data);
+        
+      } catch (err) {
+        setError(err.message);
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (productId) fetchProduct();
+  }, [productId]); 
   const getSelectedTotalAmount = () => {
-    
+    if(product){
+      return product.discountedPrice;
+    }
    
-    return price;
+ 
   };
   const getTotalWithWalletAndDiscount = () => {
     let total = getSelectedTotalAmount();
@@ -46,12 +75,14 @@ const BuyNowPage = () => {
 
     // Calculate coupon discount
   //  const couponDiscountAmount = (total * discountPercentage) / 100; // Calculate coupon discount
-  const couponDiscountAmount = discountPercentage;
-    total = Math.max(0, total - couponDiscountAmount); // Apply coupon discount and ensure total doesn't go below zero
+  const couponDiscountAmount = Math.ceil(discountPercentage);
+  total = Math.max(0, total - couponDiscountAmount); 
+  // const couponDiscountAmount = discountPercentage;
+  //   total = Math.max(0, total - couponDiscountAmount); 
 
     // Apply additional discount for payment method
     if (selectedPaymentMethod !== "cashOnDelivery") {
-      const additionalDiscount = total * 0.05; // 5% additional discount for online payment
+      const additionalDiscount =  Math.ceil(total * 0.05); // 5% additional discount for online payment
       additionalDiscountRef.current = additionalDiscount; // Store it in useRef without causing re-renders
       total = Math.max(0, total - additionalDiscount); // Apply additional discount and ensure total doesn't go below zero
     }
@@ -77,7 +108,17 @@ const BuyNowPage = () => {
       fetchUserData();
     }
   }, [user]);
-const selectedProductDetails = [{productId, heightCategory,selectedColor,selectedSize, name,price}];
+  const selectedProductDetails = [
+    {
+      productId,         // Assuming these variables are defined earlier
+      heightCategory,    // and hold the respective values.
+      selectedColor,
+      selectedSize,
+      name,
+      price: product?.discountedPrice || 0, // Correcting property access for discountedPrice
+    }
+  ];
+  
   const orderDetails = {
     uid: user.uid,
     modeOfPayment: selectedPaymentMethod,
@@ -176,6 +217,13 @@ const selectedProductDetails = [{productId, heightCategory,selectedColor,selecte
      
     }
   };
+  if (loading)
+    return (
+      <div className="loader-container">
+        {" "}
+        <span className="loader"></span>
+      </div>
+    );
   const shippingFee = "FREE";
   return (
     <div>
