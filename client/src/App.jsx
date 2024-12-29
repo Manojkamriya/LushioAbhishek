@@ -89,7 +89,6 @@ function App() {
             <Route path="/user" element={<User />} />
             <Route path="/user-editProfile" element={<EditProfile />} />
             <Route path="/wallet" element={<Wallet />} />
-            <Route path="/orderInfo" element={<OrderInfo />} />
             <Route path="/orderInfo/:orderId" element={<OrderInfo />} />
             <Route path="/buyNow" element={<BuyNow />} />
             <Route path="/privacyPolicy" element={<PrivacyPolicy />} />

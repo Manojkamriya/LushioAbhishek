@@ -3,13 +3,15 @@ import Media from "./data";
 import Carousel from "./Carousel";
 import CollectionCard from "./CollectionCard";
 import FeaturedProducts from "./FeaturedProducts";
+import HomeWishlist from "./HomeWishList";
 export default function Home() {
   return (
     <>
       <Carousel images={Media} />
       {/* <ProductCards /> */}
+      <HomeWishlist/>
       <FeaturedProducts/>
-      {/* <div className="collection-card-container">
+      <div className="collection-card-container">
         <CollectionCard
           image="/Images/card-image-6.png"
           name="SHIRTS"
@@ -22,7 +24,7 @@ export default function Home() {
           image="/Images/card-image-5.png"
           name="SALE"
         />
-      </div> */}
+      </div>
       <br></br>
     </>
   );

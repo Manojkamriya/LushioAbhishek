@@ -1,0 +1,96 @@
+.home-wishlist-wrapper{
+    scroll-behavior: smooth;
+    padding: 16px;
+   
+    gap: 16px;
+    background-color: #f9f9f9;
+    width: 100%;
+    box-sizing: border-box;
+}
+.home-wishlist-name{
+    padding: 16px;
+   padding-left: 25px;
+    gap: 16px;
+    border-radius: 10px 10px 0px 0px;
+    background-color: #f0f2f2;
+    color: #565959;
+   
+}
+.home-wishlist-container {
+    display: flex;
+    gap: 16px;
+    overflow-x: scroll;
+    scroll-behavior: smooth;
+ padding-bottom: 16px;
+    background-color: #f9f9f9;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .home-wishlist-container::-webkit-scrollbar {
+    height: 8px;
+  }
+  
+  .home-wishlist-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
+  
+  .home-wishlist-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+  
+  .wishlist-item {
+    flex: 0 0 300px; /* Fixed width for each item */
+    height: 450px;
+    /* background-color: #e0e0e0; */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+  }
+  
+  @media (max-width: 768px) {
+    .wishlist-item {
+      flex: 0 0 240px; /* Adjust width for smaller screens */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .wishlist-item {
+      flex: 0 0 200px; /* Further adjust for very small screens */
+      height: 300px;
+    }
+  }
+ /* Show More Button */
+.show-more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 16px;
+    cursor: pointer;
+    padding: 12px 24px;
+    border-radius: 8px;
+    background-color: #007bff;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: bold;
+    gap: 8px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .show-more:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+  }
+  
+  /* Arrow Icon Styling */
+  .arrow-icon {
+    font-size: 20px;
+    margin-left: 4px;
+  }
