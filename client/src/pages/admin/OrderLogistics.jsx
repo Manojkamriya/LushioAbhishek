@@ -14,6 +14,7 @@ const OrderLogistics = () => {
     companyName: '',
     resellerName: '',
     deliveryCharges: '',
+    returnEnabled: false,
     orderDiscounts: {
       500: '',
       1000: '',
@@ -61,10 +62,15 @@ const OrderLogistics = () => {
 
   // Handle input changes
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     
     // Special handling for discounts
-    if (name.startsWith('discount_')) {
+    if (type === 'checkbox') {
+      setFormData(prev => ({
+        ...prev,
+        [name]: checked
+      }));
+    } else if (name.startsWith('discount_')) {
       const discountKey = name.replace('discount_', '');
       
       setFormData(prev => ({
@@ -97,6 +103,7 @@ const OrderLogistics = () => {
         companyName: formData.companyName || '',
         resellerName: formData.resellerName || '',
         deliveryCharges: formData.deliveryCharges ? parseFloat(parseFloat(formData.deliveryCharges).toFixed(2)) : 0,
+        returnEnabled: formData.returnEnabled,
         orderDiscounts: Object.fromEntries(
           Object.entries(formData.orderDiscounts).map(([key, value]) => [
             key, 
@@ -204,19 +211,30 @@ const OrderLogistics = () => {
           </div>
         </div>
 
-        {/* Delivery Charges */}
+        {/* Delivery and Return Options */}
         <div className="form-section">
-          <h3>Delivery Charges</h3>
-          <label>
-            Delivery Charges:
-            <input
-              type="text"
-              name="deliveryCharges"
-              value={formData.deliveryCharges}
-              onChange={handleChange}
-              placeholder="Enter delivery charges (2 decimal places)"
-            />
-          </label>
+          <h3>Delivery Options</h3>
+          <div className="form-row">
+            <label>
+              Delivery Charges:
+              <input
+                type="text"
+                name="deliveryCharges"
+                value={formData.deliveryCharges}
+                onChange={handleChange}
+                placeholder="Enter delivery charges (2 decimal places)"
+              />
+            </label>
+            <label className="checkbox-label">
+              Enable Returns:
+              <input
+                type="checkbox"
+                name="returnEnabled"
+                checked={formData.returnEnabled}
+                onChange={handleChange}
+              />
+            </label>
+          </div>
         </div>
 
         {/* Discount Tiers */}
@@ -249,114 +267,3 @@ const OrderLogistics = () => {
 };
 
 export default OrderLogistics;
-
-
-// import React,{useState} from 'react'
-// import "./OrderLogistics.css"
-
-// const OrderLogistics = () => {
-//     const [dimensions, setDimensions] = useState({
-//         length: '',
-//         breadth: '',
-//         height: '',
-//         weight: '',
-//       });
-    
-//       const handleChange = (e) => {
-//         const { name, value } = e.target;
-//         setDimensions((prev) => ({
-//           ...prev,
-//           [name]: value,
-//         }));
-//       };
-    
-//       const handleSubmit = (e) => {
-//         e.preventDefault();
-//         const { length, breadth, height, weight } = dimensions;
-    
-//         if (length && breadth && height && weight) {
-//           alert(`Order Dimensions:\nLength: ${length} cm\nbreadth: ${breadth} cm\nHeight: ${height} cm\nWeight: ${weight} cm`);
-//         } else {
-//           alert('Please fill in all fields.');
-//         }
-//       };
-    
-//       return (
-//         <>
-//           <div className='order-dimensions-form-wrapper'>
-//           <form className="order-dimensions-form" onSubmit={handleSubmit}>
-//           <h3>Order Dimensions</h3>
-//           <div className='form-fields'>
-//           <div className="form-group">
-//             <label>
-//               Length (cm):
-//               <input
-//                 type="number"
-//                 name="length"
-//                 value={dimensions.length}
-//                 onChange={handleChange}
-//                 placeholder="Enter length"
-//                 required
-//               />
-//             </label>
-//           </div>
-//           <div className="form-group">
-//             <label>
-//               breadth (cm):
-//               <input
-//                 type="number"
-//                 name="breadth"
-//                 value={dimensions.breadth}
-//                 onChange={handleChange}
-//                 placeholder="Enter breadth"
-//                 required
-//               />
-//             </label>
-//           </div>
-//           <div className="form-group">
-//             <label>
-//               Height (cm):
-//               <input
-//                 type="number"
-//                 name="height"
-//                 value={dimensions.height}
-//                 onChange={handleChange}
-//                 placeholder="Enter height"
-//                 required
-//               />
-//             </label>
-//           </div>
-//           <div className="form-group">
-//             <label>
-//               Weight (Kg):
-//               <input
-//                 type="number"
-//                 name="weight"
-//                 value={dimensions.weight}
-//                 onChange={handleChange}
-//                 placeholder="Enter weight(in KG)"
-//                 required
-//               />
-//             </label>
-//           </div>
-//           </div>
-         
-//           <button type="submit" className="submit-button">
-//             Submit
-//           </button>
-//         </form>
-//         <button className="submit-button">
-//           Orders
-//           </button>
-//         </div>
-        
-     
-    
-
-//         </>
-       
-       
-//       );
-// }
-
-// export default OrderLogistics

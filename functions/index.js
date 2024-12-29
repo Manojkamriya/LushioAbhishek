@@ -51,6 +51,8 @@ const getCategoriesRoute = require("./routes/categories.js");
 const ordersRoute = require("./routes/orders/orders.js");
 const pickupRoute = require("./routes/orders/pickups.js");
 const paymentRoute = require("./routes/payment.js");
+const adminOrderRoute = require("./routes/orders/admin.js");
+const courierServicabilityRoute = require("./routes/orders/courierServicability.js");
 
 // Use routes
 app.use("/user", userRoutes);
@@ -67,6 +69,8 @@ app.use("/subCategories", getCategoriesRoute);
 app.use("/orders", ordersRoute);
 app.use("/pickup", pickupRoute);
 app.use("/payment", paymentRoute);
+app.use("/orderAdmin", adminOrderRoute);
+app.use("/couriers", courierServicabilityRoute);
 
 // Export API
 exports.api = onRequest(app);
