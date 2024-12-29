@@ -1,6 +1,6 @@
 import React from "react";
 
-const OrderedProducts = () => {
+const OrderedProducts = ({orderedProducts}) => {
   const products = [
     {
         name: "Men's Black Hoodie",
@@ -26,20 +26,34 @@ const OrderedProducts = () => {
     <div className="ordered-products-container">
       <h2 className="ordered-products-heading">Ordered Products</h2>
       <div className="ordered-products-list">
-        {products.map((product) => (
-          <div className="ordered-product" key={product.id}>
+        {orderedProducts.map((product,index) => (
+          <div className="ordered-product" key={index}>
             <img
-              src={product.image}
+              src={product.productDetails.cardImages[0]}
               alt={product.name}
               className="ordered-product-image"
             />
             <div className="ordered-product-details">
-              <p className="ordered-product-name">{product.name}</p>
+              <p className="ordered-product-name">{product.productName}</p>
               <p className="ordered-product-info">Size: {product.size}</p>
-              <p className="ordered-product-info">Height: {product.height}</p>
+              <p className="ordered-product-info">Height: {product.heightType || "Normal"}</p>
+
               <p className="ordered-product-info">Quantity: {product.quantity}</p>
-              <p className="ordered-product-info">Color: {product.color}</p>
-              <p className="ordered-product-price">₹{product.price}</p>
+              <p className="ordered-product-info">Color: {product.color} 
+              <span 
+              className="color-box"
+      style={{
+     display:"inline-block",
+     marginLeft:"5px",
+        width: "10px",
+        height: "10px",
+        backgroundColor: product.colorCode,
+       
+      }}
+    ></span>
+              </p>
+             
+              {/* <p className="ordered-product-price">₹{product.price}</p> */}
             </div>
           </div>
         ))}

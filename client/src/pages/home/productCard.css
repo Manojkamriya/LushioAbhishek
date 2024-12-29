@@ -4,7 +4,7 @@ justify-items: center;
 
 background-color: #efefef;
 grid-template-columns: repeat(4, 1fr);
-padding-inline: clamp(0px, 2vw, 40px);
+padding: clamp(0px, 2vw, 40px);
 row-gap: clamp(0px, 2vw, 20px);
 container-type: initial;
   margin-top: 30px;
@@ -79,8 +79,7 @@ container-type: initial;
   margin-inline: 4%;
 }
 .item-image span img {
-  /* height: 20px;
-  width: 20px; */
+ 
   height: 60%;
   width: 60%;
 }
@@ -262,14 +261,19 @@ font-size: min(7cqi, 18px);
     font-size:  7cqi;
   }
   .color-size-selector div {
-    /* display: flex;
-    justify-content: flex-start;
-    align-items: center; */
-    gap: 3%;
+ 
+    gap: 4%;
     row-gap: 23%;
     margin-bottom: 5%;
     width: 92%;
     height: auto;
+  }
+  .color-size-selector div:not(.height-selector):not(.size-selector) {
+    /* Your styles here */
+    display: grid;
+    grid-template-columns: repeat(6,1fr);
+    row-gap: 21%;
+    width: 75%;
   }
  .height-selector {
     display: flex;
@@ -280,14 +284,9 @@ font-size: min(7cqi, 18px);
     /* width: 100%; */
     height: auto;
   }
-  .color-size-selector div:not(.height-selector):not(.size-selector) {
-    /* Your styles here */
-    display: grid;
-    grid-template-columns: repeat(7,1fr);
-    row-gap: 15%;
-    width: 90%;
-  }
+
 .size-selector{
+  display: grid;
   grid-template-columns: repeat(4,1fr);
   row-gap: 15cqi;
 }
@@ -342,7 +341,7 @@ transition: all 0.2s ease;
 color: white;
 background-color: #1c1c1c;
 }
-.size-selector button.sold-out::before {
+.size-selector button.sold-out::before,.productDisplay-size-selector button.sold-out::before {
 content: "Sold Out";
 position: absolute;
 top: 50%;

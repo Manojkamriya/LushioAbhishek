@@ -10,72 +10,7 @@ import "./order.css";
 export default function Orders() {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
-  const order = [
-    {
-      id: "#54477622",
-      products: [
-        {
-          productName: "Men's Grey & Blue Cargo Joggers",
-          quantity: 2,
-          price: 1500,
-          size: "M",
-          color: "blue",
-          imgUrl: "/Images/product_210.webp",
-        },
-        {
-          productName: "Men's Black T-Shirt",
-          quantity: 1,
-          price: 800,
-          size: "L",
-          color: "black",
-          imgUrl: "/Images/product_119.webp",
-        },
-      ],
-      shippingAddress: "73, PNT Colony, Indore, Madhya Pradesh, 452003",
-      deliveryDate: "14 Jul, 2024",
-      status: "Delivered",
-    },
-    {
-      id: "#87834234",
-      products: [
-        {
-          productName: "Women's Black Hoodie",
-          quantity: 1,
-          price: 1800,
-          size: "L",
-          color: "black",
-          imgUrl: "/Images/product_214.webp",
-        },
-        {
-          productName: "Women's White T-Shirt",
-          quantity: 2,
-          price: 900,
-          size: "S",
-          color: "white",
-          imgUrl: "/Images/product230.jpg",
-        },
-      ],
-      shippingAddress: "22, MG Road, Mumbai, Maharashtra, 400001",
-      deliveryDate: "20 Jul, 2024",
-      status: "Shipped",
-    },
-    {
-      id: "#34211212",
-      products: [
-        {
-          productName: "Men's White Sneakers",
-          quantity: 1,
-          price: 2500,
-          size: "XL",
-          color: "green",
-          imgUrl: "/Images/product_214.webp",
-        },
-      ],
-      shippingAddress: "19, JP Nagar, Bengaluru, Karnataka, 560078",
-      deliveryDate: "26 Jul, 2024",
-      status: "On-the-Way",
-    },
-  ];
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
@@ -84,26 +19,29 @@ export default function Orders() {
   });
   const [error, setError] = useState(null);
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (isInitialLoad = false) => {
+    if (loading) return;
+
+    setLoading(true);
     try {
-      setLoading(true);
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/orders`,
+        {
+          params: {
+            uid: user.uid,
+            limit: 5,
+            lastOrderId: isInitialLoad ? null : pagination.lastOrderId,
+          },
+        }
+      );
 
-      const params = {
-        uid: user.uid,
-        limit: 5,
-        lastOrderId: pagination.lastOrderId,
-      };
-      
-      console.log("In",params);
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/orders`, {params});
-      console.log("out",response.data);
-      
-      const { orders: fetchedOrders, pagination: fetchedPagination } = response.data;
-
-      setOrders((prevOrders) => [...prevOrders, ...fetchedOrders]);
-      setPagination(fetchedPagination);
+      const { orders: newOrders, pagination: newPagination } = response.data;
+      setOrders((prevOrders) =>
+        isInitialLoad ? newOrders : [...prevOrders, ...newOrders]
+      );
+      setPagination(newPagination);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to fetch orders");
+      setError(err.response?.data?.message || "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -134,8 +72,8 @@ export default function Orders() {
       fetchOrders();
     }
   };
-  if (order.length === 0) {
-    return <EmptyOrder />
+  if (orders.length === 0) {
+    return <EmptyOrder />;
   }
   return (
     <div className="order-wrapper">
@@ -144,18 +82,19 @@ export default function Orders() {
         <hr />
         {/* <DeliveryStatus/> */}
       </div>
+
       <div className="orders-container">
-        {order.map((order) => (
-          <div className="order" key={order.id}>
+        {orders.map((order, index) => (
+          <div className="order" key={index}>
             <div className="orderID">
-              <strong>Order ID:</strong> {order.id}
+              <strong>Order ID:</strong> {order.orderId}
             </div>
 
             <div className="order-products">
-              {order.products.map((product, index) => (
+              {order.orderedProducts.map((product, index) => (
                 <div className="product-details" key={index}>
                   <img
-                    src={product.imgUrl}
+                    src={product.productDetails.cardImages[0]}
                     alt={product.productName}
                     className="product-image"
                   />
@@ -174,14 +113,16 @@ export default function Orders() {
                       <strong>Color:</strong> {product.color}
                       <span
                         className="color-box"
-                        style={{ backgroundColor: product.color }}
+                        style={{ backgroundColor: product.colorCode }}
                       ></span>
                     </p>
                     {/* Individual Cancel and Rate Us Buttons */}
                     <div className="item-button-container">
                       <button
                         className="open-rating-button"
-                        onClick={() => handleCancelProduct(order.id, product.id)}
+                        onClick={() =>
+                          handleCancelProduct(order.id, product.id)
+                        }
                       >
                         Cancel
                       </button>
@@ -198,7 +139,18 @@ export default function Orders() {
             </div>
 
             <div className="order-delivery-address">
-              <strong>Shipping Address:</strong> {order.shippingAddress}
+              <strong>Shipping Address:</strong>{" "}
+              <strong>{order.address.pinCode}</strong>
+              {", "}
+              {order.address.flatDetails}
+              {", "}
+              {order.address.areaDetails}
+              {", "}
+              {order.address.townCity}
+              {", "}
+              {order.address.state}
+              {", "}
+              {order.address.country}
             </div>
 
             <div className="order-delivery">
@@ -208,7 +160,7 @@ export default function Orders() {
                 className="delivery-icon"
               />
               <span>
-                <strong>Expected Delivery Date:</strong> {order.deliveryDate}
+                <strong>Expected Delivery Date:</strong>
               </span>
             </div>
 
@@ -224,13 +176,25 @@ export default function Orders() {
               >
                 Cancel Order
               </button>
-              <button className="open-rating-button" onClick={() => navigate("/orderInfo")}>Order Info</button>
+              <button
+                className="open-rating-button"
+                onClick={() => navigate(`/orderInfo/${order.orderId}`)}
+              >
+                Order Info
+              </button>
             </div>
           </div>
         ))}
-
       </div>
+      {pagination.hasMore && (
+        <button
+          onClick={() => fetchOrders(false)}
+          disabled={loading}
+          className="order-load-more-button"
+        >
+          {loading ? "Loading..." : "Load More"}
+        </button>
+      )}
     </div>
-
   );
 }
