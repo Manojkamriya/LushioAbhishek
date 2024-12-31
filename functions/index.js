@@ -53,6 +53,7 @@ const pickupRoute = require("./routes/orders/pickups.js");
 const paymentRoute = require("./routes/payment.js");
 const adminOrderRoute = require("./routes/orders/admin.js");
 const courierServicabilityRoute = require("./routes/orders/courierServicability.js");
+const returnsRoutes = require("./routes/orders/returns.js");
 
 // Use routes
 app.use("/user", userRoutes);
@@ -71,6 +72,7 @@ app.use("/pickup", pickupRoute);
 app.use("/payment", paymentRoute);
 app.use("/orderAdmin", adminOrderRoute);
 app.use("/couriers", courierServicabilityRoute);
+app.use("/returns", returnsRoutes);
 
 // Export API
 exports.api = onRequest(app);
