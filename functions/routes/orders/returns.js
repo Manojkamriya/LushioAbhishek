@@ -168,7 +168,7 @@ router.post("/create", async (req, res) => {
     };
 
     // Create return order in Shiprocket
-    const response = await axios.post(
+    const returnOrderResponse = await axios.post(
         `${SHIPROCKET_API_URL}/orders/create/return`,
         returnOrderData,
         {
@@ -179,9 +179,32 @@ router.post("/create", async (req, res) => {
         },
     );
 
+    // Extract shipment_id from return order response
+    const shipment_id = returnOrderResponse.data.shipment_id;
+    if (!shipment_id) {
+      throw new Error("Shipment ID not found in return order response");
+    }
+
+    // Generate AWB for return shipment
+    const awbResponse = await axios.post(
+        `${SHIPROCKET_API_URL}/courier/assign/awb`,
+        {
+          shipment_id,
+          is_return: 1,
+        },
+        {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+    );
+
+
     // Update order document with return order details
     await db.collection("orders").doc(oid).update({
-      "shiprocket.return_order": response.data,
+      "shiprocket.return_order": returnOrderResponse.data,
+      "shiprocket.return_awb": awbResponse.data,
       "returnItems": returnItems,
       "status": "return_initiated",
       "updatedAt": new Date(),
@@ -189,7 +212,10 @@ router.post("/create", async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: response.data,
+      data: {
+        return_order: returnOrderResponse.data,
+        awb_details: awbResponse.data,
+      },
     });
   } catch (error) {
     console.error("Error creating return order:", error);
