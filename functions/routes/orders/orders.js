@@ -224,7 +224,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       // Add Shiprocket details to the order
       orderData.shiprocket = {
         ...shiprocketResponse.data,
-        awb_code: awbResponse.data.awb_code,
+        // awb_code: awbResponse.data.awb_code,
         awb_details: awbResponse.data,
       };
       orderData.status = "created";

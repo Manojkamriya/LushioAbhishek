@@ -93,7 +93,6 @@ router.post("/create", async (req, res) => {
         return_reason: returnData.return_reason,
       };
     });
-    console.log(order_items);
 
     // Generate Shiprocket token
     token = await generateToken();
@@ -207,6 +206,7 @@ router.post("/create", async (req, res) => {
       "shiprocket.return_awb": awbResponse.data,
       "returnItems": returnItems,
       "status": "return_initiated",
+      "returnDate": new Date(),
       "updatedAt": new Date(),
     });
 
@@ -229,5 +229,314 @@ router.post("/create", async (req, res) => {
     }
   }
 });
+
+// Fetch return orders with pagination and date filtering
+router.get("/fetch", async (req, res) => {
+  try {
+    // Get query parameters with defaults
+    const {
+      fromDate,
+      toDate,
+      page = 1,
+      limit = 10,
+    } = req.query;
+
+    // Validate date format (yyyy-mm-dd)
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if ((fromDate && !dateRegex.test(fromDate)) || (toDate && !dateRegex.test(toDate))) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid date format. Use yyyy-mm-dd",
+      });
+    }
+
+    // Convert page and limit to numbers
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+
+    // Build query
+    let query = db.collection("orders")
+        .where("status", "==", "return_initiated")
+        .where("shiprocket.return_order", "!=", null);
+
+    // Add date filters if provided
+    if (fromDate) {
+      const fromDateTime = new Date(fromDate);
+      query = query.where("returnDate", ">=", fromDateTime);
+    }
+    if (toDate) {
+      const toDateTime = new Date(toDate);
+      // Set time to end of day
+      toDateTime.setHours(23, 59, 59, 999);
+      query = query.where("returnDate", "<=", toDateTime);
+    }
+
+    // Order by returnDate in descending order
+    query = query.orderBy("returnDate", "desc");
+
+    // Calculate pagination
+    const startAt = (pageNum - 1) * limitNum;
+
+    // Get total count for pagination info
+    const totalSnapshot = await query.count().get();
+    const total = totalSnapshot.data().count;
+
+    // Apply pagination
+    query = query.limit(limitNum).offset(startAt);
+
+    // Execute query
+    const snapshot = await query.get();
+
+    // Extract order IDs
+    const orders = snapshot.docs.map((doc) => doc.id);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        orders,
+        pagination: {
+          total,
+          page: pageNum,
+          limit: limitNum,
+          totalPages: Math.ceil(total / limitNum),
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching return orders:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching return orders",
+    });
+  }
+});
+
+// Get specific return order details
+router.get("/details/:oid", async (req, res) => {
+  try {
+    const {oid} = req.params;
+
+    // Get order document
+    const orderDoc = await db.collection("orders").doc(oid).get();
+
+    if (!orderDoc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    const orderData = orderDoc.data();
+
+    // Verify this is a return order
+    if (orderData.status !== "return_initiated" || !orderData.shiprocket?.return_order) {
+      return res.status(400).json({
+        success: false,
+        message: "Not a return order",
+      });
+    }
+
+    // Get return items details from orderedProducts subcollection
+    const returnItemIds = Object.keys(orderData.returnItems || {});
+    const returnItemsPromises = returnItemIds.map((productId) =>
+      orderDoc.ref.collection("orderedProducts").doc(productId).get(),
+    );
+
+    const returnItemDocs = await Promise.all(returnItemsPromises);
+
+    // Combine return items data
+    const returnItems = returnItemDocs.reduce((acc, doc) => {
+      if (doc.exists) {
+        const productData = doc.data();
+        acc[doc.id] = {
+          ...orderData.returnItems[doc.id],
+          productName: productData.productName,
+          productDetails: productData.productDetails,
+          productId: productData.productId,
+        };
+      }
+      return acc;
+    }, {});
+
+    // Prepare response data
+    const responseData = {
+      orderId: oid,
+      orderDetails: {
+        shiprocketOrderId: orderData.shiprocket?.order_id,
+        returnOrderId: orderData.shiprocket?.return_order?.order_id,
+        returnShipmentId: orderData.shiprocket?.return_order?.shipment_id,
+        returnAwbCode: orderData.shiprocket?.return_awb?.awb_code,
+        returnDate: orderData.returnDate?.toDate(),
+        status: orderData.status,
+        createdAt: orderData.createdAt?.toDate(),
+        updatedAt: orderData.updatedAt?.toDate(),
+      },
+      customerDetails: {
+        uid: orderData.uid,
+        email: orderData.email,
+        address: orderData.address,
+      },
+      returnItems,
+      shiprocketDetails: {
+        returnOrder: orderData.shiprocket?.return_order,
+        returnAwb: orderData.shiprocket?.return_awb,
+      },
+    };
+
+    return res.status(200).json({
+      success: true,
+      data: responseData,
+    });
+  } catch (error) {
+    console.error("Error fetching return order details:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching return order details",
+    });
+  }
+});
+
+// Update return order
+router.patch("/update/:oid", async (req, res) => {
+  let token = null;
+  try {
+    const {oid} = req.params;
+    const {action, length, breadth, height, weight, return_warehouse_id} = req.body;
+
+    // Validate action array
+    if (!Array.isArray(action) || action.length === 0 || action.length > 2) {
+      return res.status(400).json({
+        success: false,
+        message: "Action must be an array with 1-2 values",
+      });
+    }
+
+    // Validate action values
+    const validActions = ["product_details", "warehouse_address"];
+    const invalidActions = action.filter((a) => !validActions.includes(a));
+    if (invalidActions.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid actions: ${invalidActions.join(", ")}`,
+      });
+    }
+
+    // Get order document
+    const orderDoc = await db.collection("orders").doc(oid).get();
+    if (!orderDoc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    const orderData = orderDoc.data();
+
+    // Verify this is a return order
+    if (orderData.status !== "return_initiated" || !orderData.shiprocket?.return_order) {
+      return res.status(400).json({
+        success: false,
+        message: "Not a return order",
+      });
+    }
+
+    const return_order_id = orderData.shiprocket?.return_order?.order_id;
+    if (!return_order_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Return order ID not found",
+      });
+    }
+
+    // Prepare update data based on action
+    const updateData = {
+      order_id: return_order_id,
+    };
+
+    // Validate and add product details if requested
+    if (action.includes("product_details")) {
+      if (!length || !breadth || !height || !weight) {
+        return res.status(400).json({
+          success: false,
+          message: "All dimensions and weight are required for product_details update",
+        });
+      }
+
+      updateData.length = parseFloat(length);
+      updateData.breadth = parseFloat(breadth);
+      updateData.height = parseFloat(height);
+      updateData.weight = parseFloat(weight);
+
+      // Validate numbers
+      const dimensions = [updateData.length, updateData.breadth, updateData.height, updateData.weight];
+      if (dimensions.some((d) => isNaN(d) || d <= 0)) {
+        return res.status(400).json({
+          success: false,
+          message: "All dimensions and weight must be positive numbers",
+        });
+      }
+    }
+
+    // Validate and add warehouse address if requested
+    if (action.includes("warehouse_address")) {
+      if (!return_warehouse_id) {
+        return res.status(400).json({
+          success: false,
+          message: "return_warehouse_id is required for warehouse_address update",
+        });
+      }
+      updateData.return_warehouse_id = return_warehouse_id;
+    }
+
+    // Generate token and make API call to Shiprocket
+    token = await generateToken();
+
+    const response = await axios.patch(
+        `${SHIPROCKET_API_URL}/orders/edit`,
+        updateData,
+        {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+    );
+
+    // Update order document with new details
+    // Note: We're not updating the status field as per requirement
+    const firestoreUpdate = {
+      "updatedAt": new Date(),
+    };
+
+    if (action.includes("product_details")) {
+      firestoreUpdate["shiprocket.return_order.length"] = updateData.length;
+      firestoreUpdate["shiprocket.return_order.breadth"] = updateData.breadth;
+      firestoreUpdate["shiprocket.return_order.height"] = updateData.height;
+      firestoreUpdate["shiprocket.return_order.weight"] = updateData.weight;
+    }
+
+    if (action.includes("warehouse_address")) {
+      firestoreUpdate["shiprocket.return_order.return_warehouse_id"] = updateData.return_warehouse_id;
+    }
+
+    await db.collection("orders").doc(oid).update(firestoreUpdate);
+
+    return res.status(200).json({
+      success: true,
+      data: response.data,
+    });
+  } catch (error) {
+    console.error("Error updating return order:", error);
+    return res.status(error.response?.status || 500).json({
+      success: false,
+      message: error.response?.data?.message || "Error updating return order",
+    });
+  } finally {
+    if (token) {
+      await destroyToken(token);
+    }
+  }
+});
+
 
 module.exports = router;
