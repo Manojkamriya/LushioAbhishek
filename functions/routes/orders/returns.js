@@ -27,6 +27,23 @@ router.post("/create", async (req, res) => {
       });
     }
 
+    // Fetch dimensions from the admin document
+    const adminDoc = await db.collection("controls").doc("admin").get();
+    if (!adminDoc.exists) {
+      throw new Error("Admin document not found");
+    }
+    const {length, breadth, height, weight, returnEnabled} = adminDoc.data();
+    if (!length || !breadth || !height || !weight) {
+      throw new Error("Incomplete dimension or weight data in admin document.");
+    }
+
+    if (!returnEnabled) {
+      return res.status(400).json({
+        success: false,
+        message: "This feature is currently dissabled.",
+      });
+    }
+
     // Get order details from Firestore
     const orderDoc = await db.collection("orders").doc(oid).get();
     if (!orderDoc.exists) {
@@ -117,15 +134,6 @@ router.post("/create", async (req, res) => {
         success: false,
         message: "No primary pickup location found",
       });
-    }
-    // Fetch dimensions from the admin document
-    const adminDoc = await db.collection("controls").doc("admin").get();
-    if (!adminDoc.exists) {
-      throw new Error("Admin document not found");
-    }
-    const {length, breadth, height, weight} = adminDoc.data();
-    if (!length || !breadth || !height || !weight) {
-      throw new Error("Incomplete dimension or weight data in admin document.");
     }
 
     // Prepare return order data
@@ -537,6 +545,5 @@ router.patch("/update/:oid", async (req, res) => {
     }
   }
 });
-
 
 module.exports = router;
