@@ -202,7 +202,7 @@ const Pickups = ({ onClose }) => {
                           onChange={() => handleLocationSelect(location)}
                           className="pickup-radio"
                         />
-                        <h3>{location.pickup_location}</h3>
+                        <h3>{location.pickup_location} (ID : {location.id})</h3>
                       </div>
                       <StatusBadge status={location.status} />
                     </div>
