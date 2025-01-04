@@ -1,5 +1,5 @@
 import { auth, db } from "../firebaseConfig";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendSignInLinkToEmail } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendSignInLinkToEmail, sendEmailVerification } from "firebase/auth";
 import { doc, setDoc, updateDoc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
 
 // Determine the frontend URL dynamically from environment variables
@@ -28,31 +28,34 @@ const handleEmailSignUp = async (email, password, referralCode) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    const finalReferralCode = referralCode || "";
+    const finalReferralCode = (referralCode).trim() || "";
 
     await setDoc(doc(db, "users", user.uid), {
       email: user.email,
       createdAt: new Date(),
       referralCode: finalReferralCode,
-      lastSignInTime: new Date(),
+      lastSignInTime: null,
     });
 
+    // Configure verification email settings
     const actionCodeSettings = {
-      url: `${FRONTEND_URL}/finishSignIn?cartId=1234`,
+      url: `${FRONTEND_URL}/finishSignIn`,
       handleCodeInApp: true,
     };
-    await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-    alert("Verification email sent! \nPlease Verify the account first!");
 
-    window.localStorage.setItem("emailForSignIn", email);
+    // Send verification email with custom settings
+    await sendEmailVerification(user, actionCodeSettings);
 
-    console.log(user);
-    return user;
+    // Sign out the user immediately after sending verification
+    await auth.signOut();
 
+    alert("Verification email sent! Please verify your account before logging in.");
+
+    return null;
   } catch (error) {
     console.error("Error signing up with email and password", error);
     alert(error.message);
-    throw error; // Re-throw the error to be handled by the calling function
+    throw error;
   }
 };
 
@@ -60,6 +63,13 @@ const handleEmailLogin = async (email, password) => {
   try {
     const result = await signInWithEmailAndPassword(auth, email, password);
     const user = result.user;
+
+    // Check if email is verified
+    if (!user.emailVerified) {
+      await auth.signOut();
+      alert("Verify your email first.");
+      throw new Error("Please verify your email before logging in. Check your inbox for the verification link.");
+    }
 
     const userDoc = doc(db, "users", user.uid);
     const userSnapshot = await getDoc(userDoc);
@@ -69,17 +79,24 @@ const handleEmailLogin = async (email, password) => {
         lastSignInTime: new Date(),
       });
     }
-
-    console.log(user);
-
     return user;
   } catch (error) {
     console.error("Error during email login", error);
+    throw error;
   }
 };
 
 const sendEmailSignInLink = async (email) => {
   try {
+    // First check if user exists and is verified
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("email", "==", email));
+    const querySnapshot = await getDocs(q);
+    
+    if (querySnapshot.empty) {
+      throw new Error("No account found with this email. Please sign up first.");
+    }
+
     const actionCodeSettings = {
       url: `${FRONTEND_URL}/finishSignIn`,
       handleCodeInApp: true,
@@ -89,6 +106,8 @@ const sendEmailSignInLink = async (email) => {
     alert("Login link sent to your email!");
   } catch (error) {
     console.error("Error sending email sign-in link", error);
+    alert(error.message);
+    throw error;
   }
 };
 

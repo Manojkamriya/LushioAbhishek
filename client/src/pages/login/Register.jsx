@@ -121,7 +121,7 @@ const Register = () => {
     } else {
       try {
         await handleEmailSignUp(identifier, password, referralCode);
-        navigate("/user");
+        navigate("/");
       } catch (error) {
         console.error("Error signing up with email", error);
       }
