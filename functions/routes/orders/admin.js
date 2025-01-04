@@ -112,7 +112,7 @@ router.post("/manifest", async (req, res) => {
     // Step 1: Generate Manifest
     const generateResponse = await axios.post(
         `${SHIPROCKET_API_URL}/manifests/generate`,
-        {shipment_id},
+        {shipment_id: [shipment_id]},
         {
           headers: {"Authorization": `Bearer ${token}`},
         },
@@ -126,7 +126,7 @@ router.post("/manifest", async (req, res) => {
     // Step 2: Print Manifest
     const printResponse = await axios.post(
         `${SHIPROCKET_API_URL}/manifests/print`,
-        {order_id},
+        {order_ids: [order_id]},
         {
           headers: {"Authorization": `Bearer ${token}`},
         },
@@ -184,7 +184,7 @@ router.post("/label", async (req, res) => {
     // Generate Label
     const labelResponse = await axios.post(
         `${SHIPROCKET_API_URL}/courier/generate/label`,
-        {shipment_id},
+        {shipment_id: [shipment_id]},
         {
           headers: {"Authorization": `Bearer ${token}`},
         },
@@ -247,7 +247,7 @@ router.post("/invoice", async (req, res) => {
     // Generate Invoice
     const invoiceResponse = await axios.post(
         `${SHIPROCKET_API_URL}/orders/print/invoice`,
-        {order_id},
+        {ids: [order_id]},
         {
           headers: {"Authorization": `Bearer ${token}`},
         },
@@ -288,7 +288,8 @@ router.post("/invoice", async (req, res) => {
 });
 
 router.get("/fetch", async (req, res) => {
-  const {status, fromDate, toDate, lastDoc, limit = 10} = req.query;
+  const {status, fromDate, toDate, lastDoc} = req.query;
+  const limit = parseInt(req.query.limit) || 10;
 
   try {
     // Start building the query
@@ -369,6 +370,43 @@ router.get("/fetch", async (req, res) => {
     console.error("Fetch Orders Error:", error);
     return res.status(500).json({
       message: "Failed to fetch orders",
+      error: error.message,
+    });
+  }
+});
+
+// Fetch specific order and its orderedProducts subcollection
+router.get("/fetch/:oid", async (req, res) => {
+  const {oid} = req.params;
+  if (!oid) {
+    return res.status(400).json({message: "Order ID is required"});
+  }
+
+  try {
+    // Fetch order data
+    const orderDoc = await db.collection("orders").doc(oid).get();
+    if (!orderDoc.exists) {
+      return res.status(404).json({message: "Order not found"});
+    }
+
+    const orderData = orderDoc.data();
+
+    // Fetch orderedProducts subcollection
+    const orderedProductsSnapshot = await db.collection("orders").doc(oid).collection("orderedProducts").get();
+
+    const orderedProducts = [];
+    orderedProductsSnapshot.forEach((doc) => {
+      orderedProducts.push({id: doc.id, ...doc.data()});
+    });
+
+    return res.status(200).json({
+      order: {oid, ...orderData},
+      orderedProducts,
+    });
+  } catch (error) {
+    console.error("Fetch Order Details Error:", error);
+    return res.status(500).json({
+      message: "Failed to fetch order details",
       error: error.message,
     });
   }

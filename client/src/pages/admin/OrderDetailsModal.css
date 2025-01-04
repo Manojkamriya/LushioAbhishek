@@ -1,0 +1,169 @@
+/* OrderDetailsModal.css */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.modal-header {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    line-height: 1;
+}
+
+.close-button:hover {
+    color: #666;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.order-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.info-section h3 {
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.info-section p {
+    margin: 0.5rem 0;
+    color: #4b5563;
+}
+
+.products-section {
+    margin-top: 2rem;
+}
+
+.product-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.product-info {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.product-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.product-name {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.action-button {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+.action-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pickup {
+    background-color: #10b981;
+}
+
+.pickup:hover:not(:disabled) {
+    background-color: #059669;
+}
+
+.manifest {
+    background-color: #3b82f6;
+}
+
+.manifest:hover:not(:disabled) {
+    background-color: #2563eb;
+}
+
+.label {
+    background-color: #8b5cf6;
+}
+
+.label:hover:not(:disabled) {
+    background-color: #7c3aed;
+}
+
+.invoice {
+    background-color: #f59e0b;
+}
+
+.invoice:hover:not(:disabled) {
+    background-color: #d97706;
+}
+
+.loading,
+.error {
+    padding: 2rem;
+    text-align: center;
+}
+
+.error {
+    color: #dc2626;
+}
