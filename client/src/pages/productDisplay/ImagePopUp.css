@@ -100,7 +100,15 @@
     height: auto;
     border-radius: 5%;
     transform-origin: bottom; /* Anchor the scaling from the bottom */
-    animation: emerge-scale 0.15s ease-out;
+    animation: fadeIn 0.3s ease-in forwards;
+  }
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
   }
   
   /* Define the animation */

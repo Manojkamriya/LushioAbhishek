@@ -15,9 +15,7 @@
 input[type="search"]::-webkit-search-cancel-button {
   display: none;
 }
-/* * {
-  -webkit-tap-highlight-color: rgba(0,0,0,0.1); 
-} */
+
 button{
   cursor: pointer;
 }
@@ -28,21 +26,8 @@ body.no-scroll {
   overflow: hidden;
   height: 100%;
   width: 100%;
-  /* position: fixed; */
 }
-.mu{color: #03a685;
-    font-weight: 700;
-    font-size: 14px;
-    display: block;
-    margin: 5px 10px 0 0;
-  
-  
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: .5px;
-    color: #ff905a;
 
-  }
 body {
   margin: 0;
   padding: 0;

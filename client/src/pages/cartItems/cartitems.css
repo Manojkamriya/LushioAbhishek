@@ -329,14 +329,16 @@ width: 95%;
     width: max-content;
    
     
-    font-size: min(5cqi, 20px);
+    font-size: min(5cqi, 18px);
     background: linear-gradient(180deg, #950303, #f00d1e);
     color: white;
-    padding: 3cqi 4cqi;
-    border-radius: 2cqi;
-    z-index: 602;
-    max-width: 270px; 
-    max-height: 40px;
+   
+
+    padding: min(3cqi, 20px);
+border-radius: min(2cqi,10px);
+z-index: 602;
+max-width: 240px;
+max-height: 30px;
     animation: fadeInOut 3s ease-in-out;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); 
   }

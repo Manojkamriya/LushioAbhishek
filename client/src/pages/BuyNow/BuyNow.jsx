@@ -7,32 +7,43 @@ import { UserContext } from "../../components/context/UserContext";
 import { renderCartMessages } from "../cartItems/cartUtils"
 import axios from "axios";
 const BuyNowPage = () => {
-  const location = useLocation();
-  const { selectedAddress } = useAddress();
-  const [formData, setFormData] = useState({
-    name: selectedAddress && selectedAddress.name,
-    mobile: selectedAddress && selectedAddress.contactNo,
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [showNotification, setShowNotification] = useState(false);
-  const [successOpen, setSuccessOpen] = useState(false);
-  const [discountPercentage, setDiscountPercentage] = useState(0);
-  const [couponApplied, setCouponApplied] = useState("");
-  const [product,setProduct] = useState(null);
-  const [useWalletPoints, setUseWalletPoints] = useState(true);
-  const [walletPoints, setWalletPoints] = useState(null);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("phonepe");
-  const { user } = useContext(UserContext);
-  const additionalDiscountRef = useRef(0); 
-  const queryParams = new URLSearchParams(location.search);
-  const [isActive, setIsActive] = useState(false);
-  const heightCategory = queryParams.get("heightCategory");
-  const selectedColor = queryParams.get("selectedColor");
-  const selectedSize = queryParams.get("selectedSize");
-  const name = queryParams.get("name");
-  const productId = queryParams.get("productId");
-  const imageURL = queryParams.get("imageURL");
+ // Context and Location Data
+const { user } = useContext(UserContext);
+const location = useLocation();
+const { selectedAddress } = useAddress();
+const queryParams = new URLSearchParams(location.search);
+
+// Query Parameters
+const heightCategory = queryParams.get("heightCategory");
+const selectedColor = queryParams.get("selectedColor");
+const selectedSize = queryParams.get("selectedSize");
+const name = queryParams.get("name");
+const productId = queryParams.get("productId");
+const imageURL = queryParams.get("imageURL");
+
+// Form and Address States
+const [formData, setFormData] = useState({
+  name: selectedAddress?.name || "",
+  mobile: selectedAddress?.contactNo || "",
+});
+
+// Payment and Discount States
+const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("phonepe");
+const [discountPercentage, setDiscountPercentage] = useState(0);
+const [couponApplied, setCouponApplied] = useState("");
+const [useWalletPoints, setUseWalletPoints] = useState(true);
+const [walletPoints, setWalletPoints] = useState(null);
+const additionalDiscountRef = useRef(0); // Reference for additional discounts
+
+// Product and Interaction States
+const [product, setProduct] = useState(null);
+const [isActive, setIsActive] = useState(false);
+
+// UI and Loading States
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState(null);
+const [showNotification, setShowNotification] = useState(false);
+const [successOpen, setSuccessOpen] = useState(false);
 
   useEffect(() => {
     // Fetch product when `id` changes
@@ -120,7 +131,7 @@ setProduct(data);
   ];
   
   const orderDetails = {
-    uid: user.uid,
+    uid: user?.uid,
     modeOfPayment: selectedPaymentMethod,
     totalAmount: getSelectedTotalAmount(),
     payableAmount: getTotalWithWalletAndDiscount(),

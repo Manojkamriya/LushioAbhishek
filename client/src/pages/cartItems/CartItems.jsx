@@ -21,29 +21,37 @@ const CartItems = () => {
     mobile: selectedAddress && selectedAddress.contactNo,
   });
 const navigate = useNavigate();
-  // const [promoCode, setPromoCode] = useState("");
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("phonepe");
-  const [discountPercentage, setDiscountPercentage] = useState(0);
-  const [couponApplied, setCouponApplied] = useState("");
-  const [useWalletPoints, setUseWalletPoints] = useState(true);
-  const [walletPoints, setWalletPoints] = useState(null);
-  const [selectedItems, setSelectedItems] = useState({});
-  const [cartProducts, setCartProducts] = useState([]);
-  const [isAllSelected, setIsAllSelected] = useState(true); // default all selected
-  const [open, setOpen] = useState(false);
-  const [successOpen, setSuccessOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const { user } = useContext(UserContext);
-  const { fetchCartCount } = useCart();
-  const { toggleWishlist } = useWishlist();
-  const [paymentData, setPaymentData] = useState(null);
-  const [cartAddress, setCartAddress] = useState(null);
-  const [showNotification, setShowNotification] = useState(false);
-  const [isActive, setIsActive] = useState(false);
-  const [selectedProductIds, setSelectedProductIds] = useState([]);
-  const [additionalDiscount,setAddtionalDiscount] = useState(0);
-  const additionalDiscountRef = useRef(0); 
+  
+ // User and Context Data
+const { user } = useContext(UserContext);
+const { fetchCartCount } = useCart();
+const { toggleWishlist } = useWishlist();
+
+// Payment and Discount States
+const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("phonepe");
+const [discountPercentage, setDiscountPercentage] = useState(0);
+const [couponApplied, setCouponApplied] = useState("");
+const [useWalletPoints, setUseWalletPoints] = useState(true);
+const [walletPoints, setWalletPoints] = useState(null);
+const additionalDiscountRef = useRef(0); // Additional discounts reference
+
+// Cart and Product States
+const [cartProducts, setCartProducts] = useState([]);
+const [selectedItems, setSelectedItems] = useState({});
+const [selectedProductIds, setSelectedProductIds] = useState([]);
+const [selectedProduct, setSelectedProduct] = useState(null);
+const [isAllSelected, setIsAllSelected] = useState(true); // Default: all selected
+
+// Address and Checkout States
+const [cartAddress, setCartAddress] = useState(null);
+
+// UI and Interaction States
+const [open, setOpen] = useState(false);
+const [successOpen, setSuccessOpen] = useState(false);
+const [showNotification, setShowNotification] = useState(false);
+const [isActive, setIsActive] = useState(false);
+const [loading, setLoading] = useState(false);
+
   const fetchCartItems = async () => {
     setLoading(true);
     try {
@@ -292,7 +300,7 @@ const navigate = useNavigate();
       )
       .then((response) => {
    
-        setPaymentData(response.data);
+        // setPaymentData(response.data);
         if (
           response.data
           && response.data.data.instrumentResponse.redirectInfo.url
@@ -467,17 +475,23 @@ fetchCartCount();
           handleCreateOrder={handleCreateOrder}
         />
       </div>
-      {/* <PaymentMethod
-        selectedPaymentMethod={selectedPaymentMethod}
-        setSelectedPaymentMethod={setSelectedPaymentMethod}
-      /> */}
+     
       <div className="priceBlock-button-mobile">
-      {selectedPaymentMethod==="cashOnDelivery" && <p>Pay Online to get ₹{additionalDiscountRef.current} OFF</p>}
-      {selectedPaymentMethod==="phonepe" && <p>Hurray you get ₹{additionalDiscountRef.current} OFF by paying online</p>}
-        <button onClick={handleCreateOrder} className="proceed-to-pay-button">
-          PLACE ORDER ₹{getTotalWithWalletAndDiscount()}
-        </button>
-      </div>
+  {selectedPaymentMethod === "cashOnDelivery" && (
+    <p className="discount-message">
+      💰 Upgrade to online payment and save ₹{additionalDiscountRef.current} instantly!
+    </p>
+  )}
+  {selectedPaymentMethod === "phonepe" && (
+    <p className="discount-message">
+      🎉 Great choice! Enjoy ₹{additionalDiscountRef.current} off by paying with PhonePe.
+    </p>
+  )}
+  <button onClick={handleCreateOrder} className="proceed-to-pay-button">
+    🛒 Place Order – ₹{getTotalWithWalletAndDiscount()}
+  </button>
+</div>
+
     </>
   );
 };

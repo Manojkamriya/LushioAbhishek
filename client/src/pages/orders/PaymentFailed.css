@@ -1,0 +1,108 @@
+/* Container Styles */
+.payment-failed-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #ffdddd, #ffe6e6);
+    padding: 16px;
+    box-sizing: border-box;
+  }
+  
+  /* Card Styles */
+  .payment-failed-card {
+    text-align: center;
+    background: #fff;
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.6s ease-in-out;
+    transform: translateY(-10px);
+  }
+  
+  /* Icon Styles */
+  .icon-container {
+    margin-bottom: 16px;
+    animation: bounce 1s infinite;
+  }
+  
+  .failure-icon {
+    font-size: 48px;
+    color: #ff4d4f;
+  }
+  
+  /* Text Styles */
+  .payment-failed-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 12px;
+  }
+  
+  .payment-failed-message {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 24px;
+  }
+  
+  /* Button Container */
+  .button-container {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+  }
+  
+  /* Button Styles */
+  .payment-failed-btn {
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .try-again-btn {
+    background-color: #ff4d4f;
+    color: #fff;
+  }
+  
+  .try-again-btn:hover {
+    background-color: #e63946;
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(255, 77, 79, 0.4);
+  }
+  
+  .home-btn {
+    background-color: #007bff;
+    color: #fff;
+  }
+  
+  .home-btn:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.4);
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+  

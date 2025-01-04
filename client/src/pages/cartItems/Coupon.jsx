@@ -4,11 +4,12 @@ import { Modal, Backdrop, Fade, Box, Typography } from "@mui/material";
 import { AiOutlineLoading } from "react-icons/ai";
 import "./Coupon.css";
 import { UserContext } from "../../components/context/UserContext";
-function Coupon({ setDiscount, cartAmount,setCouponApplied }) {
+
+function Coupon({ setDiscount, cartAmount, setCouponApplied }) {
   const [open, setOpen] = useState(false);
   const { user } = useContext(UserContext);
   const [coupons, setCoupons] = useState([]);
-  const [selectedCoupon, setSelectedCoupon] = useState(""); // For radio-selected coupon
+  const [selectedCoupon, setSelectedCoupon] = useState(null); // Store the entire coupon object
   const [inputCoupon, setInputCoupon] = useState(""); // For manually entered coupon
   const [successMessage, setSuccessMessage] = useState("");
   const [success, setSuccess] = useState(false);
@@ -22,13 +23,11 @@ function Coupon({ setDiscount, cartAmount,setCouponApplied }) {
         const response = await axios.get(
           `${process.env.REACT_APP_API_URL}/coupon/usableCoupons/${user.uid}`
         );
-       
         if (response.data) {
           const couponsData = Object.values(response.data); // Convert object to array
-          console.log(couponsData);
           setCoupons(couponsData);
           if (couponsData.length > 0) {
-            setSelectedCoupon(couponsData[0].id); // Set the first coupon as selected
+            setSelectedCoupon(couponsData[0]); // Set the first coupon as selected
           }
         }
       } catch (error) {
@@ -46,14 +45,12 @@ function Coupon({ setDiscount, cartAmount,setCouponApplied }) {
     setInputCoupon(""); // Reset input coupon on close
   };
 
-  const handleSubmit = async () => {
-    setSuccessMessage("");
-    setErrorMessage("");
-    setValidationMessage("");
-
-    const couponCode = inputCoupon || selectedCoupon; // Prioritize input coupon if available
-
-
+  // Generic function to handle coupon application
+  const applyCoupon = async (couponCode) => {
+    if (!couponCode) {
+      setValidationMessage("Please provide a valid coupon.");
+      return;
+    }
     try {
       setIsApplying(true);
       const response = await axios.post(
@@ -64,12 +61,11 @@ function Coupon({ setDiscount, cartAmount,setCouponApplied }) {
           purchaseOf: parseFloat(cartAmount),
         }
       );
-
       const discountValue = response.data.discount;
       setDiscount(discountValue); // Update discount in parent component
-      setCouponApplied(couponCode);
+      setCouponApplied(couponCode); // Set applied coupon code
       setSuccessMessage(
-        "Coupon applied successfully! Discount: ₹" + discountValue
+        `Coupon applied successfully! Discount: ₹${discountValue}`
       );
       setSuccess(true);
       setTimeout(() => {
@@ -81,13 +77,22 @@ function Coupon({ setDiscount, cartAmount,setCouponApplied }) {
     } finally {
       setIsApplying(false);
     }
-    setInputCoupon("");
+  };
+
+  // Handle manual input coupon
+  const handleInputCoupon = () => {
+    applyCoupon(inputCoupon);
+    setInputCoupon(""); // Clear input after applying
+  };
+
+  // Handle selected coupon
+  const handleSelectedCoupon = () => {
+    applyCoupon(selectedCoupon?.id);
   };
 
   return (
     <div>
       <button onClick={() => setOpen(true)}>Apply</button>
-
       <Modal
         open={open}
         onClose={handleClose}
@@ -118,76 +123,87 @@ function Coupon({ setDiscount, cartAmount,setCouponApplied }) {
                 className="coupon-close"
                 onClick={handleClose}
               />
-
               {!success ? (
                 <>
-                <div className="coupon-input-container">
-                  <input
-                    type="text"
-                    placeholder="Enter Coupon Code"
-                    onChange={(e) => setInputCoupon(e.target.value)}
-                    value={inputCoupon}
-                    className="coupon-input"
-                  />
-                  <button onClick={handleSubmit} className="apply-button">
-                    Check
-                  </button>
-                </div>
-               
-                <div className="coupon-options">
-                  {coupons.length > 0 ? (
-                    <>
-                     <h2 className="coupon-select-heading">Select a Coupon</h2>
-                      {coupons.map((coupon) => (
-                        <label
-                          key={coupon.id}
-                          className={`option ${
-                            selectedCoupon === coupon.id ? "selected" : ""
-                          }`}
-                        >
-                          <input
-                            type="radio"
-                            name="coupon"
-                            value={coupon.id}
-                            checked={
-                              selectedCoupon === coupon.id && !inputCoupon
-                            } // Prevent radio selection if inputCoupon is used
-                            onChange={() => setSelectedCoupon(coupon.id)}
-                          />
-                          <div>
-                            <p>
-                              {coupon.id} - Valid until:{" "}
-                              {coupon.validity || "N/A"}
-                            </p>
-                            <p>
-                              Min Amount: {coupon.onPurchaseOf || "N/A"},
-                              Discount: {coupon.discount || "N/A"}
-                            </p>
-                          </div>
-                        </label>
-                      ))}
-                      <div className="coupon-button-container">
-                        <button onClick={handleClose} className="cancel-button">
-                          Cancel
-                        </button>
-                        <button onClick={handleSubmit} className="apply-button">
-                          {isApplying ? (
-                            <>
-                              <AiOutlineLoading className="spinner-icon" />
-                              Applying...
-                            </>
-                          ) : (
-                            "Apply Coupon"
-                          )}
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    <p className="no-coupons-message">No coupons available</p>
-                  )}
-                </div>
-              </>
-              
+                  <div className="coupon-input-container">
+                    <input
+                      type="text"
+                      placeholder="Enter Coupon Code"
+                      onChange={(e) => setInputCoupon(e.target.value)}
+                      value={inputCoupon}
+                      className="coupon-input"
+                    />
+                    <button
+                      onClick={handleInputCoupon}
+                      className="apply-button"
+                    >
+                      Check
+                    </button>
+                  </div>
+                  <div className="coupon-options">
+                    {coupons.length > 0 ? (
+                      <>
+                        <h2 className="coupon-select-heading">
+                          Select a Coupon
+                        </h2>
+                        {coupons.map((coupon) => (
+                          <label
+                            key={coupon.id}
+                            className={`option ${
+                              selectedCoupon?.id === coupon.id ? "selected" : ""
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="coupon"
+                              value={coupon.id}
+                              checked={selectedCoupon?.id === coupon.id}
+                              onChange={() => setSelectedCoupon(coupon)}
+                            />
+                            <div className="coupon-details">
+                              <p className="coupon-info">
+                                <strong>Code:</strong> {coupon.id} |
+                                <strong> Valid Until:</strong>{" "}
+                                {coupon.validity || "N/A"}
+                              </p>
+                              <p className="coupon-info">
+                                <strong>Min Purchase:</strong> ₹
+                                {coupon.onPurchaseOf || "N/A"} |
+                                <strong>Discount:</strong>{" "}
+                                {coupon.discountType === "percentage"
+                                  ? `${coupon.discount || "N/A"}%`
+                                  : `₹${coupon.discount || "N/A"}`}
+                              </p>
+                            </div>
+                          </label>
+                        ))}
+                        <div className="coupon-button-container">
+                          <button
+                            onClick={handleClose}
+                            className="cancel-button"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={handleSelectedCoupon}
+                            className="apply-button"
+                          >
+                            {isApplying ? (
+                              <>
+                                <AiOutlineLoading className="spinner-icon" />
+                                Applying...
+                              </>
+                            ) : (
+                              "Apply Coupon"
+                            )}
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <p className="no-coupons-message">No coupons available</p>
+                    )}
+                  </div>
+                </>
               ) : (
                 <video
                   autoPlay
@@ -200,9 +216,6 @@ function Coupon({ setDiscount, cartAmount,setCouponApplied }) {
                   Your browser does not support the video tag.
                 </video>
               )}
-
-             
-
               {validationMessage && (
                 <Typography color="warning">{validationMessage}</Typography>
               )}

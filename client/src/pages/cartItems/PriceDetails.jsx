@@ -55,8 +55,8 @@ const PriceDetails = ({
           -₹ {discountPercentage}
         </span>
       </div>
-      <div className="coupons-base-discountMessage"><span>You saved additional </span> <span>{discountPercentage}</span>
-      </div>
+      {/* <div className="coupons-base-discountMessage"><span>You saved additional </span> <span>{discountPercentage}</span>
+      </div> */}
       </>
       }
        {
@@ -92,9 +92,9 @@ const PriceDetails = ({
         </div>
         <div className="priceDetail-base-row">
           <span className="priceDetail-base-value">
-            <span className="priceDetail-base-striked priceDetail-base-spaceRight">
+            {/* <span className="priceDetail-base-striked priceDetail-base-spaceRight">
               ₹79
-            </span>
+            </span> */}
             <span className="priceDetail-base-discount">{shippingFee}</span>
           </span>
           <div className="priceDetail-base-convenienceCalloutText">

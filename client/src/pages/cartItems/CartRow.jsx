@@ -20,6 +20,9 @@ const CartRow = ({
   const inStock = isHeightBased
     ? item.product[item.height]?.quantities?.[item.color]?.[item.size] > 0
     : item.product.quantities[item.color]?.[item.size] > 0;
+    const quantityAvailable = isHeightBased
+    ? item.product[item.height]?.quantities?.[item.color]?.[item.size]
+    : item.product.quantities[item.color]?.[item.size];
   const { user } = useContext(UserContext);
   const { wishlist } = useWishlist();
 
