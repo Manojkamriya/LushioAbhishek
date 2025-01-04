@@ -101,8 +101,9 @@ const Login = () => {
           navigate("/user");
         }
       } catch (error) {
-        console.error("Error with phone login", error);
+        console.error("Error with phone login :: ", error);
         setIsButtonDisabled(false);
+        console.log("Invalid OTP");
       }
     } else {
       if (loginMethod === "otp") {
@@ -116,8 +117,9 @@ const Login = () => {
           await handleEmailLogin(identifier, password);
           navigate("/user");
         } catch (error) {
-          console.error("Error logging in with email", error);
+          console.error("Error logging in with email ::", error);
           setIsButtonDisabled(false);
+          alert("Invalid email/password");
         }
       }
     }
