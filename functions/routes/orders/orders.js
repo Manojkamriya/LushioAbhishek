@@ -164,7 +164,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       shipping_is_billing: true,
       company_name: companyName,
       reseller_name: resellerName,
-      billing_customer_name: address.name,
+      billing_customer_name: address.name?.split(" ")[0],
       billing_last_name: address.name?.split(" ").pop() || "",
       billing_address: `${address.flatDetails}, ${address.areaDetails}`, // Concatenated flatDetails and areaDetails
       billing_address_2: address.landmark || "",
@@ -224,7 +224,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       // Add Shiprocket details to the order
       orderData.shiprocket = {
         ...shiprocketResponse.data,
-        awb_code: awbResponse.data.awb_code,
+        // awb_code: awbResponse.data.awb_code,
         awb_details: awbResponse.data,
       };
       orderData.status = "created";
@@ -322,7 +322,10 @@ router.get("/:orderId", async (req, res) => {
 
     // Get ordered products subcollection
     const productsSnapshot = await orderDoc.ref.collection("orderedProducts").get();
-    const orderedProducts = productsSnapshot.docs.map((doc) => doc.data());
+    const orderedProducts = productsSnapshot.docs.map((doc) => ({
+      opid: doc.id,
+      ...doc.data(),
+    }));
 
     res.status(200).json({
       ...orderData,
@@ -374,7 +377,7 @@ router.get("/", async (req, res) => {
           const orderedProductsSnapshot = await doc.ref.collection("orderedProducts").get();
 
           const orderedProducts = orderedProductsSnapshot.docs.map((productDoc) => ({
-            productId: productDoc.id,
+            opid: productDoc.id,
             ...productDoc.data(),
           }));
 

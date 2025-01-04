@@ -287,4 +287,91 @@ router.post("/invoice", async (req, res) => {
   }
 });
 
+router.get("/fetch", async (req, res) => {
+  const {status, fromDate, toDate, lastDoc, limit = 10} = req.query;
+
+  try {
+    // Start building the query
+    let query = db.collection("orders");
+
+    // Add status filter if provided
+    if (status) {
+      query = query.where("status", "==", status);
+    }
+
+    // Add date range filter if provided
+    if (fromDate) {
+      const startDate = new Date(fromDate);
+      query = query.where("dateOfOrder", ">=", startDate);
+    }
+    if (toDate) {
+      const endDate = new Date(toDate);
+      endDate.setDate(endDate.getDate() + 1); // Include the entire end date
+      query = query.where("dateOfOrder", "<", endDate);
+    }
+
+    // Order by creation date
+    query = query.orderBy("dateOfOrder", "desc");
+
+    // Apply pagination
+    if (lastDoc) {
+      const lastDocRef = await db.collection("orders").doc(lastDoc).get();
+      if (!lastDocRef.exists) {
+        return res.status(400).json({message: "Invalid last document reference"});
+      }
+      query = query.startAfter(lastDocRef);
+    }
+
+    // Set limit
+    query = query.limit(limit);
+
+    // Execute query
+    const snapshot = await query.get();
+
+    // Transform the data
+    const orders = [];
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      const shiprocketData = data.shiprocket || {};
+
+      const orderInfo = {
+        oid: doc.id,
+        pickup: Boolean(shiprocketData.pickup_details),
+        manifest: Boolean(shiprocketData.manifest),
+        label: Boolean(shiprocketData.label),
+        invoice: Boolean(shiprocketData.invoice),
+      };
+
+      // Add URLs if they exist
+      if (orderInfo.manifest && shiprocketData.manifest?.manifest_url) {
+        orderInfo.manifest_url = shiprocketData.manifest.manifest_url;
+      }
+      if (orderInfo.label && shiprocketData.label?.label_url) {
+        orderInfo.label_url = shiprocketData.label.label_url;
+      }
+      if (orderInfo.invoice && shiprocketData.invoice?.invoice_url) {
+        orderInfo.invoice_url = shiprocketData.invoice.invoice_url;
+      }
+
+      orders.push(orderInfo);
+    });
+
+    // Determine if there are more documents
+    const hasMore = orders.length === limit;
+    const lastVisible = hasMore ? snapshot.docs[snapshot.docs.length - 1].id : null;
+
+    return res.status(200).json({
+      orders,
+      hasMore,
+      lastDoc: lastVisible,
+    });
+  } catch (error) {
+    console.error("Fetch Orders Error:", error);
+    return res.status(500).json({
+      message: "Failed to fetch orders",
+      error: error.message,
+    });
+  }
+});
+
 module.exports = router;
