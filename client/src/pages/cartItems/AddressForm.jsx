@@ -28,7 +28,11 @@ const AddressForm = ({
           placeholder="Name"
           id="name"
           value={newAddress.name}
-          onChange={handleInputChange}
+         // onChange={handleInputChange}
+         onChange={(e) => {
+          const filteredValue = e.target.value.replace(/[0-9]/g, ""); // Remove numeric characters
+          handleInputChange({ target: { name: "name", value: filteredValue } }); // Pass filtered value
+        }}
           autoFocus
         />
 

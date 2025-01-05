@@ -1,3 +1,7 @@
+.coupon-container-mobile *{
+  font-family: "Assistant", "sans-serif";
+
+}
 .coupon-options{
   display: flex;
   flex-direction: column;
@@ -105,6 +109,9 @@
   .coupon-input{
     width: 60%;
     padding: 15px;
+  }
+  .coupon-info{
+    font-size: 12px;
   }
   .success-message{
     margin: 30% 30%;

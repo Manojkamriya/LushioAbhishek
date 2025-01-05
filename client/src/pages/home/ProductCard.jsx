@@ -7,7 +7,6 @@ import { FaHeart, FaHeartBroken } from "react-icons/fa";
 import { UserContext } from "../../components/context/UserContext";
 import { useWishlist } from "../../components/context/WishlistContext";
 import { useCart } from "../../components/context/CartContext";
-import useCartCount from "../../components/useCartCount";
 import "./productCard.css";
 function ProductCard(props) {
   const menuRef = useRef();
@@ -20,9 +19,10 @@ const navigate= useNavigate();
   );
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
-  const { cartCount, fetchCartCount } = useCart();
+  const {  fetchCartCount } = useCart();
+  const {  setWishlistHome, setWishlistPage } = props;
 
-
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
   const { user } = useContext(UserContext);
  // const { fetchCartCount } = useCartCount(user?.id);
@@ -42,37 +42,33 @@ const navigate= useNavigate();
       setIsRemoving(true);
       // Try to remove from wishlist
       const isRemoved = await toggleWishlist(id, productId); // Await toggleWishlist
-      if (isRemoved) setLiked(false); // Update state based on actual result
+      if (isRemoved) {
+        setLiked(false); // Update state based on actual result
+        if (typeof setWishlistPage === "function") {
+          // Remove the item from the wishlist using productId
+          setWishlistPage((prevWishlist) => (prevWishlist || []).filter(item => item.productId !== productId));
+        }
+        if (typeof setWishlistHome === "function") {
+          // Remove the item from the wishlist using productId
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          setWishlistHome((prevWishlist) => (prevWishlist || []).filter(item => item.productId !== productId));
+        }
+        
+      }
     } else {
       // Try to add to wishlist
       setLiked(true); // Optimistically update state
-      await new Promise(resolve => setTimeout(resolve, 1800));
+     // await new Promise(resolve => setTimeout(resolve, 1800));
       const isAdded = await toggleWishlist(id, productId);
       if (!isAdded) setLiked(false); // Revert state if addition failed
     }
   
     setIsRemoving(false);
   };
-  const [quantity, setQuantity] = useState(null);
+ 
  const discount =  Math.ceil(((props.price - props.discountedPrice) / props.price) * 100);
 
-  // Define the object with input data
-  const requestData = {
-    pid: "12345", // Replace with actual product ID
-    color: "red", // Replace with actual color
-    heightType: "above", // Options: "normal", "above", "below"
-    size: "M", // Replace with actual size
-  };
-
-  // const fetchQuantity = async () => {
-  //   try {
-  //     const response = await axios.post("http://localhost:5000/getQty", requestData);
-  //     setQuantity(response.data.quantity);
-  //   } catch (err) {
-  //     console.error("Error fetching quantity:", err);
-    
-  //   }
-  // };
+ 
   const addToCart = async (id) => {
     setIsLoading(true);
 
@@ -91,10 +87,6 @@ const navigate= useNavigate();
         `${process.env.REACT_APP_API_URL}/cart/add`,
         cartItem
       );
-      // const minimumDelay = new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // // Wait for both to complete
-      // const [response] = await Promise.all([apiCall, minimumDelay]);
 
       if (response.status === 201 || response.status===200) {
        fetchCartCount();
@@ -105,25 +97,27 @@ const navigate= useNavigate();
       console.error("Error adding item to cart:", error);
     } finally {
       setIsLoading(false); // End loading state only after both tasks are complete
-      closeMenu(); // Close the menu after loading is complete
+      toggleMenu(); // Close the menu after loading is complete
     }
   };
 
-  const openMenu = () => {
-    if (menuRef.current) {
-      const menuHeight = menuRef.current.scrollHeight; // Capture the current content height
-      menuRef.current.style.height = `${menuHeight}px`; // Set the fixed height
-      menuRef.current.style.top = `calc(101% - ${menuHeight}px)`; // Position it based on height
-    }
-  };
  
-  const closeMenu = () => {
+  const toggleMenu = () => {
     if (menuRef.current) {
-      menuRef.current.style.height = "auto"; // Reset the height on close
-      menuRef.current.style.top = "101%";
-      setHeightCategory(isHeightBased ? "aboveHeight" : null);
-     
-      setSelectedSize(null);
+      if (isMenuOpen) {
+        // Close the menu
+        menuRef.current.style.height = "auto"; // Reset the height on close
+        menuRef.current.style.top = "101%";
+        setHeightCategory(isHeightBased ? "aboveHeight" : null); // Reset heightCategory when closing
+        setSelectedSize(null); // Reset selectedSize when closing
+      } else {
+        // Open the menu
+        const menuHeight = menuRef.current.scrollHeight; // Capture the current content height
+        menuRef.current.style.height = `${menuHeight}px`; // Set the fixed height
+        menuRef.current.style.top = `calc(101% - ${menuHeight}px)`; // Position it based on height
+      }
+
+      setIsMenuOpen(!isMenuOpen); // Toggle the menu open/close state
     }
   };
 
@@ -146,7 +140,7 @@ const navigate= useNavigate();
       
 
           <div className="productcard-top-icon-container">
-            <span onClick={openMenu}>
+            <span onClick={toggleMenu}>
               <img
                 className="cart-image"
                 src="/Images/icons/cart_bag.png"
@@ -164,7 +158,7 @@ const navigate= useNavigate();
             <img
               src="/Images/icons/cross.png"
               alt=""
-              onClick={closeMenu}
+              onClick={toggleMenu}
               style={{ aspectRatio: 1 }}
             />
 

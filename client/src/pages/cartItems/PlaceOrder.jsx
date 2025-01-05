@@ -24,7 +24,7 @@ const PlaceOrder = ()=> {
       >
         <Fade in={open}>
           <Box
-           className="modal-box address-modal"
+           className="address-modal"
             sx={{
               position: "absolute",
               top: "50%",
@@ -42,7 +42,7 @@ const PlaceOrder = ()=> {
             <img
               src="/Images/icons/cross.png"
               alt=""
-              className="modal-close "
+              className="address-modal-close"
               onClick={handleClose}
             />
 <AddressSelection handleClose={handleClose}/>

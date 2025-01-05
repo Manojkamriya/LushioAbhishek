@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-//import RatingModal from "../productDisplay/RatingModal";
-//import DeliveryStatus from "./Delivery";
 import EmptyOrder from "./EmptyOrder";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../components/context/UserContext";
@@ -17,7 +15,7 @@ export default function Orders() {
     hasMore: true,
     lastOrderId: null,
   });
-  const [error, setError] = useState(null);
+ 
 
   const fetchOrders = async (isInitialLoad = false) => {
     if (loading) return;
@@ -41,7 +39,7 @@ export default function Orders() {
       );
       setPagination(newPagination);
     } catch (err) {
-      setError(err.response?.data?.message || "An error occurred");
+     console.log(err);
     } finally {
       setLoading(false);
     }
@@ -72,6 +70,14 @@ export default function Orders() {
       fetchOrders();
     }
   };
+  if(loading && orders.length==0){
+    return (
+      <div className="loader-container">
+        {" "}
+        <span className="loader"></span>
+      </div>
+    );
+  }
   if (orders.length === 0) {
     return <EmptyOrder />;
   }

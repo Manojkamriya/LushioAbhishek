@@ -403,8 +403,8 @@ transform: translateX(-50%);
 background-color: #4CAF50;
 background: linear-gradient(135deg, #4ADE80, #16A34A); 
 color: white;
-padding: 3cqi 3cqi;
-border-radius: 2cqi;
+padding: min(3cqi, 20px);
+border-radius: min(2cqi,10px);
 z-index: 997;
 max-width: 230px;
 max-height: 30px;
@@ -447,6 +447,7 @@ animation: fadeInOut 3s ease-in-out;
 @media (max-width: 480px) {
 .product-card-container {
  padding: 3%;
+ margin-top: 10px;
 }
 .product-card {
 

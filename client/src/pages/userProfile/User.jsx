@@ -5,6 +5,7 @@ import { auth } from "../../firebaseConfig.js";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../components/context/UserContext";
+import { useCart } from "../../components/context/CartContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./user.css";
@@ -12,24 +13,26 @@ import "./user.css";
 function User() {
   const { user } = useContext(UserContext);
   
-  const [userName, setUserName] = useState("");
-  useEffect(() => {
+  // const [userName, setUserName] = useState("");
+  const { userName } = useCart();
+
+//   useEffect(() => {
     
-    const fetchUserData = async () => {
-      try {
+//     const fetchUserData = async () => {
+//       try {
      
-       const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/name/${user.uid}`);
+//        const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/name/${user.uid}`);
      
-  setUserName(response.data.name);
+//   setUserName(response.data.name || "User");
       
         
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-    fetchUserData();
+//       } catch (error) {
+//         console.error("Error fetching user data:", error);
+//       }
+//     };
+//     fetchUserData();
   
-}, []);
+// }, []);
   const navigate = useNavigate();
 
   
@@ -73,7 +76,8 @@ function User() {
   return (
     <>
    <ToastContainer />
-      {user && <h1 className="user-greet">Welcome {userName}</h1>}
+   {user && <h1 className="user-greet">Welcome{userName ? `, ${userName}` : ""}</h1>}
+
       <p className="user-question">What would you like to do?</p>
       <div className="user-action-container">
         <div className="user-action" onClick={() => { navigate("/user-editProfile") }}>

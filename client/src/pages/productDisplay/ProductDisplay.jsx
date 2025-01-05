@@ -121,7 +121,7 @@ function ProductDisplay() {
   const [selectedSize, setSelectedSize] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [showNotification, setShowNotification] = useState(false);
-  const [isLoadingWishlist, setIsLoadingWishlist] = useState(false);
+//  const [isLoadingWishlist, setIsLoadingWishlist] = useState(false);
   const [isLoadingCart, setIsLoadingCart] = useState(false);
   const navigate = useNavigate();
   const [showError, setShowError] = useState(false);
@@ -237,12 +237,12 @@ function ProductDisplay() {
     }
   };
 
-  // const productId = id;
-  const handleWishlistClick = async (itemId, id) => {
-    setIsLoadingWishlist(true);
-    await toggleWishlist(itemId, id);
-    setIsLoadingWishlist(false);
-  };
+  // // const productId = id;
+  // const handleWishlistClick = async (itemId, id) => {
+  //   setIsLoadingWishlist(true);
+  //   await toggleWishlist(itemId, id);
+  //   setIsLoadingWishlist(false);
+  // };
 
   
 
@@ -261,14 +261,19 @@ function ProductDisplay() {
   // const [image, setImage] = useState(images[0]);
   const handleBuyNow = () => {
     // Build the query parameters
+    if (!user) {
+      navigate("/login");
+      return;
+    };
     if (selectedSize == null) {
+      handleScroll();
       setShowError(true); // Show error if size is not selected
       return;
     }
-    if (!user) return;
+  
     const imageURL = product.cardImages[0];
     const name = product.displayName;
-    const price = product.price;
+ 
     const productId = id;
     const queryParams = new URLSearchParams({
       heightCategory,
@@ -434,7 +439,7 @@ function ProductDisplay() {
           {isRemoving ? (
             <>
               {" "}
-              <FaHeartBroken color="red" />
+              <FaHeartBroken color="red" className="wishlist-icon"/>
               REMOVING
             </>
           ) : (

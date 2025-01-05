@@ -85,6 +85,8 @@ useEffect(() => {
         colorOptions={items.product.colorOptions || []}
         quantities={items.product.quantities || {}}
         height={items.product.height || ""}
+        wishlistPage={wishlist || []}
+        setWishlistPage={setWishlist}
       />
     ) : null // Render nothing if items.product is null or undefined
   ))}

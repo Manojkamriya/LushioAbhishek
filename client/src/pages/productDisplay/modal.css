@@ -48,37 +48,7 @@ margin-bottom: 5px;
     padding: 20px;
   }
   
-  .address-modal {
-    width: 400px;
-    height: 600px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-  }
-  
-  .address-modal::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-  
-  .address-modal::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-  }
-  
-  .address-modal::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 10px;
-    border: 2px solid #f1f1f1;
-  }
-  
-  .address-modal::-webkit-scrollbar-thumb:hover {
-    background: #555;
-  }
-  
-  .address-modal::-webkit-scrollbar-corner {
-    background: #f1f1f1;
-  }
-  
+ 
   .modal-close{
     height: 30px;
     width: 30px;
@@ -88,7 +58,7 @@ margin-bottom: 5px;
   }
   /* Full-screen Modal Styling for Mobile */
   @media (max-width: 480px) {
-    .modal-box {
+    .modal-box,.address-modal {
       width: 100%;
       height: 100%;
       border-radius: 0;
@@ -102,6 +72,11 @@ margin-bottom: 5px;
     .modal-close{
       margin-top: 30px;
       margin-left: 85%;
-      cursor: pointer;
+     
+    }
+    .address-modal-close{
+      margin-top: 25px;
+      margin-left: 88%;
+   
     }
   }

@@ -19,7 +19,6 @@ function OrderInfo() {
   const { user } = useContext(UserContext);
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const steps = ["Order Placed", "Shipped", "Out for Delivery", "Delivered"];
   const currentStep = 3; // Hardcoded current step (1-based index)
   const handleCopy = () => {
@@ -37,7 +36,7 @@ function OrderInfo() {
   const fetchOrderDetails = async () => {
     const uid = user.uid;
     setLoading(true);
-    setError("");
+  
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_API_URL}/orders/${orderId}?uid=${uid}`
@@ -47,7 +46,7 @@ function OrderInfo() {
       setOrderDetails(response.data);
     } catch (err) {
       console.log(err);
-      setError(err.response?.data?.message || "Failed to fetch order details");
+     
     } finally {
       setLoading(false);
     }

@@ -57,6 +57,12 @@ export const AddressProvider = ({ children }) => {
   };
 
   const handleRemoveAddress = async (id) => {
+    const addressToRemove = addressData.find((address) => address.id === id);
+
+  if (addressToRemove?.isDefault) {
+    alert("You cannot remove the default address. Please set another address as default first.");
+    return;
+  }
     if (window.confirm("Are you sure you want to delete this address?")) {
       try {
         setISChangingDefault(true);
@@ -74,10 +80,17 @@ export const AddressProvider = ({ children }) => {
   const handleSetDefault = async (id) => {
     setISChangingDefault(true);
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/user/addresses/${user.uid}`, {
+       await axios.post(`${process.env.REACT_APP_API_URL}/user/addresses/${user.uid}`, {
         setDefaultAddress: { id }
       });
-      setAddressData(response.data.addresses.sort((a, b) => b.isDefault - a.isDefault));
+      // Update UI instantly by modifying the state
+  const updatedAddresses = addressData.map((address) => ({
+    ...address,
+    isDefault: address.id === id, // Mark only the selected address as default
+  }));
+  setAddressData(updatedAddresses.sort((a, b) => b.isDefault - a.isDefault));
+
+    //  setAddressData(response.data.addresses.sort((a, b) => b.isDefault - a.isDefault));
     } catch (error) {
       console.error('Error setting default address:', error);
     } finally {

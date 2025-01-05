@@ -137,7 +137,7 @@ function EditProfile() {
   maxlength="10"
         />
 
-        <label>Birthday Date</label>
+        <label>Birthday Date (modifiable up to two times only)</label>
         <input
           type="date"
           name="dob"
@@ -145,7 +145,7 @@ function EditProfile() {
           onChange={handleChange}
         />
 
-        <label>Anniversary Date</label>
+        <label>Anniversary Date (modifiable up to two times only)</label>
         <input
           type="date"
           name="doa"

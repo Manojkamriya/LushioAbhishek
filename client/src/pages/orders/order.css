@@ -139,6 +139,9 @@
       .order-status.shipped {
         background-color: #FF9800;
       }
+      .order-status.cancelled {
+        background-color: red;
+      }
       
       .order-status.on-the-way {
         background-color: #2196F3;
@@ -232,6 +235,9 @@ font-size: 13px;
           .product-info p {
             font-size: 13px;
            }
+           .order-button-container :nth-child(2){
+          margin-right: 20px;
+          }
         }
       
       
