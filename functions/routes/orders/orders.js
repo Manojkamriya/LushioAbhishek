@@ -179,6 +179,8 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
         sku: `SKU-${product.productId}`,
         units: product.quantity,
         selling_price: product.productDetails.price,
+        tax: product.productDetails.gst || 5,
+        hsn: product.productDetails.hsn || "",
       })),
       payment_method: modeOfPayment === "cashOnDelivery" ? "COD" : "Prepaid",
       sub_total: payableAmount,
