@@ -84,20 +84,20 @@ const OrderDetailsModal = ({ order: initialOrder, onClose, ...props }) => {
     };
 
     const actionButtons = (
-        <div className="action-buttons">
+        <div className="admin-action-buttons">
           {order.invoice ? (
             <a
               href={order.invoice_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="action-button invoice"
+              className="admin-action-button invoice"
             >
               Print Invoice
             </a>
           ) : (
             <button
               onClick={() => generateInvoice(order.oid)}
-              className="action-button invoice"
+              className="admin-action-button invoice"
             >
               Generate Invoice
             </button>
@@ -108,14 +108,14 @@ const OrderDetailsModal = ({ order: initialOrder, onClose, ...props }) => {
               href={order.label_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="action-button label"
+              className="admin-action-button label"
             >
               Print Label
             </a>
           ) : (
             <button
               onClick={() => generateLabel(order.oid)}
-              className="action-button label"
+              className="admin-action-button label"
             >
               Generate Label
             </button>
@@ -124,7 +124,7 @@ const OrderDetailsModal = ({ order: initialOrder, onClose, ...props }) => {
           <button
             onClick={() => requestPickup(order.oid)}
             disabled={order.pickup}
-            className="action-button pickup"
+            className="admin-action-button pickup"
           >
             Request Pickup
           </button>
@@ -134,7 +134,7 @@ const OrderDetailsModal = ({ order: initialOrder, onClose, ...props }) => {
               href={order.manifest_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="action-button manifest"
+              className="admin-action-button manifest"
             >
               Print Manifest
             </a>
@@ -142,7 +142,7 @@ const OrderDetailsModal = ({ order: initialOrder, onClose, ...props }) => {
             <button
               onClick={() => generateManifest(order.oid)}
               disabled={!order.pickup}
-              className="action-button manifest"
+              className="admin-action-button manifest"
             >
               Generate Manifest
             </button>
@@ -151,8 +151,8 @@ const OrderDetailsModal = ({ order: initialOrder, onClose, ...props }) => {
       );
 
     return (
-        <div className="modal-overlay">
-            <div className="modal-content">
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal-content"  onClick={(e) => e.stopPropagation()} >
                 <div className="modal-header">
                     <h2>Order Details</h2>
                     <button className="close-button" onClick={onClose}>×</button>
@@ -180,18 +180,18 @@ const OrderDetailsModal = ({ order: initialOrder, onClose, ...props }) => {
                         </div>
                     </div>
 
-                    <div className="products-section">
+                    <div className="admin-products-section">
                         <h3>Products</h3>
                         {orderedProducts.map((product, index) => (
-                            <div key={index} className="product-card">
-                                <div className="product-info">
+                            <div key={index} className="admin-product-card">
+                                <div className="admin-product-info">
                                     <img
                                         src={product.productDetails.cardImages[0]}
                                         alt={product.productName}
-                                        className="product-image"
+                                        className="admin-product-image"
                                     />
-                                    <div className="product-details">
-                                        <p className="product-name">{product.productName}</p>
+                                    <div className="admin-product-details">
+                                        <p className="admin-product-name">{product.productName}</p>
                                         <p>Size: {product.size}</p>
                                         <p>Color: {product.color}</p>
                                         <p>Quantity: {product.quantity}</p>

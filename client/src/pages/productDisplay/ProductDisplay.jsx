@@ -266,6 +266,7 @@ function ProductDisplay() {
       return;
     };
     if (selectedSize == null) {
+      handleScroll();
       setShowError(true); // Show error if size is not selected
       return;
     }

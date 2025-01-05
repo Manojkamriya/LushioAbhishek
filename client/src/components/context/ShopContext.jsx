@@ -29,7 +29,7 @@ export const ShopContext = createContext(null);
 const ShopContextProvider = (props) => {
   const { user } = useContext(UserContext); // Get user context
   const userId = user ? user.uid : "guest"; // Use user ID or "guest" for unauthenticated users
-console.log(userId);
+
   const [cartItems, setCartItems] = useState(getDefaultCart());
   const [wishlistItems, setWishlistItems] = useState(getDefaultWishlist());
 

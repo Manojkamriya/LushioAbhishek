@@ -206,7 +206,7 @@ const [loading, setLoading] = useState(false);
         : item.product.quantities[item.color]?.[item.size] > 0;
 
       if (selectedItems[item.id] && inStock) {
-        total += item.product.price * item.quantity; // Only add price for items in stock and selected
+        total += item.product.discountedPrice * item.quantity; // Only add price for items in stock and selected
       }
     });
     return total;
@@ -322,6 +322,7 @@ const [loading, setLoading] = useState(false);
  
   const createOrder = async () => {
     try {
+      console.log(orderDetails)
       setIsActive(true);
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/orders/createOrder`,
@@ -331,7 +332,10 @@ const [loading, setLoading] = useState(false);
    //   await deleteCartItems(selectedProductIds);
       setIsActive(false);
       setSuccessOpen(true);
-      setTimeout(() => setSuccessOpen(false), 4000);
+     // setTimeout(() => setSuccessOpen(false), 4000);
+      // Wait for 4 seconds before closing the success state
+  await new Promise((resolve) => setTimeout(resolve, 4000));
+  setSuccessOpen(false);
       await deleteCartItems();
     } catch (error) {
       console.log(error);

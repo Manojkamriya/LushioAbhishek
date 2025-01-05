@@ -15,7 +15,7 @@ const OrderedProducts = ({orderedProducts}) => {
               className="ordered-product-image"
             />
             <div className="ordered-product-details">
-              <p className="ordered-product-name">{product.productName}</p>
+              <p className="ordered-product-name">{product.name}</p>
               <p className="ordered-product-info">Size: {product.size}</p>
               <p className="ordered-product-info">Height: {product.heightType || "Normal"}</p>
 
