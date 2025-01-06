@@ -18,38 +18,37 @@ export default function Orders() {
  
 
   const fetchOrders = async (isInitialLoad = false) => {
-    if (loading) return;
-
+    if (loading) return; // Prevent duplicate calls
     setLoading(true);
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/orders`,
-        {
-          params: {
-            uid: user.uid,
-            limit: 5,
-            lastOrderId: isInitialLoad ? null : pagination.lastOrderId,
-          },
-        }
-      );
-
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/orders`, {
+        params: {
+          uid: user.uid,
+          limit: 5,
+          lastOrderId: isInitialLoad ? null : pagination.lastOrderId,
+        },
+      });
+  
       const { orders: newOrders, pagination: newPagination } = response.data;
+  
       setOrders((prevOrders) =>
         isInitialLoad ? newOrders : [...prevOrders, ...newOrders]
       );
       setPagination(newPagination);
     } catch (err) {
-     console.log(err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
-    if (user) {
-      fetchOrders();
+    if (user && orders.length === 0) {
+      fetchOrders(true);
     }
-  }, [user]);
+  }, [user]); // Only runs when 'user' changes and orders are empty
+  
   const handleCancelProduct = (orderId, productId) => {
     console.log(`Cancelling product ${productId} in order ${orderId}`);
     // Logic to cancel the product
@@ -118,9 +117,14 @@ export default function Orders() {
                     <p className="product-color">
                       <strong>Color:</strong> {product.color}
                       <span
-                        className="color-box"
-                        style={{ backgroundColor: product.colorCode }}
-                      ></span>
+  className="color-box"
+  style={{
+    backgroundColor: product.productDetails.colorOptions.find(
+      (color) => color.name === product.color
+    )?.code,
+  }}
+></span>
+
                     </p>
                     {/* Individual Cancel and Rate Us Buttons */}
                     <div className="item-button-container">

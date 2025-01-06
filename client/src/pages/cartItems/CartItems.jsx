@@ -147,13 +147,13 @@ const [loading, setLoading] = useState(false);
         const cartProduct = cartProducts.find((product) => product.id === id);
         if (cartProduct) {
           const { id, productId, color, height, quantity, size, product } = cartProduct;
-          const { name } = product; // Extract `name`
+          const { displayName } = product; // Extract `name`
         
           // Ensure `height` has a default value of "normal" if it's null
           const normalizedHeight = height || "normal";
         
           // Add details and IDs separately
-          details.push({ productId, color, heightType: normalizedHeight, quantity, size, name });
+          details.push({ productId, color, heightType: normalizedHeight, quantity, size, productName: displayName });
           ids.push(id);
         }
         
