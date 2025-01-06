@@ -158,3 +158,15 @@
 .om-view:hover {
   background-color: #374151;
 }
+
+.om-filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.om-filter-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}

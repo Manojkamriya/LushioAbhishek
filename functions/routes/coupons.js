@@ -207,8 +207,10 @@ router.post("/use", async (req, res) => {
     }
 
     return res.status(200).json({
+      couponCode: couponDoc.id,
       discount: parseFloat(discountAmount.toFixed(2)),
       discountType: couponData.discountType,
+      minPurchaseOf: couponData.onPurchaseOf,
     });
   } catch (error) {
     return res.status(500).json({error: "Error processing coupon", details: error.message});
@@ -234,7 +236,7 @@ router.delete("/delete/:cid", async (req, res) => {
   }
 });
 
-// Route to send usable coupons
+// Usable coupons
 router.get("/usableCoupons/:uid", async (req, res) => {
   const {uid} = req.params;
 
@@ -256,7 +258,7 @@ router.get("/usableCoupons/:uid", async (req, res) => {
     for (const doc of couponsSnapshot.docs) {
       const couponData = doc.data();
       const isExpired = currentDate > couponData.validity.toDate();
-      const isUsed = usedCoupons.includes(couponData.code);
+      const isUsed = usedCoupons.includes(doc.id);
 
       if (isExpired || isUsed) continue;
 

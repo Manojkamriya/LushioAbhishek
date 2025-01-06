@@ -29,7 +29,7 @@ const OrderManagement = () => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const params = new URLSearchParams();
       if (status) params.append('status', status);
       if (fromDate) params.append('fromDate', fromDate);
@@ -39,13 +39,13 @@ const OrderManagement = () => {
 
       const response = await axios.get(`${API}/orderAdmin/fetch?${params.toString()}`);
       const newOrders = response.data.orders;
-      
+
       if (isLoadMore) {
         setOrders(prev => [...prev, ...newOrders]);
       } else {
         setOrders(newOrders);
       }
-      
+
       setHasMore(response.data.hasMore);
       setLastDoc(response.data.lastDoc);
     } catch (err) {
@@ -68,8 +68,8 @@ const OrderManagement = () => {
 
   const generateLabel = async (orderId) => {
     try {
-      const response = await axios.post(`${API}/orderAdmin/label`,{oid:orderId});
-      const updatedOrders = orders.map(order => 
+      const response = await axios.post(`${API}/orderAdmin/label`, { oid: orderId });
+      const updatedOrders = orders.map(order =>
         order.oid === orderId ? { ...order, label: true, label_url: response.data.label_url } : order
       );
       setOrders(updatedOrders);
@@ -80,8 +80,8 @@ const OrderManagement = () => {
 
   const generateManifest = async (orderId) => {
     try {
-      const response = await axios.post(`${API}/orderAdmin/manifest`,{oid: orderId});
-      const updatedOrders = orders.map(order => 
+      const response = await axios.post(`${API}/orderAdmin/manifest`, { oid: orderId });
+      const updatedOrders = orders.map(order =>
         order.oid === orderId ? { ...order, manifest: true, manifest_url: response.data.manifest_url } : order
       );
       setOrders(updatedOrders);
@@ -92,8 +92,8 @@ const OrderManagement = () => {
 
   const generateInvoice = async (orderId) => {
     try {
-      const response = await axios.post(`${API}/orderAdmin/invoice`,{oid: orderId});
-      const updatedOrders = orders.map(order => 
+      const response = await axios.post(`${API}/orderAdmin/invoice`, { oid: orderId });
+      const updatedOrders = orders.map(order =>
         order.oid === orderId ? { ...order, invoice: true, invoice_url: response.data.invoice_url } : order
       );
       setOrders(updatedOrders);
@@ -104,8 +104,8 @@ const OrderManagement = () => {
 
   const requestPickup = async (orderId) => {
     try {
-      await axios.post(`${API}/orderAdmin/pickup`,{oid: orderId});
-      const updatedOrders = orders.map(order => 
+      await axios.post(`${API}/orderAdmin/pickup`, { oid: orderId });
+      const updatedOrders = orders.map(order =>
         order.oid === orderId ? { ...order, pickup: true } : order
       );
       setOrders(updatedOrders);
@@ -117,42 +117,66 @@ const OrderManagement = () => {
   return (
     <div className="om-container">
       <h1 className="om-title">Order Management</h1>
-      
+
       <div className="om-filters">
-        <select 
-          className="om-select"
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-        >
-          {statusOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+        <div className="om-filter-item">
+          <label htmlFor="status" className="om-filter-label">
+            Status
+          </label>
+          <select
+            id="status"
+            className="om-select"
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+          >
+            {statusOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <input
-          type="date"
-          value={fromDate}
-          onChange={(e) => setFromDate(e.target.value)}
-          className="om-input"
-        />
+        <div className="om-filter-item">
+          <label htmlFor="fromDate" className="om-filter-label">
+            From Date
+          </label>
+          <input
+            id="fromDate"
+            type="date"
+            value={fromDate}
+            onChange={(e) => setFromDate(e.target.value)}
+            className="om-input"
+          />
+        </div>
 
-        <input
-          type="date"
-          value={toDate}
-          onChange={(e) => setToDate(e.target.value)}
-          className="om-input"
-        />
+        <div className="om-filter-item">
+          <label htmlFor="toDate" className="om-filter-label">
+            To Date
+          </label>
+          <input
+            id="toDate"
+            type="date"
+            value={toDate}
+            onChange={(e) => setToDate(e.target.value)}
+            className="om-input"
+          />
+        </div>
 
-        <input
-          type="number"
-          min="1"
-          value={limit}
-          onChange={(e) => setLimit(parseInt(e.target.value))}
-          placeholder="Limit"
-          className="om-input"
-        />
+        <div className="om-filter-item">
+          <label htmlFor="limit" className="om-filter-label">
+            Results Limit
+          </label>
+          <input
+            id="limit"
+            type="number"
+            min="1"
+            value={limit}
+            onChange={(e) => setLimit(parseInt(e.target.value))}
+            placeholder="Limit"
+            className="om-input"
+          />
+        </div>
       </div>
 
       <div className="om-orders-container">
@@ -167,7 +191,10 @@ const OrderManagement = () => {
             {orders.map((order) => (
               <div key={order.oid} className="om-order-card">
                 <div className="om-order-header">
-                  <div className="om-order-id">Order ID: {order.oid}</div>
+                  <div className="om-order-id">
+                    <strong>Order ID</strong>: {order.oid}<br/>
+                    <strong>Status</strong>: {order.status}
+                  </div>
                   <div className="om-order-actions">
                     {/* <button
                       onClick={() => requestPickup(order.oid)}
@@ -237,7 +264,7 @@ const OrderManagement = () => {
                         Generate Invoice
                       </button>
                     )} */}
-                    
+
                     <button
                       onClick={() => setSelectedOrder(order)}
                       className="om-action om-view"
@@ -248,10 +275,10 @@ const OrderManagement = () => {
                 </div>
               </div>
             ))}
-            
+
             {hasMore && (
-              <button 
-                onClick={handleLoadMore} 
+              <button
+                onClick={handleLoadMore}
                 className="om-button"
                 disabled={isLoading}
               >
@@ -260,16 +287,16 @@ const OrderManagement = () => {
             )}
           </>
         )}
-      {selectedOrder && (
-        <OrderDetailsModal
-          order={selectedOrder}
-          onClose={() => setSelectedOrder(null)}
-          onGenerateLabel={generateLabel}
-          onGenerateManifest={generateManifest}
-          onGenerateInvoice={generateInvoice}
-          onRequestPickup={requestPickup}
-        />
-      )}
+        {selectedOrder && (
+          <OrderDetailsModal
+            order={selectedOrder}
+            onClose={() => setSelectedOrder(null)}
+            onGenerateLabel={generateLabel}
+            onGenerateManifest={generateManifest}
+            onGenerateInvoice={generateInvoice}
+            onRequestPickup={requestPickup}
+          />
+        )}
       </div>
     </div>
   );

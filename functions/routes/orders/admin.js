@@ -337,6 +337,7 @@ router.get("/fetch", async (req, res) => {
 
       const orderInfo = {
         oid: doc.id,
+        status: data.status,
         pickup: Boolean(shiprocketData.pickup_details),
         manifest: Boolean(shiprocketData.manifest),
         label: Boolean(shiprocketData.label),
