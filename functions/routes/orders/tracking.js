@@ -72,6 +72,16 @@ router.get("/:oid", async (req, res) => {
         );
       }
 
+      const responseData = trackingResponse.data;
+      const trackingId = Object.keys(responseData)[0];
+      const shipmentStatus = responseData[trackingId]?.tracking_data?.shipment_status;
+      const statusDesc = getStatusDescription(shipmentStatus);
+
+      // Update the database with the status description
+      await db.collection("orders").doc(oid).update({
+        "shiprocket.status_description": statusDesc,
+      });
+
       res.status(200).json({
         tracking_data: trackingResponse.data,
         awb_code,

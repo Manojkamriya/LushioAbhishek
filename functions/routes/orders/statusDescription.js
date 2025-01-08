@@ -1,6 +1,7 @@
 /* eslint-disable require-jsdoc */
 function getStatusDescription(statusCode) {
   const statusMap = {
+    0: "New",
     1: "AWB Assigned",
     2: "Label Generated",
     3: "Pickup Scheduled/Generated",
