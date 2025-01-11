@@ -86,6 +86,7 @@ router.get("/:oid", async (req, res) => {
         tracking_data: trackingResponse.data,
         awb_code,
         shipment_id,
+        status_description: statusDesc,
       });
     } catch (shiprocketError) {
       console.error("Shiprocket API Error:", shiprocketError.response?.data || shiprocketError);
