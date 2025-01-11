@@ -80,6 +80,7 @@ router.get("/:oid", async (req, res) => {
       // Update the database with the status description
       await db.collection("orders").doc(oid).update({
         "shiprocket.status_description": statusDesc,
+        "shiprocket.status_code": shipmentStatus,
       });
 
       res.status(200).json({
@@ -140,11 +141,12 @@ router.get("/shipment/:oid", async (req, res) => {
           },
       );
 
-      const statusDesc = getStatusDescription(await shipmentResponse.data.data.status);
+      const statusDesc = getStatusDescription(shipmentResponse.data.data.status);
 
       // Update the database with the status description
       await db.collection("orders").doc(oid).update({
         "shiprocket.status_description": statusDesc,
+        "shiprocket.status_code": shipmentResponse.data.data.status,
       });
 
       res.status(200).json({
