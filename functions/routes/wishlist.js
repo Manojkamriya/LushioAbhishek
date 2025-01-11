@@ -69,6 +69,7 @@ router.delete("/delete", async (req, res) => {
   }
 });
 
+// get wishlist of user
 router.get("/:uid", async (req, res) => {
   try {
     const {uid} = req.params;
