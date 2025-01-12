@@ -117,8 +117,8 @@ function checkProductMatch(product, searchText) {
 function sortProductsByMatchPriority(products) {
   const priorityOrder = {
     displayName: 1,
-    productDetails: 2,
-    categories: 3,
+    categories: 2,
+    productDetails: 3,
     sizeFit: 4,
     colorOptions: 5,
   };
