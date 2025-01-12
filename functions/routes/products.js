@@ -150,23 +150,50 @@ router.post("/addProduct", async (req, res) => {
   }
 });
 
-// Get all products
+// Get all products with pagination, sorting, and flags
 router.get("/allProducts", async (req, res) => {
   try {
-    const productsRef = db.collection("products");
-    const snapshot = await productsRef.get();
+    const {lastDocId, limit = 10} = req.query; // Get lastDocId and limit from query parameters
+    const productsRef = db.collection("products").orderBy("createdAt", "desc"); // Order by createdAt (descending)
+    let query = productsRef.limit(parseInt(limit, 10)); // Limit the number of results
+
+    if (lastDocId) {
+      const lastDoc = await db.collection("products").doc(lastDocId).get(); // Fetch the last document using the ID
+      if (lastDoc.exists) {
+        query = query.startAfter(lastDoc); // Start the query after the last document
+      } else {
+        return res.status(400).json({error: "Invalid lastDocId"});
+      }
+    }
+
+    const snapshot = await query.get();
 
     if (snapshot.empty) {
-      return res.status(404).json({message: "No products found"});
+      return res.status(200).json({
+        products: [],
+        hasMore: false,
+        lastDocId: null,
+      });
     }
 
     const products = [];
+    let lastVisibleDoc = null;
+
     snapshot.forEach((doc) => {
       products.push({id: doc.id, ...doc.data()});
+      lastVisibleDoc = doc; // Keep track of the last document in the current batch
     });
 
-    // Return the list of products
-    return res.status(200).json({products});
+    // Check if there are more products
+    const nextQuery = productsRef.startAfter(lastVisibleDoc).limit(1); // Query for the next document
+    const nextSnapshot = await nextQuery.get();
+    const hasMore = !nextSnapshot.empty;
+
+    return res.status(200).json({
+      products,
+      hasMore,
+      lastDocId: lastVisibleDoc.id,
+    });
   } catch (error) {
     console.error("Error fetching products:", error);
     return res.status(500).json({error: "Failed to fetch products"});
