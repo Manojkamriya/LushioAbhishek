@@ -170,6 +170,7 @@ const Register = () => {
               type="text"
               placeholder="Enter the OTP"
               value={otp}
+              style={{ width: "100px" }}
               onChange={(e) => setOtp(e.target.value)}
               required
             />

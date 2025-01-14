@@ -263,8 +263,8 @@ font-size: min(7cqi, 18px);
   .color-size-selector div {
  
     gap: 4%;
-    row-gap: 23%;
-    margin-bottom: 5%;
+    row-gap: 30%;
+    margin-bottom: 8%;
     width: 92%;
     height: auto;
   }
@@ -289,6 +289,7 @@ font-size: min(7cqi, 18px);
   display: grid;
   grid-template-columns: repeat(4,1fr);
   row-gap: 15cqi;
+  margin-bottom: 10%;
 }
   .height-selector button,
 .size-selector button,
@@ -298,7 +299,7 @@ background-color: #ffffff;
  color: #1c1b1b;
  outline: none;
 border: 1px solid #1c1b1b;
-border-radius: 5%;
+border-radius: 8%;
 cursor: pointer;
 transition: all 0.2s ease;
 }
@@ -321,7 +322,7 @@ transition: all 0.2s ease;
   }
   .size-selector button{
  width: 100%;
- border-radius:4.5cqi;
+ border-radius:4.9cqi;
  margin-left: 2%;
  font-size: 4.5cqi;
  position: relative;
@@ -363,7 +364,7 @@ white-space: nowrap;
 }
 
 .add-to-cart-button {
-width: 75%;
+width: 90%;
 border-radius: 1.5cqi;
 display: flex;
 justify-content: center;
@@ -447,7 +448,7 @@ animation: fadeInOut 3s ease-in-out;
 @media (max-width: 480px) {
 .product-card-container {
  padding: 3%;
- margin-top: 10px;
+ margin-top: 7px;
 }
 .product-card {
 

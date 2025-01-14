@@ -1,0 +1,87 @@
+.return-exchange-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+  }
+  .return-exchange-container input[type="radio"]{
+    accent-color: #1c1c1c;
+  }
+  .return-exchange-title {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .return-exchange-options {
+    display: flex;
+    justify-content: flex-start;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .radio-label {
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+ .radio-label input{
+    margin-right: 7px;
+ } 
+  .return-section,
+  .exchange-section {
+    margin-top: 20px;
+  }
+  .return-section h3,
+  .exchange-section h3 {
+    margin-bottom: 20px;
+  }
+  
+  .return-reasons,
+  .size-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .size-options {
+    display: grid;
+    grid-template-columns: repeat(5,1fr);
+    gap: 10px;
+  }
+  
+  .return-button,
+  .exchange-button,
+  .size-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+   
+  }
+  .exchange-button, .return-button{
+    margin-top: 18px;
+  }
+  .return-button {
+    background-color: #ff4d4d;
+    color: white;
+  }
+  
+  .exchange-button {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .size-button {
+    background-color: #ddd;
+    color: black;
+    border: 1px solid #ccc;
+  }
+  
+  .size-button.selected-size {
+    background-color: #4caf50;
+    color: white;
+  }
+  

@@ -70,7 +70,8 @@
 .itemContainer-base-details,.itemContainer-base-itemLink {
     text-decoration: none;
     padding-bottom: 0;
-    margin-right: 6px
+    margin-right: 6px;
+    margin-top: 6px;
 }
 
 .itemContainer-base-itemLink {
@@ -347,7 +348,13 @@ border: 1px solid rgb(151, 151, 150);
     font-weight: 700;
     text-transform: uppercase
 }
-
+.priceDetail-totalMRP span{
+font-weight: 600;
+font-size: 18px;
+}
+.priceDetail-totalMRP .priceDetail-base-value{
+    text-decoration: line-through;
+}
 .priceDetail-base-action {
     font-size: 14px;
     color: #ff3f6c;
@@ -393,6 +400,28 @@ border: 1px solid rgb(151, 151, 150);
     color: rgb(255, 255, 255);
     cursor: pointer;
 }
+.itemContainer-base-cutprice{
+    text-decoration: line-through;
+    font-size: 13px;
+    color: #3e4152;
+}
+.cart-quantity-error{
+    color: white;
+    background-color: red;
+    padding: 4px 10px;
+    border-radius: 10px 10px 0px 0px;
+}
+.cart-quantity-error {
+    color: #fff7f7;
+    background-color: #e51f1f;
+    padding: 6px 12px;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    font-weight: 500;
+    font-size: 14px;
+    text-align: center;
+}
+
 @media(max-width: 1080px){
     .itemContainer-base-item {
         min-width: 350px;
@@ -448,19 +477,7 @@ border: 1px solid rgb(151, 151, 150);
         max-width: 98%;
       }
       
-      /* .proceed-to-pay-button {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #ffffff;
-        background: linear-gradient(45deg, #ff7e5f, #feb47b);
-        padding: 0.75rem 1.5rem;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background 0.3s ease, transform 0.2s ease;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-      }
-       */
+    
      
       
     .itemContainer-base-item {

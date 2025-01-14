@@ -11,7 +11,7 @@ export default function Home() {
       {/* <ProductCards /> */}
       <HomeWishlist/>
       <FeaturedProducts/>
-      <div className="collection-card-container">
+      {/* <div className="collection-card-container">
         <CollectionCard
           image="/Images/card-image-6.png"
           name="SHIRTS"
@@ -24,7 +24,7 @@ export default function Home() {
           image="/Images/card-image-5.png"
           name="SALE"
         />
-      </div>
+      </div> */}
       <br></br>
     </>
   );

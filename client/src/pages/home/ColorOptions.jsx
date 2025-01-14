@@ -80,7 +80,7 @@ const ColorOptions = ({ data, selectedColor,
                   key={size}
                   //style={{ aspectRatio: "29 / 15" }}
                   style={{
-                    aspectRatio: size === "SizeFree" ? 29/10 : 29 / 15,
+                    aspectRatio: size === "SizeFree" ? 29/12 : 29 / 17,
                     width: size === "SizeFree" ? "140%" : "auto",       
                   }}
                   onClick={() => handleSizeChange(size)}

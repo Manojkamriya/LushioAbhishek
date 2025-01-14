@@ -1,9 +1,11 @@
-import React, {useRef} from "react";
+import React, {useRef,useContext} from "react";
 import "./refer-earn.css";
 import ShareComponent from "./ShareComponent";
+import { UserContext } from "../../components/context/UserContext";
 function ReferAndEarn() {
   const textRef = useRef(null);
-
+  const { user } = useContext(UserContext);
+  console.log(user);
   const copyText = () => {
     const textToCopy = textRef.current.innerText;
     navigator.clipboard.writeText(textToCopy)
@@ -27,8 +29,8 @@ function ReferAndEarn() {
       </div>
       <div className="referralBlock">
         <p>Tap To Copy Code</p>
-        <div ref={textRef} onClick={copyText}>LUSH2013</div>
-        <ShareComponent/>
+      {user &&  <div ref={textRef} onClick={copyText}>{user.referralCode}</div>}
+        <ShareComponent referralCode={user.referralCode}/>
       </div>
       <p className="refer-question">How Does Referrel Work?</p>
       <div className="instruction-container">

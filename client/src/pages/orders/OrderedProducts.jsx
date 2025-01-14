@@ -1,5 +1,5 @@
 import React from "react";
-
+import { Link } from "react-router-dom";
 const OrderedProducts = ({orderedProducts}) => {
 
 
@@ -9,13 +9,16 @@ const OrderedProducts = ({orderedProducts}) => {
       <div className="ordered-products-list">
         {orderedProducts.map((product,index) => (
           <div className="ordered-product" key={index}>
-            <img
+              <Link to={`/product/${product?.productDetails?.id}`}>
+              <img
               src={product.productDetails.cardImages[0]}
               alt={product.name}
               className="ordered-product-image"
             />
+              </Link>
+          
             <div className="ordered-product-details">
-              <p className="ordered-product-name">{product.name}</p>
+              <p className="ordered-product-name">{product.productName || product?.name}</p>
               <p className="ordered-product-info">Size: {product.size}</p>
               <p className="ordered-product-info">Height: {product.heightType || "Normal"}</p>
 
@@ -28,7 +31,9 @@ const OrderedProducts = ({orderedProducts}) => {
      marginLeft:"5px",
         width: "10px",
         height: "10px",
-        backgroundColor: product.colorCode,
+        backgroundColor:  product.productDetails.colorOptions.find(
+          (color) => color.name === product.color
+        )?.code,
        
       }}
     ></span>

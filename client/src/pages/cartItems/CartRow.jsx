@@ -16,27 +16,35 @@ const CartRow = ({
   handleMoveToWishlist,
   handleRemoveFromCart,
 }) => {
-  const isHeightBased = item.height;
-  const inStock = isHeightBased
-    ? item.product[item.height]?.quantities?.[item.color]?.[item.size] > 0
-    : item.product.quantities[item.color]?.[item.size] > 0;
-    const quantityAvailable = isHeightBased
-    ? item.product[item.height]?.quantities?.[item.color]?.[item.size]
-    : item.product.quantities[item.color]?.[item.size];
+  // Contexts
   const { user } = useContext(UserContext);
   const { wishlist } = useWishlist();
 
+  // State Variables
   const [isPopupOneOpen, setPopupOneOpen] = useState(false);
   const [isPopupTwoOpen, setPopupTwoOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [isLoading,setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [totalQuantity, setTotalQuantity] = useState(0);
   const [cartQuantity, setCartQuantity] = useState(0);
+
+  // Derived Variables
+  const isHeightBased = item.height;
+  const quantityAvailable = isHeightBased
+    ? item.product[item.height]?.quantities?.[item.color]?.[item.size]
+    : item.product.quantities[item.color]?.[item.size];
+  const inStock = quantityAvailable > 0;
+  const canPurchase = quantityAvailable >= item?.quantity;
+
+  // Wishlist Item and Color Hex
   const wishlistItem = wishlist.find((e) => e.productId === item.product.id);
   const colorHex = item.product.colorOptions.find(
     (color) => color.name === item.color
   )?.code;
+
+ 
+
   const handlePopUpOneOpen = async (e) => {
     setSelectedItem(e);
 
@@ -59,56 +67,52 @@ const CartRow = ({
       setCartQuantity(e.quantity);
     } catch (err) {
       console.log(err);
-    }
-    finally{
+    } finally {
       setIsLoading(false);
     }
   };
   const handlePopUpTwoOpen = (e) => {
     setPopupTwoOpen(true);
+    console.log(e);
     handleOpen(e);
   };
-  const handleQuantityUpdate = async(cartItemId) =>{
+  const handleQuantityUpdate = async (cartItemId) => {
     const data = {
-uid: user.uid,
-quantity: cartQuantity,
-    }
+      uid: user.uid,
+      quantity: cartQuantity,
+    };
     try {
       setIsUpdating(true);
       const res = await axios.put(
         `${process.env.REACT_APP_API_URL}/cart/update/${cartItemId}`,
-        
-         data,
-        
+
+        data
       );
       setPopupOneOpen(false);
       setCartProducts((prevItems) =>
         prevItems.map((item) =>
-          item.id === cartItemId
-            ? { ...item, quantity: cartQuantity, }
-            : item
+          item.id === cartItemId ? { ...item, quantity: cartQuantity } : item
         )
       );
-      console.log(res);
     } catch (err) {
       console.log(err);
-    }
-    finally{
+    } finally {
       setIsUpdating(false);
     }
-  }
+  };
   const handleQuantityChange = (quantity) => {
     setCartQuantity(quantity); // Update cart quantity when a button is clicked
   };
 
   return (
     <>
-     {isUpdating && (
-        <div className="spinner-overlay">
-          <div></div>
-        </div>
-      )}
       <div className={`itemContainer-base-item ${!inStock ? "sold-out" : ""}`}>
+        {!canPurchase && (
+          <p className="cart-quantity-error">
+            You selected {item.quantity}, but only {quantityAvailable} left in
+            stock.
+          </p>
+        )}
         <div className={`cartitems-format ${!inStock ? "sold-out" : ""}`}>
           <div className="itemContainer-base-itemLeft">
             {!inStock ? (
@@ -189,7 +193,11 @@ quantity: cartQuantity,
                 </div>
               </div>
               <div className="itemContainer-base-description">
-                ₹ {item.product.discountedPrice * item.quantity}
+                <span className="itemContainer-base-cutprice">
+                  {" "}
+                  ₹{item.product.price * item.quantity}{" "}
+                </span>{" "}
+                ₹{item.product.discountedPrice * item.quantity}
               </div>
             </div>
 
@@ -213,39 +221,53 @@ quantity: cartQuantity,
         isOpen={isPopupOneOpen}
         onClose={() => setPopupOneOpen(false)}
       >
-        {
-          isLoading ? <div className="cart-loader-container">
-          {" "}
-          <span className="loader"></span>
-        </div>:<div className="quantity-change-container">
-          <h2>
-    Select Quantity
-    {totalQuantity < 10 && (
-      <span className="error-message"> (Only {totalQuantity} Left)</span>
-    )}
-  </h2>
-  
-            <div className="quantity-buttons">
-              {Array.from({ length: Math.min(totalQuantity, 10) }, (_, index) => {
-                const quantity = index + 1;
-                return (
-                  <button
-                    key={quantity}
-                    className={`quantity-button ${
-                      quantity === cartQuantity ? "selected" : ""
-                    }`}
-                    style={{ aspectRatio: 1 }}
-                    onClick={() => handleQuantityChange(quantity)}
-                  >
-                    {quantity}
-                  </button>
-                );
-              })}
-            </div>
-            <button className="submit-button"  onClick={() => handleQuantityUpdate(item.id)}>Submit</button>
+        {isLoading ? (
+          <div className="cart-loader-container">
+            {" "}
+            <span className="loader"></span>
           </div>
-        }
-        
+        ) : (
+          <div className="quantity-change-container">
+            <h2>
+              Select Quantity
+              {totalQuantity < 10 && (
+                <span className="error-message">
+                  {" "}
+                  (Only {totalQuantity} Left)
+                </span>
+              )}
+            </h2>
+
+            <div className="quantity-buttons">
+              {Array.from(
+                { length: Math.min(totalQuantity, 10) },
+                (_, index) => {
+                  const quantity = index + 1;
+                  return (
+                    <button
+                      key={quantity}
+                      className={`quantity-button ${
+                        quantity === cartQuantity ? "selected" : ""
+                      }`}
+                      style={{ aspectRatio: 1 }}
+                      onClick={() => handleQuantityChange(quantity)}
+                    >
+                      {quantity}
+                    </button>
+                  );
+                }
+              )}
+            </div>
+            <button
+              className="submit-button"
+              disabled={isUpdating}
+              onClick={() => handleQuantityUpdate(item.id)}
+            >
+              {" "}
+              {isUpdating ? <div className="quantity-loader"></div> : "Submit"}
+            </button>
+          </div>
+        )}
       </ResponsivePopup>
 
       <ResponsivePopup
@@ -255,17 +277,18 @@ quantity: cartQuantity,
         <div className="remove-cart-buttons">
           <div className="remove-product-details">
             <img
-              src={selectedProduct?.cardImages[0]}
+              src={selectedProduct?.product?.cardImages[0]}
               alt=""
               className="remove-product-image"
             />
             <div className="remove-product-info">
-              <h3>{selectedProduct?.displayName}</h3>
+              <h3>{selectedProduct?.product?.displayName}</h3>
               <p>
                 <strong>Quantity:</strong> {selectedProduct?.quantity || "1"}
               </p>
               <p>
-                <strong>Price:</strong>  ₹ {selectedProduct?.price}
+                <strong>Price:</strong> ₹
+                {selectedProduct?.product?.discountedPrice}
               </p>
               <p>
                 <strong>Size:</strong> {selectedProduct?.size}

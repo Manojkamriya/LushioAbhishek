@@ -41,7 +41,7 @@ const FeaturedProducts = () => {
     });
   }, []);
 
-  const renderProductSection = (category, buttonText, route) => {
+  const renderProductSection = (category, buttonText, route,topText) => {
     if (loadingStates[category]) {
       return <div className="loader-container"><span className="loader"></span></div>;
     }
@@ -55,6 +55,13 @@ const FeaturedProducts = () => {
       {
         products[category].length > 0 && (
 <>
+{products[category].length > 0 && (
+      
+          <button className="home-heading-button" onClick={() => navigate(route)}>
+            {topText}
+          </button>
+       
+      )}
 <div className="product-card-container">
         {products[category].map((item) => (
           <ProductCard
@@ -94,9 +101,9 @@ const FeaturedProducts = () => {
 
   return (
     <>
-      {renderProductSection('men', 'Show More', '/men')}
-      {renderProductSection('women', 'Show More', '/women')}
-      {renderProductSection('featured', 'Show More', '/accessories')}
+      {renderProductSection('men', 'Show More', '/men','FOR HIM')}
+      {renderProductSection('women', 'Show More', '/women','FOR HER')}
+      {renderProductSection('featured', 'Show More', '/accessories','ACCESSORIES')}
     </>
   );
 };

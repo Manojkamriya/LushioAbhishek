@@ -10,6 +10,7 @@
   border-radius: 8px;
   margin-block: 3cqi;
   margin-left: 3cqi;
+  text-transform: capitalize;
 }
 
 .breadcrumb-item {

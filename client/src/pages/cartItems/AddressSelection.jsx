@@ -9,6 +9,7 @@ const AddressSelection = ({handleClose})=> {
     addressData,
     isChangingDefault,
     isLoading,
+    fetchAddresses,
     handleAddAddress,
     handleEditAddress,
     handleRemoveAddress,
@@ -39,7 +40,7 @@ const [isUpdating,setIsUpdating] = useState(false);
     setIsAddingNew(false);
     setNewAddress(addressData[index]);
   };
-
+ 
   const handlePhoneInputChange = (value) => {
     setNewAddress((prevState) => ({
       ...prevState,
@@ -56,7 +57,6 @@ const handleSelectAddress = async () => {
   try {
     setIsUpdating(true);
 
-    // Create a shallow copy of selectedAddress and modify contactNo
     const updatedAddress = {
       ...selectedAddress,
       contactNo: selectedAddress.contactNo.substring(2),
@@ -229,11 +229,12 @@ console.log(data);
                         />
                         <div className="address">
                           <h4>{info.name}</h4>
-                          <span>{info.flatDetails}{", "}{info.areaDetails}{", "}{info.landmark}{", "}{info.townCity}{", "}{info.state}{", "}</span>
+                          <span>{info.flatDetails}{", "}{info.areaDetails}{", "}{info.townCity}{", "}{info.state}{", "}</span>
+                          {info.landmark &&  <p><strong>Landmark: </strong> {info.landmark}</p>}  
                           <span>Pin Code: {info.pinCode}  </span>
                          
                           <p>Contact Number: {info.contactNo.startsWith('91') ? info.contactNo.substring(2) : info.contactNo}</p>
-
+                        
                           {info.isDefault && <h3 className="default-address">Default Address</h3>}
                           <div className="address-action">
                             <button onClick={() => handleEdit(i)}>Edit</button>
@@ -243,7 +244,10 @@ console.log(data);
                         </div>
                       </label>
                     ))}
-                    <button className="address-done-button" onClick={()=>handleSelectAddress()}>Done</button>
+                    <button className="address-done-button" onClick={()=>handleSelectAddress()}>
+                    {" "}
+                    {isUpdating ? <div className="quantity-loader"></div> : "Done"}
+                      </button>
                   </>
                 )
               )}

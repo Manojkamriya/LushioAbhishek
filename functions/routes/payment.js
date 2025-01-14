@@ -140,13 +140,29 @@ router.post("/status", async (req, res) => {
           paymentData: paymentDetails, // Nest paymentDetails under the key 'paymentData'
         };
 
-        logger.log("Combined Order and Payment Details:", combinedDetails);
+        logger.log("Combined Order and Payment Details:", JSON.stringify(combinedDetails, null, 2));
         // Await order creation API call
         const orderResponse = await axios.post(
             `${API_URL}/orders/createOrder`,
             combinedDetails,
         );
         logger.log("Order Creation Response:", orderResponse.data);
+        // Extracting productIds
+const selectedProductIds = globalOrderDetails.orderedProducts.map(product => product.productId);
+console.log(selectedProductIds);
+        try {
+          const response = await axios.post(
+            `${API_URL}/cart/batch-delete`,
+            {
+              uid: globalOrderDetails.uid,
+              itemIds: selectedProductIds,
+            }
+          );
+    
+          
+        } catch (error) {
+          logger.log(error);
+        }
         const url = `${FRONTEND_URL}/paymentStatus`;
         return res.redirect(url);
       } catch (error) {
