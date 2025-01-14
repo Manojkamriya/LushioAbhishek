@@ -13,39 +13,53 @@ function intersectProducts(products1, products2) {
   return products2.filter((product) => map.has(product.id));
 }
 
+// Helper function to get pagination query
+function getPaginationQuery(query, lastDocId, limit = 20) {
+  let paginatedQuery = query.orderBy("createdAt", "desc").limit(limit);
+
+  if (lastDocId) {
+    // Get the last document
+    const lastDocRef = db.collection("products").doc(lastDocId);
+    paginatedQuery = paginatedQuery.startAfter(lastDocRef);
+  }
+
+  return paginatedQuery;
+}
+
 // POST /getByCategory
 router.post("/getByCategory", async (req, res) => {
   try {
-    const {categories} = req.body;
+    const {categories, lastDocId, limit = 20} = req.body;
     if (!categories || !Array.isArray(categories) || categories.length === 0 || categories.length > 2) {
       return res.status(400).json({message: "Please provide 1 or 2 categories."});
     }
 
     const productsRef = db.collection("products");
-    let results = [];
-
-    const snapshot1 = await productsRef
+    let baseQuery = productsRef
         .where("categories", "array-contains", categories[0])
-        .where("toDisplay", "==", true)
-        .limit(20)
-        .get();
+        .where("toDisplay", "==", true);
 
+    let paginatedQuery = getPaginationQuery(baseQuery, lastDocId, limit);
+    const snapshot1 = await paginatedQuery.get();
+
+    let results = [];
     snapshot1.forEach((doc) => {
       results.push({id: doc.id, ...doc.data()});
     });
 
     if (categories.length === 2) {
       const results2 = [];
-      const snapshot2 = await productsRef
+      baseQuery = productsRef
           .where("categories", "array-contains", categories[1])
-          .where("toDisplay", "==", true)
-          .limit(20)
-          .get();
+          .where("toDisplay", "==", true);
+
+      paginatedQuery = getPaginationQuery(baseQuery, lastDocId, limit);
+      const snapshot2 = await paginatedQuery.get();
+
       snapshot2.forEach((doc) => {
         results2.push({id: doc.id, ...doc.data()});
       });
 
-      // Use intersection of both categories
       results = intersectProducts(results, results2);
     }
 
@@ -53,7 +67,12 @@ router.post("/getByCategory", async (req, res) => {
       return res.status(404).json({message: "No products found."});
     }
 
-    res.status(200).json(results.slice(0, 20)); // Return top 20 unique products
+    const hasMore = results.length === limit;
+    res.status(200).json({
+      products: results,
+      hasMore,
+      lastDocId: results[results.length - 1]?.id,
+    });
   } catch (error) {
     console.error("Error fetching products by category:", error);
     res.status(500).json({message: "Error fetching products"});
@@ -69,6 +88,7 @@ router.get("/featuredMen", async (req, res) => {
     const featuredSnapshot = await productsRef
         .where("categories", "array-contains", "featured")
         .where("toDisplay", "==", true)
+        .orderBy("createdAt", "desc")
         .get();
     const featuredProducts = [];
     featuredSnapshot.forEach((doc) => {
@@ -79,6 +99,7 @@ router.get("/featuredMen", async (req, res) => {
     const menSnapshot = await productsRef
         .where("categories", "array-contains", "men")
         .where("toDisplay", "==", true)
+        .orderBy("createdAt", "desc")
         .get();
     const menProducts = [];
     menSnapshot.forEach((doc) => {
@@ -108,6 +129,7 @@ router.get("/featuredWomen", async (req, res) => {
     const featuredSnapshot = await productsRef
         .where("categories", "array-contains", "featured")
         .where("toDisplay", "==", true)
+        .orderBy("createdAt", "desc")
         .get();
     const featuredProducts = [];
     featuredSnapshot.forEach((doc) => {
@@ -118,6 +140,7 @@ router.get("/featuredWomen", async (req, res) => {
     const womenSnapshot = await productsRef
         .where("categories", "array-contains", "women")
         .where("toDisplay", "==", true)
+        .orderBy("createdAt", "desc")
         .get();
     const womenProducts = [];
     womenSnapshot.forEach((doc) => {
@@ -147,6 +170,7 @@ router.get("/featuredAccessories", async (req, res) => {
     const featuredSnapshot = await productsRef
         .where("categories", "array-contains", "featured")
         .where("toDisplay", "==", true)
+        .orderBy("createdAt", "desc")
         .get();
     const featuredProducts = [];
     featuredSnapshot.forEach((doc) => {
@@ -157,6 +181,7 @@ router.get("/featuredAccessories", async (req, res) => {
     const accessoriesSnapshot = await productsRef
         .where("categories", "array-contains", "accessories")
         .where("toDisplay", "==", true)
+        .orderBy("createdAt", "desc")
         .get();
     const accessoriesProducts = [];
     accessoriesSnapshot.forEach((doc) => {
@@ -180,20 +205,26 @@ router.get("/featuredAccessories", async (req, res) => {
 // GET /men
 router.get("/men", async (req, res) => {
   try {
+    const {lastDocId, limit = 20} = req.query;
     const productsRef = db.collection("products");
-    const snapshot = await productsRef
+    const baseQuery = productsRef
         .where("categories", "array-contains", "men")
-        .where("toDisplay", "==", true)
-        .limit(20)
-        .get();
+        .where("toDisplay", "==", true);
+
+    const paginatedQuery = getPaginationQuery(baseQuery, lastDocId, limit);
+    const snapshot = await paginatedQuery.get();
 
     const results = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
 
     if (results.length === 0) {
       return res.status(404).json({message: "No products found for men."});
     }
-
-    res.status(200).json(results);
+    const hasMore = results.length === limit;
+    res.status(200).json({
+      products: results,
+      hasMore,
+      lastDocId: results[results.length - 1]?.id,
+    });
   } catch (error) {
     console.error("Error fetching men products:", error);
     res.status(500).json({message: "Error fetching products"});
@@ -203,20 +234,26 @@ router.get("/men", async (req, res) => {
 // GET /women
 router.get("/women", async (req, res) => {
   try {
+    const {lastDocId, limit = 20} = req.query;
     const productsRef = db.collection("products");
-    const snapshot = await productsRef
+    const baseQuery = productsRef
         .where("categories", "array-contains", "women")
-        .where("toDisplay", "==", true)
-        .limit(20)
-        .get();
+        .where("toDisplay", "==", true);
+
+    const paginatedQuery = getPaginationQuery(baseQuery, lastDocId, limit);
+    const snapshot = await paginatedQuery.get();
 
     const results = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
 
     if (results.length === 0) {
       return res.status(404).json({message: "No products found for women."});
     }
-
-    res.status(200).json(results);
+    const hasMore = results.length === limit;
+    res.status(200).json({
+      products: results,
+      hasMore,
+      lastDocId: results[results.length - 1]?.id,
+    });
   } catch (error) {
     console.error("Error fetching women products:", error);
     res.status(500).json({message: "Error fetching products"});
@@ -226,20 +263,26 @@ router.get("/women", async (req, res) => {
 // GET /accessories
 router.get("/accessories", async (req, res) => {
   try {
+    const {lastDocId, limit = 20} = req.query;
     const productsRef = db.collection("products");
-    const snapshot = await productsRef
+    const baseQuery = productsRef
         .where("categories", "array-contains", "accessories")
-        .where("toDisplay", "==", true)
-        .limit(20)
-        .get();
+        .where("toDisplay", "==", true);
+
+    const paginatedQuery = getPaginationQuery(baseQuery, lastDocId, limit);
+    const snapshot = await paginatedQuery.get();
 
     const results = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
 
     if (results.length === 0) {
       return res.status(404).json({message: "No products found for accessories."});
     }
-
-    res.status(200).json(results);
+    const hasMore = results.length === limit;
+    res.status(200).json({
+      products: results,
+      hasMore,
+      lastDocId: results[results.length - 1]?.id,
+    });
   } catch (error) {
     console.error("Error fetching accessories products:", error);
     res.status(500).json({message: "Error fetching products"});

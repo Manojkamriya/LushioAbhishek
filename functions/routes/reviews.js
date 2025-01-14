@@ -258,13 +258,14 @@ router.get("/", async (req, res) => {
     return res.status(200).json({
       reviews: reviewsData,
       hasMore,
-      lastDocId: hasMore ? reviewsData[[reviewsData.length - 1]].id : null,
+      lastDocId: reviewsData[reviewsData.length - 1].id,
     });
   } catch (error) {
     console.error("Error getting reviews:", error);
     return res.status(500).json({error: "Failed to get reviews"});
   }
 });
+
 // Delete a review
 router.delete("/delete/:reviewId", async (req, res) => {
   try {

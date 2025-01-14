@@ -8,7 +8,23 @@ const db = getFirestore();
 // Fetch all coupons route
 router.get("/", async (req, res) => {
   try {
-    const couponsSnapshot = await db.collection("coupons").get();
+    const {lastDocId} = req.query;
+    const limit = parseInt(req.query.limit) || 20;
+    // Create base query with sorting
+    let query = db.collection("coupons")
+        .orderBy("createdAt", "desc")
+        .limit(limit);
+
+    // Add pagination if lastDocId exists
+    if (lastDocId) {
+      const lastDoc = await db.collection("coupons").doc(lastDocId).get();
+      if (!lastDoc.exists) {
+        return res.status(400).json({error: "Invalid lastDocId provided"});
+      }
+      query = query.startAfter(lastDoc);
+    }
+
+    const couponsSnapshot = await query.get();
     const coupons = couponsSnapshot.docs.map((doc) => {
       const data = doc.data();
       const formattedValidity = data.validity.toDate().toISOString().split("T")[0];
@@ -18,8 +34,12 @@ router.get("/", async (req, res) => {
         validity: formattedValidity,
       };
     });
-
-    return res.status(200).json({coupons});
+    const hasMore = coupons.length === limit;
+    return res.status(200).json({
+      coupons,
+      hasMore,
+      lastDocId: coupons.length > 0 ? coupons[coupons.length - 1].id : null,
+    });
   } catch (error) {
     return res.status(500).json({error: "Error fetching coupons", details: error.message});
   }
@@ -71,6 +91,7 @@ router.post("/add", async (req, res) => {
     // Add new coupon to Firestore
     await db.collection("coupons").doc(code).set({
       validity: new Date(validity),
+      createdAt: new Date(),
       discount: parseFloat(discount),
       discountType,
       onPurchaseOf: parseFloat(onPurchaseOf),
@@ -239,8 +260,10 @@ router.delete("/delete/:cid", async (req, res) => {
 // Usable coupons
 router.get("/usableCoupons/:uid", async (req, res) => {
   const {uid} = req.params;
+  const {lastDocId, limit = 10} = req.query;
 
   try {
+    // Check if user exists
     const userRef = db.collection("users").doc(uid);
     const userDoc = await userRef.get();
 
@@ -252,8 +275,25 @@ router.get("/usableCoupons/:uid", async (req, res) => {
     const usedCoupons = userData.usedCoupons || [];
     const currentDate = new Date();
 
-    const couponsSnapshot = await db.collection("coupons").get();
+    // Build the query with sorting
+    let couponsQuery = db.collection("coupons")
+        .orderBy("validity", "asc"); // Sort by validity date ascending
+
+    // Apply pagination if lastDocId is provided
+    if (lastDocId) {
+      const lastDoc = await db.collection("coupons").doc(lastDocId).get();
+      if (!lastDoc.exists) {
+        return res.status(400).json({error: "Invalid lastDocId"});
+      }
+      couponsQuery = couponsQuery.startAfter(lastDoc);
+    }
+
+    // Limit the number of documents
+    couponsQuery = couponsQuery.limit(limit);
+
+    const couponsSnapshot = await couponsQuery.get();
     const validCoupons = {};
+    let lastVisible = null;
 
     for (const doc of couponsSnapshot.docs) {
       const couponData = doc.data();
@@ -294,10 +334,17 @@ router.get("/usableCoupons/:uid", async (req, res) => {
           ...couponData,
           validity: formattedValidity,
         };
+
+        // Update lastVisible for pagination
+        lastVisible = doc;
       }
     }
 
-    return res.status(200).json(validCoupons);
+    return res.status(200).json({
+      coupons: validCoupons,
+      lastDocId: lastVisible?.id || null,
+      hasMore: couponsSnapshot.docs.length === parseInt(limit),
+    });
   } catch (error) {
     return res.status(500).json({error: "Error fetching user-specific coupons", details: error.message});
   }
