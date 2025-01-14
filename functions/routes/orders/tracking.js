@@ -72,10 +72,22 @@ router.get("/:oid", async (req, res) => {
         );
       }
 
+      const responseData = trackingResponse.data;
+      const trackingId = Object.keys(responseData)[0];
+      const shipmentStatus = responseData[trackingId]?.tracking_data?.shipment_status;
+      const statusDesc = getStatusDescription(shipmentStatus);
+
+      // Update the database with the status description
+      await db.collection("orders").doc(oid).update({
+        "shiprocket.status_description": statusDesc,
+        "shiprocket.status_code": shipmentStatus,
+      });
+
       res.status(200).json({
         tracking_data: trackingResponse.data,
         awb_code,
         shipment_id,
+        status_description: statusDesc,
       });
     } catch (shiprocketError) {
       console.error("Shiprocket API Error:", shiprocketError.response?.data || shiprocketError);
@@ -129,11 +141,12 @@ router.get("/shipment/:oid", async (req, res) => {
           },
       );
 
-      const statusDesc = getStatusDescription(await shipmentResponse.data.data.status);
+      const statusDesc = getStatusDescription(shipmentResponse.data.data.status);
 
       // Update the database with the status description
       await db.collection("orders").doc(oid).update({
         "shiprocket.status_description": statusDesc,
+        "shiprocket.status_code": shipmentResponse.data.data.status,
       });
 
       res.status(200).json({

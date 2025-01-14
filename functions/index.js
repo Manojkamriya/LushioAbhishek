@@ -55,6 +55,7 @@ const adminOrderRoute = require("./routes/orders/admin.js");
 const courierServicabilityRoute = require("./routes/orders/courierServicability.js");
 const returnsRoute = require("./routes/orders/returns.js");
 const trackRoute = require("./routes/orders/tracking.js");
+const searchRoute = require("./routes/search.js");
 
 // Use routes
 app.use("/user", userRoutes);
@@ -75,6 +76,7 @@ app.use("/orderAdmin", adminOrderRoute);
 app.use("/couriers", courierServicabilityRoute);
 app.use("/returns", returnsRoute);
 app.use("/track", trackRoute);
+app.use("/search", searchRoute);
 
 // Export API
 exports.api = onRequest(app);

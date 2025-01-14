@@ -60,6 +60,7 @@ router.get("/details/:uid", async (req, res) => {
       gender: userData.gender || null,
       dob: convertToDisplayDate(userData.dob) || null,
       doa: convertToDisplayDate(userData.doa) || null,
+      referralCode: userData.referralCode || null,
     };
 
     return res.status(200).json(userDetails);

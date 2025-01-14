@@ -9,6 +9,7 @@ const {getFirestore} = require("firebase-admin/firestore");
 const db = getFirestore();
 const {generateToken, destroyToken} = require("./shiprocketAuth");
 // const logger = require("firebase-functions/logger");
+const getStatusDescription = require("./statusDescription");
 
 // Validation middleware
 const validateOrderRequest = (req, res, next) => {
@@ -444,10 +445,44 @@ router.post("/cancel", async (req, res) => {
       return res.status(400).json({message: "Shiprocket order ID not found"});
     }
 
+    // Fetch real-time status from Shiprocket Tracking API
     let token;
     try {
-      // Cancel order on Shiprocket
       token = await generateToken();
+      const trackingResponse = await axios.get(
+          `${SHIPROCKET_API_URL}/courier/track?order_id=${shiprocketOrderId}`,
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          },
+      );
+
+      const trackingDataKey = Object.keys(trackingResponse.data[0])[0]; // Get the dynamic key
+      const realTimeStatus = trackingResponse.data[0][trackingDataKey]?.tracking_data?.shipment_status;
+
+      console.log("Real-time Status:", realTimeStatus);
+
+      // Define cancelable statuses
+      const cancelableStatuses = [
+        0, // New
+        1, // AWB Assigned
+        2, // Label Generated
+        3, // Pickup Scheduled/Generated
+        4, // Pickup Queued
+        5, // Manifest Generated
+      ];
+
+      // Check if the real-time status allows cancellation
+      if (!cancelableStatuses.includes(realTimeStatus)) {
+        const statusDescription = getStatusDescription(realTimeStatus);
+        return res.status(400).json({
+          message: `Order cannot be canceled. Current status: ${statusDescription}`,
+        });
+      }
+
+      // Cancel order on Shiprocket
       await axios.post(
           `${SHIPROCKET_API_URL}/orders/cancel`,
           {ids: [shiprocketOrderId]},

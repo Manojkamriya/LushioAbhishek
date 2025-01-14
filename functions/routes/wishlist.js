@@ -69,16 +69,46 @@ router.delete("/delete", async (req, res) => {
   }
 });
 
-// Get all wishlist items with product details
+// get wishlist of user
 router.get("/:uid", async (req, res) => {
   try {
     const {uid} = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
 
     if (!uid) {
       return res.status(400).json({error: "Missing user ID"});
     }
 
-    const wishlistRef = db.collection("users").doc(uid).collection("wishlist");
+    if (page < 1 || limit < 1) {
+      return res.status(400).json({error: "Invalid page or limit parameters"});
+    }
+
+    // Calculate skip value for pagination
+    const skip = (page - 1) * limit;
+
+    // Get total count first
+    const totalCountSnapshot = await db.collection("users")
+        .doc(uid)
+        .collection("wishlist")
+        .count()
+        .get();
+
+    const totalItems = totalCountSnapshot.data().count;
+    const totalPages = Math.ceil(totalItems / limit);
+
+    if (page > totalPages && totalPages > 0) {
+      return res.status(400).json({error: "Page number exceeds total pages"});
+    }
+
+    // Get paginated and sorted wishlist items
+    const wishlistRef = db.collection("users")
+        .doc(uid)
+        .collection("wishlist")
+        .orderBy("createdAt", "desc")
+        .limit(limit)
+        .offset(skip);
+
     const snapshot = await wishlistRef.get();
 
     let productsRemoved = false;
@@ -103,8 +133,19 @@ router.get("/:uid", async (req, res) => {
       }
     }))).filter((item) => item !== null); // Remove null items (deleted products)
 
-    // Send response with a flag indicating if products were removed
-    res.status(200).json({wishlistItems, productsRemoved});
+    // Send response with pagination metadata
+    res.status(200).json({
+      wishlistItems,
+      productsRemoved,
+      pagination: {
+        currentPage: page,
+        limit,
+        totalItems,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    });
   } catch (error) {
     console.error("Error fetching wishlist items with product details:", error);
     res.status(500).json({error: "Failed to fetch wishlist items"});

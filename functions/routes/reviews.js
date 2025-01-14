@@ -95,30 +95,26 @@ router.post("/:productId", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const {id} = req.params;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = parseInt(req.query.skip) || 0;
+
+    // Get all review IDs from product's reviews subcollection
     const productRef = db.collection("products").doc(id);
     const reviewsRef = productRef.collection("reviews");
-
     const reviewsSnapshot = await reviewsRef.get();
+
     if (reviewsSnapshot.empty) {
       return res.status(404).json({message: "No reviews found for this product"});
     }
 
+    // Fetch all reviews from main reviews collection
     const reviewsData = await Promise.all(
         reviewsSnapshot.docs.map(async (reviewDoc) => {
           const mainReviewDoc = await db.collection("reviews").doc(reviewDoc.id).get();
           const reviewData = mainReviewDoc.data();
-          // Add these logs inside the map function
-          console.log("------");
-          console.log("Review Data:", reviewData);
-          console.log("User ID:", reviewData.userId);
-          console.log("------");
-          // if (reviewData.userId) {
-          //   const userDoc = await db.collection("users").doc(reviewData.userId).get();
-          //   console.log("User Doc Exists:", userDoc.exists);
-          //   console.log("User Data:", userDoc.data());
-          // }
+
           let formattedTimestamp = "Timestamp not available";
-          if (reviewData && reviewData.timestamp && reviewData.timestamp.toDate) {
+          if (reviewData?.timestamp?.toDate) {
             const timestamp = reviewData.timestamp.toDate();
             formattedTimestamp = timestamp.toLocaleString("en-US", {
               timeZone: "Asia/Kolkata",
@@ -133,7 +129,6 @@ router.get("/:id", async (req, res) => {
             });
           }
 
-          // Retrieve user's displayName
           let displayName = "User not found";
           if (reviewData.userId) {
             const userDoc = await db.collection("users").doc(reviewData.userId).get();
@@ -147,11 +142,46 @@ router.get("/:id", async (req, res) => {
             ...reviewData,
             timestamp: formattedTimestamp,
             displayName,
+            originalTimestamp: reviewData?.timestamp?.toDate() || new Date(0),
           };
         }),
     );
 
-    return res.status(200).json(reviewsData);
+    // Sort reviews by rating, timestamp, and media presence
+    const sortedReviews = reviewsData.sort((a, b) => {
+      // First sort by rating (descending)
+      if (b.rating !== a.rating) {
+        return b.rating - a.rating;
+      }
+
+      // For same rating, check media array length
+      const aHasMedia = (a.media?.length || 0) > 0;
+      const bHasMedia = (b.media?.length || 0) > 0;
+
+      if (aHasMedia !== bHasMedia) {
+        return aHasMedia ? -1 : 1;
+      }
+
+      // Finally sort by timestamp
+      return b.originalTimestamp - a.originalTimestamp;
+    });
+
+    // Apply pagination
+    const paginatedReviews = sortedReviews.slice(skip, skip + limit);
+    const hasMore = sortedReviews.length > skip + limit;
+
+    // Remove originalTimestamp from response
+    const finalReviews = paginatedReviews.map((review) => {
+      // eslint-disable-next-line no-unused-vars
+      const {originalTimestamp, ...rest} = review;
+      return rest;
+    });
+
+    return res.status(200).json({
+      reviews: finalReviews,
+      hasMore,
+      total: sortedReviews.length,
+    });
   } catch (error) {
     console.error("Error getting reviews:", error);
     return res.status(500).json({error: "Failed to get reviews"});
@@ -161,18 +191,39 @@ router.get("/:id", async (req, res) => {
 // Get all reviews
 router.get("/", async (req, res) => {
   try {
-    const reviewsSnapshot = await db.collection("reviews").get();
+    const limit = parseInt(req.query.limit) || 10;
+    const lastDocId = req.query.lastDocId; // ID of the last document from previous page
+
+    // Build query with ordering by timestamp ascending
+    let query = db.collection("reviews")
+        .orderBy("timestamp", "asc")
+        .limit(limit + 1); // Get one extra to check if more exist
+
+    // If we have a lastDocId, get that document and start after it
+    if (lastDocId) {
+      const lastDoc = await db.collection("reviews").doc(lastDocId).get();
+      if (!lastDoc.exists) {
+        return res.status(400).json({message: "Invalid lastDocId"});
+      }
+      query = query.startAfter(lastDoc);
+    }
+
+    const reviewsSnapshot = await query.get();
 
     if (reviewsSnapshot.empty) {
       return res.status(404).json({message: "No reviews found"});
     }
 
+    // Remove the extra review used for hasMore check
+    const reviews = reviewsSnapshot.docs.slice(0, limit);
+    const hasMore = reviewsSnapshot.docs.length > limit;
+
     const reviewsData = await Promise.all(
-        reviewsSnapshot.docs.map(async (reviewDoc) => {
+        reviews.map(async (reviewDoc) => {
           const reviewData = reviewDoc.data();
 
           let formattedTimestamp = "Timestamp not available";
-          if (reviewData && reviewData.timestamp && reviewData.timestamp.toDate) {
+          if (reviewData?.timestamp?.toDate) {
             const timestamp = reviewData.timestamp.toDate();
             formattedTimestamp = timestamp.toLocaleString("en-US", {
               timeZone: "Asia/Kolkata",
@@ -187,7 +238,6 @@ router.get("/", async (req, res) => {
             });
           }
 
-          // Retrieve user's displayName
           let displayName = "User not found";
           if (reviewData.userId) {
             const userDoc = await db.collection("users").doc(reviewData.userId).get();
@@ -205,7 +255,11 @@ router.get("/", async (req, res) => {
         }),
     );
 
-    return res.status(200).json(reviewsData);
+    return res.status(200).json({
+      reviews: reviewsData,
+      hasMore,
+      lastDocId: reviewsData[reviewsData.length - 1].id,
+    });
   } catch (error) {
     console.error("Error getting reviews:", error);
     return res.status(500).json({error: "Failed to get reviews"});

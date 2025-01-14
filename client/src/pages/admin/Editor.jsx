@@ -33,7 +33,7 @@ const Editor = ({ product: initialProduct,onClose}) => {
         quantities: initialProduct.quantities || {},
         cardImages: initialProduct.cardImages || [],
         soldOut: initialProduct.soldOut || false,
-        toDisplay: initialProduct.toDisplay || true,
+        toDisplay: initialProduct.toDisplay || false,
       };
       setProduct(formattedProduct);
       setHasHeight(!!initialProduct.height);
