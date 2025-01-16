@@ -237,15 +237,6 @@ function ProductDisplay() {
     }
   };
 
-  // // const productId = id;
-  // const handleWishlistClick = async (itemId, id) => {
-  //   setIsLoadingWishlist(true);
-  //   await toggleWishlist(itemId, id);
-  //   setIsLoadingWishlist(false);
-  // };
-
-  
-
   const [isOpen, setIsOpen] = useState(false); // Control the open/close state
 
   const openGallery = () => {

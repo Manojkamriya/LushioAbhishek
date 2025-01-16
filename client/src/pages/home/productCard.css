@@ -397,9 +397,6 @@ top: 17%;
 left: 50%;
 width: 60%;
 font-size: min(5cqi, 20px);
-
-
-/* height: 25px; */
 transform: translateX(-50%);
 background-color: #4CAF50;
 background: linear-gradient(135deg, #4ADE80, #16A34A); 
@@ -411,23 +408,24 @@ max-width: 230px;
 max-height: 30px;
 animation: fadeInOut 3s ease-in-out;
 }
-/* Keyframes for fadeInOut animation */
+/* Fade In and Out Animation */
 @keyframes fadeInOut {
   0% {
-    opacity: 0; /* Completely invisible */
+    opacity: 0;
+    transform: translateY(-20px); /* Slide in from above */
   }
-  25% {
-    opacity: 1; /* Fully visible */
+  10% {
+    opacity: 1;
+    transform: translateY(0); /* Settle in place */
   }
-  75% {
-    opacity: 1; /* Fully visible */
+  90% {
+    opacity: 1; /* Stay visible */
   }
- 
   100% {
-    opacity: 0; /* Completely invisible */
+    opacity: 0;
+    transform: translateY(-20px); /* Slide out */
   }
 }
-
 
 
 @keyframes spin {

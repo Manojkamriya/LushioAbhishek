@@ -37,7 +37,7 @@ const ReturnExchange = () => {
 
   return (
     <div className="return-exchange-container">
-      <h2 className="return-exchange-title">Return/Exchange Product</h2>
+
 
       {/* Radio Buttons for Return and Exchange */}
       <div className="return-exchange-options">

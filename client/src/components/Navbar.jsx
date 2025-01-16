@@ -148,46 +148,6 @@ function Navbar() {
                 <Dropdown
                   setActiveDropdown={setActiveDropdown}
                   category="men"
-//                   topProducts={[
-// "Upperwear",
-//   "Hoodie",
-//   "Outerwear",
-//   "Jeans",
-//   "Tanks",
-//   "Shirts",
-//   "Sweaters",
-//   "Blazers",
-//   "Coats",
-//   "Cardigans",
-//   "Trousers",
-//   "Joggers",
-//   "Shorts",
-//   "Skirts",
-//   "Dresses",
-//   "Suits",
-//   "Sportswear",
-//   "Pajamas",
-//   "Activewear",
-//   "Vests",
-//   "Blouses",
-//   "Jackets",
-//   "Denims",
-//   "Formalwear",
-//   "Casualwear",
-//   "Tracksuits",
-//   "Overcoats",
-//   "Pullovers",
-//   "Raincoats",
-//   "Scarves",
-//   "Denims",
-//   "Formalwear",
-//   "Casualwear",
-//   "Tracksuits",
-//   "Overcoats",
-//   "Pullovers",
-//   "Raincoats",
-//   "Scarves",
-//                   ]}
 topProducts={subcategories.men}
 
                   imageSrc="/Images/card-image-6.webp"
@@ -239,12 +199,7 @@ topProducts={subcategories.men}
                 <Dropdown
                   setActiveDropdown={setActiveDropdown}
                   category="accessories"
-                  // topProducts={[
-                  //   "Gloves",
-                  //   "Shakers",
-                  //   "Wrist Band",
-                  //   "Deadlift Band",
-                  // ]}
+                 
                   topProducts={subcategories.accessories}
                   featured={[
                     "New Drop",

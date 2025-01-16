@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./Accordion.css"; // Include the CSS file for styling
-
+import ReturnExchange from "./ReturnExchange";
 const Accordion = ({ title, content }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -18,9 +18,10 @@ const Accordion = ({ title, content }) => {
       </div>
       <div
         className={`accordion-content ${isOpen ? "expanded" : ""}`}
-        style={{ maxHeight: isOpen ? "200px" : "0" }}
+        style={{ maxHeight: isOpen ? "1000px" : "0" }}
       >
-        <p>{content}</p>
+     
+        <ReturnExchange/>
       </div>
     </div>
   );

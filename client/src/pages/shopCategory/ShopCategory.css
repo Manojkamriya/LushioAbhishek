@@ -1,3 +1,8 @@
+.shop-category{
+display: flex;
+flex-direction: column;
+
+}
 .shopcategory-banner {
   display: block;
   margin: 30px auto;
@@ -86,7 +91,7 @@ padding-bottom: 30px;
 }
 .filter-container label{
     color: #606060;
- 
+ text-transform: capitalize;
     font-family: "Montserrat", sans-serif;
     cursor: pointer;
    margin-block: 5px;

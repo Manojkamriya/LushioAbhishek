@@ -11,35 +11,68 @@ function ShopCategory(props) {
   const [subCategory, setSubCategory] = useState([]);
   const [priceRange, setPriceRange] = useState("");
   const [color, setColor] = useState([]);
+  const [lastDocId, setLastDocId] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
   const [isFilterApplied, setIsFilterApplied] = useState(false);
   const filterRef = useRef();
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
+//   useEffect(() => {
+//     const fetchProducts = async () => {
+//       setLoading(true);
    
 
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/filters/${props.category}`
-        );
-        const data = response.data;
-console.log(data);
-        if (Array.isArray(data)) {
+//       try {
+//         const response = await axios.get(
+//           `${process.env.REACT_APP_API_URL}/filters/${props.category}`
+//         );
+//         const data = response.data;
+// console.log(data);
+//         if (Array.isArray(data)) {
      
-          setProducts(data);
-        } else {
-          throw new Error("Unexpected response format");
-        }
-      } catch (err) {
-        console.log(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+//           setProducts(data);
+//         } 
+//       } catch (err) {
+//         console.log(err);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
 
-    fetchProducts();
-  }, [props.category]);
+//     fetchProducts();
+//   }, [props.category]);
+
+const fetchProducts = async (reset = false) => {
+  if (!hasMore && !reset) return;
+
+  setLoading(true);
+ 
+
+  try {
+    const response = await axios.get( `${process.env.REACT_APP_API_URL}/filters/${props.category}`, {
+      params: {
+        lastDocId: reset ? null : lastDocId,
+        limit: 20,
+      },
+    });
+
+    const { products: fetchedProducts, hasMore: newHasMore, lastDocId: newLastDocId } = response.data;
+
+    setProducts((prev) => (reset ? fetchedProducts : [...prev, ...fetchedProducts]));
+    setHasMore(newHasMore);
+    setLastDocId(newLastDocId);
+  } catch (err) {
+   
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+};
+
+useEffect(() => {
+  setProducts([]);
+  setFilterProducts([]);
+  fetchProducts(true);
+}, [props.category]);
 
   const openFilter = () => {
     if (filterRef.current) {
@@ -203,7 +236,15 @@ if (color.length > 0) {
         : [...prev, value]
     );
   };
-  if (loading) return <div className="loader-container"> <span className="loader"></span></div>;
+  // if (loading) return <div className="loader-container"> <span className="loader"></span></div>;
+  if(loading && products.length===0){
+    return (
+      <div className="loader-container">
+        {" "}
+        <span className="loader"></span>
+      </div>
+    );
+  }
   return (
     <div className="shop-category">
       <img className="shopcategory-banner" src={props.banner} alt="" />
@@ -369,7 +410,15 @@ if (color.length > 0) {
   </div>
 )}
 
+
       </div>
+      {hasMore  && (
+        <button onClick={() => fetchProducts()} 
+        disabled={loading}
+        className="order-load-more-button">
+          {loading ? "Loading..." : "Load More"}
+        </button>
+      )}
     </div>
   );
 }

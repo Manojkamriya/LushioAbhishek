@@ -201,11 +201,8 @@ function OrderInfo() {
           <FaChevronRight />
         </div>
       </div>
-      {/* <Accordion
-        title="What is React?"
-        content="React is a JavaScript library for building user interfaces."
-      />
-      <ReturnExchange/> */}
+   
+        {/*  <ReturnExchange/> */}
       <div className="order-price-details-container">
         <h2 className="order-price-details-heading">Order Details</h2>
         <h4 className="order-price-details-heading">Price Details ({orderDetails?.orderedProducts.length || 0} Items)</h4>

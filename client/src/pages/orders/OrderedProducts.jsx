@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Accordion from "./Accordian";
 const OrderedProducts = ({orderedProducts}) => {
 
 
@@ -41,8 +42,14 @@ const OrderedProducts = ({orderedProducts}) => {
              
               {/* <p className="ordered-product-price">₹{product.price}</p> */}
             </div>
+          
           </div>
+          
         ))}
+          <Accordion
+            title="RETURN/EXCHANGE PRODUCT"
+           
+          />
       </div>
       
     </div>
