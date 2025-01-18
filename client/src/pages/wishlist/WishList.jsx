@@ -1,100 +1,90 @@
-import React, { useState, useContext,useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
-//import { ShopContext } from "../../components/context/ShopContext";
 import { UserContext } from "../../components/context/UserContext";
 import EmptyWishList from "./EmptyWishList";
 import ProductCard from "../home/ProductCard";
-import { Pagination } from "@mui/material"; 
+import { Pagination } from "@mui/material";
 import Breadcrumb from "../../components/BreadCrumb";
+
 function WishList() {
- 
-  const {user} = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const [page, setPage] = useState(1); // For keeping track of the current page
-  const itemsPerPage = 8; // Control the number of items per page
-const [wishlist, setWishlist] = useState([]);
-const[loading,setLoading] = useState(false);
+  const [wishlist, setWishlist] = useState([]);
+  const [loading, setLoading] = useState(false);
+const [wishlistLength, setWishlistLength] = useState(0);
+  const itemsPerPage = 10; // Control the number of items per page
+
   const handleChange = (event, value) => {
     setPage(value);
   };
 
-useEffect(() => {
-  const fetchWishlist = async () => {
-    // Ensure the user is defined before proceeding
-    if (!user?.uid) return;
+  useEffect(() => {
+    const fetchWishlist = async () => {
+      if (!user?.uid) return;
 
-    try {
-      setLoading(true);
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/wishlist/${user.uid}`
-      );
-      console.log(response.data.wishlistItems);
-      // Validate response format
-      if (Array.isArray(response.data.wishlistItems)) {
-        setWishlist(response.data.wishlistItems);
-      
-      } else {
-        throw new Error("Unexpected data format: Expected an array of IDs.");
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/wishlist/${user.uid}?page=${page}&limit=${itemsPerPage}`
+        );
+        setWishlistLength(response.data.pagination.totalItems);
+        if (Array.isArray(response.data.wishlistItems)) {
+          setWishlist(response.data.wishlistItems);
+        }
+      } catch (error) {
+        console.error("Error fetching wishlist items:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching wishlist IDs:", error);
-      // setError("Failed to load wishlist items."); // Uncomment if you want to handle errors in state
-    }
-    finally{
-      setLoading(false);
-    }
-  };
+    };
 
-  fetchWishlist();
-}, [user]);
+    fetchWishlist();
+  }, [user, page]); // Re-fetch when user or page changes
 
-  
-  const wishlistHasItems = wishlist.length > 0;
+  const wishlistHasItems = wishlistLength > 0;
   if (loading) return <div className="loader-container"> <span className="loader"></span></div>;
+
   if (!wishlistHasItems) {
     return <EmptyWishList />;
   }
 
-  // Calculate the items to display based on pagination
-  const startIndex = (page - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedProducts = wishlist.slice(startIndex, endIndex);
   const breadcrumbItems = [
     { label: 'Home', link: '/' },
     { label: 'Wishlist', link: '/wishlist' },
-   
   ];
+
   return (
     <>
-   <Breadcrumb items={breadcrumbItems} />
-    <div className="wishlist-container">
-  {paginatedProducts.map((items, id) => (
-    items.product ? ( // Check if items.product exists
-      <ProductCard
-        key={items.id}
-        id={items.productId}
-        displayName={items.product.displayName}
-        image1={items.product.cardImages?.[0] || ""}
-        image2={items.product.cardImages?.[1] || ""}
-        rating={items.product.rating || 0}
-        price={items.product.price || 0}
-        discountedPrice={items.product.discountedPrice || 0}
-        description={items.product.description}
-        discount={items.product.discount || 0}
-        aboveHeight={items.product.aboveHeight || {}}
-        belowHeight={items.product.belowHeight || {}}
-        colorOptions={items.product.colorOptions || []}
-        quantities={items.product.quantities || {}}
-        height={items.product.height || ""}
-        wishlistPage={wishlist || []}
-        setWishlistPage={setWishlist}
-      />
-    ) : null // Render nothing if items.product is null or undefined
-  ))}
-</div>
+      <Breadcrumb items={breadcrumbItems} />
+      <div className="wishlist-container">
+        {wishlist.map((item) => (
+          item.product ? (
+            <ProductCard
+              key={item.id}
+              id={item.productId}
+              displayName={item.product.displayName}
+              image1={item.product.cardImages?.[0] || ""}
+              image2={item.product.cardImages?.[1] || ""}
+              rating={item.product.rating || 0}
+              price={item.product.price || 0}
+              discountedPrice={item.product.discountedPrice || 0}
+              description={item.product.description}
+              discount={item.product.discount || 0}
+              aboveHeight={item.product.aboveHeight || {}}
+              belowHeight={item.product.belowHeight || {}}
+              colorOptions={item.product.colorOptions || []}
+              quantities={item.product.quantities || {}}
+              height={item.product.height || ""}
+              wishlistPage={wishlist || []}
+              setWishlistPage={setWishlist}
+            />
+          ) : null
+        ))}
+      </div>
 
       {/* Pagination Component */}
       <Pagination
-        count={Math.ceil(wishlist.length / itemsPerPage)} // Total pages
+        count={Math.ceil(wishlistLength / itemsPerPage)} // Total pages
         page={page}
         onChange={handleChange}
         style={{ marginBlock: '20px', display: 'flex', justifyContent: 'center' }}
@@ -111,7 +101,7 @@ useEffect(() => {
             },
           },
           "& .MuiPaginationItem-root": {
-            backgroundColor: "#e7e7e7" ,
+            backgroundColor: "#e7e7e7",
             color: "#6e6e6e", // Default button color
             "&:hover": {
               backgroundColor: "#e6e6e6", // Optional: Light grey hover for unselected buttons

@@ -132,7 +132,7 @@ const MultiStepForm = ({productId, handleClose}) => {
         userId: user.uid,
       };
   
-      console.log('Payload being sent:', payload); // Log the payload
+    
   
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/reviews/${productId}`, payload, {
         headers: {
@@ -140,7 +140,7 @@ const MultiStepForm = ({productId, handleClose}) => {
         },
       });
   
-      console.log('Review submitted successfully:', response.data);
+   
 
       
       // Set state to "validate" upon success

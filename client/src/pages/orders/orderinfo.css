@@ -147,7 +147,7 @@
   }
   
   .order-delivery-address {
-    margin: 10px 0;
+    margin: 5px 0;
   }
   
   .order-delivery-contact {
@@ -325,4 +325,14 @@ width: 4px;
     color: #10b981;
     margin-top: 5px;
   }
+  @media(max-width: 500px){
+    .order-price-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      font-size: 15px;
+    }
+ 
   
+        
+  }

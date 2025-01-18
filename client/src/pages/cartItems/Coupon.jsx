@@ -71,7 +71,7 @@ function Coupon({ setDiscount, cartAmount, setCouponApplied }) {
       setTimeout(() => {
         setSuccess(false);
         handleClose();
-      }, 3000);
+      }, 2000);
     } catch (error) {
       setErrorMessage(error.response?.data?.error || "Error applying coupon");
     } finally {
@@ -163,8 +163,29 @@ function Coupon({ setDiscount, cartAmount, setCouponApplied }) {
                             <div className="coupon-details">
                               <p className="coupon-info">
                                 <strong>Code:</strong> {coupon.id} |
-                                <strong> Valid Until:</strong>{" "}
-                                {coupon.validity || "N/A"}
+                                <strong>Valid Until:</strong>{" "}
+{coupon.validity
+  ? (() => {
+      let validityDate;
+
+      // Handle different formats
+      if (typeof coupon.validity === "string") {
+        validityDate = new Date(coupon.validity); // ISO string
+      } else if (typeof coupon.validity === "number") {
+        validityDate = new Date(coupon.validity * 1000); // Unix timestamp
+      } else if (coupon.validity instanceof Date) {
+        validityDate = coupon.validity; // Already a Date object
+      } else {
+        return "Invalid Date";
+      }
+
+      // Format the date as DD-MM-YY
+      const [year, month, day] = validityDate.toISOString().split("T")[0].split("-");
+      return `${day}-${month}-${year}`;
+    })()
+  : "N/A"}
+
+
                               </p>
                               <p className="coupon-info">
                                 <strong>Min Purchase:</strong> ₹

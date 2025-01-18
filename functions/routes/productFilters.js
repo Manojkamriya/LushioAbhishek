@@ -204,8 +204,11 @@ router.get("/featuredAccessories", async (req, res) => {
 
 // GET /men
 router.get("/men", async (req, res) => {
+ 
   try {
-    const {lastDocId, limit = 20} = req.query;
+   
+    let {lastDocId, limit = 20} = req.query;
+    limit = parseInt(limit, 10);
     const productsRef = db.collection("products");
     const baseQuery = productsRef
         .where("categories", "array-contains", "men")
@@ -234,7 +237,8 @@ router.get("/men", async (req, res) => {
 // GET /women
 router.get("/women", async (req, res) => {
   try {
-    const {lastDocId, limit = 20} = req.query;
+    let {lastDocId, limit = 20} = req.query;
+    limit = parseInt(limit, 10);
     const productsRef = db.collection("products");
     const baseQuery = productsRef
         .where("categories", "array-contains", "women")
@@ -263,7 +267,8 @@ router.get("/women", async (req, res) => {
 // GET /accessories
 router.get("/accessories", async (req, res) => {
   try {
-    const {lastDocId, limit = 20} = req.query;
+    let {lastDocId, limit = 20} = req.query;
+    limit = parseInt(limit, 10);
     const productsRef = db.collection("products");
     const baseQuery = productsRef
         .where("categories", "array-contains", "accessories")

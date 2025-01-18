@@ -1,16 +1,28 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import EmptyOrder from "./EmptyOrder";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../components/context/UserContext";
 import "./order.css";
+import OrderDetailsModal from "../admin/OrderDetailsModal";
+import RatingModal from "../productDisplay/RatingModal"
 
+function formatDate(seconds) {
+  const date = new Date(seconds * 1000);
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
 export default function Orders() {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
   const [pagination, setPagination] = useState({
     hasMore: true,
     lastOrderId: null,
@@ -49,27 +61,39 @@ export default function Orders() {
     }
   }, [user]); // Only runs when 'user' changes and orders are empty
   
-  const handleCancelProduct = (orderId, productId) => {
-    console.log(`Cancelling product ${productId} in order ${orderId}`);
-    // Logic to cancel the product
+ 
+ 
+  const handleCancelOrder = async (orderId) => {
+    // Show a confirmation dialog
+    const confirmCancel = window.confirm("Are you sure you want to cancel this order?");
+    if (!confirmCancel) return; // Exit if the user clicks "Cancel"
+  
+    setIsCancelling(true);
+  
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/orders/cancel`, {
+        oid: orderId,
+        uid: user.uid,
+      });
+  
+      // Show a success alert after the cancellation
+      alert("Order cancelled successfully!");
+    } catch (error) {
+      console.error(error);
+  
+      // Show an error alert if the cancellation fails
+      alert("Failed to cancel the order. Please try again.");
+    } finally {
+      setIsCancelling(false);
+    }
   };
-
-  const handleRateProduct = (orderId, productId) => {
-    console.log(`Rating product ${productId} in order ${orderId}`);
-    // Logic to handle product rating (e.g., show a modal)
-  };
-
-  const handleCancelOrder = (orderId) => {
-    console.log(`Cancelling order ${orderId}`);
-    // Logic to cancel the entire order
-  };
-
+  
   const handleLoadMore = () => {
     if (pagination.hasMore) {
       fetchOrders();
     }
   };
-  if(loading && orders.length==0){
+  if(loading && orders.length===0){
     return (
       <div className="loader-container">
         {" "}
@@ -82,6 +106,11 @@ export default function Orders() {
   }
   return (
     <div className="order-wrapper">
+        {isCancelling && (
+        <div className="spinner-overlay">
+          <div></div>
+        </div>
+      )}
       <div className="order-title">
         <h2>My Orders</h2>
         <hr />
@@ -98,13 +127,16 @@ export default function Orders() {
             <div className="order-products">
               {order.orderedProducts.map((product, index) => (
                 <div className="product-details" key={index}>
-                  <img
+                    <Link to={`/product/${product?.productDetails?.id}`}>
+                    <img
                     src={product.productDetails.cardImages[0]}
                     alt={product.productName}
                     className="product-image"
                   />
+                    </Link>
+               
                   <div className="product-info">
-                    <h3>{product.productName}</h3>
+                    <h3>{product?.productName || product?.name}</h3>
                     <p>
                       <strong>Quantity:</strong> {product.quantity}
                     </p>
@@ -117,31 +149,28 @@ export default function Orders() {
                     <p className="product-color">
                       <strong>Color:</strong> {product.color}
                       <span
-  className="color-box"
-  style={{
-    backgroundColor: product.productDetails.colorOptions.find(
-      (color) => color.name === product.color
-    )?.code,
-  }}
-></span>
+                      className="color-box"
+                      style={{
+                      backgroundColor: product.productDetails.colorOptions.find(
+                        (color) => color.name === product.color
+                        )?.code,
+                        }}
+                         ></span>
 
                     </p>
                     {/* Individual Cancel and Rate Us Buttons */}
                     <div className="item-button-container">
-                      <button
+                      {
+                         order?.orderedProducts?.length>1 &&       <button
                         className="open-rating-button"
-                        onClick={() =>
-                          handleCancelProduct(order.id, product.id)
-                        }
+                       
                       >
                         Cancel
                       </button>
-                      <button
-                        className="open-rating-button"
-                        onClick={() => handleRateProduct(order.id, product.id)}
-                      >
-                        Rate Us
-                      </button>
+                      }
+                
+                    
+                      <RatingModal productId={product.productDetails.id}/>
                     </div>
                   </div>
                 </div>
@@ -170,10 +199,10 @@ export default function Orders() {
                 className="delivery-icon"
               />
               <span>
-                <strong>Expected Delivery Date:</strong>
+                <strong>Order Date: </strong> {formatDate(order.dateOfOrder._seconds)}
               </span>
             </div>
-
+        
             <span className={`order-status ${order.status.toLowerCase()}`}>
               {order.status.toUpperCase()}
             </span>
@@ -182,7 +211,7 @@ export default function Orders() {
               {/* Cancel Order Button */}
               <button
                 className="open-rating-button"
-                onClick={() => handleCancelOrder(order.id)}
+                onClick={() => handleCancelOrder(order.orderId)}
               >
                 Cancel Order
               </button>

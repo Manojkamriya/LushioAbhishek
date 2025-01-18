@@ -335,7 +335,7 @@ setProduct(data);
           />
 
           <div className="returnPeriod-base-returnText">
-            <span className="returnPeriod-base-returnDays">14 days</span> return
+            <span className="returnPeriod-base-returnDays">7 days</span> return
             available
           </div>
         </div>
@@ -354,6 +354,7 @@ setProduct(data);
           useWalletPoints={useWalletPoints}
           handleWalletCheckboxChange={handleWalletCheckboxChange}
           getSelectedTotalAmount={getSelectedTotalAmount}
+          getSelectedAmount={getSelectedTotalAmount}
           getTotalWithWalletAndDiscount={getTotalWithWalletAndDiscount}
           renderCartMessages={renderCartMessages}
           shippingFee={shippingFee}

@@ -51,7 +51,7 @@ const formatDateTime = (timestamp) => {
 };
 
 const ReviewCard = ({
-  username,
+  displayName,
   rating,
   review,
   timestamp,
@@ -82,7 +82,7 @@ const ReviewCard = ({
       </div>
 
       <div className="review-header">
-        <h3>Manoj kamriya</h3>
+        <h3>{displayName || "Anonymous"}</h3>
         <div className="review-footer">
           <span className="review-date">{formattedDate}</span>
         </div>
@@ -237,15 +237,6 @@ function ProductDisplay() {
     }
   };
 
-  // // const productId = id;
-  // const handleWishlistClick = async (itemId, id) => {
-  //   setIsLoadingWishlist(true);
-  //   await toggleWishlist(itemId, id);
-  //   setIsLoadingWishlist(false);
-  // };
-
-  
-
   const [isOpen, setIsOpen] = useState(false); // Control the open/close state
 
   const openGallery = () => {
@@ -270,7 +261,9 @@ function ProductDisplay() {
       setShowError(true); // Show error if size is not selected
       return;
     }
-  
+  if(1>0){
+    return;
+  }
     const imageURL = product.cardImages[0];
     const name = product.displayName;
  

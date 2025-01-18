@@ -15,7 +15,7 @@ import Success from "./Success";
 import { useAddress } from "../../components/context/AddressContext";
 const CartItems = () => {
 //  const navigate = useNavigate();
-  const { selectedAddress } = useAddress();
+  const {selectedAddress} = useAddress();
   const [formData, setFormData] = useState({
     name: selectedAddress && selectedAddress.name,
     mobile: selectedAddress && selectedAddress.contactNo,
@@ -60,7 +60,7 @@ const [loading, setLoading] = useState(false);
       );
       setCartProducts(response.data.cartItems);
     setCartAddress(response.data.cartAddress);
-    console.log(response.data.cart.cartAddress);
+   // console.log(response.data.cart.cartAddress);
     } catch (err) {
       console.error(err);
     } finally {
@@ -101,36 +101,60 @@ const [loading, setLoading] = useState(false);
   }, [cartProducts]);
 
   const handleOpen = (e) => {
-    setSelectedProduct(e.product);
+    setSelectedProduct(e);
     setOpen(true);
   };
   const handleClose = () => setOpen(false);
 
   const getTotalWithWalletAndDiscount = () => {
     let total = getSelectedTotalAmount();
-
+    let walletAppliedAmount = 0;
+    let couponDiscountAmount = 0;
+    let additionalDiscount = 0;
+  
     // Apply wallet points if applicable
     if (useWalletPoints && walletPoints > 0) {
+      walletAppliedAmount = Math.min(walletPoints, total); // Wallet points applied
       total = Math.max(0, total - walletPoints); // Ensure total doesn't go below zero
     }
-
+  
     // Calculate coupon discount
-  //  const couponDiscountAmount = (total * discountPercentage) / 100; // Calculate coupon discount
-  const couponDiscountAmount = Math.ceil(discountPercentage);
+    couponDiscountAmount = Math.ceil(discountPercentage); // Calculate coupon discount
     total = Math.max(0, total - couponDiscountAmount); // Apply coupon discount and ensure total doesn't go below zero
-
+  
     // Apply additional discount for payment method
     if (selectedPaymentMethod !== "cashOnDelivery") {
-      const additionalDiscount =  Math.ceil(total * 0.05); // 5% additional discount for online payment
+      additionalDiscount = Math.ceil(total * 0.05); // 5% additional discount for online payment
       additionalDiscountRef.current = additionalDiscount; // Store it in useRef without causing re-renders
       total = Math.max(0, total - additionalDiscount); // Apply additional discount and ensure total doesn't go below zero
     }
-
-    // No additional discount for "COD"
-
-    return total;
+  
+    return {
+      total: Math.ceil(total),
+      walletAppliedAmount,
+      couponDiscountAmount,
+      additionalDiscount,
+    };
   };
+  
+const getTotalForCOD = () => {
+  let total = getSelectedTotalAmount();
+  let walletAppliedAmount = 0;
+  let couponDiscountAmount = 0;
+  let additionalDiscount = 0;
 
+     // Apply wallet points if applicable
+     if (useWalletPoints && walletPoints > 0) {
+      walletAppliedAmount = Math.min(walletPoints, total); // Wallet points applied
+      total = Math.max(0, total - walletPoints); // Ensure total doesn't go below zero
+    }
+  
+    // Calculate coupon discount
+    couponDiscountAmount = Math.ceil(discountPercentage); // Calculate coupon discount
+    total = Math.max(0, total - couponDiscountAmount); // Apply coupon discount and ensure total doesn't go below zero
+   return Math.ceil(total);
+  
+}
   const handleWalletCheckboxChange = () => {
     setUseWalletPoints(!useWalletPoints);
   };
@@ -180,10 +204,19 @@ const [loading, setLoading] = useState(false);
 
   const handleSelectAll = () => {
     const updatedSelections = {};
+  
     cartProducts.forEach((item) => {
-      updatedSelections[item.id] = true;
+      const isHeightBased = item.height;
+      const inStock = isHeightBased
+        ? item.product[item.height]?.quantities?.[item.color]?.[item.size] > 0
+        : item.product.quantities[item.color]?.[item.size] > 0;
+  
+      // Add to selections only if the item is in stock
+      if (inStock) {
+        updatedSelections[item.id] = true;
+      }
     });
-    setSelectedItems(updatedSelections);
+  
     setIsAllSelected(true);
   
   };
@@ -211,7 +244,20 @@ const [loading, setLoading] = useState(false);
     });
     return total;
   };
+  const getSelectedAmount = () => {
+    let total = 0;
+    cartProducts.forEach((item) => {
+      const isHeightBased = item.height;
+      const inStock = isHeightBased
+        ? item.product[item.height]?.quantities?.[item.color]?.[item.size] > 0
+        : item.product.quantities[item.color]?.[item.size] > 0;
 
+      if (selectedItems[item.id] && inStock) {
+        total += item.product.price * item.quantity; // Only add price for items in stock and selected
+      }
+    });
+    return total;
+  };
   const handleMoveToWishlist = async (
     wishlistItemID,
     productID,
@@ -264,8 +310,8 @@ const [loading, setLoading] = useState(false);
     uid: user.uid,
     modeOfPayment: selectedPaymentMethod,
     totalAmount: getSelectedTotalAmount(),
-    payableAmount: getTotalWithWalletAndDiscount(),
-    discount: getSelectedTotalAmount() - getTotalWithWalletAndDiscount(),
+    payableAmount: getTotalWithWalletAndDiscount().total,
+    discount: getSelectedTotalAmount() - getTotalWithWalletAndDiscount().total,
     lushioCurrencyUsed: useWalletPoints && walletPoints,
     couponCode: couponApplied,
     address: selectedAddress,
@@ -277,11 +323,11 @@ const [loading, setLoading] = useState(false);
   const handlePayment = async () => {
    
     const { name, mobile } = formData;
-
+    setIsActive(true);
     const data = {
       name,
       mobile,
-      amount: getTotalWithWalletAndDiscount(),
+      amount: getTotalWithWalletAndDiscount().total,
       MUID: "MUIDW" + Date.now(),
       transactionId: "T" + Date.now(),
     };
@@ -318,6 +364,7 @@ const [loading, setLoading] = useState(false);
       .catch((error) => {
         console.log("Error:", error);
       });
+      setIsActive(false);
   };
  
   const createOrder = async () => {
@@ -334,9 +381,10 @@ const [loading, setLoading] = useState(false);
       setSuccessOpen(true);
      // setTimeout(() => setSuccessOpen(false), 4000);
       // Wait for 4 seconds before closing the success state
-  await new Promise((resolve) => setTimeout(resolve, 4000));
-  setSuccessOpen(false);
       await deleteCartItems();
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+  setSuccessOpen(false);
+     
     } catch (error) {
       console.log(error);
     }
@@ -471,6 +519,9 @@ fetchCartCount();
           useWalletPoints={useWalletPoints}
           handleWalletCheckboxChange={handleWalletCheckboxChange}
           getSelectedTotalAmount={getSelectedTotalAmount}
+          getSelectedAmount={getSelectedAmount}
+          additionalDiscountRef={additionalDiscountRef}
+          getTotalForCOD={getTotalForCOD}
           getTotalWithWalletAndDiscount={getTotalWithWalletAndDiscount}
           renderCartMessages={renderCartMessages}
           shippingFee={shippingFee}
@@ -492,10 +543,10 @@ fetchCartCount();
     </p>
   )}
   <button onClick={handleCreateOrder} className="proceed-to-pay-button">
-    🛒 Place Order – ₹{getTotalWithWalletAndDiscount()}
+    🛒 Place Order – ₹{getTotalWithWalletAndDiscount().total || 0}
   </button>
 </div>
-
+{/* <PaymentSelectionWithAnimation/> */}
     </>
   );
 };

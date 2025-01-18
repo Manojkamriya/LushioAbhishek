@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useContext } from 'react';
 import PhoneInput from "react-phone-input-2";
 import './address.css';
 import { useAddress } from '../../components/context/AddressContext';
 import AddressForm from '../cartItems/AddressForm';
+import { UserContext } from "../../components/context/UserContext";
 export default function Address() {
   const {
     addressData,
@@ -10,6 +11,7 @@ export default function Address() {
     isLoading,
     handleAddAddress,
     handleEditAddress,
+    fetchAddresses,
     handleRemoveAddress,
     handleSetDefault,
   } = useAddress();
@@ -28,7 +30,8 @@ export default function Address() {
     isDefault: false,
   });
   const [isAddingNew, setIsAddingNew] = useState(false);
-
+  const { user } = useContext(UserContext);
+ 
   const handleEdit = (index) => {
     setEditingIndex(index);
     setIsAddingNew(false);
@@ -179,17 +182,18 @@ if (numericValue.length !== 12) {
             {addressData.map((info, i) => (
               <div className="myaddress" key={info.id}>
                 <h4>{info.name}</h4>
-                <span>{info.flatDetails}, {info.areaDetails}, {info.landmark}, {info.townCity}, {info.state}</span>
+                <span>{info.flatDetails}, {info.areaDetails}, {info.townCity}, {info.state}</span>
+             {info.landmark &&  <p><strong>Landmark: </strong> {info.landmark}</p>}  
                 <p>Pin Code: {info.pinCode}</p>
-           
                 <p>Contact Number: {info.contactNo.startsWith('91') ? info.contactNo.substring(2) : info.contactNo}</p>
-
                 {info.isDefault && <h3 className="default-address">Default Address</h3>}
                 <div className="address-action">
                   <button onClick={() => handleEdit(i)}>Edit</button>
                   <button onClick={() => handleRemoveAddress(info.id)}>Remove</button>
                   {!info.isDefault && <button onClick={() => handleSetDefault(info.id)}>Set as Default</button>}
                 </div>
+
+                
               </div>
             ))}
            

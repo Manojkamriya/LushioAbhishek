@@ -29,7 +29,7 @@ function ProductCards() {
         } else {
           console.error("Expected an array, but received:", data.products); // Log unexpected format
           setProducts([]); // Fallback to an empty array if the data format is unexpected
-          throw new Error("Unexpected response format");
+       
         }
       } catch (err) {
         setError("Failed to fetch products. Please try again later.");
@@ -56,9 +56,7 @@ function ProductCards() {
         if (Array.isArray(response.data)) {
           setWishlistIds(data);
          
-        } else {
-          throw new Error("Unexpected data format: Expected an array of IDs.");
-        }
+        } 
       } catch (error) {
         console.error("Error fetching wishlist IDs:", error);
         setError("Failed to load wishlist items.");

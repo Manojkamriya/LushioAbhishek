@@ -11,6 +11,7 @@ export const CartProvider = ({ children }) => {
 
   const [userName, setUserName] = useState("");
   useEffect(() => {
+    if (!user?.uid) return;
     const fetchUserName = async () => {
       try {
         const response = await axios.get(
@@ -31,7 +32,7 @@ export const CartProvider = ({ children }) => {
       const response = await axios.get(
         `${process.env.REACT_APP_API_URL}/cart/count/${user.uid}`
       );
-      console.log(response.data.count);
+    
       setCartCount(response.data.count);
     } catch (error) {
       console.error("Error fetching cart count", error);

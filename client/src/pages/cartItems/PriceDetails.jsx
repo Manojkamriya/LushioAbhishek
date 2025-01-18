@@ -1,6 +1,8 @@
-import React from "react";
+import React,{useEffect,useState} from "react";
 import Coupon from "./Coupon";
 import PaymentMethod from "./PaymentMethod";
+import { db } from '../../firebaseConfig'; // Adjust the import path to your Firebase config
+import { doc, getDoc } from 'firebase/firestore';
 const PriceDetails = ({
   couponApplied,
   setCouponApplied,
@@ -10,14 +12,38 @@ const PriceDetails = ({
   useWalletPoints,
   handleWalletCheckboxChange,
   getSelectedTotalAmount,
+  getSelectedAmount,
   getTotalWithWalletAndDiscount,
+  additionalDiscountRef,
+  getTotalForCOD,
   renderCartMessages,
   shippingFee,
   selectedPaymentMethod, 
   setSelectedPaymentMethod,
   handleCreateOrder,
 }) => {
-  const totalAmount = getTotalWithWalletAndDiscount();
+  const totalAmount = getTotalWithWalletAndDiscount().total;
+  const [discountedTiers, setDiscountTiers]= useState(null);
+   // Fetch initial data from Firestore
+   useEffect(() => {
+    const fetchAdminControls = async () => {
+      try {
+        const adminDocRef = doc(db, 'controls', 'admin');
+        const docSnap = await getDoc(adminDocRef);
+        
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+        
+         setDiscountTiers(data.orderDiscounts);
+        }
+      } catch (error) {
+        console.error("Error fetching admin controls:", error);
+       
+      }
+    };
+
+    fetchAdminControls();
+  }, []);
   return (
     <div className="priceBlock-base-wrapper">
       <div className="priceBlock-base-container">
@@ -38,8 +64,14 @@ const PriceDetails = ({
 
       <div className="priceBlock-base-priceHeader">PRICE DETAILS (1 Item)</div>
       <div className="priceBreakUp-base-orderSummary" id="priceBlock">
-        <div className="priceDetail-base-row">
+      <div className="priceDetail-base-row priceDetail-totalMRP">
           <span>Total MRP</span>
+          <span className="priceDetail-base-value">
+            ₹{getSelectedAmount()}
+          </span>
+        </div>
+        <div className="priceDetail-base-row">
+          <span>Payable Amount</span>
           <span className="priceDetail-base-value">
             ₹{getSelectedTotalAmount()}
           </span>
@@ -73,19 +105,21 @@ const PriceDetails = ({
           </span>
         </div>
         {
-          useWalletPoints &&   <div className="priceDetail-base-row">
-          <span>Wallet Discount</span>
-            <span className="priceDetail-base-value priceDetail-base-action">
-            -₹ {walletPoints}
-            </span>
-          </div>
-        }
-      
+  useWalletPoints && (
+    <div className="priceDetail-base-row">
+      <span>Wallet Discount</span>
+      <span className="priceDetail-base-value priceDetail-base-action">
+        -₹ {walletPoints >= getSelectedTotalAmount() ? getSelectedTotalAmount() : walletPoints}
+      </span>
+    </div>
+  )
+}
+
         </>:<p className="coupons-base-discountMessage">No Wallet Points to use</p>
        }
      
       <div className="priceDetail-base-row">
-          <span>Additional 5% OFF if pay Online</span>
+          <span>Additional 5% OFF (if pay Online)</span>
           <span className="priceDetail-base-value priceDetail-base-action">
            5%
           </span>
@@ -104,17 +138,20 @@ const PriceDetails = ({
         <div className="priceDetail-base-total">
           <span>Total Amount</span>
           <span className="priceDetail-base-value">
-            ₹ {getTotalWithWalletAndDiscount()}
+            ₹ {getTotalWithWalletAndDiscount().total}
           </span>
         </div>
       </div>
-      {renderCartMessages(totalAmount)}
+      {renderCartMessages(totalAmount,discountedTiers)}
       <PaymentMethod
         selectedPaymentMethod={selectedPaymentMethod}
         setSelectedPaymentMethod={setSelectedPaymentMethod}
+        getTotalWithWalletAndDiscount={getTotalWithWalletAndDiscount}
+        additionalDiscountRef={additionalDiscountRef}
+        getTotalForCOD={getTotalForCOD}
       />
       <div className="priceBlock-button-desktop">
-        <button onClick={handleCreateOrder}>PLACE ORDER ₹{getTotalWithWalletAndDiscount()}</button>
+        <button onClick={handleCreateOrder}>PLACE ORDER ₹{getTotalWithWalletAndDiscount().total}</button>
       </div>
     
     </div>
