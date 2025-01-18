@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 /* eslint-disable no-unused-vars */
 /* eslint-disable new-cap */
 /* eslint-disable camelcase */
@@ -177,7 +178,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       billing_email: email,
       order_items: validatedProducts.map((product) => ({
         name: product.productDetails.displayName,
-        sku: `SKU-${product.productId}`,
+        sku: `${product.productId}-${product.heightType}-${product.color}-${product.heightType}-${product.size}`,
         units: product.quantity,
         selling_price: product.productDetails.price,
         tax: product.productDetails.gst || 5,
@@ -611,4 +612,205 @@ router.put("/address/update", async (req, res) => {
   }
 });
 
+// update order
+router.post("/updateOrder", async (req, res) => {
+  const {oid, uid, removedProducts} = req.body;
+
+  if (!oid || !uid) {
+    return res.status(400).json({message: "Order ID and User ID are required"});
+  }
+
+  const batch = db.batch();
+
+  try {
+    // Validate user's access to order
+    const orderRef = db.collection("orders").doc(oid);
+    const orderDoc = await orderRef.get();
+
+    if (!orderDoc.exists) {
+      throw new Error("Order not found");
+    }
+
+    if (orderDoc.data().uid !== uid) {
+      throw new Error("Unauthorized access to order");
+    }
+
+    // Get current order data
+    const orderData = orderDoc.data();
+
+    // Get Shiprocket order details
+    const shiprocketOrderId = orderData.shiprocket?.order_id;
+    if (!shiprocketOrderId) {
+      throw new Error("Shiprocket order ID not found");
+    }
+
+    // Check real-time status from Shiprocket
+    let token;
+    try {
+      token = await generateToken();
+      const trackingResponse = await axios.get(
+          `${SHIPROCKET_API_URL}/courier/track?order_id=${shiprocketOrderId}`,
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          },
+      );
+
+      const trackingDataKey = Object.keys(trackingResponse.data[0])[0];
+      const realTimeStatus = trackingResponse.data[0][trackingDataKey]?.tracking_data?.shipment_status;
+
+      // Define updatable statuses (before pickup scheduling)
+      const updatableStatuses = [
+        0, // New
+        1, // AWB Assigned
+        2, // Label Generated
+      ];
+
+      if (!updatableStatuses.includes(realTimeStatus)) {
+        const statusDescription = getStatusDescription(realTimeStatus);
+        throw new Error(`Order cannot be updated. Current status: ${statusDescription}`);
+      }
+
+      // Get all current ordered products
+      const currentProductsSnapshot = await orderRef.collection("orderedProducts").get();
+      const currentProducts = {};
+      currentProductsSnapshot.forEach((doc) => {
+        currentProducts[doc.id] = {...doc.data(), docId: doc.id};
+      });
+
+      // Validate removed products exist in order
+      for (const removedProductId of removedProducts) {
+        if (!Object.values(currentProducts).some((p) => p.productId === removedProductId)) {
+          throw new Error(`Product ${removedProductId} not found in order`);
+        }
+      }
+
+      // Process inventory returns and calculate new total
+      let newTotalAmount = orderData.totalAmount;
+      const inventoryUpdates = [];
+      const remainingProducts = [];
+
+      for (const product of Object.values(currentProducts)) {
+        if (removedProducts.includes(product.productId)) {
+          // Return inventory for removed product
+          const productDoc = await db.collection("products").doc(product.productId).get();
+          const productData = productDoc.data();
+          const quantitiesMap = product.heightType === "normal" ?
+            productData.quantities :
+            productData[product.heightType === "above" ? "aboveHeight" : "belowHeight"];
+
+          const currentQuantity = quantitiesMap?.[product.color]?.[product.size] || 0;
+
+          const updatedQuantities = {
+            ...quantitiesMap,
+            [product.color]: {
+              ...quantitiesMap[product.color],
+              [product.size]: currentQuantity + product.quantity,
+            },
+          };
+
+          inventoryUpdates.push({
+            ref: productDoc.ref,
+            data: product.heightType === "normal" ?
+              {quantities: updatedQuantities} :
+              {[product.heightType === "above" ? "aboveHeight" : "belowHeight"]: updatedQuantities},
+          });
+
+          // Subtract removed product's amount from total
+          newTotalAmount -= product.productDetails.discountedPrice * product.quantity;
+
+          // Delete product from order
+          batch.delete(orderRef.collection("orderedProducts").doc(product.docId));
+        } else {
+          // Keep track of remaining products for Shiprocket update
+          remainingProducts.push({
+            name: product.productDetails.displayName,
+            sku: `SKU-${product.productId}`,
+            units: product.quantity,
+            selling_price: product.productDetails.price,
+            tax: product.productDetails.gst || 5,
+            hsn: product.productDetails.hsn || "",
+          });
+        }
+      }
+
+      // Check if all products are being removed
+      if (remainingProducts.length === 0) {
+        throw new Error("Cannot remove all products from order. Use cancel order instead.");
+      }
+
+      // Update Shiprocket order
+      const shiprocketOrderData = {
+        order_id: orderData.shiprocket.order_id,
+        order_items: remainingProducts,
+      };
+
+      const shiprocketResponse = await axios.post(
+          `${SHIPROCKET_API_URL}/orders/update/adhoc`,
+          shiprocketOrderData,
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          },
+      );
+
+      if (!shiprocketResponse.data.order_id) {
+        throw new Error("Invalid response from Shiprocket API");
+      }
+
+      // Update order document
+      batch.update(orderRef, {
+        "updatedAt": new Date(),
+        "status": "order_updated",
+        "totalAmount": newTotalAmount,
+        "payableAmount": calculatePayableAmount(newTotalAmount, orderData.discount, orderData.lushioCurrencyUsed),
+        "shiprocket.order_items": remainingProducts,
+      });
+
+      // Apply inventory updates
+      for (const update of inventoryUpdates) {
+        batch.update(update.ref, update.data);
+      }
+
+      // Commit all changes
+      await batch.commit();
+
+      res.status(200).json({
+        message: "Order updated successfully",
+        orderId: oid,
+        removedProducts: removedProducts,
+      });
+    } catch (shiprocketError) {
+      console.error("Shiprocket API Error:", shiprocketError.response?.data || shiprocketError);
+      throw new Error(`Shiprocket API Error: ${shiprocketError.response?.data?.message || shiprocketError.message}`);
+    } finally {
+      if (token) {
+        await destroyToken(token);
+      }
+    }
+  } catch (error) {
+    console.error("Error updating order:", error);
+    res.status(500).json({
+      message: "Failed to update order",
+      error: error.message,
+      details: error.response?.data?.errors || null,
+    });
+  }
+});
+
+// Helper function to calculate payable amount
+function calculatePayableAmount(totalAmount, discount, lushioCurrencyUsed) {
+  let payableAmount = totalAmount;
+  if (discount) {
+    payableAmount -= discount;
+  }
+  if (lushioCurrencyUsed) {
+    payableAmount -= lushioCurrencyUsed;
+  }
+  return Math.max(0, payableAmount);
+}
 module.exports = router;
