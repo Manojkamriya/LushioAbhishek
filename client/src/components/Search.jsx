@@ -1,15 +1,45 @@
-import React from 'react'
+import React,{useState} from 'react'
+import { useNavigate } from "react-router-dom";
 
 function Search({searchRef, closeSearch}) {
+  const [searchText, setSearchText] = useState("");
+  const navigate = useNavigate();
+
+  const handleSearchChange = (e) => {
+    setSearchText(e.target.value);
+  };
+
+  const handleSearch = (e) => {
+    // If Enter key is pressed, initiate search
+    if (e.key === "Enter" && searchText.trim()) {
+      
+      navigate(`/search?query=${encodeURIComponent(searchText.trim())}`);
+      setSearchText("");
+    closeSearch();
+    }
+  };
+
+  const closeSearchBox = () => {
+    setSearchText("");
+    closeSearch();
+
+  };
   return (
     <div ref={searchRef} className="header-search">
     <div className="header-search-form-control">
       <img src="/Images/icons/search.svg" alt="" />
-      <input type="search" placeholder="SEARCH FOR..." />
+      {/* <input type="search" placeholder="SEARCH FOR..." /> */}
+      <input
+        type="search"
+        placeholder="SEARCH FOR..."
+        value={searchText}
+        onChange={handleSearchChange}
+        onKeyPress={handleSearch} // Trigger search on Enter key
+      />
       <img
         src="/Images/icons/cross.png"
         alt=""
-        onClick={closeSearch}
+        onClick={closeSearchBox}
       />
     </div>
   </div>

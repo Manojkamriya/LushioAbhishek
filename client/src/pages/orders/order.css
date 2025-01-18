@@ -146,7 +146,9 @@
       .order-status.on-the-way {
         background-color: #2196F3;
       }
-      
+      .order-status.created {
+        background-color: #4CAF50;
+      }
       .order-button-container,.item-button-container {
         margin-top: 1rem;
         display: flex;

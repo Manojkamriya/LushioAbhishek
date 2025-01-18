@@ -10,11 +10,7 @@ export const AddressProvider = ({ children }) => {
   const [isChangingDefault, setISChangingDefault] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null); 
   const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    if (user) {
-      fetchAddresses();
-    }
-  }, [user]);
+ 
 
   const fetchAddresses = async () => {
     setIsLoading(true);
@@ -22,14 +18,18 @@ export const AddressProvider = ({ children }) => {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/addresses/${user.uid}`);
       const sortedAddresses = response.data.addresses.sort((a, b) => b.isDefault - a.isDefault);
       setAddressData(sortedAddresses);
-      console.log(response.data);
+   
     } catch (error) {
       console.error('Error fetching addresses:', error);
     } finally {
       setIsLoading(false);
     }
   };
-
+  useEffect(() => {
+    if (user) {
+      fetchAddresses();
+    }
+  }, [user]);
   const handleAddAddress = async (newAddress) => {
     setISChangingDefault(true);
     try {
@@ -108,6 +108,7 @@ export const AddressProvider = ({ children }) => {
       addressData,
       isChangingDefault,
       isLoading,
+      fetchAddresses,
       handleAddAddress,
       handleEditAddress,
       handleRemoveAddress,

@@ -11,8 +11,10 @@ import {
 } from 'react-share';
 
 const ShareComponent = () => {
-  const shareUrl = 'https://example.com';  // URL to share
-  const text = "Hey, check out this amazing content I'm sharing!";  // Text to share
+  const shareUrl = 'https://lushio-fitness.web.app';  // URL to share
+ 
+  const text = "Hey, check this out! Sign up using my referral codeand earn ₹100 rewards. Don't miss this amazing opportunity!"; // Refer and earn text
+
 
   return (
     <div style={{ display: 'flex', gap: '10px' }}>

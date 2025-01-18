@@ -1,0 +1,27 @@
+.search-results-container{
+    display: flex;
+    flex-direction: column;
+}
+.search-results-container h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    margin: 20px 5%;
+    text-align: left;
+    position: relative;
+  }
+  
+  .search-results-container h2::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #ddd;
+    transform: translateY(-50%);
+  }
+  
+ 
+  
+  

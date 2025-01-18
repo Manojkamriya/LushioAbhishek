@@ -168,7 +168,19 @@
   .fluid-button:active {
     color: #1c1c1c;
   }
-  
+  .home-heading-button{
+    background-color: transparent;
+    border: none;
+    outline: none;
+    text-decoration: underline;
+    font-weight: 400;
+    font-family: "Montserrat";
+ display: block;
+ color: #1c1c1c;
+ font-size: 20px;
+ margin-top: 25px;
+    margin-inline: auto;
+  }
   /* Responsive styles */
   
   @media(hover:none){

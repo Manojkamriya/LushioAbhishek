@@ -1,5 +1,4 @@
-import React, {useContext,useState, useEffect } from "react";
-import axios from "axios";
+import React, {useContext} from "react";
 import { Link } from "react-router-dom";
 import { auth } from "../../firebaseConfig.js";
 import { signOut } from "firebase/auth";

@@ -220,6 +220,7 @@ const Login = () => {
             <input
               type="text"
               placeholder="Enter the OTP"
+              style={{ width: "130px" }}
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
               required

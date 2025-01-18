@@ -406,11 +406,12 @@ max-height: 30px;
       display: flex;
       justify-content: space-between;
       width: 100%;
+      gap: 10px;
         }
         .remove-cart-buttons button{
           background-color: #1c1c1c;
           height: 40px;
-          width: 140px;
+          width: 100%;
           border-radius: 10px;
           outline: none;
           border: none;

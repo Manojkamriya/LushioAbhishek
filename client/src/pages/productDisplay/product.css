@@ -338,6 +338,9 @@
 .productDisplay-buy-button-mobile{
   display: none;
 }
+.productDisplay-right-category{
+  text-transform: capitalize;
+}
 .size-chart {
   margin-block: 20px;
   font-size: 19px;

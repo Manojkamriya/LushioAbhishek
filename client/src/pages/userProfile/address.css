@@ -166,7 +166,10 @@
      font-size: 12px;
      
     }
-    
+    .myaddress p {
+  
+      margin-bottom: 3px;
+    }
     .edit-address {
       width: 85%;
     padding: 15px;

@@ -188,7 +188,7 @@ const navigate= useNavigate();
                   onClick={() => addToCart(props.id)}
                   disabled={!selectedSize}
                   className="add-to-cart-button"
-                  style={{ aspectRatio: 5 }}
+                  style={{ aspectRatio: 5.5 }}
                 >
                   {isLoading ? (
                     <span className="spinner" style={{ aspectRatio: 1 }}></span>
@@ -202,7 +202,7 @@ const navigate= useNavigate();
                   style={{
                     backgroundColor: "#5f5e5e",
                     cursor: "not-allowed",
-                    aspectRatio: 5,
+                    aspectRatio: 5.5,
                   }}
                 >
                   Select size to add to cart
@@ -214,7 +214,7 @@ const navigate= useNavigate();
                 style={{
                   backgroundColor: "#5f5e5e",
                   cursor: "not-allowed",
-                  aspectRatio: 5,
+                  aspectRatio: 5.5,
                 }}
               >
                 Please Login to add to cart
