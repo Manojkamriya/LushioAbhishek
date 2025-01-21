@@ -141,40 +141,40 @@ function Coupon({ setDiscount, cartAmount, setCouponApplied }) {
                     </button>
                   </div>
                   <div className="coupon-options">
-                    {coupons.length > 0 ? (
+                    {coupons?.length > 0 ? (
                       <>
                         <h2 className="coupon-select-heading">
                           Select a Coupon
                         </h2>
-                        {coupons.map((coupon) => (
+                        {coupons?.map((coupon) => (
                           <label
-                            key={coupon.id}
+                            key={coupon?.id}
                             className={`option ${
-                              selectedCoupon?.id === coupon.id ? "selected" : ""
+                              selectedCoupon?.id === coupon?.id ? "selected" : ""
                             }`}
                           >
                             <input
                               type="radio"
                               name="coupon"
-                              value={coupon.id}
-                              checked={selectedCoupon?.id === coupon.id}
+                              value={coupon?.id}
+                              checked={selectedCoupon?.id === coupon?.id}
                               onChange={() => setSelectedCoupon(coupon)}
                             />
                             <div className="coupon-details">
                               <p className="coupon-info">
-                                <strong>Code:</strong> {coupon.id} |
+                                <strong>Code:</strong> {coupon?.id} |
                                 <strong>Valid Until:</strong>{" "}
-{coupon.validity
+{coupon?.validity
   ? (() => {
       let validityDate;
 
       // Handle different formats
-      if (typeof coupon.validity === "string") {
-        validityDate = new Date(coupon.validity); // ISO string
-      } else if (typeof coupon.validity === "number") {
-        validityDate = new Date(coupon.validity * 1000); // Unix timestamp
-      } else if (coupon.validity instanceof Date) {
-        validityDate = coupon.validity; // Already a Date object
+      if (typeof coupon?.validity === "string") {
+        validityDate = new Date(coupon?.validity); // ISO string
+      } else if (typeof coupon?.validity === "number") {
+        validityDate = new Date(coupon?.validity * 1000); // Unix timestamp
+      } else if (coupon?.validity instanceof Date) {
+        validityDate = coupon?.validity; // Already a Date object
       } else {
         return "Invalid Date";
       }
@@ -189,11 +189,11 @@ function Coupon({ setDiscount, cartAmount, setCouponApplied }) {
                               </p>
                               <p className="coupon-info">
                                 <strong>Min Purchase:</strong> ₹
-                                {coupon.onPurchaseOf || "N/A"} |
+                                {coupon?.onPurchaseOf || "N/A"} |
                                 <strong>Discount:</strong>{" "}
-                                {coupon.discountType === "percentage"
-                                  ? `${coupon.discount || "N/A"}%`
-                                  : `₹${coupon.discount || "N/A"}`}
+                                {coupon?.discountType === "percentage"
+                                  ? `${coupon?.discount || "N/A"}%`
+                                  : `₹${coupon?.discount || "N/A"}`}
                               </p>
                             </div>
                           </label>

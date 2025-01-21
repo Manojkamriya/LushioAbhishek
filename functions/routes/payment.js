@@ -148,18 +148,16 @@ router.post("/status", async (req, res) => {
         );
         logger.log("Order Creation Response:", orderResponse.data);
         // Extracting productIds
-const selectedProductIds = globalOrderDetails.orderedProducts.map(product => product.productId);
-console.log(selectedProductIds);
+        const selectedProductIds = globalOrderDetails.orderedProducts.map((product) => product.productId);
+        console.log(selectedProductIds);
         try {
           const response = await axios.post(
-            `${API_URL}/cart/batch-delete`,
-            {
-              uid: globalOrderDetails.uid,
-              itemIds: selectedProductIds,
-            }
+              `${API_URL}/cart/batch-delete`,
+              {
+                uid: globalOrderDetails.uid,
+                itemIds: selectedProductIds,
+              },
           );
-    
-          
         } catch (error) {
           logger.log(error);
         }

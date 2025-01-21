@@ -9,7 +9,7 @@ const router = express.Router();
 const {getFirestore} = require("firebase-admin/firestore");
 const db = getFirestore();
 const {generateToken, destroyToken} = require("./shiprocketAuth");
-// const logger = require("firebase-functions/logger");
+const logger = require("firebase-functions/logger");
 const getStatusDescription = require("./statusDescription");
 
 // Validation middleware
@@ -116,7 +116,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
     const validatedProducts = await Promise.all(productPromises);
 
     // Calculate the total amount and verify
-    const calculatedTotal = validatedProducts.reduce((sum, product) => sum + product.productDetails.discountedPrice * product.quantity, 0);
+    const calculatedTotal = validatedProducts.reduce((sum, product) => sum + product.productDetails.price * product.quantity, 0);
 
     if (Math.abs(calculatedTotal - totalAmount) > 0.01) {
       throw new Error("Total amount mismatch");
@@ -178,11 +178,12 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       billing_email: email,
       order_items: validatedProducts.map((product) => ({
         name: product.productDetails.displayName,
-        sku: `${product.productId}-${product.heightType}-${product.color}-${product.heightType}-${product.size}`,
+        sku: `${product.productId}-${product.color}-${product.heightType}-${product.size}`,
         units: product.quantity,
         selling_price: product.productDetails.price,
         tax: product.productDetails.gst || 5,
         hsn: product.productDetails.hsn || "",
+        discount: product.productDetails.price - product.productDetails.discountedPrice,
       })),
       payment_method: modeOfPayment === "cashOnDelivery" ? "COD" : "Prepaid",
       sub_total: payableAmount,
@@ -191,9 +192,10 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       breadth,
       height,
       weight,
+      discount,
     };
 
-    // logger.log(shiprocketOrderData);
+    logger.log(shiprocketOrderData);
     let token;
     try {
       token = await generateToken();
@@ -212,24 +214,24 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
         throw new Error("Invalid response from Shiprocket API");
       }
 
-      const awbResponse = await axios.post(
-          `${SHIPROCKET_API_URL}/courier/assign/awb`,
-          {
-            shipment_id: shiprocketResponse.data.shipment_id,
-          },
-          {
-            headers: {
-              "Authorization": `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          },
-      );
+      // const awbResponse = await axios.post(
+      //     `${SHIPROCKET_API_URL}/courier/assign/awb`,
+      //     {
+      //       shipment_id: shiprocketResponse.data.shipment_id,
+      //     },
+      //     {
+      //       headers: {
+      //         "Authorization": `Bearer ${token}`,
+      //         "Content-Type": "application/json",
+      //       },
+      //     },
+      // );
 
       // Add Shiprocket details to the order
       orderData.shiprocket = {
         ...shiprocketResponse.data,
         // awb_code: awbResponse.data.awb_code,
-        awb_details: awbResponse.data,
+        // awb_details: awbResponse.data,
       };
       orderData.status = "created";
 
@@ -451,7 +453,7 @@ router.post("/cancel", async (req, res) => {
     try {
       token = await generateToken();
       const trackingResponse = await axios.get(
-          `${SHIPROCKET_API_URL}/courier/track?order_id=${shiprocketOrderId}`,
+          `${SHIPROCKET_API_URL}/shipments/${orderData.shiprocket.shipment_id}`,
           {
             headers: {
               "Authorization": `Bearer ${token}`,
@@ -460,9 +462,9 @@ router.post("/cancel", async (req, res) => {
           },
       );
 
-      const trackingDataKey = Object.keys(trackingResponse.data[0])[0]; // Get the dynamic key
-      const realTimeStatus = trackingResponse.data[0][trackingDataKey]?.tracking_data?.shipment_status;
-
+      // const trackingDataKey = Object.keys(trackingResponse.data[0])[0]; // Get the dynamic key
+      // const realTimeStatus = trackingResponse.data[0][trackingDataKey]?.tracking_data?.shipment_status;
+      const realTimeStatus = trackingResponse.data?.data?.status;
       console.log("Real-time Status:", realTimeStatus);
 
       // Define cancelable statuses
@@ -473,6 +475,7 @@ router.post("/cancel", async (req, res) => {
         3, // Pickup Scheduled/Generated
         4, // Pickup Queued
         5, // Manifest Generated
+        11, // Pending
       ];
 
       // Check if the real-time status allows cancellation
@@ -558,6 +561,39 @@ router.put("/address/update", async (req, res) => {
     let token;
     try {
       token = await generateToken();
+      const trackingResponse = await axios.get(
+          `${SHIPROCKET_API_URL}/shipments/${orderData.shiprocket.shipment_id}`,
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          },
+      );
+
+      // const trackingDataKey = Object.keys(trackingResponse.data[0])[0]; // Get the dynamic key
+      // const realTimeStatus = trackingResponse.data[0][trackingDataKey]?.tracking_data?.shipment_status;
+      const realTimeStatus = trackingResponse.data?.data?.status;
+      console.log("Real-time Status:", realTimeStatus);
+
+      // Define cancelable statuses
+      const updateableStatuses = [
+        0, // New
+        1, // AWB Assigned
+        2, // Label Generated
+        3, // Pickup Scheduled/Generated
+        4, // Pickup Queued
+        5, // Manifest Generated
+        11, // Pending
+      ];
+
+      // Check if the real-time status allows cancellation
+      if (!updateableStatuses.includes(realTimeStatus)) {
+        const statusDescription = getStatusDescription(realTimeStatus);
+        return res.status(400).json({
+          message: `Address cant be changed. Current status: ${statusDescription}`,
+        });
+      }
 
       const shiprocketAddressData = {
         order_id: shiprocketOrderId,
@@ -639,9 +675,10 @@ router.post("/updateOrder", async (req, res) => {
     const orderData = orderDoc.data();
 
     // Get Shiprocket order details
-    const shiprocketOrderId = orderData.shiprocket?.order_id;
-    if (!shiprocketOrderId) {
-      throw new Error("Shiprocket order ID not found");
+    const shipment_id = orderData.shiprocket?.shipment_id;
+    // console.log("Shiprocket shipment ID:", shipment_id);
+    if (!shipment_id) {
+      throw new Error("Shiprocket Shipment ID not found");
     }
 
     // Check real-time status from Shiprocket
@@ -649,7 +686,7 @@ router.post("/updateOrder", async (req, res) => {
     try {
       token = await generateToken();
       const trackingResponse = await axios.get(
-          `${SHIPROCKET_API_URL}/courier/track?order_id=${shiprocketOrderId}`,
+          `${SHIPROCKET_API_URL}/shipments/${shipment_id}`,
           {
             headers: {
               "Authorization": `Bearer ${token}`,
@@ -657,15 +694,17 @@ router.post("/updateOrder", async (req, res) => {
             },
           },
       );
-
-      const trackingDataKey = Object.keys(trackingResponse.data[0])[0];
-      const realTimeStatus = trackingResponse.data[0][trackingDataKey]?.tracking_data?.shipment_status;
-
+      // console.log(trackingResponse.data);
+      // const trackingDataKey = Object.keys(trackingResponse.data[0])[0];
+      // const realTimeStatus = trackingResponse.data[0][trackingDataKey]?.tracking_data?.shipment_status;
+      const realTimeStatus = trackingResponse.data?.data?.status;
+      // console.log("Real-time Status:", realTimeStatus);
       // Define updatable statuses (before pickup scheduling)
       const updatableStatuses = [
         0, // New
         1, // AWB Assigned
         2, // Label Generated
+        11, // Pending
       ];
 
       if (!updatableStatuses.includes(realTimeStatus)) {
@@ -675,15 +714,17 @@ router.post("/updateOrder", async (req, res) => {
 
       // Get all current ordered products
       const currentProductsSnapshot = await orderRef.collection("orderedProducts").get();
+
+      // Create a map of document IDs to products
       const currentProducts = {};
       currentProductsSnapshot.forEach((doc) => {
         currentProducts[doc.id] = {...doc.data(), docId: doc.id};
       });
 
-      // Validate removed products exist in order
-      for (const removedProductId of removedProducts) {
-        if (!Object.values(currentProducts).some((p) => p.productId === removedProductId)) {
-          throw new Error(`Product ${removedProductId} not found in order`);
+      // Validate removed products exist in order using document IDs
+      for (const removedDocId of removedProducts) {
+        if (!currentProducts[removedDocId]) {
+          throw new Error(`Product with document ID ${removedDocId} not found in order`);
         }
       }
 
@@ -692,8 +733,8 @@ router.post("/updateOrder", async (req, res) => {
       const inventoryUpdates = [];
       const remainingProducts = [];
 
-      for (const product of Object.values(currentProducts)) {
-        if (removedProducts.includes(product.productId)) {
+      for (const [docId, product] of Object.entries(currentProducts)) {
+        if (removedProducts.includes(docId)) {
           // Return inventory for removed product
           const productDoc = await db.collection("products").doc(product.productId).get();
           const productData = productDoc.data();
@@ -721,13 +762,16 @@ router.post("/updateOrder", async (req, res) => {
           // Subtract removed product's amount from total
           newTotalAmount -= product.productDetails.discountedPrice * product.quantity;
 
-          // Delete product from order
-          batch.delete(orderRef.collection("orderedProducts").doc(product.docId));
+          // update the product with cancelledOn timestamp
+          batch.update(orderRef.collection("orderedProducts").doc(docId), {
+            cancelledOn: new Date(),
+            status: "cancelled",
+          });
         } else {
           // Keep track of remaining products for Shiprocket update
           remainingProducts.push({
             name: product.productDetails.displayName,
-            sku: `SKU-${product.productId}`,
+            sku: `${product.productId}-${product.color}-${product.heightType}-${product.size}`,
             units: product.quantity,
             selling_price: product.productDetails.price,
             tax: product.productDetails.gst || 5,
@@ -740,12 +784,49 @@ router.post("/updateOrder", async (req, res) => {
       if (remainingProducts.length === 0) {
         throw new Error("Cannot remove all products from order. Use cancel order instead.");
       }
+      const adminDoc = await db.collection("controls").doc("admin").get();
+      if (!adminDoc.exists) {
+        throw new Error("Admin document not found");
+      }
+      const adminData = adminDoc.data();
+
+      // Calculate new payable amount
+      const newPayableAmount = calculatePayableAmount(
+          newTotalAmount,
+          orderData.discount,
+          orderData.lushioCurrencyUsed,
+      );
 
       // Update Shiprocket order
       const shiprocketOrderData = {
-        order_id: orderData.shiprocket.order_id,
+        order_id: oid,
+        order_date: new Date().toISOString().split("T")[0], // Format: YYYY-MM-DD
+        payment_method: orderData.modeOfPayment === "cashOnDelivery" ? "COD" : "Prepaid",
+        sub_total: newPayableAmount,
+        shipping_is_billing: true,
+        billing_customer_name: orderData.address.name?.split(" ")[0] || "",
+        billing_last_name: orderData.address.name?.split(" ").pop() || "",
+        billing_address: `${orderData.address.flatDetails}, ${orderData.address.areaDetails}`,
+        billing_address_2: orderData.address.landmark || "",
+        billing_city: orderData.address.townCity,
+        billing_pincode: orderData.address.pinCode,
+        billing_state: orderData.address.state,
+        billing_country: orderData.address.country,
+        billing_phone: orderData.address.contactNo.replace(/\D/g, "").slice(-10),
+        billing_email: orderData.email,
         order_items: remainingProducts,
+        // shipping_charges: 0,
+        // Get these values from admin document like in create order
+        length: adminData.length,
+        breadth: adminData.breadth,
+        height: adminData.height,
+        weight: adminData.weight,
+        pickup_location: adminData.pickupLocation,
+        company_name: adminData.companyName,
+        reseller_name: adminData.resellerName,
       };
+
+      // console.log("Shiprocket Order Data:", shiprocketOrderData);
 
       const shiprocketResponse = await axios.post(
           `${SHIPROCKET_API_URL}/orders/update/adhoc`,
@@ -767,7 +848,7 @@ router.post("/updateOrder", async (req, res) => {
         "updatedAt": new Date(),
         "status": "order_updated",
         "totalAmount": newTotalAmount,
-        "payableAmount": calculatePayableAmount(newTotalAmount, orderData.discount, orderData.lushioCurrencyUsed),
+        "payableAmount": newPayableAmount,
         "shiprocket.order_items": remainingProducts,
       });
 
@@ -813,4 +894,5 @@ function calculatePayableAmount(totalAmount, discount, lushioCurrencyUsed) {
   }
   return Math.max(0, payableAmount);
 }
+
 module.exports = router;
