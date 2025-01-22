@@ -9,6 +9,9 @@ function Coupon({ setDiscount, cartAmount, setCouponApplied }) {
   const [open, setOpen] = useState(false);
   const { user } = useContext(UserContext);
   const [coupons, setCoupons] = useState([]);
+  const [lastDocId, setLastDocId] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState(null); // Store the entire coupon object
   const [inputCoupon, setInputCoupon] = useState(""); // For manually entered coupon
   const [successMessage, setSuccessMessage] = useState("");
@@ -17,26 +20,43 @@ function Coupon({ setDiscount, cartAmount, setCouponApplied }) {
   const [errorMessage, setErrorMessage] = useState("");
   const [validationMessage, setValidationMessage] = useState("");
 
+  const fetchCoupons = async () => {
+    if (loading || !hasMore) return;
+  
+    setLoading(true);
+  
+    try {
+      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/coupon/usableCoupons/${user.uid}`, {
+        params: {
+          lastDocId,
+          limit: 6, // Fetch 10 coupons per page
+        },
+      });
+  
+      setCoupons((prev) => {
+        const newCoupons = Object.values(data.coupons);
+        const uniqueCoupons = [
+          ...prev,
+          ...newCoupons.filter(
+            (coupon) => !prev.some((existingCoupon) => existingCoupon.id === coupon.id)
+          ),
+        ];
+        return uniqueCoupons;
+      });
+  
+      setLastDocId(data.lastDocId);
+      setHasMore(data.hasMore);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchCoupons = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/coupon/usableCoupons/${user.uid}`
-        );
-        if (response.data) {
-          const couponsData = Object.values(response.data); // Convert object to array
-          setCoupons(couponsData);
-          if (couponsData.length > 0) {
-            setSelectedCoupon(couponsData[0]); // Set the first coupon as selected
-          }
-        }
-      } catch (error) {
-        console.log("Error fetching coupons.");
-      }
-    };
-    fetchCoupons();
-  }, [user.uid]);
-
+    if (user && coupons.length === 0) {
+      fetchCoupons(); // Initial load
+    }
+  }, [user]);  
   const handleClose = () => {
     setOpen(false);
     setSuccessMessage("");
@@ -146,35 +166,35 @@ function Coupon({ setDiscount, cartAmount, setCouponApplied }) {
                         <h2 className="coupon-select-heading">
                           Select a Coupon
                         </h2>
-                        {coupons.map((coupon) => (
+                        {coupons && coupons.map((coupon) => (
                           <label
-                            key={coupon.id}
+                            key={coupon?.id}
                             className={`option ${
-                              selectedCoupon?.id === coupon.id ? "selected" : ""
+                              selectedCoupon?.id === coupon?.id ? "selected" : ""
                             }`}
                           >
                             <input
                               type="radio"
                               name="coupon"
-                              value={coupon.id}
-                              checked={selectedCoupon?.id === coupon.id}
+                              value={coupon?.id}
+                              checked={selectedCoupon?.id === coupon?.id}
                               onChange={() => setSelectedCoupon(coupon)}
                             />
                             <div className="coupon-details">
                               <p className="coupon-info">
-                                <strong>Code:</strong> {coupon.id} |
+                                <strong>Code:</strong> {coupon?.id} |
                                 <strong>Valid Until:</strong>{" "}
-{coupon.validity
+{coupon?.validity
   ? (() => {
       let validityDate;
 
       // Handle different formats
-      if (typeof coupon.validity === "string") {
-        validityDate = new Date(coupon.validity); // ISO string
-      } else if (typeof coupon.validity === "number") {
-        validityDate = new Date(coupon.validity * 1000); // Unix timestamp
-      } else if (coupon.validity instanceof Date) {
-        validityDate = coupon.validity; // Already a Date object
+      if (typeof coupon?.validity === "string") {
+        validityDate = new Date(coupon?.validity); // ISO string
+      } else if (typeof coupon?.validity === "number") {
+        validityDate = new Date(coupon?.validity * 1000); // Unix timestamp
+      } else if (coupon?.validity instanceof Date) {
+        validityDate = coupon?.validity; // Already a Date object
       } else {
         return "Invalid Date";
       }
@@ -189,15 +209,20 @@ function Coupon({ setDiscount, cartAmount, setCouponApplied }) {
                               </p>
                               <p className="coupon-info">
                                 <strong>Min Purchase:</strong> ₹
-                                {coupon.onPurchaseOf || "N/A"} |
+                                {coupon?.onPurchaseOf || "N/A"} |
                                 <strong>Discount:</strong>{" "}
-                                {coupon.discountType === "percentage"
-                                  ? `${coupon.discount || "N/A"}%`
-                                  : `₹${coupon.discount || "N/A"}`}
+                                {coupon?.discountType === "percentage"
+                                  ? `${coupon?.discount || "N/A"}%`
+                                  : `₹${coupon?.discount || "N/A"}`}
                               </p>
                             </div>
                           </label>
                         ))}
+                         {!loading && hasMore && (
+        <button className="load-more" onClick={fetchCoupons}>
+          Load More
+        </button>
+      )}
                         <div className="coupon-button-container">
                           <button
                             onClick={handleClose}

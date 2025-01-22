@@ -260,7 +260,8 @@ router.delete("/delete/:cid", async (req, res) => {
 // Usable coupons
 router.get("/usableCoupons/:uid", async (req, res) => {
   const {uid} = req.params;
-  const {lastDocId, limit = 10} = req.query;
+  let {lastDocId, limit = 10} = req.query;
+  limit = parseInt(limit, 10);
 
   try {
     // Check if user exists
