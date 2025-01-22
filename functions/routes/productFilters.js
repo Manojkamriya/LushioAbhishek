@@ -204,9 +204,7 @@ router.get("/featuredAccessories", async (req, res) => {
 
 // GET /men
 router.get("/men", async (req, res) => {
- 
   try {
-   
     let {lastDocId, limit = 20} = req.query;
     limit = parseInt(limit, 10);
     const productsRef = db.collection("products");
