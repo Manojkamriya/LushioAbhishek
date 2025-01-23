@@ -68,7 +68,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       // Reduce product inventory based on height type
       let quantitiesMap;
       if (product.heightType === "normal") {
-        quantitiesMap = productData.quantities; // Access the quantities map directly
+        quantitiesMap = {...productData.quantities}; // Access the quantities map directly
 
         const sizeQuantity = quantitiesMap?.[product.color]?.[product.size];
         if (!sizeQuantity || sizeQuantity < product.quantity) {
@@ -88,7 +88,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       } else {
         // Handle height-based products (above/below)
         const heightKey = product.heightType === "above" ? "aboveHeight" : "belowHeight";
-        quantitiesMap = productData[heightKey]; // Access the height-specific map
+        quantitiesMap = {...productData[heightKey]}; // Access the height-specific map
 
         const sizeQuantity = quantitiesMap?.[product.color]?.[product.size];
         if (!sizeQuantity || sizeQuantity < product.quantity) {
@@ -121,6 +121,21 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
     if (Math.abs(calculatedTotal - totalAmount) > 0.01) {
       throw new Error("Total amount mismatch");
     }
+
+    // Calculate and distribute discount proportionally
+    const distributedProducts = validatedProducts.map((product) => {
+      const productTotalPrice = product.productDetails.price * product.quantity;
+      const productDiscountPercentage = productTotalPrice / calculatedTotal;
+      let productDiscount = (discount || 0) * productDiscountPercentage;
+      const perUnitDiscount = (productDiscount / product.quantity) + (product.productDetails.price - product.productDetails.discountedPrice);
+      productDiscount = perUnitDiscount * product.quantity;
+      // console.log("perUnitDiscount: ", perUnitDiscount);
+      return {
+        ...product,
+        productDiscount,
+        perUnitDiscount,
+      };
+    });
 
     // Get user details
     const userDoc = await db.collection("users").doc(uid).get();
@@ -176,14 +191,14 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       billing_country: address.country,
       billing_phone: sanitizedContactNo,
       billing_email: email,
-      order_items: validatedProducts.map((product) => ({
+      order_items: distributedProducts.map((product) => ({
         name: product.productDetails.displayName,
         sku: `${product.productId}-${product.color}-${product.heightType}-${product.size}`,
         units: product.quantity,
         selling_price: product.productDetails.price,
         tax: product.productDetails.gst || 5,
         hsn: product.productDetails.hsn || "",
-        discount: product.productDetails.price - product.productDetails.discountedPrice,
+        discount: product.perUnitDiscount,
       })),
       payment_method: modeOfPayment === "cashOnDelivery" ? "COD" : "Prepaid",
       sub_total: payableAmount,
@@ -195,7 +210,9 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       discount,
     };
 
-    logger.log(shiprocketOrderData);
+    // console.log(shiprocketOrderData);
+
+    // Create order on Shiprocket
     let token;
     try {
       token = await generateToken();
@@ -240,7 +257,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       batch.set(userOrderRef, {orderId: orderRef.id, dateOfOrder});
 
       // Add ordered products as subcollection
-      validatedProducts.forEach((product) => {
+      distributedProducts.forEach((product) => {
         const productRef = orderRef.collection("orderedProducts").doc();
         batch.set(productRef, product);
       });
@@ -679,6 +696,10 @@ router.post("/updateOrder", async (req, res) => {
     // console.log("Shiprocket shipment ID:", shipment_id);
     if (!shipment_id) {
       throw new Error("Shiprocket Shipment ID not found");
+    }
+
+    if (orderData.shiprocket?.invoice?.invoice_url) {
+      throw new Error("Invoice already generated for this order. Please contact support for any changes.");
     }
 
     // Check real-time status from Shiprocket
