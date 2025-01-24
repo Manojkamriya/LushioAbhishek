@@ -58,66 +58,61 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
 
     // Fetch and validate products with inventory reduction
     const productPromises = orderedProducts.map(async (product) => {
-      const productDoc = await db.collection("products").doc(product.productId).get();
-      if (!productDoc.exists) {
-        throw new Error(`Product ${product.productId} not found`);
-      }
+      // Directly return the transaction result
+      return await db.runTransaction(async (transaction) => {
+        // Fetch product document
+        const productRef = db.collection("products").doc(product.productId);
+        const productDoc = await transaction.get(productRef);
 
-      const productData = productDoc.data();
-
-      // Reduce product inventory based on height type
-      let quantitiesMap;
-      if (product.heightType === "normal") {
-        quantitiesMap = {...productData.quantities}; // Access the quantities map directly
-
-        const sizeQuantity = quantitiesMap?.[product.color]?.[product.size];
-        if (!sizeQuantity || sizeQuantity < product.quantity) {
-          throw new Error(`Insufficient inventory for product ${product.productId}, color ${product.color}, size ${product.size}`);
+        // Validate product exists
+        if (!productDoc.exists) {
+          throw new Error(`Product ${product.productId} not found`);
         }
 
-        // Update the quantities map
-        const updatedQuantities = {
-          ...quantitiesMap,
-          [product.color]: {
-            ...quantitiesMap[product.color],
-            [product.size]: sizeQuantity - product.quantity,
-          },
-        };
+        const productData = productDoc.data();
 
-        batch.update(productDoc.ref, {quantities: updatedQuantities});
-      } else {
-        // Handle height-based products (above/below)
-        const heightKey = product.heightType === "above" ? "aboveHeight" : "belowHeight";
-        quantitiesMap = {...productData[heightKey]}; // Access the height-specific map
+        // Determine inventory key based on height type
+        const inventoryKey = product.heightType === "normal" ?
+          "quantities" :
+          (product.heightType === "above" ? "aboveHeight" : "belowHeight");
 
-        const sizeQuantity = quantitiesMap?.[product.color]?.[product.size];
-        if (!sizeQuantity || sizeQuantity < product.quantity) {
-          throw new Error(`Insufficient inventory for height-based product ${product.productId}, height ${product.heightType}, color ${product.color}, size ${product.size}`);
+        // Create a deep copy of inventory map
+        const inventoryMap = {...productData[inventoryKey]};
+
+        // Validate color exists
+        if (!inventoryMap[product.color]) {
+          throw new Error(`Color ${product.color} not found for product ${product.productId}`);
         }
 
-        // Update the height-based map
-        const updatedQuantities = {
-          ...quantitiesMap,
-          [product.color]: {
-            ...quantitiesMap[product.color],
-            [product.size]: sizeQuantity - product.quantity,
-          },
+        // Validate size exists and has sufficient quantity
+        const currentQuantity = inventoryMap[product.color][product.size] || 0;
+        if (currentQuantity < product.quantity) {
+          throw new Error(`Insufficient inventory for product ${product.productId}, color ${product.color}, size ${product.size}. Available: ${currentQuantity}, Requested: ${product.quantity}`);
+        }
+
+        // Reduce inventory
+        inventoryMap[product.color][product.size] -= product.quantity;
+
+        // Update product document within transaction
+        transaction.update(productRef, {
+          [inventoryKey]: inventoryMap,
+        });
+
+        // Return enriched product data for further processing
+        return {
+          ...product,
+          productDetails: productData,
         };
-
-        batch.update(productDoc.ref, {[heightKey]: updatedQuantities});
-      }
-
-      return {
-        ...product,
-        productDetails: productData,
-      };
+      });
     });
 
     const validatedProducts = await Promise.all(productPromises);
 
+    console.log(validatedProducts);
+
     // Calculate the total amount and verify
     const calculatedTotal = validatedProducts.reduce((sum, product) => sum + product.productDetails.price * product.quantity, 0);
-
+    // console.log(calculatedTotal);
     if (Math.abs(calculatedTotal - totalAmount) > 0.01) {
       throw new Error("Total amount mismatch");
     }
@@ -751,6 +746,7 @@ router.post("/updateOrder", async (req, res) => {
 
       // Process inventory returns and calculate new total
       let newTotalAmount = orderData.totalAmount;
+      let newPayableAmount = orderData.payableAmount;
       const inventoryUpdates = [];
       const remainingProducts = [];
 
@@ -781,7 +777,8 @@ router.post("/updateOrder", async (req, res) => {
           });
 
           // Subtract removed product's amount from total
-          newTotalAmount -= product.productDetails.discountedPrice * product.quantity;
+          newTotalAmount -= product.productDetails.price * product.quantity;
+          newPayableAmount = newPayableAmount - (product.productDetails.discountedPrice * product.quantity) + product.productDiscount - ((product.productDetails.price-product.productDetails.discountedPrice)*product.quantity);
 
           // update the product with cancelledOn timestamp
           batch.update(orderRef.collection("orderedProducts").doc(docId), {
@@ -812,11 +809,11 @@ router.post("/updateOrder", async (req, res) => {
       const adminData = adminDoc.data();
 
       // Calculate new payable amount
-      const newPayableAmount = calculatePayableAmount(
-          newTotalAmount,
-          orderData.discount,
-          orderData.lushioCurrencyUsed,
-      );
+      // const newPayableAmount = calculatePayableAmount(
+      //     newTotalAmount,
+      //     orderData.discount,
+      //     orderData.lushioCurrencyUsed,
+      // );
 
       // Update Shiprocket order
       const shiprocketOrderData = {
