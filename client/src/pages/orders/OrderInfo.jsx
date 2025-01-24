@@ -15,12 +15,15 @@ import { FaChevronRight } from "react-icons/fa";
 import OrderedProducts from "./OrderedProducts";
 import ReturnExchange from "./ReturnExchange";
 import Accordion from "./Accordian";
+import { db } from '../../firebaseConfig'; 
+import { doc, getDoc } from 'firebase/firestore';
 function OrderInfo() {
   const [copied, setCopied] = useState(false);
   const { orderId } = useParams();
   const { user } = useContext(UserContext);
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [canReturn,setCanReturn] = useState(false);
   const steps = ["Order Placed", "Shipped", "Out for Delivery", "Delivered"];
   const currentStep = 3; // Hardcoded current step (1-based index)
   const handleCopy = () => {
@@ -52,7 +55,26 @@ function OrderInfo() {
       setLoading(false);
     }
   };
- 
+  useEffect(() => {
+    const fetchAdminControls = async () => {
+      try {
+        const adminDocRef = doc(db, 'controls', 'admin');
+        const docSnap = await getDoc(adminDocRef);
+        
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+        
+
+        setCanReturn(data.returnEnabled);
+        }
+      } catch (error) {
+        console.error("Error fetching admin controls:", error);
+       
+      }
+    };
+
+    fetchAdminControls();
+  }, []);
   
   const [invoiceData, setInvoiceData] = useState({
     clientName: "Manoj",
@@ -152,7 +174,7 @@ function OrderInfo() {
       <InvoicePreview data={invoiceData} />
      
     
-      <OrderedProducts orderedProducts={orderDetails?.orderedProducts || []} />
+      <OrderedProducts orderedProducts={orderDetails?.orderedProducts || []} canReturn={canReturn}/>
 
       <div className="order-tracking-vertical-container">
         <h2 className="order-tracking-vertical-heading">Delivery Status</h2>
@@ -184,7 +206,7 @@ function OrderInfo() {
       <OrderTracking status="Order Confirmed" />
       <OrderTracking status="Out for Delivery" />
       <OrderTracking status="Cancelled" /> */}
-      <div className="orderId-container">
+      {/* <div className="orderId-container">
         <div className="orderId-left">
           <h4 className="orderId-heading">RETURN/EXCHANGE ORDER</h4>
           <p className="orderId">Available till 27 Jan</p>
@@ -192,7 +214,7 @@ function OrderInfo() {
         <div className="orderId-right">
           <FaChevronRight />
         </div>
-      </div>
+      </div> */}
       <div className="orderId-container downloadInvoicePdf" onClick={()=>handledownloadInvoice(orderDetails)}>
         <div className="orderId-left" >
           <h4 className="orderId-heading">DOWNLOAD INVOICE</h4>
@@ -226,18 +248,7 @@ function OrderInfo() {
           <span className="order-price-label">Coupon Discount</span>
           <span className="order-price-value">-₹{orderDetails?.totalAmount - orderDetails?.payableAmount - orderDetails?.discount}</span>
         </div>
-{/* {orderDetails?.discount > 0 && (
-  <div className="order-price-row">
-    <span className="order-price-label">Coupon Discount</span>
-    <span className="order-price-value">-₹{orderDetails.discount}</span>
-  </div>
-)} */}
 
-     
-        {/* <div className="order-price-row">
-          <span className="order-price-label">Delivery Charges</span>
-          <span className="order-price-value">₹100</span>
-        </div> */}
      
         <div className="order-price-row order-total">
           <span className="order-price-label">Grand Total</span>

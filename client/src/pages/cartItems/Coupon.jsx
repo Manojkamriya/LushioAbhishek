@@ -110,190 +110,171 @@ function Coupon({ setDiscount, cartAmount, setCouponApplied }) {
     applyCoupon(selectedCoupon?.id);
   };
 
-  return (
-    <div>
-      <button onClick={() => setOpen(true)}>Apply</button>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{ timeout: 500 }}
-      >
-        <Fade in={open}>
-          <Box
-            className="modal-box modal-box-coupon"
-            sx={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              width: "76%",
-              maxWidth: "400px",
-              bgcolor: "background.paper",
-              borderRadius: "9px",
-              boxShadow: 10,
-              p: 4,
-            }}
-          >
-            <div className="coupon-container-mobile">
-              <img
-                src="/Images/icons/cross.png"
-                alt="Close"
-                className="coupon-close"
-                onClick={handleClose}
-              />
-              {!success ? (
-                <>
-                  <div className="coupon-input-container">
-                    <input
-                      type="text"
-                      placeholder="Enter Coupon Code"
-                      onChange={(e) => setInputCoupon(e.target.value)}
-                      value={inputCoupon}
-                      className="coupon-input"
-                    />
-                    <button
-                      onClick={handleInputCoupon}
-                      className="apply-button"
-                    >
-                      Check
-                    </button>
-                  </div>
-                  <div className="coupon-options">
-                    {coupons?.length > 0 ? (
-                      <>
-                        <h2 className="coupon-select-heading">
-                          Select a Coupon
-                        </h2>
-                        {coupons?.map((coupon) => (
-                        {coupons && coupons.map((coupon) => (
-                          <label
-                            key={coupon?.id}
-                            key={coupon?.id}
-                            className={`option ${
-                              selectedCoupon?.id === coupon?.id ? "selected" : ""
-                              selectedCoupon?.id === coupon?.id ? "selected" : ""
-                            }`}
-                          >
-                            <input
-                              type="radio"
-                              name="coupon"
-                              value={coupon?.id}
-                              checked={selectedCoupon?.id === coupon?.id}
-                              value={coupon?.id}
-                              checked={selectedCoupon?.id === coupon?.id}
-                              onChange={() => setSelectedCoupon(coupon)}
-                            />
-                            <div className="coupon-details">
-                              <p className="coupon-info">
-                                <strong>Code:</strong> {coupon?.id} |
-                                <strong>Code:</strong> {coupon?.id} |
-                                <strong>Valid Until:</strong>{" "}
-{coupon?.validity
-{coupon?.validity
-  ? (() => {
-      let validityDate;
-
-      // Handle different formats
-      if (typeof coupon?.validity === "string") {
-        validityDate = new Date(coupon?.validity); // ISO string
-      } else if (typeof coupon?.validity === "number") {
-        validityDate = new Date(coupon?.validity * 1000); // Unix timestamp
-      } else if (coupon?.validity instanceof Date) {
-        validityDate = coupon?.validity; // Already a Date object
-      if (typeof coupon?.validity === "string") {
-        validityDate = new Date(coupon?.validity); // ISO string
-      } else if (typeof coupon?.validity === "number") {
-        validityDate = new Date(coupon?.validity * 1000); // Unix timestamp
-      } else if (coupon?.validity instanceof Date) {
-        validityDate = coupon?.validity; // Already a Date object
-      } else {
-        return "Invalid Date";
-      }
-
-      // Format the date as DD-MM-YY
-      const [year, month, day] = validityDate.toISOString().split("T")[0].split("-");
-      return `${day}-${month}-${year}`;
-    })()
-  : "N/A"}
-
-
-                              </p>
-                              <p className="coupon-info">
-                                <strong>Min Purchase:</strong> ₹
-                                {coupon?.onPurchaseOf || "N/A"} |
-                                {coupon?.onPurchaseOf || "N/A"} |
-                                <strong>Discount:</strong>{" "}
-                                {coupon?.discountType === "percentage"
-                                  ? `${coupon?.discount || "N/A"}%`
-                                  : `₹${coupon?.discount || "N/A"}`}
-                                {coupon?.discountType === "percentage"
-                                  ? `${coupon?.discount || "N/A"}%`
-                                  : `₹${coupon?.discount || "N/A"}`}
-                              </p>
-                            </div>
-                          </label>
-                        ))}
-                         {!loading && hasMore && (
-        <button className="load-more" onClick={fetchCoupons}>
-          Load More
-        </button>
-      )}
-                        <div className="coupon-button-container">
-                          <button
-                            onClick={handleClose}
-                            className="cancel-button"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={handleSelectedCoupon}
-                            className="apply-button"
-                          >
-                            {isApplying ? (
-                              <>
-                                <AiOutlineLoading className="spinner-icon" />
-                                Applying...
-                              </>
-                            ) : (
-                              "Apply Coupon"
-                            )}
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <p className="no-coupons-message">No coupons available</p>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  src="/Images/success.mp4"
-                  className="success-message"
-                >
-                  Your browser does not support the video tag.
-                </video>
-              )}
-              {validationMessage && (
-                <Typography color="warning">{validationMessage}</Typography>
-              )}
-              {successMessage && (
-                <Typography color="success">{successMessage}</Typography>
-              )}
-              {errorMessage && (
-                <Typography color="error">{errorMessage}</Typography>
-              )}
-            </div>
-          </Box>
-        </Fade>
-      </Modal>
-    </div>
-  );
+ 
+    return (
+      <div>
+        <button onClick={() => setOpen(true)}>Apply</button>
+        <Modal
+          open={open}
+          onClose={handleClose}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{ timeout: 500 }}
+        >
+          <Fade in={open}>
+            <Box
+              className="modal-box modal-box-coupon"
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: "76%",
+                maxWidth: "400px",
+                bgcolor: "background.paper",
+                borderRadius: "9px",
+                boxShadow: 10,
+                p: 4,
+              }}
+            >
+              <div className="coupon-container-mobile">
+                <img
+                  src="/Images/icons/cross.png"
+                  alt="Close"
+                  className="coupon-close"
+                  onClick={handleClose}
+                />
+                {!success ? (
+                  <>
+                    <div className="coupon-input-container">
+                      <input
+                        type="text"
+                        placeholder="Enter Coupon Code"
+                        onChange={(e) => setInputCoupon(e.target.value)}
+                        value={inputCoupon}
+                        className="coupon-input"
+                      />
+                      <button
+                        onClick={handleInputCoupon}
+                        className="apply-button"
+                      >
+                        Check
+                      </button>
+                    </div>
+                    <div className="coupon-options">
+                      {coupons?.length > 0 ? (
+                        <>
+                          <h2 className="coupon-select-heading">Select a Coupon</h2>
+                          {coupons.map((coupon) => (
+                            <label
+                              key={coupon?.id}
+                              className={`option ${
+                                selectedCoupon?.id === coupon?.id ? "selected" : ""
+                              }`}
+                            >
+                              <input
+                                type="radio"
+                                name="coupon"
+                                value={coupon?.id}
+                                checked={selectedCoupon?.id === coupon?.id}
+                                onChange={() => setSelectedCoupon(coupon)}
+                              />
+                              <div className="coupon-details">
+                                <p className="coupon-info">
+                                  <strong>Code:</strong> {coupon?.id} |
+                                  <strong>Valid Until:</strong>{" "}
+                                  {coupon?.validity
+                                    ? (() => {
+                                        let validityDate;
+    
+                                        // Handle different formats
+                                        if (typeof coupon?.validity === "string") {
+                                          validityDate = new Date(coupon?.validity); // ISO string
+                                        } else if (typeof coupon?.validity === "number") {
+                                          validityDate = new Date(coupon?.validity * 1000); // Unix timestamp
+                                        } else if (coupon?.validity instanceof Date) {
+                                          validityDate = coupon?.validity; // Already a Date object
+                                        } else {
+                                          return "Invalid Date";
+                                        }
+    
+                                        // Format the date as DD-MM-YY
+                                        const [year, month, day] = validityDate
+                                          .toISOString()
+                                          .split("T")[0]
+                                          .split("-");
+                                        return `${day}-${month}-${year}`;
+                                      })()
+                                    : "N/A"}
+                                </p>
+                                <p className="coupon-info">
+                                  <strong>Min Purchase:</strong> ₹
+                                  {coupon?.onPurchaseOf || "N/A"} |
+                                  <strong>Discount:</strong>{" "}
+                                  {coupon?.discountType === "percentage"
+                                    ? `${coupon?.discount || "N/A"}%`
+                                    : `₹${coupon?.discount || "N/A"}`}
+                                </p>
+                              </div>
+                            </label>
+                          ))}
+                          {!loading && hasMore && (
+                            <button className="load-more" onClick={fetchCoupons}>
+                              Load More
+                            </button>
+                          )}
+                          <div className="coupon-button-container">
+                            <button onClick={handleClose} className="cancel-button">
+                              Cancel
+                            </button>
+                            <button
+                              onClick={handleSelectedCoupon}
+                              className="apply-button"
+                            >
+                              {isApplying ? (
+                                <>
+                                  <AiOutlineLoading className="spinner-icon" />
+                                  Applying...
+                                </>
+                              ) : (
+                                "Apply Coupon"
+                              )}
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <p className="no-coupons-message">No coupons available</p>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    src="/Images/success.mp4"
+                    className="success-message"
+                  >
+                    Your browser does not support the video tag.
+                  </video>
+                )}
+                {validationMessage && (
+                  <Typography color="warning">{validationMessage}</Typography>
+                )}
+                {successMessage && (
+                  <Typography color="success">{successMessage}</Typography>
+                )}
+                {errorMessage && (
+                  <Typography color="error">{errorMessage}</Typography>
+                )}
+              </div>
+            </Box>
+          </Fade>
+        </Modal>
+      </div>
+    );
+    
 }
 
 export default Coupon;

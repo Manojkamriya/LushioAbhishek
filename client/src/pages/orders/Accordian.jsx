@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./Accordion.css"; // Include the CSS file for styling
 import ReturnExchange from "./ReturnExchange";
-const Accordion = ({ title, content }) => {
+const Accordion = ({ title, canReturn }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleAccordion = () => {
@@ -21,7 +21,7 @@ const Accordion = ({ title, content }) => {
         style={{ maxHeight: isOpen ? "1000px" : "0" }}
       >
      
-        <ReturnExchange/>
+        <ReturnExchange canReturn={canReturn}/>
       </div>
     </div>
   );
