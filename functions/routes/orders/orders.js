@@ -58,69 +58,79 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
 
     // Fetch and validate products with inventory reduction
     const productPromises = orderedProducts.map(async (product) => {
-      const productDoc = await db.collection("products").doc(product.productId).get();
-      if (!productDoc.exists) {
-        throw new Error(`Product ${product.productId} not found`);
-      }
+      // Directly return the transaction result
+      return await db.runTransaction(async (transaction) => {
+        // Fetch product document
+        const productRef = db.collection("products").doc(product.productId);
+        const productDoc = await transaction.get(productRef);
 
-      const productData = productDoc.data();
-
-      // Reduce product inventory based on height type
-      let quantitiesMap;
-      if (product.heightType === "normal") {
-        quantitiesMap = productData.quantities; // Access the quantities map directly
-
-        const sizeQuantity = quantitiesMap?.[product.color]?.[product.size];
-        if (!sizeQuantity || sizeQuantity < product.quantity) {
-          throw new Error(`Insufficient inventory for product ${product.productId}, color ${product.color}, size ${product.size}`);
+        // Validate product exists
+        if (!productDoc.exists) {
+          throw new Error(`Product ${product.productId} not found`);
         }
 
-        // Update the quantities map
-        const updatedQuantities = {
-          ...quantitiesMap,
-          [product.color]: {
-            ...quantitiesMap[product.color],
-            [product.size]: sizeQuantity - product.quantity,
-          },
-        };
+        const productData = productDoc.data();
 
-        batch.update(productDoc.ref, {quantities: updatedQuantities});
-      } else {
-        // Handle height-based products (above/below)
-        const heightKey = product.heightType === "above" ? "aboveHeight" : "belowHeight";
-        quantitiesMap = productData[heightKey]; // Access the height-specific map
+        // Determine inventory key based on height type
+        const inventoryKey = product.heightType === "normal" ?
+          "quantities" :
+          (product.heightType === "above" ? "aboveHeight" : "belowHeight");
 
-        const sizeQuantity = quantitiesMap?.[product.color]?.[product.size];
-        if (!sizeQuantity || sizeQuantity < product.quantity) {
-          throw new Error(`Insufficient inventory for height-based product ${product.productId}, height ${product.heightType}, color ${product.color}, size ${product.size}`);
+        // Create a deep copy of inventory map
+        const inventoryMap = {...productData[inventoryKey]};
+
+        // Validate color exists
+        if (!inventoryMap[product.color]) {
+          throw new Error(`Color ${product.color} not found for product ${product.productId}`);
         }
 
-        // Update the height-based map
-        const updatedQuantities = {
-          ...quantitiesMap,
-          [product.color]: {
-            ...quantitiesMap[product.color],
-            [product.size]: sizeQuantity - product.quantity,
-          },
+        // Validate size exists and has sufficient quantity
+        const currentQuantity = inventoryMap[product.color][product.size] || 0;
+        if (currentQuantity < product.quantity) {
+          throw new Error(`Insufficient inventory for product ${product.productId}, color ${product.color}, size ${product.size}. Available: ${currentQuantity}, Requested: ${product.quantity}`);
+        }
+
+        // Reduce inventory
+        inventoryMap[product.color][product.size] -= product.quantity;
+
+        // Update product document within transaction
+        transaction.update(productRef, {
+          [inventoryKey]: inventoryMap,
+        });
+
+        // Return enriched product data for further processing
+        return {
+          ...product,
+          productDetails: productData,
         };
-
-        batch.update(productDoc.ref, {[heightKey]: updatedQuantities});
-      }
-
-      return {
-        ...product,
-        productDetails: productData,
-      };
+      });
     });
 
     const validatedProducts = await Promise.all(productPromises);
 
+    console.log(validatedProducts);
+
     // Calculate the total amount and verify
     const calculatedTotal = validatedProducts.reduce((sum, product) => sum + product.productDetails.price * product.quantity, 0);
-
+    // console.log(calculatedTotal);
     if (Math.abs(calculatedTotal - totalAmount) > 0.01) {
       throw new Error("Total amount mismatch");
     }
+
+    // Calculate and distribute discount proportionally
+    const distributedProducts = validatedProducts.map((product) => {
+      const productTotalPrice = product.productDetails.price * product.quantity;
+      const productDiscountPercentage = productTotalPrice / calculatedTotal;
+      let productDiscount = (discount || 0) * productDiscountPercentage;
+      const perUnitDiscount = (productDiscount / product.quantity) + (product.productDetails.price - product.productDetails.discountedPrice);
+      productDiscount = perUnitDiscount * product.quantity;
+      // console.log("perUnitDiscount: ", perUnitDiscount);
+      return {
+        ...product,
+        productDiscount,
+        perUnitDiscount,
+      };
+    });
 
     // Get user details
     const userDoc = await db.collection("users").doc(uid).get();
@@ -176,14 +186,14 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       billing_country: address.country,
       billing_phone: sanitizedContactNo,
       billing_email: email,
-      order_items: validatedProducts.map((product) => ({
+      order_items: distributedProducts.map((product) => ({
         name: product.productDetails.displayName,
         sku: `${product.productId}-${product.color}-${product.heightType}-${product.size}`,
         units: product.quantity,
         selling_price: product.productDetails.price,
         tax: product.productDetails.gst || 5,
         hsn: product.productDetails.hsn || "",
-        discount: product.productDetails.price - product.productDetails.discountedPrice,
+        discount: product.perUnitDiscount,
       })),
       payment_method: modeOfPayment === "cashOnDelivery" ? "COD" : "Prepaid",
       sub_total: payableAmount,
@@ -195,7 +205,9 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       discount,
     };
 
-    logger.log(shiprocketOrderData);
+    // console.log(shiprocketOrderData);
+
+    // Create order on Shiprocket
     let token;
     try {
       token = await generateToken();
@@ -240,7 +252,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       batch.set(userOrderRef, {orderId: orderRef.id, dateOfOrder});
 
       // Add ordered products as subcollection
-      validatedProducts.forEach((product) => {
+      distributedProducts.forEach((product) => {
         const productRef = orderRef.collection("orderedProducts").doc();
         batch.set(productRef, product);
       });
@@ -681,6 +693,10 @@ router.post("/updateOrder", async (req, res) => {
       throw new Error("Shiprocket Shipment ID not found");
     }
 
+    if (orderData.shiprocket?.invoice?.invoice_url) {
+      throw new Error("Invoice already generated for this order. Please contact support for any changes.");
+    }
+
     // Check real-time status from Shiprocket
     let token;
     try {
@@ -730,6 +746,7 @@ router.post("/updateOrder", async (req, res) => {
 
       // Process inventory returns and calculate new total
       let newTotalAmount = orderData.totalAmount;
+      let newPayableAmount = orderData.payableAmount;
       const inventoryUpdates = [];
       const remainingProducts = [];
 
@@ -760,7 +777,8 @@ router.post("/updateOrder", async (req, res) => {
           });
 
           // Subtract removed product's amount from total
-          newTotalAmount -= product.productDetails.discountedPrice * product.quantity;
+          newTotalAmount -= product.productDetails.price * product.quantity;
+          newPayableAmount = newPayableAmount - (product.productDetails.discountedPrice * product.quantity) + product.productDiscount - ((product.productDetails.price-product.productDetails.discountedPrice)*product.quantity);
 
           // update the product with cancelledOn timestamp
           batch.update(orderRef.collection("orderedProducts").doc(docId), {
@@ -791,11 +809,11 @@ router.post("/updateOrder", async (req, res) => {
       const adminData = adminDoc.data();
 
       // Calculate new payable amount
-      const newPayableAmount = calculatePayableAmount(
-          newTotalAmount,
-          orderData.discount,
-          orderData.lushioCurrencyUsed,
-      );
+      // const newPayableAmount = calculatePayableAmount(
+      //     newTotalAmount,
+      //     orderData.discount,
+      //     orderData.lushioCurrencyUsed,
+      // );
 
       // Update Shiprocket order
       const shiprocketOrderData = {
