@@ -245,7 +245,7 @@ router.get("/fetch", async (req, res) => {
     const {
       fromDate,
       toDate,
-      page = 1,
+      lastDocumentId = null,
       limit = 10,
     } = req.query;
 
@@ -258,11 +258,10 @@ router.get("/fetch", async (req, res) => {
       });
     }
 
-    // Convert page and limit to numbers
-    const pageNum = parseInt(page);
+    // Convert limit to number
     const limitNum = parseInt(limit);
 
-    // Build query
+    // Build base query
     let query = db.collection("orders")
         .where("status", "==", "return_initiated")
         .where("shiprocket.return_order", "!=", null);
@@ -282,31 +281,33 @@ router.get("/fetch", async (req, res) => {
     // Order by returnDate in descending order
     query = query.orderBy("returnDate", "desc");
 
-    // Calculate pagination
-    const startAt = (pageNum - 1) * limitNum;
+    // If lastDocumentId is provided, start after that document
+    if (lastDocumentId) {
+      const lastDoc = await db.collection("orders").doc(lastDocumentId).get();
+      query = query.startAfter(lastDoc);
+    }
 
-    // Get total count for pagination info
-    const totalSnapshot = await query.count().get();
-    const total = totalSnapshot.data().count;
-
-    // Apply pagination
-    query = query.limit(limitNum).offset(startAt);
+    // Apply limit
+    query = query.limit(limitNum);
 
     // Execute query
     const snapshot = await query.get();
 
-    // Extract order IDs
+    // Extract orders and last document
     const orders = snapshot.docs.map((doc) => doc.id);
+    const lastVisibleDocument = snapshot.docs[snapshot.docs.length - 1];
+
+    // Determine if there are more results
+    const hasMore = snapshot.docs.length === limitNum;
 
     return res.status(200).json({
       success: true,
       data: {
         orders,
         pagination: {
-          total,
-          page: pageNum,
+          lastDocumentId: lastVisibleDocument ? lastVisibleDocument.id : null,
           limit: limitNum,
-          totalPages: Math.ceil(total / limitNum),
+          hasMore,
         },
       },
     });
