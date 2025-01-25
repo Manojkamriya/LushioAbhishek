@@ -794,6 +794,7 @@ router.post("/updateOrder", async (req, res) => {
             selling_price: product.productDetails.price,
             tax: product.productDetails.gst || 5,
             hsn: product.productDetails.hsn || "",
+            discount: product.perUnitDiscount,
           });
         }
       }
@@ -900,17 +901,5 @@ router.post("/updateOrder", async (req, res) => {
     });
   }
 });
-
-// Helper function to calculate payable amount
-function calculatePayableAmount(totalAmount, discount, lushioCurrencyUsed) {
-  let payableAmount = totalAmount;
-  if (discount) {
-    payableAmount -= discount;
-  }
-  if (lushioCurrencyUsed) {
-    payableAmount -= lushioCurrencyUsed;
-  }
-  return Math.max(0, payableAmount);
-}
 
 module.exports = router;
