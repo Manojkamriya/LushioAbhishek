@@ -96,18 +96,25 @@ router.post("/create", async (req, res) => {
         message: "Some products not found in the order",
       });
     }
+
     let sub_total = 0;
     // Prepare order items array
     const order_items = returnProductDocs.map((doc) => {
       const productData = doc.data();
       const returnData = returnItems[doc.id];
-      sub_total += Number(productData.productDetails.discountedPrice);
+      sub_total += ((Number(productData.productDetails.price) - productData.perUnitDiscount) * returnData.units);
       return {
         name: productData.productName,
         sku: `SKU-${productData.productId}`,
         units: returnData.units,
-        selling_price: Number(productData.productDetails.discountedPrice),
+        selling_price: Number(productData.productDetails.price),
         return_reason: returnData.return_reason,
+        discount: productData.perUnitDiscount,
+
+        qc_enable: true,
+        qc_color: productData.color,
+        qc_size: productData.size,
+        qc_product_name: productData.productName,
       };
     });
 
@@ -192,26 +199,26 @@ router.post("/create", async (req, res) => {
       throw new Error("Shipment ID not found in return order response");
     }
 
-    // Generate AWB for return shipment
-    const awbResponse = await axios.post(
-        `${SHIPROCKET_API_URL}/courier/assign/awb`,
-        {
-          shipment_id,
-          is_return: 1,
-        },
-        {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        },
-    );
+    // // Generate AWB for return shipment
+    // const awbResponse = await axios.post(
+    //     `${SHIPROCKET_API_URL}/courier/assign/awb`,
+    //     {
+    //       shipment_id,
+    //       is_return: 1,
+    //     },
+    //     {
+    //       headers: {
+    //         "Authorization": `Bearer ${token}`,
+    //         "Content-Type": "application/json",
+    //       },
+    //     },
+    // );
 
 
     // Update order document with return order details
     await db.collection("orders").doc(oid).update({
       "shiprocket.return_order": returnOrderResponse.data,
-      "shiprocket.return_awb": awbResponse.data,
+      // "shiprocket.return_awb": awbResponse.data,
       "returnItems": returnItems,
       "status": "return_initiated",
       "returnDate": new Date(),
@@ -222,7 +229,7 @@ router.post("/create", async (req, res) => {
       success: true,
       data: {
         return_order: returnOrderResponse.data,
-        awb_details: awbResponse.data,
+        // awb_details: awbResponse.data,
       },
     });
   } catch (error) {

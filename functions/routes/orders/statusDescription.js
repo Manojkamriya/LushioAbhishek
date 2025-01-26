@@ -28,6 +28,7 @@ function getStatusDescription(statusCode) {
     24: "Destroyed",
     25: "Damaged",
     26: "Fulfilled",
+    27: "Return Cancelled",
     38: "Reached at Destination",
     39: "Misrouted",
     40: "RTO NDR",

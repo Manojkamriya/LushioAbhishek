@@ -41,7 +41,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
   const {
     uid, modeOfPayment, orderedProducts, address,
     totalAmount, payableAmount, discount, lushioCurrencyUsed, couponCode,
-    paymentData,
+    paymentData, isExchange, exchangeOrderId,
   } = req.body;
 
   // Start a Firestore batch
@@ -246,6 +246,10 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
         // awb_details: awbResponse.data,
       };
       orderData.status = "created";
+      if (isExchange) {
+        orderData.isExchange = isExchange;
+        orderData.exchangeOrderId = exchangeOrderId;
+      }
 
       // Add order data to batch
       batch.set(orderRef, orderData);
