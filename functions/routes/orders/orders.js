@@ -205,7 +205,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       discount,
     };
 
-    // console.log(shiprocketOrderData);
+    console.log(shiprocketOrderData);
 
     // Create order on Shiprocket
     let token;

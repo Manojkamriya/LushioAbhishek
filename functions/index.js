@@ -56,6 +56,7 @@ const courierServicabilityRoute = require("./routes/orders/courierServicability.
 const returnsRoute = require("./routes/orders/returns.js");
 const trackRoute = require("./routes/orders/tracking.js");
 const searchRoute = require("./routes/search.js");
+const exchangeRoute = require("./routes/orders/exchange.js");
 
 // Use routes
 app.use("/user", userRoutes);
@@ -77,6 +78,7 @@ app.use("/couriers", courierServicabilityRoute);
 app.use("/returns", returnsRoute);
 app.use("/track", trackRoute);
 app.use("/search", searchRoute);
+app.use("/exchange", exchangeRoute);
 
 // Export API
 exports.api = onRequest(app);

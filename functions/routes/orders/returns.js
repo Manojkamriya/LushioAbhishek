@@ -27,6 +27,36 @@ router.post("/create", async (req, res) => {
       });
     }
 
+    // Get order details from Firestore
+    const orderDoc = await db.collection("orders").doc(oid).get();
+    if (!orderDoc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    const orderData = orderDoc.data();
+    if (orderData.uid !== uid) {
+      return res.status(403).json({message: "Unauthorized access to order"});
+    }
+
+    // const currentTime = new Date().getTime();
+    // const deliveredOn = orderData.deliveredOn?.toDate()?.getTime();
+    // const returnExchangeExpiresOn = orderData.returnExchangeExpiresOn?.toDate()?.getTime();
+
+    // if (!deliveredOn || !returnExchangeExpiresOn) {
+    //   return res.status(400).json({error: "Invalid order delivery timestamps"});
+    // }
+
+    // if (currentTime > returnExchangeExpiresOn) {
+    //   return res.status(400).json({
+    //     error: "Exchange/return period has expired",
+    //     deliveredOn: new Date(deliveredOn).toISOString(),
+    //     returnExchangeExpiresOn: new Date(returnExchangeExpiresOn).toISOString(),
+    //   });
+    // }
+
     // Fetch dimensions from the admin document
     const adminDoc = await db.collection("controls").doc("admin").get();
     if (!adminDoc.exists) {
@@ -44,21 +74,8 @@ router.post("/create", async (req, res) => {
       });
     }
 
-    // Get order details from Firestore
-    const orderDoc = await db.collection("orders").doc(oid).get();
-    if (!orderDoc.exists) {
-      return res.status(404).json({
-        success: false,
-        message: "Order not found",
-      });
-    }
-
-    const orderData = orderDoc.data();
     const order_id = orderData.shiprocket?.order_id;
 
-    if (orderData.uid !== uid) {
-      return res.status(403).json({message: "Unauthorized access to order"});
-    }
 
     if (!order_id) {
       return res.status(400).json({
@@ -111,10 +128,10 @@ router.post("/create", async (req, res) => {
         return_reason: returnData.return_reason,
         discount: productData.perUnitDiscount,
 
-        qc_enable: true,
-        qc_color: productData.color,
-        qc_size: productData.size,
-        qc_product_name: productData.productName,
+        // qc_enable: true,
+        // qc_color: productData.color,
+        // qc_size: productData.size,
+        // qc_product_name: productData.productName,
       };
     });
 
