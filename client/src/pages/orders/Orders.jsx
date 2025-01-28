@@ -87,7 +87,25 @@ export default function Orders() {
       setIsCancelling(false);
     }
   };
-  
+  const handleCancelItem = async (oid,itemId) => {
+    const apiUrl = `${process.env.REACT_APP_API_URL}/orders/updateOrder`; // Replace with your API endpoint
+
+    const requestBody = {
+      oid: oid,
+      uid: user?.uid,
+      removedProducts: [itemId],
+    };
+
+    try {
+      const response = await axios.post(apiUrl, requestBody);
+      console.log("Response:", response.data);
+      alert("API call successful!");
+    } catch (error) {
+      console.error("Error making API call:", error);
+      alert("API call failed. Check console for details.");
+    }
+  };
+
   const handleLoadMore = () => {
     if (pagination.hasMore) {
       fetchOrders();
@@ -163,7 +181,7 @@ export default function Orders() {
                       {
                          order?.orderedProducts?.length>1 &&       <button
                         className="open-rating-button"
-                       
+                        onClick={() => handleCancelItem(order.orderId,product?.productDetails?.id)}
                       >
                         Cancel
                       </button>

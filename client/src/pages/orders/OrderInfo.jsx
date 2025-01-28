@@ -14,7 +14,7 @@ import { AiOutlineCheck } from "react-icons/ai";
 import { FaChevronRight } from "react-icons/fa";
 import OrderedProducts from "./OrderedProducts";
 import ReturnExchange from "./ReturnExchange";
-import Accordion from "./Accordian";
+//import Accordion from "./Accordian";
 import { db } from '../../firebaseConfig'; 
 import { doc, getDoc } from 'firebase/firestore';
 function OrderInfo() {
@@ -23,7 +23,7 @@ function OrderInfo() {
   const { user } = useContext(UserContext);
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [canReturn,setCanReturn] = useState(false);
+  const [canReturn,setCanReturn] = useState(true);
   const steps = ["Order Placed", "Shipped", "Out for Delivery", "Delivered"];
   const currentStep = 3; // Hardcoded current step (1-based index)
   const handleCopy = () => {
@@ -32,49 +32,84 @@ function OrderInfo() {
       // setTimeout(() => setCopied(false), 2000);
     });
   };
-  useEffect(() => {
-    if (orderId) {
-      fetchOrderDetails();
-    }
-  }, [orderId]);
+  // useEffect(() => {
+  //   if (orderId) {
+  //     fetchOrderDetails();
+  //   }
+  // }, [orderId]);
  
-  const fetchOrderDetails = async () => {
-    const uid = user.uid;
-    setLoading(true);
+  // const fetchOrderDetails = async () => {
+  //   const uid = user.uid;
+  //   setLoading(true);
   
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/orders/${orderId}?uid=${uid}`
-      );
+  //   try {
+  //     const response = await axios.get(
+  //       `${process.env.REACT_APP_API_URL}/orders/${orderId}?uid=${uid}`
+  //     );
     
-      setOrderDetails(response.data);
-    } catch (err) {
-      console.log(err);
+  //     setOrderDetails(response.data);
+  //   } catch (err) {
+  //     console.log(err);
      
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    const fetchAdminControls = async () => {
-      try {
-        const adminDocRef = doc(db, 'controls', 'admin');
-        const docSnap = await getDoc(adminDocRef);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  // useEffect(() => {
+  //   const fetchAdminControls = async () => {
+  //     try {
         
-        if (docSnap.exists()) {
-          const data = docSnap.data();
+  //       const adminDocRef = doc(db, 'controls', 'admin');
+  //       const docSnap = await getDoc(adminDocRef);
+        
+  //       if (docSnap.exists()) {
+  //         const data = docSnap.data();
         
 
-        setCanReturn(data.returnEnabled);
+  //       setCanReturn(data.returnEnabled);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching admin controls:", error);
+       
+  //     }
+  //   };
+
+  //   fetchAdminControls();
+  // }, []);
+ 
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!orderId) return;
+  
+      setLoading(true);
+  
+      try {
+        const uid = user.uid;
+  
+        // Fetch both order details and admin controls simultaneously
+        const [orderResponse, adminDocSnap] = await Promise.all([
+          axios.get(`${process.env.REACT_APP_API_URL}/orders/${orderId}?uid=${uid}`),
+          getDoc(doc(db, "controls", "admin"))
+        ]);
+  
+        // Handle order details
+        setOrderDetails(orderResponse.data);
+  
+        // Handle admin controls
+        if (adminDocSnap.exists()) {
+          const adminData = adminDocSnap.data();
+          setCanReturn(adminData.returnEnabled);
         }
       } catch (error) {
-        console.error("Error fetching admin controls:", error);
-       
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
       }
     };
-
-    fetchAdminControls();
-  }, []);
+  
+    fetchData();
+  }, [orderId]);
   
   const [invoiceData, setInvoiceData] = useState({
     clientName: "Manoj",
@@ -174,7 +209,7 @@ function OrderInfo() {
       <InvoicePreview data={invoiceData} />
      
     
-      <OrderedProducts orderedProducts={orderDetails?.orderedProducts || []} canReturn={canReturn}/>
+      <OrderedProducts orderedProducts={orderDetails?.orderedProducts || []} canReturn={canReturn} orderId={orderId}/>
 
       <div className="order-tracking-vertical-container">
         <h2 className="order-tracking-vertical-heading">Delivery Status</h2>
@@ -202,19 +237,7 @@ function OrderInfo() {
           ))}
         </div>
       </div>
-      {/* <OrderTracking status="Order Placed" />
-      <OrderTracking status="Order Confirmed" />
-      <OrderTracking status="Out for Delivery" />
-      <OrderTracking status="Cancelled" /> */}
-      {/* <div className="orderId-container">
-        <div className="orderId-left">
-          <h4 className="orderId-heading">RETURN/EXCHANGE ORDER</h4>
-          <p className="orderId">Available till 27 Jan</p>
-        </div>
-        <div className="orderId-right">
-          <FaChevronRight />
-        </div>
-      </div> */}
+     
       <div className="orderId-container downloadInvoicePdf" onClick={()=>handledownloadInvoice(orderDetails)}>
         <div className="orderId-left" >
           <h4 className="orderId-heading">DOWNLOAD INVOICE</h4>

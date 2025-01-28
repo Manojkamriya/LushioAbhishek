@@ -538,6 +538,7 @@ const AddProducts = () => {
             id="cardImages"
             type="file"
             multiple
+            name='cardImages'
             accept="image/*"
             onChange={(e) => handleImageUpload(e)}
             required

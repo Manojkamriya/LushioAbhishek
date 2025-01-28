@@ -327,6 +327,6 @@ align-items: flex-start;
 }
 
 .file-upload-container input {
-  display: none;
+ visibility: hidden;
 }
 
