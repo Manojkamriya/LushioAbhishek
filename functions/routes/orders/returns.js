@@ -27,6 +27,36 @@ router.post("/create", async (req, res) => {
       });
     }
 
+    // Get order details from Firestore
+    const orderDoc = await db.collection("orders").doc(oid).get();
+    if (!orderDoc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    const orderData = orderDoc.data();
+    if (orderData.uid !== uid) {
+      return res.status(403).json({message: "Unauthorized access to order"});
+    }
+
+    // const currentTime = new Date().getTime();
+    // const deliveredOn = orderData.deliveredOn?.toDate()?.getTime();
+    // const returnExchangeExpiresOn = orderData.returnExchangeExpiresOn?.toDate()?.getTime();
+
+    // if (!deliveredOn || !returnExchangeExpiresOn) {
+    //   return res.status(400).json({error: "Invalid order delivery timestamps"});
+    // }
+
+    // if (currentTime > returnExchangeExpiresOn) {
+    //   return res.status(400).json({
+    //     error: "Exchange/return period has expired",
+    //     deliveredOn: new Date(deliveredOn).toISOString(),
+    //     returnExchangeExpiresOn: new Date(returnExchangeExpiresOn).toISOString(),
+    //   });
+    // }
+
     // Fetch dimensions from the admin document
     const adminDoc = await db.collection("controls").doc("admin").get();
     if (!adminDoc.exists) {
@@ -44,21 +74,8 @@ router.post("/create", async (req, res) => {
       });
     }
 
-    // Get order details from Firestore
-    const orderDoc = await db.collection("orders").doc(oid).get();
-    if (!orderDoc.exists) {
-      return res.status(404).json({
-        success: false,
-        message: "Order not found",
-      });
-    }
-
-    const orderData = orderDoc.data();
     const order_id = orderData.shiprocket?.order_id;
 
-    if (orderData.uid !== uid) {
-      return res.status(403).json({message: "Unauthorized access to order"});
-    }
 
     if (!order_id) {
       return res.status(400).json({
@@ -96,18 +113,25 @@ router.post("/create", async (req, res) => {
         message: "Some products not found in the order",
       });
     }
+
     let sub_total = 0;
     // Prepare order items array
     const order_items = returnProductDocs.map((doc) => {
       const productData = doc.data();
       const returnData = returnItems[doc.id];
-      sub_total += Number(productData.productDetails.discountedPrice);
+      sub_total += ((Number(productData.productDetails.price) - productData.perUnitDiscount) * returnData.units);
       return {
         name: productData.productName,
         sku: `SKU-${productData.productId}`,
         units: returnData.units,
-        selling_price: Number(productData.productDetails.discountedPrice),
+        selling_price: Number(productData.productDetails.price),
         return_reason: returnData.return_reason,
+        discount: productData.perUnitDiscount,
+
+        // qc_enable: true,
+        // qc_color: productData.color,
+        // qc_size: productData.size,
+        // qc_product_name: productData.productName,
       };
     });
 
@@ -192,26 +216,26 @@ router.post("/create", async (req, res) => {
       throw new Error("Shipment ID not found in return order response");
     }
 
-    // Generate AWB for return shipment
-    const awbResponse = await axios.post(
-        `${SHIPROCKET_API_URL}/courier/assign/awb`,
-        {
-          shipment_id,
-          is_return: 1,
-        },
-        {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        },
-    );
+    // // Generate AWB for return shipment
+    // const awbResponse = await axios.post(
+    //     `${SHIPROCKET_API_URL}/courier/assign/awb`,
+    //     {
+    //       shipment_id,
+    //       is_return: 1,
+    //     },
+    //     {
+    //       headers: {
+    //         "Authorization": `Bearer ${token}`,
+    //         "Content-Type": "application/json",
+    //       },
+    //     },
+    // );
 
 
     // Update order document with return order details
     await db.collection("orders").doc(oid).update({
       "shiprocket.return_order": returnOrderResponse.data,
-      "shiprocket.return_awb": awbResponse.data,
+      // "shiprocket.return_awb": awbResponse.data,
       "returnItems": returnItems,
       "status": "return_initiated",
       "returnDate": new Date(),
@@ -222,7 +246,7 @@ router.post("/create", async (req, res) => {
       success: true,
       data: {
         return_order: returnOrderResponse.data,
-        awb_details: awbResponse.data,
+        // awb_details: awbResponse.data,
       },
     });
   } catch (error) {
@@ -245,7 +269,7 @@ router.get("/fetch", async (req, res) => {
     const {
       fromDate,
       toDate,
-      page = 1,
+      lastDocumentId = null,
       limit = 10,
     } = req.query;
 
@@ -258,11 +282,10 @@ router.get("/fetch", async (req, res) => {
       });
     }
 
-    // Convert page and limit to numbers
-    const pageNum = parseInt(page);
+    // Convert limit to number
     const limitNum = parseInt(limit);
 
-    // Build query
+    // Build base query
     let query = db.collection("orders")
         .where("status", "==", "return_initiated")
         .where("shiprocket.return_order", "!=", null);
@@ -282,31 +305,33 @@ router.get("/fetch", async (req, res) => {
     // Order by returnDate in descending order
     query = query.orderBy("returnDate", "desc");
 
-    // Calculate pagination
-    const startAt = (pageNum - 1) * limitNum;
+    // If lastDocumentId is provided, start after that document
+    if (lastDocumentId) {
+      const lastDoc = await db.collection("orders").doc(lastDocumentId).get();
+      query = query.startAfter(lastDoc);
+    }
 
-    // Get total count for pagination info
-    const totalSnapshot = await query.count().get();
-    const total = totalSnapshot.data().count;
-
-    // Apply pagination
-    query = query.limit(limitNum).offset(startAt);
+    // Apply limit
+    query = query.limit(limitNum);
 
     // Execute query
     const snapshot = await query.get();
 
-    // Extract order IDs
+    // Extract orders and last document
     const orders = snapshot.docs.map((doc) => doc.id);
+    const lastVisibleDocument = snapshot.docs[snapshot.docs.length - 1];
+
+    // Determine if there are more results
+    const hasMore = snapshot.docs.length === limitNum;
 
     return res.status(200).json({
       success: true,
       data: {
         orders,
         pagination: {
-          total,
-          page: pageNum,
+          lastDocumentId: lastVisibleDocument ? lastVisibleDocument.id : null,
           limit: limitNum,
-          totalPages: Math.ceil(total / limitNum),
+          hasMore,
         },
       },
     });

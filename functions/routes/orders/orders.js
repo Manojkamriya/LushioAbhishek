@@ -41,7 +41,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
   const {
     uid, modeOfPayment, orderedProducts, address,
     totalAmount, payableAmount, discount, lushioCurrencyUsed, couponCode,
-    paymentData,
+    paymentData, isExchange, exchangeOrderId,
   } = req.body;
 
   // Start a Firestore batch
@@ -205,7 +205,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       discount,
     };
 
-    // console.log(shiprocketOrderData);
+    console.log(shiprocketOrderData);
 
     // Create order on Shiprocket
     let token;
@@ -246,6 +246,10 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
         // awb_details: awbResponse.data,
       };
       orderData.status = "created";
+      if (isExchange) {
+        orderData.isExchange = isExchange;
+        orderData.exchangeOrderId = exchangeOrderId;
+      }
 
       // Add order data to batch
       batch.set(orderRef, orderData);
@@ -794,6 +798,7 @@ router.post("/updateOrder", async (req, res) => {
             selling_price: product.productDetails.price,
             tax: product.productDetails.gst || 5,
             hsn: product.productDetails.hsn || "",
+            discount: product.perUnitDiscount,
           });
         }
       }
@@ -900,17 +905,5 @@ router.post("/updateOrder", async (req, res) => {
     });
   }
 });
-
-// Helper function to calculate payable amount
-function calculatePayableAmount(totalAmount, discount, lushioCurrencyUsed) {
-  let payableAmount = totalAmount;
-  if (discount) {
-    payableAmount -= discount;
-  }
-  if (lushioCurrencyUsed) {
-    payableAmount -= lushioCurrencyUsed;
-  }
-  return Math.max(0, payableAmount);
-}
 
 module.exports = router;
