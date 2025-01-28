@@ -292,4 +292,123 @@ router.get("/accessories", async (req, res) => {
   }
 });
 
+// GET /topRated
+router.get("/topRated", async (req, res) => {
+  try {
+    let {lastDocId, limit = 20} = req.query;
+    limit = parseInt(limit, 10);
+    const productsRef = db.collection("products");
+
+    // Base query to ensure only displayable products
+    const baseQuery = productsRef
+        .where("toDisplay", "==", true)
+        .orderBy("rating", "desc")
+        .orderBy("createdAt", "desc");
+
+    // Create paginated query
+    let paginatedQuery = baseQuery.limit(limit);
+
+    // If lastDocId is provided, start after that document
+    if (lastDocId) {
+      const lastDocRef = db.collection("products").doc(lastDocId);
+      const lastDocSnapshot = await lastDocRef.get();
+
+      // Ensure the last document exists and has the data we need
+      if (lastDocSnapshot.exists) {
+        const lastDoc = lastDocSnapshot.data();
+        paginatedQuery = baseQuery
+            .startAfter(lastDoc.rating, lastDoc.createdAt)
+            .limit(limit);
+      }
+    }
+
+    // Execute the query
+    const snapshot = await paginatedQuery.get();
+
+    const results = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    if (results.length === 0) {
+      return res.status(404).json({message: "No top-rated products found."});
+    }
+
+    const hasMore = results.length === limit;
+    res.status(200).json({
+      products: results,
+      hasMore,
+      lastDocId: results[results.length - 1]?.id,
+    });
+  } catch (error) {
+    console.error("Error fetching top-rated products:", error);
+    res.status(500).json({message: "Error fetching products"});
+  }
+});
+
+// GET /topDiscounts
+router.get("/topDiscounts", async (req, res) => {
+  try {
+    let {lastDocId, limit = 20} = req.query;
+    limit = parseInt(limit, 10);
+    const productsRef = db.collection("products");
+
+    // Fetch all products that can be displayed
+    const snapshot = await productsRef
+        .where("toDisplay", "==", true)
+        .get();
+
+    // Process products and calculate discount percentages
+    const productsWithDiscounts = snapshot.docs
+        .map((doc) => {
+          const productData = doc.data();
+
+          // Expanded calculation logic with more robust error handling
+          let discountPercentage = 0;
+          if (
+            productData.price &&
+          productData.discountedPrice &&
+          productData.price > 0 &&
+          productData.discountedPrice < productData.price
+          ) {
+            discountPercentage = Math.round(
+                ((productData.price - productData.discountedPrice) / productData.price) * 100,
+            );
+          }
+
+          return {
+            id: doc.id,
+            ...productData,
+            discountPercentage,
+            originalPrice: productData.price,
+            discountedPrice: productData.discountedPrice,
+          };
+        })
+    // Only sort and filter if you want to show only products with discounts
+        .sort((a, b) => b.discountPercentage - a.discountPercentage);
+
+    // Apply pagination
+    const startIndex = lastDocId ?
+      productsWithDiscounts.findIndex((product) => product.id === lastDocId) + 1 :
+      0;
+
+    const results = productsWithDiscounts.slice(startIndex, startIndex + limit);
+
+    if (results.length === 0) {
+      return res.status(404).json({message: "No products found."});
+    }
+
+    const hasMore = startIndex + limit < productsWithDiscounts.length;
+    res.status(200).json({
+      products: results,
+      hasMore,
+      totalProducts: productsWithDiscounts.length,
+      lastDocId: results[results.length - 1]?.id,
+    });
+  } catch (error) {
+    console.error("Error fetching discounted products:", error);
+    res.status(500).json({message: "Error fetching products"});
+  }
+});
+
 module.exports = router;
