@@ -427,7 +427,7 @@ function ProductDisplay() {
       <div className="mobile-button-container">
         <button
           className="wishlist-button"
-       
+          onClick={() => handleToggleWishlist(wishlistItem?.id, id)}
         >
           {isRemoving ? (
             <>
@@ -440,7 +440,7 @@ function ProductDisplay() {
               {" "}
               <FaHeart
                 className={`wishlist-icon ${liked ? "liked" : ""}`}
-                onClick={() => handleToggleWishlist(wishlistItem?.id, id)}
+              
               />
               {liked ? <>WISHLISTED</> : <>WISHLIST</>}
             </>

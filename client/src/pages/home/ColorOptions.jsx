@@ -71,8 +71,8 @@ const ColorOptions = ({ data, selectedColor,
       )}
       {selectedColor && (
         <>
-          {/* <p>Select Size:</p> */}
-          <p>Select Size for: {selectedColor}</p>
+        
+          {/* <p>Select Size for: {selectedColor}</p>
           {availableSizes.length > 0 ? (
             <div className="size-selector">
               {availableSizes.map((size) => (
@@ -98,7 +98,33 @@ const ColorOptions = ({ data, selectedColor,
             </div>
           ) : (
             <p>No sizes available for the selected color</p>
-          )}
+          )} */}
+          <p>Select Size for: {selectedColor}</p>
+{availableSizes.filter(size => data.quantities[selectedColor]?.[size] !== null).length > 0 ? (
+  <div className="size-selector">
+    {availableSizes
+      .filter(size => data.quantities[selectedColor]?.[size] !== null)
+      .map((size) => (
+        <button
+          key={size}
+          style={{
+            aspectRatio: size === "SizeFree" ? 29 / 12 : 29 / 17,
+            width: size === "SizeFree" ? "140%" : "auto",
+          }}
+          onClick={() => handleSizeChange(size)}
+          disabled={data.quantities[selectedColor]?.[size] === 0}
+          className={`${size === selectedSize ? "selected" : ""} ${
+            data.quantities[selectedColor]?.[size] === 0 ? "sold-out" : ""
+          }`}
+        >
+          {size}
+        </button>
+      ))}
+  </div>
+) : (
+  <p>No sizes available for the selected color</p>
+)}
+
         </>
       )}
     </>

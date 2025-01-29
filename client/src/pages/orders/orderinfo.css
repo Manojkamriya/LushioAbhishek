@@ -283,13 +283,16 @@ width: 4px;
     flex-direction: column;
     gap: 10px;
   }
-  
+  .ordered-product-wrapper{
+    background-color: #f7f7f7;
+    border: 1px solid #ddd;
+  }
   .ordered-product {
     display: flex;
     gap: 15px;
     padding: 10px;
     border-radius: 8px;
-    background-color: #ffffff;
+   
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     align-items: center;
   }

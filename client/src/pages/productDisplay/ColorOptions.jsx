@@ -74,7 +74,7 @@ const ColorOptions = ({ data, selectedColor,
           <p>Select Size for: {selectedColor}</p>
           {availableSizes.length > 0 ? (
             <div className="productDisplay-size-selector">
-              {availableSizes.map((size) => (
+              {availableSizes.filter(size => data.quantities[selectedColor]?.[size] !== null).map((size) => (
                 <button
                   key={size}
                  // style={{ aspectRatio: "29 / 15" }}

@@ -114,7 +114,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
     const calculatedTotal = validatedProducts.reduce((sum, product) => sum + product.productDetails.price * product.quantity, 0);
     // console.log(calculatedTotal);
     if (Math.abs(calculatedTotal - totalAmount) > 0.01) {
-      throw new Error("Total amount mismatch");
+      throw new Error(`Total amount mismatch ${calculatedTotal - totalAmount}`);
     }
 
     // Calculate and distribute discount proportionally

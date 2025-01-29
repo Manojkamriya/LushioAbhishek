@@ -244,6 +244,20 @@ const getTotalForCOD = () => {
     });
     return total;
   };
+  const getSelectedTotalMRP = () => {
+    let total = 0;
+    cartProducts.forEach((item) => {
+      const isHeightBased = item.height;
+      const inStock = isHeightBased
+        ? item.product[item.height]?.quantities?.[item.color]?.[item.size] > 0
+        : item.product.quantities[item.color]?.[item.size] > 0;
+
+      if (selectedItems[item.id] && inStock) {
+        total += item.product.price * item.quantity; // Only add price for items in stock and selected
+      }
+    });
+    return total;
+  };
   const getSelectedAmount = () => {
     let total = 0;
     cartProducts.forEach((item) => {
@@ -309,11 +323,13 @@ const getTotalForCOD = () => {
   const orderDetails = {
     uid: user.uid,
     modeOfPayment: selectedPaymentMethod,
-    totalAmount: getSelectedTotalAmount(),
+    totalAmount: getSelectedTotalMRP(),
     payableAmount: getTotalWithWalletAndDiscount().total,
     discount: getSelectedTotalAmount() - getTotalWithWalletAndDiscount().total,
     lushioCurrencyUsed: useWalletPoints && walletPoints,
     couponCode: couponApplied,
+    couponDiscount: getTotalWithWalletAndDiscount().couponDiscountAmount || 0,
+    onlinePaymentDiscount: getTotalWithWalletAndDiscount().additionalDiscount || 0,
     address: selectedAddress,
     orderedProducts: selectedProductDetails,
  //   paymentData: paymentData,
