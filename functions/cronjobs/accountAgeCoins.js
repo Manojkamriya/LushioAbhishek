@@ -52,8 +52,12 @@ const assignAccountAgeCoins = onSchedule("every day 00:00", async (event) => {
 
               await coinsRef.add({
                 amount: settings.coins,
+                amountLeft: settings.coins,
                 message: settings.message,
-                expiry: expiryDate,
+                expiresOn: expiryDate,
+                createdAt: currentDate,
+                isExpired: false,
+                isUsed: false,
               });
 
               await milestoneTrackerRef.doc(milestone.name).set({

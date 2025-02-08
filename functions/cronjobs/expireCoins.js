@@ -1,14 +1,14 @@
 /* eslint-disable max-len */
 const {onSchedule} = require("firebase-functions/v2/scheduler");
-const {getFirestore, FieldValue} = require("firebase-admin/firestore");
+const {getFirestore} = require("firebase-admin/firestore");
 const logger = require("firebase-functions/logger");
 
 // Firestore instance
 const db = getFirestore();
 
-// Cloud Function to remove expired coins daily
-const removeExpiredCoins = onSchedule("0 0 * * *", async () => {
-  const currentDate = FieldValue.serverTimestamp(); // Current date
+// Cloud Function to mark expired coins daily
+const updateExpiredCoins = onSchedule("0 0 * * *", async () => {
+  const currentDate = new Date(); // Current date
   try {
     const usersRef = db.collection("users");
     const snapshot = await usersRef.get();
@@ -30,11 +30,14 @@ const removeExpiredCoins = onSchedule("0 0 * * *", async () => {
 
       const coinPromises = coinsSnapshot.docs.map(async (coinDoc) => {
         const coinData = coinDoc.data();
-        const expiryTimestamp = coinData.expiry;
+        const expiryDate = coinData.expiresOn?.toDate();
 
-        if (expiryTimestamp && expiryTimestamp.toDate() < currentDate) {
-          logger.log(`Removing expired coin for user: ${userId}, coin ID: ${coinDoc.id}`);
-          await coinDoc.ref.delete();
+        // the coins are expired if the expiry date is in the past and the coin is not already marked as expired
+        if (expiryDate && expiryDate < currentDate && !coinData.isExpired) {
+          logger.log(`Marking coin as expired for user: ${userId}, coin ID: ${coinDoc.id}`);
+          await coinDoc.ref.update({
+            isExpired: true,
+          });
         }
       });
 
@@ -42,10 +45,10 @@ const removeExpiredCoins = onSchedule("0 0 * * *", async () => {
     });
 
     await Promise.all(promises);
-    logger.log("Expired coins removed successfully.");
+    logger.log("Expired coins updated successfully.");
   } catch (error) {
-    logger.error("Error removing expired coins: ", error);
+    logger.error("Error updating expired coins: ", error);
   }
 });
 
-module.exports = removeExpiredCoins;
+module.exports = updateExpiredCoins;
