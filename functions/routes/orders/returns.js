@@ -41,6 +41,7 @@ router.post("/create", async (req, res) => {
       return res.status(403).json({message: "Unauthorized access to order"});
     }
 
+    // old (kept for reference)
     // const currentTime = new Date().getTime();
     // const deliveredOn = orderData.deliveredOn?.toDate()?.getTime();
     // const returnExchangeExpiresOn = orderData.returnExchangeExpiresOn?.toDate()?.getTime();
@@ -56,6 +57,30 @@ router.post("/create", async (req, res) => {
     //     returnExchangeExpiresOn: new Date(returnExchangeExpiresOn).toISOString(),
     //   });
     // }
+
+    const normalizeToDate = (date) => {
+      const normalized = new Date(date);
+      normalized.setHours(0, 0, 0, 0);
+      return normalized.getTime();
+    };
+
+    const currentDate = normalizeToDate(new Date());
+    const deliveredOn = orderData.deliveredOn?.toDate();
+    const returnExchangeExpiresOn = orderData.returnExchangeExpiresOn?.toDate();
+
+    if (!deliveredOn || !returnExchangeExpiresOn) {
+      return res.status(400).json({error: "Invalid order delivery timestamps"});
+    }
+
+    const expiryDate = normalizeToDate(returnExchangeExpiresOn);
+
+    if (currentDate > expiryDate) {
+      return res.status(400).json({
+        error: "Exchange/return period has expired",
+        deliveredOn: new Date(normalizeToDate(deliveredOn)).toISOString(),
+        returnExchangeExpiresOn: new Date(expiryDate).toISOString(),
+      });
+    }
 
     // Fetch dimensions from the admin document
     const adminDoc = await db.collection("controls").doc("admin").get();

@@ -19,7 +19,7 @@ router.get("/:id", async (req, res) => {
     }
 
     const userData = userDoc.data();
-    const lushioCash = userData.lushioCash || 0; // Default to 0 if cash doesn't exist
+    const lushioCash = Number(userData.lushioCash) || 0; // Default to 0 if cash doesn't exist
 
     // Fetch the user's coins subcollection
     const coinsSnapshot = await db.collection("users").doc(userId).collection("coins").get();
@@ -27,7 +27,10 @@ router.get("/:id", async (req, res) => {
 
     coinsSnapshot.forEach((doc) => {
       const coinData = doc.data();
-      lushioCoins += Number(coinData.amount) || 0; // Add the amount from each document
+      if (!coinData.lushioCash && coinData.isExpired && coinData.amountLeft <= 0) {
+        return; // Skip expired coins
+      }
+      lushioCoins += Number(coinData.amountLeft) || 0; // Add the amount from each document
     });
 
     const totalCredits = lushioCoins + lushioCash; // Sum of coins and cash
@@ -44,6 +47,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// Route to send coins to all users
 router.post("/send", async (req, res) => {
   const {amount, days, message} = req.body;
 
@@ -88,8 +92,11 @@ router.post("/send", async (req, res) => {
 
       batch.set(newCoinRef, {
         amount: numericAmount,
-        expiry: expirationDate,
+        amountLeft: numericAmount,
         message: message,
+        expiresOn: expirationDate,
+        createdAt: new Date(),
+        isExpired: false,
       });
     });
 
@@ -107,6 +114,165 @@ router.post("/send", async (req, res) => {
       error: "Internal server error",
       details: error.message,
       code: error.code,
+    });
+  }
+});
+
+/*
+  ***********
+  ** TODOS **
+  ***********
+
+  *** Route to send coins to  specific user (admin will give emails or phone numbers of users)
+  * Request body should contain the following:
+  * - emails or phone number (Doubt: will the admin type the values of give a csv or some other file)
+  * - amount: The amount of coins to send
+  * - days: The number of days until the coins expire
+  * - message: The message to attach to the coins
+
+  *** Route to send coins to active users
+  * need to think how to do this
+
+  *** Route to send coins to users who ordered between a specific date range
+  ** Logic - get all the orders between the date range and get the users from the orders and send coins to them.
+              (order should not be a cancelled order and return period should have ended.)
+              cancellationDate should not exist or be null
+              returnExchangeExpiresOn -> How is this field comming since we dont get a realtime update of delivery from shiprocket.
+  * Request body should contain the following:
+  * - startDate: The start date of the range
+  * - endDate: The end date of the range
+  * - amount: The amount of coins to send
+  * - days: The number of days until the coins expire
+  * - message: The message to attach to the coins
+
+  *** Route to consume coins and cash
+  ** Logic -> the api traverses the coins sub collection in the ascending order of expiresOn (the one about to expire first is consumed first)
+              - coins are consumed in the order of expiry.
+              - as the coins are traversed, amountLeft field in the documnet must be updated accordingly in each coin document unitl,
+                - either the coins documents have ended, in this case consume the rest of the coins from the lushioCash field in the users document.
+                - else if there are more coins left then leave them as it is
+              - when checking for a consumable coins document, check for isExpired, amountLeft > 0.
+                - if amountLeft > 0, then you can consume from that.
+                - if amountLeft = 0, then move to the next document.
+                - if isExpired = true, then move to the next document.
+              - the oid and orderAmount should be updated in the coins document.
+                - remember a coins document can have multiple orders so a proper mapping should be done.
+  * Request body should contain the following:
+  * - uid: The ID of the user
+  * - coinsToConsume: The number of coins to consume
+  * - oid: The ID of the order
+  * - orderAmount: The total amount of the order
+*/
+
+
+// Route to consume coins and cash
+router.post("/consume", async (req, res) => {
+  try {
+    const {uid, coinsToConsume, oid, orderAmount} = req.body;
+
+    // Input validation
+    if (!uid || !coinsToConsume || !oid || !orderAmount) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+      });
+    }
+
+    // Start a transaction to ensure data consistency
+    const result = await db.runTransaction(async (transaction) => {
+      let remainingCoinsToConsume = coinsToConsume;
+      const consumptionDetails = [];
+
+      // Get user document reference
+      const userRef = db.collection("users").doc(uid);
+      const userDoc = await transaction.get(userRef);
+
+      if (!userDoc.exists) {
+        throw new Error("User not found");
+      }
+
+      // Get coins subcollection
+      const coinsQuery = await userRef
+          .collection("coins")
+          .orderBy("expiresOn", "asc")
+          .get();
+
+      // Process each coin document
+      for (const coinDoc of coinsQuery.docs) {
+        const coinData = coinDoc.data();
+
+        // Skip if coin is expired or has no amount left
+        if (coinData.isExpired || coinData.amountLeft <= 0) {
+          continue;
+        }
+
+        const coinRef = userRef.collection("coins").doc(coinDoc.id);
+
+        if (remainingCoinsToConsume > 0) {
+          const consumableAmount = Math.min(coinData.amountLeft, remainingCoinsToConsume);
+
+          // Update coin document
+          transaction.update(coinRef, {
+            amountLeft: coinData.amountLeft - consumableAmount,
+            orders: [...(coinData.orders || []), {
+              oid,
+              consumedAmount: consumableAmount,
+              orderAmount,
+              consumedAt: new Date(),
+            }],
+          });
+
+          remainingCoinsToConsume -= consumableAmount;
+          consumptionDetails.push({
+            coinId: coinDoc.id,
+            consumedAmount: consumableAmount,
+          });
+        }
+      }
+
+      // If there are still coins to consume, use lushioCash
+      if (remainingCoinsToConsume > 0) {
+        const userData = userDoc.data();
+        const availableCash = userData.lushioCash || 0;
+
+        if (availableCash < remainingCoinsToConsume) {
+          throw new Error("Insufficient funds");
+        }
+
+        // Update user's lushioCash
+        transaction.update(userRef, {
+          lushioCash: availableCash - remainingCoinsToConsume,
+        });
+
+        // Create a new document in coins subcollection for lushioCash transaction
+        const lushioCashTransactionRef = userRef.collection("coins").doc();
+        transaction.create(lushioCashTransactionRef, {
+          lushioCash: true,
+          cashUsed: remainingCoinsToConsume,
+          oid,
+          orderAmount,
+          consumedAt: new Date(),
+        });
+
+        consumptionDetails.push({
+          type: "lushioCash",
+          consumedAmount: remainingCoinsToConsume,
+        });
+      }
+
+      return {
+        success: true,
+        consumptionDetails,
+        totalConsumed: coinsToConsume,
+      };
+    });
+
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("Error consuming coins:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Error processing coin consumption",
     });
   }
 });

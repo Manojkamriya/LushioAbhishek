@@ -64,7 +64,6 @@ const assignBirthdayCoins = onSchedule("0 0 1 * *", async () => {
               expiresOn: expiryDate,
               createdAt: currentDate,
               isExpired: false,
-              isUsed: false,
             });
 
             logger.log(`Coins added for user: ${doc.id}`);
@@ -124,7 +123,6 @@ const assignAnniversaryCoins = onSchedule("0 0 1 * *", async () => {
               expiresOn: expiryDate,
               createdAt: currentDate,
               isExpired: false,
-              isUsed: false,
             });
 
             logger.log(`Coins added for user: ${doc.id}`);
