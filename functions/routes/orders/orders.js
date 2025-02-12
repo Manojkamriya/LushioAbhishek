@@ -71,13 +71,27 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
 
         const productData = productDoc.data();
 
-        // Determine inventory key based on height type
-        const inventoryKey = product.heightType === "normal" ?
-          "quantities" :
-          (product.heightType === "above" ? "aboveHeight" : "belowHeight");
+        // Determine inventory path
+        let inventoryMap;
+        if (product.heightType === "normal") {
+          inventoryMap = {...productData.quantities}; // Directly access quantities
+        } else {
+          const heightKey = product.heightType === "above" ? "aboveHeight" : "belowHeight";
 
-        // Create a deep copy of inventory map
-        const inventoryMap = {...productData[inventoryKey]};
+          if (!productData[heightKey] || !productData[heightKey].quantities) {
+            throw new Error(`Invalid height-based inventory for product ${product.productId}`);
+          }
+
+          inventoryMap = {...productData[heightKey].quantities}; // Access nested quantities
+        }
+
+        // Determine inventory key based on height type
+        // const inventoryKey = product.heightType === "normal" ?
+        //   "quantities" :
+        //   (product.heightType === "above" ? "aboveHeight" : "belowHeight");
+
+        // // Create a deep copy of inventory map
+        // const inventoryMap = {...productData[inventoryKey]};
 
         // Validate color exists
         if (!inventoryMap[product.color]) {
@@ -93,10 +107,17 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
         // Reduce inventory
         inventoryMap[product.color][product.size] -= product.quantity;
 
+        // Prepare update data
+        let updateData;
+        if (product.heightType === "normal") {
+          updateData = {quantities: inventoryMap};
+        } else {
+          const heightKey = product.heightType === "above" ? "aboveHeight" : "belowHeight";
+          updateData = {[`${heightKey}.quantities`]: inventoryMap};
+        }
+
         // Update product document within transaction
-        transaction.update(productRef, {
-          [inventoryKey]: inventoryMap,
-        });
+        transaction.update(productRef, updateData);
 
         // Return enriched product data for further processing
         return {
@@ -108,7 +129,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
 
     const validatedProducts = await Promise.all(productPromises);
 
-    console.log(validatedProducts);
+    // console.log(validatedProducts);
 
     // Calculate the total amount and verify
     const calculatedTotal = validatedProducts.reduce((sum, product) => sum + product.productDetails.price * product.quantity, 0);
@@ -205,7 +226,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       discount,
     };
 
-    console.log(shiprocketOrderData);
+    // console.log(shiprocketOrderData);
 
     // Create order on Shiprocket
     let token;
