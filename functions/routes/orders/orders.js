@@ -85,14 +85,6 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
           inventoryMap = {...productData[heightKey].quantities}; // Access nested quantities
         }
 
-        // Determine inventory key based on height type
-        // const inventoryKey = product.heightType === "normal" ?
-        //   "quantities" :
-        //   (product.heightType === "above" ? "aboveHeight" : "belowHeight");
-
-        // // Create a deep copy of inventory map
-        // const inventoryMap = {...productData[inventoryKey]};
-
         // Validate color exists
         if (!inventoryMap[product.color]) {
           throw new Error(`Color ${product.color} not found for product ${product.productId}`);

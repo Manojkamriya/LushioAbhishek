@@ -11,6 +11,7 @@ const db = getFirestore();
 // URLs
 const API_URL = process.env.REACT_APP_API_URL;
 
+// Exchange Products
 router.post("/", async (req, res) => {
   const {oid, uid, exchangeItems} = req.body;
 

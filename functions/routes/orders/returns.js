@@ -2,6 +2,8 @@
 /* eslint-disable new-cap */
 /* eslint-disable camelcase */
 /* eslint-disable max-len */
+
+
 const express = require("express");
 const axios = require("axios");
 const router = express.Router();
@@ -58,29 +60,29 @@ router.post("/create", async (req, res) => {
     //   });
     // }
 
-    const normalizeToDate = (date) => {
-      const normalized = new Date(date);
-      normalized.setHours(0, 0, 0, 0);
-      return normalized.getTime();
-    };
+    // const normalizeToDate = (date) => {
+    //   const normalized = new Date(date);
+    //   normalized.setHours(0, 0, 0, 0);
+    //   return normalized.getTime();
+    // };
 
-    const currentDate = normalizeToDate(new Date());
-    const deliveredOn = orderData.deliveredOn?.toDate();
-    const returnExchangeExpiresOn = orderData.returnExchangeExpiresOn?.toDate();
+    // const currentDate = normalizeToDate(new Date());
+    // const deliveredOn = orderData.deliveredOn?.toDate();
+    // const returnExchangeExpiresOn = orderData.returnExchangeExpiresOn?.toDate();
 
-    if (!deliveredOn || !returnExchangeExpiresOn) {
-      return res.status(400).json({error: "Invalid order delivery timestamps"});
-    }
+    // if (!deliveredOn || !returnExchangeExpiresOn) {
+    //   return res.status(400).json({error: "Invalid order delivery timestamps"});
+    // }
 
-    const expiryDate = normalizeToDate(returnExchangeExpiresOn);
+    // const expiryDate = normalizeToDate(returnExchangeExpiresOn);
 
-    if (currentDate > expiryDate) {
-      return res.status(400).json({
-        error: "Exchange/return period has expired",
-        deliveredOn: new Date(normalizeToDate(deliveredOn)).toISOString(),
-        returnExchangeExpiresOn: new Date(expiryDate).toISOString(),
-      });
-    }
+    // if (currentDate > expiryDate) {
+    //   return res.status(400).json({
+    //     error: "Exchange/return period has expired",
+    //     deliveredOn: new Date(normalizeToDate(deliveredOn)).toISOString(),
+    //     returnExchangeExpiresOn: new Date(expiryDate).toISOString(),
+    //   });
+    // }
 
     // Fetch dimensions from the admin document
     const adminDoc = await db.collection("controls").doc("admin").get();
@@ -256,6 +258,72 @@ router.post("/create", async (req, res) => {
     //     },
     // );
 
+    // Update inventory for returned items
+    const inventoryUpdatePromises = returnProductDocs.map(async (doc) => {
+      const productData = doc.data();
+      const returnData = returnItems[doc.id];
+
+      return await db.runTransaction(async (transaction) => {
+        // Fetch current product document
+        const productRef = db.collection("products").doc(productData.productId);
+        const currentProductDoc = await transaction.get(productRef);
+
+        if (!currentProductDoc.exists) {
+          throw new Error(`Product ${productData.productId} not found`);
+        }
+
+        const currentProductData = currentProductDoc.data();
+
+        // Determine inventory path based on height type
+        let inventoryMap;
+        if (productData.heightType === "normal") {
+          inventoryMap = {...currentProductData.quantities};
+        } else {
+          const heightKey = productData.heightType === "above" ? "aboveHeight" : "belowHeight";
+
+          if (!currentProductData[heightKey] || !currentProductData[heightKey].quantities) {
+            throw new Error(`Invalid height-based inventory for product ${productData.productId}`);
+          }
+
+          inventoryMap = {...currentProductData[heightKey].quantities};
+        }
+
+        // Validate color exists
+        if (!inventoryMap[productData.color]) {
+          throw new Error(`Color ${productData.color} not found for product ${productData.productId}`);
+        }
+
+        // Validate size exists and update quantity
+        if (typeof inventoryMap[productData.color][productData.size] === "undefined") {
+          throw new Error(`Size ${productData.size} not found for product ${productData.productId}, color ${productData.color}`);
+        }
+
+        // Increase inventory by returned units
+        inventoryMap[productData.color][productData.size] += returnData.units;
+
+        // Prepare update data
+        let updateData;
+        if (productData.heightType === "normal") {
+          updateData = {quantities: inventoryMap};
+        } else {
+          const heightKey = productData.heightType === "above" ? "aboveHeight" : "belowHeight";
+          updateData = {[`${heightKey}.quantities`]: inventoryMap};
+        }
+
+        // Update product document within transaction
+        transaction.update(productRef, updateData);
+
+        return {
+          productId: productData.productId,
+          color: productData.color,
+          size: productData.size,
+          returnedUnits: returnData.units,
+        };
+      });
+    });
+
+    // Execute all inventory updates
+    const inventoryUpdates = await Promise.all(inventoryUpdatePromises);
 
     // Update order document with return order details
     await db.collection("orders").doc(oid).update({

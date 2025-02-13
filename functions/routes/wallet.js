@@ -125,7 +125,7 @@ router.post("/send", async (req, res) => {
 
   *** Route to send coins to  specific user (admin will give emails or phone numbers of users)
   * Request body should contain the following:
-  * - emails or phone number (Doubt: will the admin type the values of give a csv or some other file)
+  * - emails or phone number (the admin type the values of give a csv)
   * - amount: The amount of coins to send
   * - days: The number of days until the coins expire
   * - message: The message to attach to the coins
@@ -251,7 +251,7 @@ router.post("/consume", async (req, res) => {
           cashUsed: remainingCoinsToConsume,
           oid,
           orderAmount,
-          consumedAt: new Date(),
+          createdAt: new Date(),
         });
 
         consumptionDetails.push({
