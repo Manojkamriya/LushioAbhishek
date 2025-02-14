@@ -42,10 +42,10 @@ router.post("/", async (req, res) => {
         {
           id: doc.id,
           type: "cash",
-          amount: data.amount,
+          amount: data.cashUsed,
           orderId: data.oid,
           orderAmount: data.orderAmount,
-          transactionDate: data.consumedAt.toDate(),
+          transactionDate: data.createdAt.toDate(),
           createdAt: data.createdAt.toDate(),
         } :
         {

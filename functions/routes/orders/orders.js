@@ -284,8 +284,18 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
           });
         } catch (couponError) {
           console.error("Error marking coupon as used:", couponError);
-          // We don't throw here as the order is already created successfully
-          // Just log the error for tracking
+        }
+      }
+      if (lushioCurrencyUsed) {
+        try {
+          await axios.post(`${API_URL}/wallet/consume`, {
+            uid,
+            coinsToConsume: lushioCurrencyUsed,
+            oid: orderRef.id,
+            orderAmount: payableAmount,
+          });
+        } catch (couponError) {
+          console.error("Error marking coupon as used:", couponError);
         }
       }
     } catch (shiprocketError) {
