@@ -16,6 +16,7 @@ router.post("/add", async (req, res) => {
 
     const productsRef = db.collection("products").doc(productId);
     const productSnapshot = await productsRef.get();
+    const userRef = db.collection("users").doc(uid);
 
     // Check if the product exists
     if (!productSnapshot.exists) {
@@ -31,13 +32,36 @@ router.post("/add", async (req, res) => {
       return res.status(400).json({message: "Product already in wishlist"});
     }
 
-    // If not in wishlist, add the item
+    // // If not in wishlist, add the item
+    // const wishlistItem = {
+    //   productId,
+    //   createdAt: new Date(),
+    // };
+
+    // const newWishlistItemRef = await wishlistRef.add(wishlistItem);
+
+    // Create a batch operation
+    const batch = db.batch();
+
+    // Create a new document reference
+    const newWishlistItemRef = wishlistRef.doc();
+
+    const timestamp = new Date();
+
+    // Add the wishlist item
     const wishlistItem = {
       productId,
-      createdAt: new Date(),
+      createdAt: timestamp,
     };
 
-    const newWishlistItemRef = await wishlistRef.add(wishlistItem);
+    // Add both operations to the batch
+    batch.set(newWishlistItemRef, wishlistItem);
+    batch.update(userRef, {
+      updatedAt: timestamp,
+    });
+
+    // Commit the batch
+    await batch.commit();
 
     res.status(201).json({id: newWishlistItemRef.id, ...wishlistItem});
   } catch (error) {
@@ -55,12 +79,18 @@ router.delete("/delete", async (req, res) => {
       return res.status(400).json({error: "Missing required fields"});
     }
 
-    await db
-        .collection("users")
-        .doc(uid)
-        .collection("wishlist")
-        .doc(itemId)
-        .delete();
+    const batch = db.batch();
+    const userRef = db.collection("users").doc(uid);
+    const wishlistItemRef = userRef.collection("wishlist").doc(itemId);
+
+    // Add both operations to the batch
+    batch.delete(wishlistItemRef);
+    batch.update(userRef, {
+      updatedAt: new Date(),
+    });
+
+    // Commit the batch
+    await batch.commit();
 
     res.status(200).json({message: "Item removed from wishlist successfully"});
   } catch (error) {

@@ -48,6 +48,7 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
   const batch = db.batch();
   const orderRef = db.collection("orders").doc();
   const userOrderRef = db.collection("users").doc(uid).collection("orders").doc(orderRef.id);
+  const userRef = db.collection("users").doc(uid);
 
   try {
     // Validate and sanitize the contact number
@@ -267,6 +268,9 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
       // Add order data to batch
       batch.set(orderRef, orderData);
       batch.set(userOrderRef, {orderId: orderRef.id, dateOfOrder});
+      batch.update(userRef, {
+        updatedAt: dateOfOrder,
+      });
 
       // Add ordered products as subcollection
       distributedProducts.forEach((product) => {

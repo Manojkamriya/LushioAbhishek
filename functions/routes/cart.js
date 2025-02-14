@@ -17,18 +17,21 @@ router.post("/add", async (req, res) => {
 
     const productsRef = db.collection("products").doc(productId);
     const productSnapshot = await productsRef.get();
+    const userRef = db.collection("users").doc(uid);
 
     // Check if the product exists
     if (!productSnapshot.exists) {
       return res.status(400).json({message: "Invalid product ID"});
     }
 
+    const batch = db.batch();
+
     // Create a new cart document if it doesn't exist
     const userCartRef = db.collection("users").doc(uid).collection("carts").doc("activeCart");
     const userCartSnapshot = await userCartRef.get();
 
     if (!userCartSnapshot.exists) {
-      await userCartRef.set({
+      batch.set(userCartRef, {
         cartCoupon: null,
         cartAddress: null,
         createdAt: FieldValue.serverTimestamp(),
@@ -52,14 +55,23 @@ router.post("/add", async (req, res) => {
       const identicalItemDoc = identicalItemSnapshot.docs[0];
       const existingQuantity = identicalItemDoc.data().quantity;
 
-      await identicalItemDoc.ref.update({
+      batch.update(identicalItemDoc.ref, {
         quantity: Number(existingQuantity) + Number(quantity),
         updatedAt: FieldValue.serverTimestamp(),
       });
+      batch.update(userCartRef, {
+        updatedAt: FieldValue.serverTimestamp(),
+      });
 
+      // Update user's updatedAt
+      batch.update(userRef, {
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+      await batch.commit();
       return res.status(200).json({message: "Quantity updated for identical item in cart"});
     } else {
       // If no identical item exists, add the new item to the cart
+      const newCartItemRef = cartItemsRef.doc();
       const cartItem = {
         productId,
         quantity,
@@ -70,7 +82,15 @@ router.post("/add", async (req, res) => {
         updatedAt: FieldValue.serverTimestamp(),
       };
 
-      const newCartItemRef = await cartItemsRef.add(cartItem);
+      batch.set(newCartItemRef, cartItem);
+      batch.update(userCartRef, {
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+      batch.update(userRef, {
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+
+      await batch.commit();
 
       res.status(201).json({id: newCartItemRef.id, ...cartItem});
     }
@@ -90,10 +110,19 @@ router.delete("/delete/:cartItemId", async (req, res) => {
       return res.status(400).json({error: "Missing required fields"});
     }
 
+    const batch = db.batch();
+    const userRef = db.collection("users").doc(uid);
     const userCartRef = db.collection("users").doc(uid).collection("carts").doc("activeCart");
     const cartItemRef = userCartRef.collection("cartItems").doc(cartItemId);
-    await cartItemRef.delete();
+    batch.delete(cartItemRef);
+    batch.update(userCartRef, {
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    batch.update(userRef, {
+      updatedAt: FieldValue.serverTimestamp(),
+    });
 
+    await batch.commit();
     res.status(200).json({message: "Item removed from cart successfully"});
   } catch (error) {
     logger.error("Error removing item from cart:", error);
@@ -345,18 +374,28 @@ router.put("/update/:cartItemId", async (req, res) => {
       return res.status(400).json({error: "Missing required fields"});
     }
 
+    const batch = db.batch();
+    const userRef = db.collection("users").doc(uid);
     const userCartRef = db.collection("users").doc(uid).collection("carts").doc("activeCart");
     const cartItemRef = userCartRef.collection("cartItems").doc(cartItemId);
 
+    if (quantity !== undefined && quantity <= 0) return res.status(400).json({error: "Invalid quantity"});
+
     const updateData = {};
-    if (quantity !== undefined) updateData.quantity = quantity;
+    if (quantity !== undefined && quantity > 0) updateData.quantity = quantity;
     if (color !== undefined) updateData.color = color;
     if (size !== undefined) updateData.size = size;
     if (height !== undefined) updateData.height = height;
     updateData.updatedAt = FieldValue.serverTimestamp();
 
-    await cartItemRef.update(updateData);
-
+    batch.update(cartItemRef, updateData);
+    batch.update(userCartRef, {
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    batch.update(userRef, {
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    await batch.commit();
     const updatedDoc = await cartItemRef.get();
 
     if (!updatedDoc.exists) {

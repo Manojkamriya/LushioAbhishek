@@ -125,7 +125,7 @@ router.post("/send", async (req, res) => {
 
   *** Route to send coins to  specific user (admin will give emails or phone numbers of users)
   * Request body should contain the following:
-  * - emails or phone number (the admin type the values of give a csv)
+  * - emails or phone number (the admin type the values of uploads a csv file)
   * - amount: The amount of coins to send
   * - days: The number of days until the coins expire
   * - message: The message to attach to the coins
@@ -144,24 +144,6 @@ router.post("/send", async (req, res) => {
   * - amount: The amount of coins to send
   * - days: The number of days until the coins expire
   * - message: The message to attach to the coins
-
-  *** Route to consume coins and cash
-  ** Logic -> the api traverses the coins sub collection in the ascending order of expiresOn (the one about to expire first is consumed first)
-              - coins are consumed in the order of expiry.
-              - as the coins are traversed, amountLeft field in the documnet must be updated accordingly in each coin document unitl,
-                - either the coins documents have ended, in this case consume the rest of the coins from the lushioCash field in the users document.
-                - else if there are more coins left then leave them as it is
-              - when checking for a consumable coins document, check for isExpired, amountLeft > 0.
-                - if amountLeft > 0, then you can consume from that.
-                - if amountLeft = 0, then move to the next document.
-                - if isExpired = true, then move to the next document.
-              - the oid and orderAmount should be updated in the coins document.
-                - remember a coins document can have multiple orders so a proper mapping should be done.
-  * Request body should contain the following:
-  * - uid: The ID of the user
-  * - coinsToConsume: The number of coins to consume
-  * - oid: The ID of the order
-  * - orderAmount: The total amount of the order
 */
 
 
