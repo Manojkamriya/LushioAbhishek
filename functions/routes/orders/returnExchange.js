@@ -21,6 +21,7 @@ router.post("/process-return-exchange", async (req, res) => {
 
     const orderRef = db.collection("orders").doc(oid);
     const orderDoc = await orderRef.get();
+    const userRef = db.collection("users").doc(uid);
 
     if (!orderDoc.exists) {
       return res.status(404).json({success: false, message: "Order not found."});
@@ -117,9 +118,9 @@ router.post("/process-return-exchange", async (req, res) => {
         isExchange: true,
         exchangeOrderId: oid,
       };
-      console.log( "CREATE ORDER INPUT - ", newOrderBody);
+      // console.log( "CREATE ORDER INPUT - ", newOrderBody);
 
-      console.log("\n\n");
+      // console.log("\n\n");
       await axios.post(`${API_URL}/orders/createOrder`, newOrderBody);
     }
 
@@ -131,6 +132,11 @@ router.post("/process-return-exchange", async (req, res) => {
         [itemData.exchange ? "exchange_reason" : "return_reason"]: itemData.reason,
         [itemData.exchange ? "exchangedOn" : "returnedOn"]: new Date(),
       });
+    });
+
+    // update user timestamp
+    await userRef.update({
+      updatedAt: new Date(),
     });
 
     await Promise.all(updatePromises);

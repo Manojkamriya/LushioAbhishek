@@ -278,6 +278,11 @@ router.post("/createOrder", validateOrderRequest, async (req, res) => {
         batch.set(productRef, product);
       });
 
+      // update user timestamp
+      batch.update(userRef, {
+        updatedAt: new Date(),
+      });
+
       // Commit batch
       await batch.commit();
       if (couponCode) {
@@ -468,6 +473,7 @@ router.post("/cancel", async (req, res) => {
   try {
     // Get the order document
     const orderDoc = await db.collection("orders").doc(oid).get();
+    const userRef = db.collection("users").doc(uid);
 
     if (!orderDoc.exists) {
       return res.status(404).json({message: "Order not found"});
@@ -545,6 +551,11 @@ router.post("/cancel", async (req, res) => {
       await db.collection("orders").doc(oid).update({
         status: "cancelled",
         cancellationDate: new Date(),
+      });
+
+      // update user timestamp
+      await userRef.update({
+        updatedAt: new Date(),
       });
 
       res.status(200).json({
