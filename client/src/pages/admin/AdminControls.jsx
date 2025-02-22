@@ -21,6 +21,10 @@ const AdminControls = () => {
     fiveYears: { coins: 0, message: '', expiry: 30 },
   });
 
+  const [referredCoins, setReferredCoins] = useState(0);
+  const [referredMessage, setReferredMessage] = useState('');
+  const [referredExpiry, setReferredExpiry] = useState(30);
+
   const docRef = doc(db, "controls", "admin");
 
   useEffect(() => {
@@ -41,6 +45,9 @@ const AdminControls = () => {
           setReviewApprovedCoins(data.reviewApprovedCoins);
           setReviewApprovedMessage(data.reviewApprovedMessage);
           setreviewApprovedExpiry(data.reviewApprovedExpiry || reviewApprovedExpiry)
+          setReferredCoins(data.referredCoins);
+          setReferredMessage(data.referredMessage);
+          setReferredExpiry(data.referredExpiry);
         } else {
           console.log("No such document!");
         }
@@ -75,7 +82,10 @@ const AdminControls = () => {
         coinSettings: ageCoins,
         reviewApprovedCoins: Number(reviewApprovedCoins), // Ensure number type
         reviewApprovedMessage,
-        reviewApprovedExpiry
+        reviewApprovedExpiry,
+        referredCoins: Number(referredCoins), // Ensure number type
+        referredMessage,
+        referredExpiry: Number(referredExpiry), // Ensure number type
       });
       alert("Data successfully updated!");
     } catch (error) {
@@ -147,7 +157,34 @@ const AdminControls = () => {
         <input
           type="number"
           value={doaExpiry}
-          onChange={(e) => setDoaExpiry(e.target.value)} // Correctly updating doaExpiry
+          onChange={(e) => setDoaExpiry(e.target.value)}
+        />
+      </div>
+
+      <div className="control-item">
+        <label>Coins for Refferal:</label>
+        <input
+          type="number"
+          value={referredCoins}
+          onChange={(e) => setReferredCoins(e.target.value)}
+        />
+      </div>
+
+      <div className="control-item">
+        <label>Message for Refferal:</label>
+        <input
+          type="text"
+          value={referredMessage}
+          onChange={(e) => setReferredMessage(e.target.value)}
+        />
+      </div>
+
+      <div className="control-item">
+        <label>Expiry for Refferal Coins:</label>
+        <input
+          type="number"
+          value={referredExpiry}
+          onChange={(e) => setReferredExpiry(e.target.value)}
         />
       </div>
 
@@ -174,7 +211,7 @@ const AdminControls = () => {
         <input
           type="number"
           value={reviewApprovedExpiry}
-          onChange={(e) => setreviewApprovedExpiry(e.target.value)} // Correctly updating reviewApprovedExpiry
+          onChange={(e) => setreviewApprovedExpiry(e.target.value)}
         />
       </div>
 

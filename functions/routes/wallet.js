@@ -1,10 +1,21 @@
+/* eslint-disable require-jsdoc */
 /* eslint-disable new-cap */
 /* eslint-disable max-len */
 const express = require("express");
 const {getFirestore} = require("firebase-admin/firestore");
 const db = getFirestore();
+const multer = require("multer");
+const csv = require("csv-parse");
 const router = express.Router();
 const logger = require("firebase-functions/logger");
+
+// Configure multer for file upload
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 1024 * 1024 * 5, // Limit file size to 5MB
+  },
+});
 
 // Route to get the total coins and cash for a user
 router.get("/:id", async (req, res) => {
@@ -118,35 +129,6 @@ router.post("/send", async (req, res) => {
   }
 });
 
-/*
-  ***********
-  ** TODOS **
-  ***********
-
-  *** Route to send coins to  specific user (admin will give emails or phone numbers of users)
-  * Request body should contain the following:
-  * - emails or phone number (the admin type the values of uploads a csv file)
-  * - amount: The amount of coins to send
-  * - days: The number of days until the coins expire
-  * - message: The message to attach to the coins
-
-  *** Route to send coins to active users
-  * need to think how to do this
-
-  *** Route to send coins to users who ordered between a specific date range
-  ** Logic - get all the orders between the date range and get the users from the orders and send coins to them.
-              (order should not be a cancelled order and return period should have ended.)
-              cancellationDate should not exist or be null
-              returnExchangeExpiresOn -> How is this field comming since we dont get a realtime update of delivery from shiprocket.
-  * Request body should contain the following:
-  * - startDate: The start date of the range
-  * - endDate: The end date of the range
-  * - amount: The amount of coins to send
-  * - days: The number of days until the coins expire
-  * - message: The message to attach to the coins
-*/
-
-
 // Route to consume coins and cash
 router.post("/consume", async (req, res) => {
   try {
@@ -259,4 +241,201 @@ router.post("/consume", async (req, res) => {
   }
 });
 
+// Process CSV or direct input into arrays of emails and phones
+async function extractContactInfo(recipients, fileBuffer) {
+  const contacts = [];
+
+  if (fileBuffer) {
+    return new Promise((resolve, reject) => {
+      csv.parse(fileBuffer.toString(), {
+        columns: true,
+        skip_empty_lines: true,
+      })
+          .on("data", (data) => {
+          // Each email/phone is a separate potential user
+            if (data.email) contacts.push(data.email.toLowerCase().trim());
+            if (data.phone) contacts.push(data.phone.trim());
+          })
+          .on("end", () => resolve(contacts))
+          .on("error", reject);
+    });
+  }
+
+  if (Array.isArray(recipients)) {
+    recipients.forEach((recipient) => {
+      if (recipient.email) contacts.push(recipient.email.toLowerCase().trim());
+      if (recipient.phone) contacts.push(recipient.phone.trim());
+    });
+  }
+
+  return contacts;
+}
+
+// Route to send coins to specific users
+router.post("/send-specific", upload.single("recipientsFile"), async (req, res) => {
+  try {
+    const {recipients, amount, days, message} = req.body;
+    const fileBuffer = req.file?.buffer;
+
+    if ((!recipients && !req.file) || !amount || !days || !message) {
+      return res.status(400).json({error: "Missing required parameters"});
+    }
+
+    // Get all contact information
+    const contacts = await extractContactInfo(
+      recipients ? JSON.parse(recipients) : null,
+      fileBuffer,
+    );
+
+    if (contacts.length === 0) {
+      return res.status(400).json({error: "No valid contacts provided"});
+    }
+
+    // Find users matching any of the contacts
+    const uniqueUsers = new Map();
+
+    // Search for each contact as either email or phone
+    const emailQuery = db.collection("users").where("email", "in", contacts);
+    const phoneQuery = db.collection("users").where("phoneNumber", "in", contacts);
+
+    const [emailUsers, phoneUsers] = await Promise.all([
+      emailQuery.get(),
+      phoneQuery.get(),
+    ]);
+
+    // Combine results, preventing duplicates
+    [...emailUsers.docs, ...phoneUsers.docs].forEach((doc) => {
+      if (!uniqueUsers.has(doc.id)) {
+        uniqueUsers.set(doc.id, doc);
+      }
+    });
+
+    // Prepare batch write
+    const batch = db.batch();
+    const expirationDate = new Date();
+    expirationDate.setDate(expirationDate.getDate() + Number(days));
+
+    // Add coins to each unique user
+    uniqueUsers.forEach((userDoc) => {
+      const newCoinRef = db.collection("users")
+          .doc(userDoc.id)
+          .collection("coins")
+          .doc();
+
+      batch.set(newCoinRef, {
+        amount: Number(amount),
+        amountLeft: Number(amount),
+        message,
+        expiresOn: expirationDate,
+        createdAt: new Date(),
+        isExpired: false,
+      });
+    });
+
+    await batch.commit();
+
+    res.status(200).json({
+      success: true,
+      totalContactsProvided: contacts.length,
+      uniqueUsersFound: uniqueUsers.size,
+    });
+  } catch (error) {
+    logger.error("Error in /send-specific route:", error);
+    res.status(500).json({error: "Internal server error"});
+  }
+});
+
+// Route to send coins to active users within a date range
+router.post("/send-to-active", async (req, res) => {
+  const {startDate, lastDate, amount, days, message} = req.body;
+
+  if (!startDate || !lastDate || !amount || !days || !message) {
+    return res.status(400).json({
+      error: "Missing required parameters",
+      received: {startDate, lastDate, amount, days, message},
+    });
+  }
+
+  // Convert and validate dates
+  const start = new Date(startDate);
+  const end = new Date(lastDate);
+  const numericAmount = Number(amount);
+  const numericDays = Number(days);
+
+  if (isNaN(start.getTime()) || isNaN(end.getTime()) || isNaN(numericAmount) || isNaN(numericDays)) {
+    return res.status(400).json({
+      error: "Invalid parameters",
+      details: "Dates must be valid, and amount/days must be numbers",
+    });
+  }
+
+  try {
+    // Fetch users with updatedAt within the given range
+    logger.log("Fetching active users...");
+    const usersSnapshot = await db.collection("users")
+        .where("updatedAt", ">=", start)
+        .where("updatedAt", "<=", end)
+        .get();
+
+    if (usersSnapshot.empty) {
+      logger.log("No active users found in the given period");
+      return res.status(404).json({error: "No active users found in the given period"});
+    }
+
+    logger.log(`Found ${usersSnapshot.size} active users`);
+
+    const batch = db.batch();
+    const expirationDate = new Date();
+    expirationDate.setDate(expirationDate.getDate() + numericDays);
+
+    usersSnapshot.forEach((userDoc) => {
+      const userId = userDoc.id;
+      const newCoinRef = db.collection("users").doc(userId).collection("coins").doc();
+
+      batch.set(newCoinRef, {
+        amount: numericAmount,
+        amountLeft: numericAmount,
+        message: message,
+        expiresOn: expirationDate,
+        createdAt: new Date(),
+        isExpired: false,
+      });
+    });
+
+    logger.log("Committing batch write...");
+    await batch.commit();
+    logger.log("Batch write successful");
+
+    res.status(200).json({
+      message: `Successfully sent ${numericAmount} coins to ${usersSnapshot.size} active users`,
+      usersAffected: usersSnapshot.size,
+    });
+  } catch (error) {
+    logger.error("Error in /send-to-active route:", error);
+    res.status(500).json({
+      error: "Internal server error",
+      details: error.message,
+      code: error.code,
+    });
+  }
+});
+
 module.exports = router;
+/*
+  ***********
+  ** TODOS **
+  ***********
+  *** Route to send coins to users who ordered between a specific date range
+  ** Logic - get all the orders between the date range and get the users from the orders and send coins to them.
+              (order should not be a cancelled order and return period should have ended.)
+              cancellationDate should not exist or be null
+              returnExchangeExpiresOn -> How is this field comming since we dont get a realtime update of delivery from shiprocket.
+  * Request body should contain the following:
+  * - startDate: The start date of the range
+  * - endDate: The end date of the range
+  * - amount: The amount of coins to send
+  * - days: The number of days until the coins expire
+  * - message: The message to attach to the coins
+*/
+
+

@@ -25,7 +25,7 @@ const signInWithFacebook = async (referralCode) => {
         email: user.email,
         displayName: user.displayName,
         photoURL: user.photoURL,
-        referralCode: finalReferralCode, // Pass referralCode or empty string
+        referredBy: finalReferralCode, // Pass referralCode or empty string
         createdAt: new Date(),
         lastSignInTime: new Date()  // Set lastSignInTime for new user
       });

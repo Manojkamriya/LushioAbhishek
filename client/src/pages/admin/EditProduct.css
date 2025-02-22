@@ -138,3 +138,33 @@ margin-top: 20px;
     font-size: 1.2rem; /* Size of the icon */
   }
   
+  .EditProduct-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .EditProduct-limitSelect {
+    padding: 0.5rem;
+    border-radius: 4px;
+  }
+  
+  .EditProduct-loading {
+    text-align: center;
+    padding: 1rem;
+  }
+  
+  .EditProduct-loadMore {
+    display: block;
+    margin: 1rem auto;
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .EditProduct-loadMore:hover {
+    background-color: #0056b3;
+  }

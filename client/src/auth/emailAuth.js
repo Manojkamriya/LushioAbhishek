@@ -33,7 +33,7 @@ const handleEmailSignUp = async (email, password, referralCode) => {
     await setDoc(doc(db, "users", user.uid), {
       email: user.email,
       createdAt: new Date(),
-      referralCode: finalReferralCode,
+      referredBy: finalReferralCode,
       lastSignInTime: null,
     });
 

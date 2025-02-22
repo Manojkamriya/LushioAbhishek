@@ -27,7 +27,7 @@ const signInWithGoogle = async (referralCode) => {
         displayName: user.displayName,
         photoURL: user.photoURL,
         createdAt: new Date(),
-        referralCode: finalReferralCode, // Pass referralCode or empty string
+        referredBy: finalReferralCode, // Pass referralCode or empty string
         lastSignInTime: new Date(user.metadata.lastSignInTime)
       });
     } else {

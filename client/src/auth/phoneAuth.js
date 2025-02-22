@@ -51,7 +51,7 @@ const verifyOtp = async (confirmationResult, otp, formattedPhoneNumber, referral
       // Save new user data in Firestore
       await setDoc(userDoc, {
         phoneNumber: formattedPhoneNumber,
-        referralCode: referralCode || "", // Pass empty string if referralCode is undefined
+        referredBy: referralCode || "", // Pass empty string if referralCode is undefined
         createdAt: new Date(),
         lastSignInTime: new Date(),
       });

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import signInWithGoogle from "../../auth/googleAuth";
@@ -9,6 +9,7 @@ import { sendOtp, verifyOtp } from "../../auth/phoneAuth";
 import "./auth.css";
 
 const Register = () => {
+  const [searchParams] = useSearchParams();
   const [identifier, setIdentifier] = useState(""); // Can be either email or phone number
   const [phone, setPhone] = useState("");
   const [showPwdField,setShowPwdField] = useState(false);
@@ -29,6 +30,13 @@ const Register = () => {
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked);
   };
+
+  useEffect(() => {
+    const referredBy = searchParams.get("referredBy");
+    if (referredBy) {
+      setReferralCode(referredBy);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

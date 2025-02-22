@@ -88,6 +88,7 @@ exports.api = onRequest(app);
 
 // Import and export cloud functions
 exports.generateReferralCode = require("./cloudFunctions/generateReferralCode.js");
+exports.coinsToReferred = require("./cloudFunctions/coinsToReferred.js");
 
 // Import and export cron jobs
 exports.assignBirthdayCoins = require("./cronjobs/birthdayAnniversaryCoins.js").assignBirthdayCoins;
