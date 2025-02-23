@@ -376,8 +376,11 @@ router.post("/approve/:reviewId", async (req, res) => {
       const coinsCollectionRef = db.collection(`users/${userId}/coins`);
       await coinsCollectionRef.add({
         amount: Number(reviewApprovedCoins),
-        expiry: expiryDate,
+        amountLeft: Number(reviewApprovedCoins),
         message: reviewApprovedMessage,
+        expiresOn: expiryDate,
+        createdAt: new Date(),
+        isExpired: false,
       });
 
       // Update the review document with the approved value from the frontend
