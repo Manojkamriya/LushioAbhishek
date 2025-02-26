@@ -59,6 +59,8 @@ const searchRoute = require("./routes/search.js");
 const exchangeRoute = require("./routes/orders/exchange.js");
 const transactionsRoute = require("./routes/transactions.js");
 const returnExchangeRoute = require("./routes/orders/returnExchange.js");
+const bannerRoute = require("./routes/banners.js");
+
 // Use routes
 app.use("/user", userRoutes);
 app.use("/products", productsRoute);
@@ -82,6 +84,7 @@ app.use("/search", searchRoute);
 app.use("/exchange", exchangeRoute);
 app.use("/transactions", transactionsRoute);
 app.use("/returnExchange", returnExchangeRoute);
+app.use("/banners", bannerRoute);
 
 // Export API
 exports.api = onRequest(app);

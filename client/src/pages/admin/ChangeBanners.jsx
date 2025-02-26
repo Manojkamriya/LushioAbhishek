@@ -5,6 +5,9 @@ import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage
 import { v4 as uuidv4 } from 'uuid';
 import './ChangeBanners.css';
 
+// API
+const API = process.env.REACT_APP_API_URL;
+
 const ChangeBanners = () => {
   // State variables
   const [carouselBanners, setCarouselBanners] = useState([]);
@@ -14,7 +17,7 @@ const ChangeBanners = () => {
     accessories: ''
   });
   const [highlightPosters, setHighlightPosters] = useState({
-    card1: { image: '', heading: '', category: '' },
+    card1: { image: '', heading: '', category: ['', ''] },
     card2: { image: '' },
     card3: { image: '' }
   });
@@ -22,7 +25,8 @@ const ChangeBanners = () => {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [categories, setCategories] = useState({ men: [], women: [], accessories: [] });
-  const [selectedCategory, setSelectedCategory] = useState('men');
+  const [selectedMainCategory, setSelectedMainCategory] = useState('men');
+  const [selectedSubCategory, setSelectedSubCategory] = useState('');
   const [heading, setHeading] = useState('');
 
   // Fetch data from Firestore and API on component mount
@@ -37,13 +41,32 @@ const ChangeBanners = () => {
           const data = adminDocSnap.data();
           if (data.carouselBanners) setCarouselBanners(data.carouselBanners);
           if (data.navbarPosters) setNavbarPosters(data.navbarPosters);
-          if (data.highlightPosters) setHighlightPosters(data.highlightPosters);
+          if (data.highlightPosters) {
+            setHighlightPosters(data.highlightPosters);
+            // Initialize category state if it exists
+            if (data.highlightPosters.card1 && 
+                data.highlightPosters.card1.category && 
+                Array.isArray(data.highlightPosters.card1.category) && 
+                data.highlightPosters.card1.category.length === 2) {
+              setSelectedMainCategory(data.highlightPosters.card1.category[0]);
+              setSelectedSubCategory(data.highlightPosters.card1.category[1]);
+            }
+            // Initialize heading if it exists
+            if (data.highlightPosters.card1 && data.highlightPosters.card1.heading) {
+              setHeading(data.highlightPosters.card1.heading);
+            }
+          }
         }
 
         // Fetch categories from API
-        const response = await fetch('http://127.0.0.1:5001/lushio-fitness/us-central1/api/subCategories');
+        const response = await fetch(`${API}/subCategories`);
         const categoriesData = await response.json();
         setCategories(categoriesData);
+        
+        // Initialize the first subcategory if available
+        if (categoriesData.men && categoriesData.men.length > 0) {
+          setSelectedSubCategory(categoriesData.men[0]);
+        }
         
         setLoading(false);
       } catch (error) {
@@ -218,7 +241,7 @@ const ChangeBanners = () => {
 
   // Handle highlight card 1 details update
   const handleHighlightCard1Update = async () => {
-    if (!heading || !selectedCategory) return;
+    if (!heading || !selectedMainCategory || !selectedSubCategory) return;
 
     try {
       const updatedPosters = {
@@ -226,7 +249,7 @@ const ChangeBanners = () => {
         card1: {
           ...highlightPosters.card1,
           heading: heading,
-          category: selectedCategory
+          category: [selectedMainCategory, selectedSubCategory]
         }
       };
       
@@ -234,6 +257,19 @@ const ChangeBanners = () => {
       await updateFirestore({ highlightPosters: updatedPosters });
     } catch (error) {
       console.error("Error updating highlight card details:", error);
+    }
+  };
+
+  // Handle main category change
+  const handleMainCategoryChange = (e) => {
+    const mainCategory = e.target.value;
+    setSelectedMainCategory(mainCategory);
+    
+    // Reset subcategory to first one in the new main category
+    if (categories[mainCategory] && categories[mainCategory].length > 0) {
+      setSelectedSubCategory(categories[mainCategory][0]);
+    } else {
+      setSelectedSubCategory('');
     }
   };
 
@@ -409,31 +445,33 @@ const ChangeBanners = () => {
               <input
                 type="text"
                 placeholder="Enter heading"
-                value={heading || highlightPosters.card1.heading || ''}
+                value={heading}
                 onChange={(e) => setHeading(e.target.value)}
                 className="ChangeBanners-input"
               />
               
+              {/* Main Category Dropdown */}
               <select
-                value={selectedCategory || highlightPosters.card1.category || 'men'}
-                onChange={(e) => setSelectedCategory(e.target.value)}
+                value={selectedMainCategory}
+                onChange={handleMainCategoryChange}
                 className="ChangeBanners-select"
               >
-                <optgroup label="Men">
-                  {categories.men.map(category => (
-                    <option key={`men-${category}`} value={`men/${category}`}>Men - {category}</option>
-                  ))}
-                </optgroup>
-                <optgroup label="Women">
-                  {categories.women.map(category => (
-                    <option key={`women-${category}`} value={`women/${category}`}>Women - {category}</option>
-                  ))}
-                </optgroup>
-                <optgroup label="Accessories">
-                  {categories.accessories.map(category => (
-                    <option key={`accessories-${category}`} value={`accessories/${category}`}>Accessories - {category}</option>
-                  ))}
-                </optgroup>
+                <option value="men">Men</option>
+                <option value="women">Women</option>
+                <option value="accessories">Accessories</option>
+              </select>
+              
+              {/* Sub-Category Dropdown */}
+              <select
+                value={selectedSubCategory}
+                onChange={(e) => setSelectedSubCategory(e.target.value)}
+                className="ChangeBanners-select"
+              >
+                {categories[selectedMainCategory]?.map(category => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
               </select>
               
               <button 
@@ -443,6 +481,19 @@ const ChangeBanners = () => {
                 Update Details
               </button>
             </div>
+            
+            {/* Current Category Display */}
+            {highlightPosters.card1.category && 
+              Array.isArray(highlightPosters.card1.category) && 
+              highlightPosters.card1.category.length === 2 && (
+              <div className="ChangeBanners-current-category">
+                Current Category: 
+                <span className="ChangeBanners-category-value">
+                  {highlightPosters.card1.category[0]} / {highlightPosters.card1.category[1]}
+                </span>
+              </div>
+            )}
+            
             {highlightPosters.card1.image ? (
               <div className="ChangeBanners-image-container">
                 <img src={highlightPosters.card1.image} alt="Highlight card 1" />
