@@ -349,7 +349,7 @@ router.get("/topRated", async (req, res) => {
 // GET /topDiscounts
 router.get("/topDiscounts", async (req, res) => {
   try {
-    let {lastDocId, limit = 20} = req.query;
+    let {lastDocId, limit = 10} = req.query;
     limit = parseInt(limit, 10);
     const productsRef = db.collection("products");
 
