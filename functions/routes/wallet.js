@@ -261,10 +261,26 @@ async function extractContactInfo(recipients, fileBuffer) {
     });
   }
 
+  // if (Array.isArray(recipients)) {
+  //   recipients.forEach((recipient) => {
+  //     if (recipient.email) contacts.push(recipient.email.toLowerCase().trim());
+  //     if (recipient.phone) contacts.push(recipient.phone.trim());
+  //   });
+  // }
   if (Array.isArray(recipients)) {
     recipients.forEach((recipient) => {
-      if (recipient.email) contacts.push(recipient.email.toLowerCase().trim());
-      if (recipient.phone) contacts.push(recipient.phone.trim());
+      if (typeof recipient === "string") {
+        // Handle string recipient
+        if (recipient.includes("@")) {
+          contacts.push(recipient.toLowerCase().trim());
+        } else {
+          contacts.push(recipient.trim());
+        }
+      } else if (recipient && typeof recipient === "object") {
+        // Handle object recipient
+        if (recipient.email) contacts.push(recipient.email.toLowerCase().trim());
+        if (recipient.phone) contacts.push(recipient.phone.trim());
+      }
     });
   }
 
@@ -275,6 +291,7 @@ async function extractContactInfo(recipients, fileBuffer) {
 router.post("/send-specific", upload.single("recipientsFile"), async (req, res) => {
   try {
     const {recipients, amount, days, message} = req.body;
+    console.log(req.body);
     const fileBuffer = req.file?.buffer;
 
     if ((!recipients && !req.file) || !amount || !days || !message) {
@@ -283,8 +300,9 @@ router.post("/send-specific", upload.single("recipientsFile"), async (req, res) 
 
     // Get all contact information
     const contacts = await extractContactInfo(
-      recipients ? JSON.parse(recipients) : null,
-      fileBuffer,
+        // recipients ? JSON.parse(recipients) : null,
+        recipients || null,
+        fileBuffer,
     );
 
     if (contacts.length === 0) {
