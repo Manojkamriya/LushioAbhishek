@@ -170,3 +170,14 @@
   font-weight: 500;
   color: #374151;
 }
+
+.om-exchange-badge {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 8px;
+  background-color: #ff9800;
+  color: white;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
