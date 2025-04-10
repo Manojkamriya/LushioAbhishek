@@ -34,13 +34,13 @@ const SendTokens = () => {
     try {
       let endpoint = '';
       let data = {};
-      let config = {
+      const config = {
         headers: {
           'Content-Type': 'application/json'
         }
       };
       
-      // Common fields for all methods (except file upload case)
+      // Common fields for all methods
       data.amount = amount;
       data.days = days;
       data.message = message;
@@ -49,20 +49,20 @@ const SendTokens = () => {
       switch(method) {
         case 'specific':
           endpoint = `${API}/wallet/send-specific`;
-          
           if (uploadedFile) {
-            // For file uploads, use FormData properly
+            // For file uploads, we need to use FormData
             const formData = new FormData();
             formData.append('recipientsFile', uploadedFile);
             formData.append('amount', amount);
             formData.append('days', days);
             formData.append('message', message);
             
-            // Make the request with FormData directly
-            const response = await axios.post(endpoint, formData, {
-              headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            config.headers = {
+              'Content-Type': 'multipart/form-data'
+            };
             
+            // Make the request with FormData
+            const response = await axios.post(endpoint, formData, config);
             setResponse({
               success: true,
               data: response.data
@@ -153,7 +153,7 @@ const SendTokens = () => {
           <div className="SendTokens-section">
             <h3>Specific Users</h3>
             <div className="SendTokens-option">
-              <label>Upload CSV</label>
+              <label>Upload CSV <span style={{color:"red"}}>COMMING SOON</span></label>
               <input 
                 type="file" 
                 accept=".csv" 

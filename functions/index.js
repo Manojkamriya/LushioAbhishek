@@ -86,6 +86,10 @@ app.use("/transactions", transactionsRoute);
 app.use("/returnExchange", returnExchangeRoute);
 app.use("/banners", bannerRoute);
 
+// Import and use webhooks
+const webhook = require("./webhooks/shiprocket.js");
+app.use("/webhook", webhook);
+
 // Export API
 exports.api = onRequest(app);
 

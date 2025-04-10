@@ -1,4 +1,6 @@
 /* eslint-disable require-jsdoc */
+
+// function to map status code to shiprocket description
 function getStatusDescription(statusCode) {
   const statusMap = {
     0: "New",
@@ -65,5 +67,61 @@ function getStatusDescription(statusCode) {
   return statusMap[statusCode] || "Unknown Status Code";
 }
 
-module.exports = getStatusDescription;
+// function to map shiprocket status id to application status
+function getOrderStatus(statusId) {
+  const shipmentStatusId = Number(statusId);
+  const statusGroups = {
+
+    // created
+    created: [0],
+
+    // Initial states before processing begins
+    pending: [11],
+
+    // Order is being prepared, packed, or in initial logistics steps
+    processing: [
+      1, 2, 3, 4, 5, 15, 19, 27, 42, 48, 49, 52, 55, 56, 57,
+      59, 60, 61, 62, 63, 67, 68,
+    ],
+
+    // Order is in transit or out for delivery
+    shipped: [6, 18, 38, 50, 51, 54],
+
+    // Out for delivery
+    OutForDelivery: [17],
+
+    // Order successfully delivered or fulfilled
+    delivered: [7, 26, 43],
+
+    // Order has been cancelled
+    cancelled: [8, 16, 45],
+
+    // Order is in return process
+    ReturnOrExchanged: [9, 10, 14, 40, 41, 46, 75, 78],
+
+    // Issues with delivery, damage, or other problems
+    IssueOccured: [12, 13, 20, 21, 24, 25, 44, 71, 72, 76, 77],
+
+    // Quality Check failed in return
+    qcFailed: [47],
+
+    // Order is experiencing delays
+    delayed: [22, 39],
+
+    // Only part of the order was delivered
+    partially_delivered: [23],
+  };
+
+  // Find which application status contains this Shiprocket status code
+  for (const [status, codes] of Object.entries(statusGroups)) {
+    if (codes.includes(shipmentStatusId)) {
+      return status;
+    }
+  }
+
+  // Default status if not found
+  return "PROCESSING";
+}
+
+module.exports = {getStatusDescription, getOrderStatus};
 
