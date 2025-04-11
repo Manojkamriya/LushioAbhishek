@@ -438,6 +438,132 @@ router.post("/send-to-active", async (req, res) => {
   }
 });
 
+// Route to send coins to users who ordered between a specific date range
+router.post("/send-to-orders", async (req, res) => {
+  const {startDate, lastDate, amount, days, message} = req.body;
+
+  if (!startDate || !lastDate || !amount || !days || !message) {
+    return res.status(400).json({
+      error: "Missing required parameters",
+      received: {startDate, lastDate, amount, days, message},
+    });
+  }
+
+  // Convert and validate dates
+  const start = new Date(startDate);
+  const end = new Date(lastDate);
+  const numericAmount = Number(amount);
+  const numericDays = Number(days);
+  const now = new Date();
+
+  if (isNaN(start.getTime()) || isNaN(end.getTime()) || isNaN(numericAmount) || isNaN(numericDays)) {
+    return res.status(400).json({
+      error: "Invalid parameters",
+      details: "Dates must be valid, and amount/days must be numbers",
+    });
+  }
+
+  try {
+    // Fetch orders within the date range that are not cancelled and have passed return period
+    logger.log("Fetching eligible orders...");
+    const ordersSnapshot = await db.collection("orders")
+        .where("dateOfOrder", ">=", start)
+        .where("dateOfOrder", "<=", end)
+        .get();
+
+    if (ordersSnapshot.empty) {
+      logger.log("No orders found in the given period");
+      return res.status(404).json({error: "No orders found in the given period"});
+    }
+
+    logger.log(`Found ${ordersSnapshot.size} orders in the date range`);
+
+    // Filter orders to get only eligible ones and extract unique user IDs
+    const uniqueUserIds = new Set();
+
+    ordersSnapshot.forEach((orderDoc) => {
+      const order = orderDoc.data();
+      const notCancelled = !order.cancelledOn;
+      const hasReturnDate = !!order.returnExchangeExpiresOn;
+      const returnExpired = hasReturnDate && order.returnExchangeExpiresOn.toDate() < now;
+      const hasUid = !!order.uid;
+
+      // Log the conditions for debugging
+      // console.log("Processing order:", orderDoc.id);
+      // console.log({
+      //   orderId: orderDoc.id,
+      //   uid: order.uid,
+      //   notCancelled,
+      //   hasReturnDate,
+      //   returnExpired,
+      //   hasUid,
+      //   returnExpiresOn: order.returnExchangeExpiresOn,
+      //   currentDate: now.toISOString(),
+      // });
+
+      // Check if order is not cancelled and return period has expired
+      if (notCancelled && hasReturnDate && returnExpired && hasUid) {
+        console.log(`Adding user ${order.uid} to set`);
+        uniqueUserIds.add(order.uid);
+      }
+    });
+
+    console.log(uniqueUserIds);
+
+    if (uniqueUserIds.size === 0) {
+      logger.log("No eligible users found after filtering");
+      return res.status(404).json({
+        error: "No eligible users found with completed orders past return period",
+      });
+    }
+
+    logger.log(`Found ${uniqueUserIds.size} unique eligible users`);
+
+    // Prepare batch write
+    const batch = db.batch();
+    const expirationDate = new Date();
+    expirationDate.setDate(expirationDate.getDate() + numericDays);
+
+    // Add coins to each eligible user
+    for (const userId of uniqueUserIds) {
+      // Verify the user exists
+      const userDoc = await db.collection("users").doc(userId).get();
+
+      if (!userDoc.exists) {
+        logger.log(`User ${userId} not found, skipping`);
+        continue;
+      }
+
+      const newCoinRef = db.collection("users").doc(userId).collection("coins").doc();
+
+      batch.set(newCoinRef, {
+        amount: numericAmount,
+        amountLeft: numericAmount,
+        message: message,
+        expiresOn: expirationDate,
+        createdAt: new Date(),
+        isExpired: false,
+      });
+    }
+
+    logger.log("Committing batch write...");
+    await batch.commit();
+    logger.log("Batch write successful");
+
+    res.status(200).json({
+      message: `Successfully sent ${numericAmount} coins to ${uniqueUserIds.size} users with eligible orders`,
+      usersAffected: uniqueUserIds.size,
+    });
+  } catch (error) {
+    logger.error("Error in /send-to-orders route:", error);
+    res.status(500).json({
+      error: "Internal server error",
+      details: error.message,
+      code: error.code,
+    });
+  }
+});
+
 module.exports = router;
 /*
   ***********

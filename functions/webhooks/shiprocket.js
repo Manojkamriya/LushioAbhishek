@@ -72,6 +72,35 @@ router.post("/orderStatus", verifyToken, async (req, res) => {
       status,
     };
 
+    if (shipment_status_id === 7) {
+      // Parse the timestamp string into a JavaScript Date object
+      const dateParts = current_timestamp.split(" "); // ["23", "05", "2023", "11:43:52"]
+      const [day, month, year, time] = dateParts;
+      const timeParts = time.split(":"); // ["11", "43", "52"]
+      const [hours, minutes, seconds] = timeParts;
+
+      // JavaScript months are 0-indexed (0-11)
+      const deliveredDate = new Date(year, month - 1, day, hours, minutes, seconds);
+      updateData["deliveredOn"] = deliveredDate;
+
+      // Get returnExchangeDays from admin controls collection
+      try {
+        const adminDoc = await db.collection("controls").doc("admin").get();
+        if (adminDoc.exists) {
+          const returnExchangeDays = adminDoc.data().returnExchangeDays || 7; // Default to 7 days if not specified
+
+          // Calculate the expiration date by adding days to deliveredDate
+          const expirationDate = new Date(deliveredDate);
+          expirationDate.setDate(expirationDate.getDate() + returnExchangeDays);
+
+          // Add the expiration date to updateData
+          updateData["returnExchangeExpiresOn"] = expirationDate;
+        }
+      } catch (error) {
+        console.error("Error getting admin document:", error);
+      }
+    }
+
     // If this is the first tracking update, store all scans
     if (scans && scans.length > 0) {
       updateData["shiprocket.scans"] = scans;
