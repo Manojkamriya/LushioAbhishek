@@ -11,7 +11,8 @@ const ReviewReviews = () => {
     const fetchReviews = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/reviews`);
-        setReviews(response.data);
+        setReviews(response.data.reviews);
+       console.log(response.data);
       } catch (error) {
         console.error("Error fetching reviews:", error);
       }
@@ -27,6 +28,7 @@ const ReviewReviews = () => {
       try {
         await axios.delete(`${process.env.REACT_APP_API_URL}/reviews/delete/${id}`); // Update with your actual delete endpoint
         setReviews((prev) => prev.filter((review) => review.id !== id));
+        setSelectedReview(null); 
       } catch (error) {
         console.error("Error deleting review:", error);
       }
