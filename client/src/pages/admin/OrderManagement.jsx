@@ -194,6 +194,9 @@ const OrderManagement = () => {
                   <div className="om-order-id">
                     <strong>Order ID</strong>: {order.oid}<br/>
                     <strong>Status</strong>: {order.status}
+                    {order.isExchange && (
+                      <span className="om-exchange-badge">Exchange</span>
+                    )}
                   </div>
                   <div className="om-order-actions">
                     {/* <button

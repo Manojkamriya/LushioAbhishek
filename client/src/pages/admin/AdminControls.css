@@ -1,58 +1,134 @@
 .admin-controls {
-    margin: 20px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    width: 80%; /* Adjust width as needed */
-    max-width: 600px; /* Limit the max width */
-    background-color: #f9f9f9;
-    overflow-y: auto;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 800px;
+  background-color: #f8f9fa;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.admin-controls-title {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #2c3e50;
+  font-size: 28px;
+}
+
+.admin-controls-subtitle {
+  margin: 10px 0;
+  color: #34495e;
+  font-size: 18px;
+}
+
+.admin-controls-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.admin-controls-card-header {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 12px;
+  margin-bottom: 15px;
+}
+
+.admin-controls-card-header-title {
+  margin: 0;
+  color: #3498db;
+  font-size: 18px;
+}
+
+.admin-controls-item {
+  margin-bottom: 15px;
+}
+
+.admin-controls-label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #555;
+  font-size: 14px;
+}
+
+.admin-controls-input-text,
+.admin-controls-input-number {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  transition: border-color 0.2s;
+  font-size: 15px;
+}
+
+.admin-controls-input-text:focus,
+.admin-controls-input-number:focus {
+  border-color: #3498db;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.admin-controls-input-number, .admin-controls-input-text {
+  width: 93%;
+}
+
+.admin-controls-input-checkbox {
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+}
+
+.admin-controls-checkbox-container {
+  display: flex;
+  align-items: center;
+}
+
+.admin-controls-milestone {
+  background-color: #f1f8fc;
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.admin-controls-milestone-title {
+  margin-top: 0;
+  color: #2980b9;
+  font-size: 16px;
+}
+
+.admin-controls-update-btn {
+  background-color: #3498db;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background-color 0.2s;
+  margin-top: 10px;
+}
+
+.admin-controls-update-btn:hover {
+  background-color: #2980b9;
+}
+
+.admin-controls-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .admin-controls-grid {
+    grid-template-columns: 1fr;
   }
   
-  .admin-controls h2 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .control-item {
-    margin-bottom: 15px;
-  }
-  
-  .control-item label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-  
-  .control-item input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  }
-  
-  .update-btn {
-    background-color: #28a745;
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 100%;
-  }
-  
-  .update-btn:hover {
-    background-color: #218838;
-  }
-  
-  /* Adding some padding to the bottom to prevent overlap with the footer */
   .admin-controls {
-    padding-bottom: 50px;
+    width: 95%;
+    padding: 15px;
   }
-  
-  /* Ensuring the page layout respects the footer */
-  
-  main {
-    flex-grow: 1;
-  }
-  
+}

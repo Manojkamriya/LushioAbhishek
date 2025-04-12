@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from '../../firebaseConfig'; // Import Firestore instance
-import './AdminControls.css'; // Import the CSS file
+import { db } from '../../firebaseConfig';
+import './AdminControls.css';
 
 const AdminControls = () => {
   const [engine, setEngine] = useState(false);
@@ -21,14 +21,27 @@ const AdminControls = () => {
     fiveYears: { coins: 0, message: '', expiry: 30 },
   });
 
+  // Define the milestone order to ensure consistent display
+  const milestoneOrder = ['oneMonth', 'oneYear', 'twoYears', 'fiveYears'];
+
+  // Pretty names for milestones
+  const milestonePrettyNames = {
+    oneMonth: 'One Month',
+    oneYear: 'One Year',
+    twoYears: 'Two Years',
+    fiveYears: 'Five Years'
+  };
+
   const [referredCoins, setReferredCoins] = useState(0);
   const [referredMessage, setReferredMessage] = useState('');
   const [referredExpiry, setReferredExpiry] = useState(30);
+  const [referrerCoins, setReferrerCoins] = useState(0);
+  const [referrerMessage, setReferrerMessage] = useState('');
+  const [referrerExpiry, setReferrerExpiry] = useState(30);
 
   const docRef = doc(db, "controls", "admin");
 
   useEffect(() => {
-    // Fetching initial data from Firestore
     const fetchData = async () => {
       try {
         const docSnap = await getDoc(docRef);
@@ -48,6 +61,9 @@ const AdminControls = () => {
           setReferredCoins(data.referredCoins);
           setReferredMessage(data.referredMessage);
           setReferredExpiry(data.referredExpiry);
+          setReferrerCoins(data.referrerCoins);
+          setReferrerMessage(data.referrerMessage);
+          setReferrerExpiry(data.referrerExpiry);
         } else {
           console.log("No such document!");
         }
@@ -73,19 +89,22 @@ const AdminControls = () => {
     try {
       await updateDoc(docRef, {
         engine,
-        dobCoins: Number(dobCoins), // Ensure number type
+        dobCoins: Number(dobCoins),
         dobMessage,
-        dobExpiry: Number(dobExpiry), // Ensure number type
-        doaCoins: Number(doaCoins), // Ensure number type
+        dobExpiry: Number(dobExpiry),
+        doaCoins: Number(doaCoins),
         doaMessage,
-        doaExpiry: Number(doaExpiry), // Ensure number type
+        doaExpiry: Number(doaExpiry),
         coinSettings: ageCoins,
-        reviewApprovedCoins: Number(reviewApprovedCoins), // Ensure number type
+        reviewApprovedCoins: Number(reviewApprovedCoins),
         reviewApprovedMessage,
-        reviewApprovedExpiry,
-        referredCoins: Number(referredCoins), // Ensure number type
+        reviewApprovedExpiry: Number(reviewApprovedExpiry),
+        referredCoins: Number(referredCoins),
         referredMessage,
-        referredExpiry: Number(referredExpiry), // Ensure number type
+        referredExpiry: Number(referredExpiry),
+        referrerCoins: Number(referrerCoins),
+        referrerMessage,
+        referrerExpiry: Number(referrerExpiry),
       });
       alert("Data successfully updated!");
     } catch (error) {
@@ -96,157 +115,234 @@ const AdminControls = () => {
 
   return (
     <div className="admin-controls">
-      <h2>Admin Controls</h2>
+      <h2 className="admin-controls-title">Admin Controls</h2>
       
-      <div className="control-item">
-        <label>Keep Website Alive:</label>
-        <input
-          type="checkbox"
-          checked={engine}
-          onChange={(e) => setEngine(e.target.checked)}
-        />
+      <div className="admin-controls-card">
+        <div className="admin-controls-card-header">
+          <h3 className="admin-controls-card-header-title">System Settings</h3>
+        </div>
+        <div className="admin-controls-item admin-controls-checkbox-container">
+          <input
+            type="checkbox"
+            className="admin-controls-input-checkbox"
+            checked={engine}
+            onChange={(e) => setEngine(e.target.checked)}
+          />
+          <label className="admin-controls-label">Keep Website Alive</label>
+        </div>
       </div>
       
-      <div className="control-item">
-        <label>Coins for DOB:</label>
-        <input
-          type="number"
-          value={dobCoins}
-          onChange={(e) => setDobCoins(e.target.value)} // Correctly updating dobCoins
-        />
-      </div>
-
-      <div className="control-item">
-        <label>Message for DOB:</label>
-        <input
-          type="text"
-          value={dobMessage}
-          onChange={(e) => setDobMessage(e.target.value)}
-        />
-      </div>
-
-      <div className="control-item">
-        <label>Expiry for DOB:</label>
-        <input
-          type="number"
-          value={dobExpiry}
-          onChange={(e) => setDobExpiry(e.target.value)} // Correctly updating dobExpiry
-        />
-      </div>
-
-      <div className="control-item">
-        <label>Coins for DOA:</label>
-        <input
-          type="number"
-          value={doaCoins}
-          onChange={(e) => setDoaCoins(e.target.value)} // Correctly updating doaCoins
-        />
-      </div>
-
-      <div className="control-item">
-        <label>Message for DOA:</label>
-        <input
-          type="text"
-          value={doaMessage}
-          onChange={(e) => setDoaMessage(e.target.value)}
-        />
-      </div>
-
-      <div className="control-item">
-        <label>Expiry for DOA:</label>
-        <input
-          type="number"
-          value={doaExpiry}
-          onChange={(e) => setDoaExpiry(e.target.value)}
-        />
-      </div>
-
-      <div className="control-item">
-        <label>Coins for Refferal:</label>
-        <input
-          type="number"
-          value={referredCoins}
-          onChange={(e) => setReferredCoins(e.target.value)}
-        />
-      </div>
-
-      <div className="control-item">
-        <label>Message for Refferal:</label>
-        <input
-          type="text"
-          value={referredMessage}
-          onChange={(e) => setReferredMessage(e.target.value)}
-        />
-      </div>
-
-      <div className="control-item">
-        <label>Expiry for Refferal Coins:</label>
-        <input
-          type="number"
-          value={referredExpiry}
-          onChange={(e) => setReferredExpiry(e.target.value)}
-        />
-      </div>
-
-      <div className="control-item">
-        <label>Coins for Review Approval:</label>
-        <input
-          type="number"
-          value={reviewApprovedCoins}
-          onChange={(e) => setReviewApprovedCoins(e.target.value)}
-        />
-      </div>
-
-      <div className="control-item">
-        <label>Message for Review Approval:</label>
-        <input
-          type="text"
-          value={reviewApprovedMessage}
-          onChange={(e) => setReviewApprovedMessage(e.target.value)}
-        />
-      </div>
-
-      <div className="control-item">
-        <label>Expiry for Review Coins:</label>
-        <input
-          type="number"
-          value={reviewApprovedExpiry}
-          onChange={(e) => setreviewApprovedExpiry(e.target.value)}
-        />
-      </div>
-
-      {Object.entries(ageCoins).map(([milestone, settings]) => (
-        <div key={milestone} className="milestone-settings">
-          <h3>{milestone.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</h3>
-          <div className="control-item">
-            <label>Coins:</label>
+      <div className="admin-controls-grid">
+        <div className="admin-controls-card">
+          <div className="admin-controls-card-header">
+            <h3 className="admin-controls-card-header-title">Date of Birth Rewards</h3>
+          </div>
+          <div className="admin-controls-item">
+            <label className="admin-controls-label">Coins for DOB</label>
             <input
               type="number"
-              value={settings.coins}
-              onChange={(e) => handleCoinSettingChange(milestone, 'coins', e.target.value)}
+              className="admin-controls-input-number"
+              value={dobCoins}
+              onChange={(e) => setDobCoins(e.target.value)}
             />
           </div>
-          <div className="control-item">
-            <label>Message:</label>
+          <div className="admin-controls-item">
+            <label className="admin-controls-label">Message for DOB</label>
             <input
               type="text"
-              value={settings.message}
-              onChange={(e) => handleCoinSettingChange(milestone, 'message', e.target.value)}
+              className="admin-controls-input-text"
+              value={dobMessage}
+              onChange={(e) => setDobMessage(e.target.value)}
             />
           </div>
-          <div className="control-item">
-            <label>Expiry (days):</label>
+          <div className="admin-controls-item">
+            <label className="admin-controls-label">Expiry for DOB (days)</label>
             <input
               type="number"
-              value={settings.expiry}
-              onChange={(e) => handleCoinSettingChange(milestone, 'expiry', e.target.value)}
+              className="admin-controls-input-number"
+              value={dobExpiry}
+              onChange={(e) => setDobExpiry(e.target.value)}
             />
           </div>
         </div>
-      ))}
 
-      <button className="update-btn" onClick={handleUpdate}>
-        Update
+        <div className="admin-controls-card">
+          <div className="admin-controls-card-header">
+            <h3 className="admin-controls-card-header-title">Date of Anniversary Rewards</h3>
+          </div>
+          <div className="admin-controls-item">
+            <label className="admin-controls-label">Coins for DOA</label>
+            <input
+              type="number"
+              className="admin-controls-input-number"
+              value={doaCoins}
+              onChange={(e) => setDoaCoins(e.target.value)}
+            />
+          </div>
+          <div className="admin-controls-item">
+            <label className="admin-controls-label">Message for DOA</label>
+            <input
+              type="text"
+              className="admin-controls-input-text"
+              value={doaMessage}
+              onChange={(e) => setDoaMessage(e.target.value)}
+            />
+          </div>
+          <div className="admin-controls-item">
+            <label className="admin-controls-label">Expiry for DOA (days)</label>
+            <input
+              type="number"
+              className="admin-controls-input-number"
+              value={doaExpiry}
+              onChange={(e) => setDoaExpiry(e.target.value)}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="admin-controls-grid">
+        <div className="admin-controls-card">
+          <div className="admin-controls-card-header">
+            <h3 className="admin-controls-card-header-title">Referred User Rewards</h3>
+          </div>
+          <div className="admin-controls-item">
+            <label className="admin-controls-label">Coins for Referred User</label>
+            <input
+              type="number"
+              className="admin-controls-input-number"
+              value={referredCoins}
+              onChange={(e) => setReferredCoins(e.target.value)}
+            />
+          </div>
+          <div className="admin-controls-item">
+            <label className="admin-controls-label">Message for Referred User</label>
+            <input
+              type="text"
+              className="admin-controls-input-text"
+              value={referredMessage}
+              onChange={(e) => setReferredMessage(e.target.value)}
+            />
+          </div>
+          <div className="admin-controls-item">
+            <label className="admin-controls-label">Expiry for Referred Coins (days)</label>
+            <input
+              type="number"
+              className="admin-controls-input-number"
+              value={referredExpiry}
+              onChange={(e) => setReferredExpiry(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="admin-controls-card">
+          <div className="admin-controls-card-header">
+            <h3 className="admin-controls-card-header-title">Referrer Rewards</h3>
+          </div>
+          <div className="admin-controls-item">
+            <label className="admin-controls-label">Coins for Referrer</label>
+            <input
+              type="number"
+              className="admin-controls-input-number"
+              value={referrerCoins}
+              onChange={(e) => setReferrerCoins(e.target.value)}
+            />
+          </div>
+          <div className="admin-controls-item">
+            <label className="admin-controls-label">Message to Referrer</label>
+            <input
+              type="text"
+              className="admin-controls-input-text"
+              value={referrerMessage}
+              onChange={(e) => setReferrerMessage(e.target.value)}
+            />
+          </div>
+          <div className="admin-controls-item">
+            <label className="admin-controls-label">Expiry for Referrer Coins (days)</label>
+            <input
+              type="number"
+              className="admin-controls-input-number"
+              value={referrerExpiry}
+              onChange={(e) => setReferrerExpiry(e.target.value)}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="admin-controls-card">
+        <div className="admin-controls-card-header">
+          <h3 className="admin-controls-card-header-title">Review Approval Rewards</h3>
+        </div>
+        <div className="admin-controls-item">
+          <label className="admin-controls-label">Coins for Review Approval</label>
+          <input
+            type="number"
+            className="admin-controls-input-number"
+            value={reviewApprovedCoins}
+            onChange={(e) => setReviewApprovedCoins(e.target.value)}
+          />
+        </div>
+        <div className="admin-controls-item">
+          <label className="admin-controls-label">Message for Review Approval</label>
+          <input
+            type="text"
+            className="admin-controls-input-text"
+            value={reviewApprovedMessage}
+            onChange={(e) => setReviewApprovedMessage(e.target.value)}
+          />
+        </div>
+        <div className="admin-controls-item">
+          <label className="admin-controls-label">Expiry for Review Coins (days)</label>
+          <input
+            type="number"
+            className="admin-controls-input-number"
+            value={reviewApprovedExpiry}
+            onChange={(e) => setreviewApprovedExpiry(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="admin-controls-card">
+        <div className="admin-controls-card-header">
+          <h3 className="admin-controls-card-header-title">Age Milestone Rewards</h3>
+        </div>
+        {milestoneOrder.map(milestone => (
+          <div key={milestone} className="admin-controls-milestone">
+            <h3 className="admin-controls-milestone-title">
+              {milestonePrettyNames[milestone]}
+            </h3>
+            <div className="admin-controls-item">
+              <label className="admin-controls-label">Coins</label>
+              <input
+                type="number"
+                className="admin-controls-input-number"
+                value={ageCoins[milestone].coins}
+                onChange={(e) => handleCoinSettingChange(milestone, 'coins', e.target.value)}
+              />
+            </div>
+            <div className="admin-controls-item">
+              <label className="admin-controls-label">Message</label>
+              <input
+                type="text"
+                className="admin-controls-input-text"
+                value={ageCoins[milestone].message}
+                onChange={(e) => handleCoinSettingChange(milestone, 'message', e.target.value)}
+              />
+            </div>
+            <div className="admin-controls-item">
+              <label className="admin-controls-label">Expiry (days)</label>
+              <input
+                type="number"
+                className="admin-controls-input-number"
+                value={ageCoins[milestone].expiry}
+                onChange={(e) => handleCoinSettingChange(milestone, 'expiry', e.target.value)}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <button className="admin-controls-update-btn" onClick={handleUpdate}>
+        Update Settings
       </button>
     </div>
   );

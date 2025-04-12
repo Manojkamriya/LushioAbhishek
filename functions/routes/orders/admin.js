@@ -342,6 +342,7 @@ router.get("/fetch", async (req, res) => {
         manifest: Boolean(shiprocketData.manifest),
         label: Boolean(shiprocketData.label),
         invoice: Boolean(shiprocketData.invoice),
+        isExchange: Boolean(data.isExchange),
       };
 
       // Add URLs if they exist

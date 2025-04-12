@@ -60,6 +60,8 @@ const emailRoutes = require('./routes/emailRoutes');
 const exchangeRoute = require("./routes/orders/exchange.js");
 const transactionsRoute = require("./routes/transactions.js");
 const returnExchangeRoute = require("./routes/orders/returnExchange.js");
+const bannerRoute = require("./routes/banners.js");
+
 // Use routes
 app.use("/user", userRoutes);
 app.use("/products", productsRoute);
@@ -83,7 +85,11 @@ app.use("/search", searchRoute);
 app.use("/exchange", exchangeRoute);
 app.use("/transactions", transactionsRoute);
 app.use("/returnExchange", returnExchangeRoute);
-app.use('/sendEmail', emailRoutes);
+app.use("/banners", bannerRoute);
+
+// Import and use webhooks
+const webhook = require("./webhooks/shiprocket.js");
+app.use("/webhook", webhook);
 
 // Export API
 exports.api = onRequest(app);

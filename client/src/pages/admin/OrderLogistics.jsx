@@ -15,6 +15,7 @@ const OrderLogistics = () => {
     resellerName: '',
     deliveryCharges: '',
     returnEnabled: false,
+    returnExchangeDays: 7,
     orderDiscounts: {
       500: '',
       1000: '',
@@ -104,6 +105,7 @@ const OrderLogistics = () => {
         resellerName: formData.resellerName || '',
         deliveryCharges: formData.deliveryCharges ? parseFloat(parseFloat(formData.deliveryCharges).toFixed(2)) : 0,
         returnEnabled: formData.returnEnabled,
+        returnExchangeDays: formData.returnExchangeDays ? parseInt(formData.returnExchangeDays, 10) : 7,
         orderDiscounts: Object.fromEntries(
           Object.entries(formData.orderDiscounts).map(([key, value]) => [
             key, 
@@ -226,12 +228,23 @@ const OrderLogistics = () => {
               />
             </label>
             <label className="checkbox-label">
-              Enable Returns:
+              Enable Return/Exchange:
               <input
                 type="checkbox"
                 name="returnEnabled"
                 checked={formData.returnEnabled}
                 onChange={handleChange}
+              />
+            </label>
+            <label>
+              Return/Exchange Days:
+              <input
+                type="number"
+                name="returnExchangeDays"
+                value={formData.returnExchangeDays}
+                onChange={handleChange}
+                disabled={!formData.returnEnabled}
+                placeholder="Enter return/exchange days"
               />
             </label>
           </div>

@@ -37,6 +37,12 @@ const coinsToReferred = onDocumentCreated(
         }
 
         const referringUser = referringUserSnap.docs[0];
+        const referringUserId = referringUser.id;
+
+        // Add referringUserId to the user document
+        await db.collection("users").doc(userId).update({
+          referringUserId: referringUserId,
+        });
 
         // Get admin controls
         const adminDoc = await db.collection("controls").doc("admin").get();
